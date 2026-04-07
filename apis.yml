@@ -1,5 +1,5 @@
 aid: m3ter
-name: m3ter
+name: M3ter
 description: >-
   m3ter is a usage-based billing and metering engine providing real-time usage
   data ingestion, pricing logic, and billing automation for API and SaaS
@@ -16,7 +16,7 @@ modified: '2026-03-27'
 specificationVersion: '0.19'
 apis:
   - aid: m3ter:m3ter
-    name: m3ter
+    name: M3ter
     description: >-
       m3ter is a usage-based billing and metering engine providing real-time
       usage data ingestion, pricing logic, and billing automation for API and
