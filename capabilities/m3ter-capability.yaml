@@ -1,0 +1,4123 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API
+  description: 'If you are using Postman, you can: - Use the **Download** button above to download the m3ter Open API spec
+    JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open
+    API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our
+    main user Documentation for details. - Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json)
+    and use it to import the **m3ter-Template API Collection** into yo'
+  tags:
+  - M3ter
+  - API
+  created: '2026-05-06'
+  modified: '2026-05-06'
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter
+    baseUri: https://api.m3ter.com
+    description: m3ter API HTTP API.
+    authentication:
+      type: bearer
+      token: '{{M3TER_TOKEN}}'
+    resources:
+    - name: organizations-orgid-bills-billid-debitlineitems-
+      path: /organizations/{orgId}/bills/{billId}/debitlineitems/{id}
+      operations:
+      - name: getdebitlineitem
+        method: GET
+        description: Retrieve Debit Line Item
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        - name: billId
+          in: path
+          type: string
+          required: true
+          description: UUID of the bill.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The UUID of the debit line item to retrieve.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: putdebitlineitem
+        method: PUT
+        description: Update Debit Line Item
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        - name: billId
+          in: path
+          type: string
+          required: true
+          description: UUID of the bill.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The UUID of the debit line item to update.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deletedebitlineitem
+        method: DELETE
+        description: Delete Debit Line Item
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        - name: billId
+          in: path
+          type: string
+          required: true
+          description: UUID of the bill.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: UUID of the debit line item.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-latest-accountid
+      path: /organizations/{orgId}/bills/latest/{accountId}
+      operations:
+      - name: getlatestbill
+        method: GET
+        description: Retrieve latest Bill
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: accountId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Account for which the latest Bill should be retrieved.
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-billid-debitlineitems
+      path: /organizations/{orgId}/bills/{billId}/debitlineitems
+      operations:
+      - name: listdebitlineitems
+        method: GET
+        description: List Debit Line Items
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        - name: billId
+          in: path
+          type: string
+          required: true
+          description: UUID of the bill.
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of line items to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: '`nextToken` for multi page retrievals.'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: postdebitlineitem
+        method: POST
+        description: Create Debit Line Item
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        - name: billId
+          in: path
+          type: string
+          required: true
+          description: UUID of the bill.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-id
+      path: /organizations/{orgId}/bills/{id}
+      operations:
+      - name: getbill
+        method: GET
+        description: Retrieve Bill
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Bill to retrieve.
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deletebill
+        method: DELETE
+        description: Delete Bill
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Bill to delete.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-balances-balanceid-balancech
+      path: /organizations/{orgId}/balances/{balanceId}/balancechargeschedules/{id}
+      operations:
+      - name: getbalancechargeschedule
+        method: GET
+        description: Retrieve BalanceChargeSchedule
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization
+        - name: balanceId
+          in: path
+          type: string
+          required: true
+          description: UUID of the balance
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The UUID of the BalanceChargeSchedule to retrieve.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatebalancechargeschedule
+        method: PUT
+        description: Update BalanceChargeSchedule
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization
+        - name: balanceId
+          in: path
+          type: string
+          required: true
+          description: UUID of the balance
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The UUID of the BalanceChargeSchedule to update.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deletebalancechargeschedule
+        method: DELETE
+        description: Delete BalanceChargeSchedule
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization
+        - name: balanceId
+          in: path
+          type: string
+          required: true
+          description: UUID of the balance
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The UUID of the BalanceChargeSchedule to update.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-balances-balanceid-balancetr
+      path: /organizations/{orgId}/balances/{balanceId}/balancetransactionschedules
+      operations:
+      - name: listbalancetransactionschedule
+        method: GET
+        description: List BalanceTransactionSchedule
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization
+        - name: balanceId
+          in: path
+          type: string
+          required: true
+          description: UUID of the balance
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of BalanceTransactionSchedules to retrieve per page
+        - name: nextToken
+          in: query
+          type: string
+          description: nextToken for multi page retrievals
+        - name: ids
+          in: query
+          type: array
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createbalancetransactionschedule
+        method: POST
+        description: Create BalanceTransactionSchedule
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization
+        - name: balanceId
+          in: path
+          type: string
+          required: true
+          description: UUID of the balance
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-billid-creditlineitems
+      path: /organizations/{orgId}/bills/{billId}/creditlineitems/{id}
+      operations:
+      - name: getcreditlineitem
+        method: GET
+        description: Retrieve Credit Line Item
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        - name: billId
+          in: path
+          type: string
+          required: true
+          description: UUID of the Bill.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The UUID of the Credit line item to retrieve.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: putcreditlineitem
+        method: PUT
+        description: Update Credit Line Item
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        - name: billId
+          in: path
+          type: string
+          required: true
+          description: UUID of the bill.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The UUID of the credit line item to update.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deletecreditlineitem
+        method: DELETE
+        description: Delete Credit Line Item
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        - name: billId
+          in: path
+          type: string
+          required: true
+          description: UUID of the bill.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: UUID of the credit line item to delete.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-statementjobs-id-cancel
+      path: /organizations/{orgId}/statementjobs/{id}/cancel
+      operations:
+      - name: cancelstatementjob
+        method: POST
+        description: Cancel StatementJob
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the StatementJob to cancel.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-balances-balanceid-balancetr
+      path: /organizations/{orgId}/balances/{balanceId}/balancetransactionschedules/{id}
+      operations:
+      - name: getbalancetransactionschedule
+        method: GET
+        description: Retrieve BalanceTransactionSchedule
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization
+        - name: balanceId
+          in: path
+          type: string
+          required: true
+          description: UUID of the balance
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The UUID of the BalanceTransactionSchedule to retrieve.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatebalancetransactionschedule
+        method: PUT
+        description: Update BalanceTransactionSchedule
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization
+        - name: balanceId
+          in: path
+          type: string
+          required: true
+          description: UUID of the balance
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The UUID of the BalanceTransactionSchedule to update.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deletebalancetransactionschedule
+        method: DELETE
+        description: Delete BalanceTransactionSchedule
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization
+        - name: balanceId
+          in: path
+          type: string
+          required: true
+          description: UUID of the balance
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The UUID of the BalanceTransactionSchedule to update.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-billconfig
+      path: /organizations/{orgId}/billconfig
+      operations:
+      - name: getbillconfig
+        method: GET
+        description: Retrieve BillConfig
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatebillconfig
+        method: PUT
+        description: Update BillConfig
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills
+      path: /organizations/{orgId}/bills
+      operations:
+      - name: listbills
+        method: GET
+        description: List Bills
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: pageSize
+          in: query
+          type: integer
+          description: Specifies the maximum number of Bills to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Bills in a paginated
+            list.
+        - name: accountId
+          in: query
+          type: string
+          description: Optional filter. An Account ID - returns the Bills for the single specified Account.
+        - name: locked
+          in: query
+          type: boolean
+          description: Boolean flag specifying whether to include Bills with "locked" status. * **TRUE** - the list inlcudes
+            "locked" Bills. * **FALSE** - excludes "locked" Bills from
+        - name: excludeLineItems
+          in: query
+          type: boolean
+          description: Exclude Line Items
+        - name: includeBillTotal
+          in: query
+          type: boolean
+          description: Include Bill Total
+        - name: status
+          in: query
+          type: string
+          description: Only include Bills having the given status
+        - name: billDate
+          in: query
+          type: string
+          description: The specific date in ISO 8601 format for which you want to retrieve Bills.
+        - name: billDateStart
+          in: query
+          type: string
+          description: Only include Bills with bill dates equal to or later than this date.
+        - name: billDateEnd
+          in: query
+          type: string
+          description: Only include Bills with bill dates earlier than this date.
+        - name: externalInvoiceDateStart
+          in: query
+          type: string
+          description: Only include Bills with external invoice dates equal to or later than this date.
+        - name: externalInvoiceDateEnd
+          in: query
+          type: string
+          description: Only include Bills with external invoice dates earlier than this date.
+        - name: ids
+          in: query
+          type: array
+          description: Optional filter. The list of Bill IDs to retrieve.
+        - name: billJobId
+          in: query
+          type: string
+          description: List Bill entities by the bill job that last calculated them.
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+        - name: billingFrequency
+          in: query
+          type: string
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-id-status
+      path: /organizations/{orgId}/bills/{id}/status
+      operations:
+      - name: updatebillstatus
+        method: PUT
+        description: Update Bill Status
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Bill whose status you want to update.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-id-statement-json
+      path: /organizations/{orgId}/bills/{id}/statement/json
+      operations:
+      - name: getbilljsonstatement
+        method: GET
+        description: Retrieve Bill Statement in JSON Format
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Bill for which you want to retrieve the Statement.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-billid-lineitems
+      path: /organizations/{orgId}/bills/{billId}/lineitems
+      operations:
+      - name: listbilllineitems
+        method: GET
+        description: List Line Items
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: billId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Bill for which you want to list the line items.
+        - name: pageSize
+          in: query
+          type: integer
+          description: Specifies the maximum number of line items to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of line items in a paginated
+            list.
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-balances-balanceid-transacti
+      path: /organizations/{orgId}/balances/{balanceId}/transactions
+      operations:
+      - name: listbalancetransactions
+        method: GET
+        description: List Transactions
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: balanceId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) for the Balance whose Transactions you want to retrieve.
+        - name: pageSize
+          in: query
+          type: integer
+          description: The maximum number of transactions to return per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: '`nextToken` for multi page retrievals. A token for retrieving the next page of transactions. You''ll
+            get this from the response to your request.'
+        - name: transactionTypeId
+          in: query
+          type: string
+        - name: entityType
+          in: query
+          type: string
+        - name: entityId
+          in: query
+          type: string
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: postbalancetransaction
+        method: POST
+        description: Create Balance Transaction
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: balanceId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) for the Balance to which you want to add a transaction.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-accountid-accountid
+      path: /organizations/{orgId}/bills/accountid/{accountId}
+      operations:
+      - name: getallbillsforaccount
+        method: GET
+        description: Retrieve Bills for an Account ID
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: pageSize
+          in: query
+          type: integer
+          description: Specifies the maximum number of Bills to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Bills in a paginated
+            list.
+        - name: accountId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Account for which you want to retrieve Bills.
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-balances-balanceid-balancetr
+      path: /organizations/{orgId}/balances/{balanceId}/balancetransactionschedules/preview
+      operations:
+      - name: previewbalancetransactionschedule
+        method: POST
+        description: Preview ScheduledBalanceTransactions
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization
+        - name: balanceId
+          in: path
+          type: string
+          required: true
+          description: UUID of the balance
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of BalanceTransactions to retrieve per page
+        - name: nextToken
+          in: query
+          type: string
+          description: nextToken for multi page retrievals
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-billid-lineitems-id
+      path: /organizations/{orgId}/bills/{billId}/lineitems/{id}
+      operations:
+      - name: getbilllineitem
+        method: GET
+        description: Retrieve Line Item
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: billId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Bill containing the line item.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the line item you want to retrieve.
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-id-lock
+      path: /organizations/{orgId}/bills/{id}/lock
+      operations:
+      - name: lockbill
+        method: PUT
+        description: Lock Bill
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Bill to lock.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-billingperiod-lastdate
+      path: /organizations/{orgId}/bills/billingperiod/{lastDateInBillingPeriod}/{billingFrequency}/approve
+      operations:
+      - name: approveallbillsinbillingperiod
+        method: POST
+        description: Approve Bills in Billing Period
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: lastDateInBillingPeriod
+          in: path
+          type: string
+          required: true
+          description: The last date of the billing period for which you want to approve Bills. This date defines the range
+            of Bills to be approved.
+        - name: billingFrequency
+          in: path
+          type: string
+          required: true
+          description: The billing frequency for the specified period. Valid options are daily, weekly, monthly, or annually.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-charges
+      path: /organizations/{orgId}/charges
+      operations:
+      - name: listcharges
+        method: GET
+        description: List Charges
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of Charges to retrieve per page
+        - name: nextToken
+          in: query
+          type: string
+          description: nextToken for multi page retrievals
+        - name: accountId
+          in: query
+          type: string
+          description: List Charge items for the Account UUID
+        - name: entityType
+          in: query
+          type: string
+          description: List Charge items for the EntityType
+        - name: entityId
+          in: query
+          type: string
+          description: List Charge items for the Entity UUID
+        - name: billDate
+          in: query
+          type: string
+          description: List Charge items for the Bill Date
+        - name: ids
+          in: query
+          type: array
+          description: List of Charge UUIDs to retrieve
+        - name: scheduleId
+          in: query
+          type: string
+          description: List Charge items for the Schedule UUID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createcharge
+        method: POST
+        description: Create Charge
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-balances-balanceid-transacti
+      path: /organizations/{orgId}/balances/{balanceId}/transactions/summary
+      operations:
+      - name: getbalancetransactionssummary
+        method: GET
+        description: Get Balance Transactions Summary
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization
+        - name: balanceId
+          in: path
+          type: string
+          required: true
+          description: The UUID of the Balance
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-billjobs-id
+      path: /organizations/{orgId}/billjobs/{id}
+      operations:
+      - name: getbilljob
+        method: GET
+        description: Retrieve BillJob
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The UUID of the Bill Job to retrieve.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-balances
+      path: /organizations/{orgId}/balances
+      operations:
+      - name: listbalances
+        method: GET
+        description: List Balances
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) for your organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: pageSize
+          in: query
+          type: integer
+          description: The maximum number of Balances to return per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for retrieving the next page of Balances. It is used to fetch the next page of Balances
+            in a paginated list.
+        - name: accountId
+          in: query
+          type: string
+          description: The unique identifier (UUID) for the end customer's account.
+        - name: endDateStart
+          in: query
+          type: string
+          description: Only include Balances with end dates equal to or later than this date. If a Balance has a rollover
+            amount configured, then the `rolloverEndDate` will be used as
+        - name: endDateEnd
+          in: query
+          type: string
+          description: Only include Balances with end dates earlier than this date. If a Balance has a rollover amount configured,
+            then the `rolloverEndDate` will be used as the end d
+        - name: contract
+          in: query
+          type: string
+        - name: contractId
+          in: query
+          type: string
+          description: Filter Balances by contract id. Use '' with accountId to fetch unlinked balances.
+        - name: ids
+          in: query
+          type: array
+          description: A list of unique identifiers (UUIDs) for specific Balances to retrieve.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: postbalance
+        method: POST
+        description: Create Balance
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-statementjobs-id
+      path: /organizations/{orgId}/statementjobs/{id}
+      operations:
+      - name: getstatementjob
+        method: GET
+        description: Get StatementJob
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: id
+          in: path
+          type: string
+          required: true
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-id-statement-csv
+      path: /organizations/{orgId}/bills/{id}/statement/csv
+      operations:
+      - name: getbillcsvstatement
+        method: GET
+        description: Retrieve Bill Statement in CSV Format
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Bill for which to retrieve the Statement in CSV format.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createbillcsvstatement
+        method: POST
+        description: Create Bill Statement in CSV Format
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Bill for which you want to generate the Statement in CSV format.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-billjobs
+      path: /organizations/{orgId}/billjobs
+      operations:
+      - name: listbilljobs
+        method: GET
+        description: List BillJobs
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: pageSize
+          in: query
+          type: integer
+          description: Specifies the maximum number of BillJobs to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of BillJobs in a paginated
+            list.
+        - name: active
+          in: query
+          type: string
+          description: Boolean filter to retrieve only active BillJobs and exclude completed or cancelled BillJobs from the
+            results. * TRUE - only active BillJobs. * FALSE - all BillJ
+        - name: status
+          in: query
+          type: string
+          description: 'Filter BillJobs by specific status. Allows for targeted retrieval of BillJobs based on their current
+            processing status. Possible states are: * PENDING * INITIAL'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createbilljob
+        method: POST
+        description: Create BillJob
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-balances-balanceid-balancech
+      path: /organizations/{orgId}/balances/{balanceId}/balancechargeschedules/preview
+      operations:
+      - name: previewscheduledcharge
+        method: POST
+        description: Preview ScheduledBalanceCharges
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization
+        - name: balanceId
+          in: path
+          type: string
+          required: true
+          description: UUID of the balance
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of Charges to retrieve per page
+        - name: nextToken
+          in: query
+          type: string
+          description: nextToken for multi page retrievals
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-lineitems
+      path: /organizations/{orgId}/lineitems
+      operations:
+      - name: listlineitems
+        method: GET
+        description: List Line Items
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        - name: commitmentId
+          in: query
+          type: string
+          description: Filter the line items list using the given Commitment ID.
+        - name: lineItemType
+          in: query
+          type: string
+          description: Filter the line items list using the given line item type. See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-
+        - name: billId
+          in: query
+          type: string
+          description: Filter the line items list using the given Bill ID.
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of Line Items to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: '`nextToken` for multi page retrievals.'
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-balances-id
+      path: /organizations/{orgId}/balances/{id}
+      operations:
+      - name: getbalance
+        method: GET
+        description: Retrieve Balance
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Balance to retrieve.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: putbalance
+        method: PUT
+        description: Update Balance
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Balance to update.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deletebalance
+        method: DELETE
+        description: Delete Balance
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Balance to delete.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-billjobs-id-cancel
+      path: /organizations/{orgId}/billjobs/{id}/cancel
+      operations:
+      - name: cancelbilljob
+        method: POST
+        description: Cancel BillJob
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the BillJob to cancel.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-counteradjustments
+      path: /organizations/{orgId}/counteradjustments
+      operations:
+      - name: listcounteradjustments
+        method: GET
+        description: List CounterAdjustments
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of CounterAdjustments to retrieve per page
+        - name: nextToken
+          in: query
+          type: string
+          description: nextToken for multi page retrievals.
+        - name: counterId
+          in: query
+          type: string
+          description: List CounterAdjustment items for the Counter UUID.
+        - name: accountId
+          in: query
+          type: string
+          description: List CounterAdjustment items for the Account UUID.
+        - name: date
+          in: query
+          type: string
+          description: List CounterAdjustment items for the given date.
+        - name: endDateStart
+          in: query
+          type: string
+          description: Only include CounterAdjustments with end dates equal to or later than this date.
+        - name: endDateEnd
+          in: query
+          type: string
+          description: Only include CounterAdjustments with end dates earlier than this date.
+        - name: sortOrder
+          in: query
+          type: string
+          description: Sort order for the results
+        - name: dateStart
+          in: query
+          type: string
+        - name: dateEnd
+          in: query
+          type: string
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: postcounteradjustment
+        method: POST
+        description: Create CounterAdjustment
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-preview
+      path: /organizations/{orgId}/bills/preview
+      operations:
+      - name: previewbill
+        method: POST
+        description: Preview Bill
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: debug
+          in: query
+          type: boolean
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-statementjobs-batch
+      path: /organizations/{orgId}/statementjobs/batch
+      operations:
+      - name: createstatementjobbatch
+        method: POST
+        description: Create Batch StatementJobs
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-counteradjustments-id
+      path: /organizations/{orgId}/counteradjustments/{id}
+      operations:
+      - name: getcounteradjustment
+        method: GET
+        description: Retrieve CounterAdjustment
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The UUID of the CounterAdjustment to retrieve.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: putcounteradjustment
+        method: PUT
+        description: Update CounterAdjustment
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The UUID of the CounterAdjustment to update.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deletecounteradjustment
+        method: DELETE
+        description: Delete CounterAdjustment
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The UUID of the CounterAdjustment to delete.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-billjobs-recalculate
+      path: /organizations/{orgId}/billjobs/recalculate
+      operations:
+      - name: recalculatebilljob
+        method: POST
+        description: Create Recalculation BillJob
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-billid-lineitems-id-us
+      path: /organizations/{orgId}/bills/{billId}/lineitems/{id}/usage/json
+      operations:
+      - name: getbilllineitemjsonusage
+        method: GET
+        description: Retrieve Line Item Usage in JSON Format
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+        - name: billId
+          in: path
+          type: string
+          required: true
+          description: UUID of the Bill
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: The unique identifier (UUID) of the Bill line item for which to retrieve the usage.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: organizations-orgid-bills-billid-creditlineitems
+      path: /organizations/{orgId}/bills/{billId}/creditlineitems
+      operations:
+      - name: listcreditlineitems
+        method: GET
+        description: List Credit Line Items
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          required: true
+          description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+        - name: billId
+          in: path
+          type: string
+          required: true
+          description: UUID of the bill.
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of Line Items to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: '`nextToken` for multi page retrievals.'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+  exposes:
+  - type: rest
+    port: 8080
+    namespace: m3ter-rest
+    description: REST adapter for m3ter API.
+    resources:
+    - path: /organizations/{orgId}/bills/{billId}/debitlineitems/{id}
+      name: getdebitlineitem
+      operations:
+      - method: GET
+        name: getdebitlineitem
+        description: Retrieve Debit Line Item
+        call: m3ter.getdebitlineitem
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{billId}/debitlineitems/{id}
+      name: putdebitlineitem
+      operations:
+      - method: PUT
+        name: putdebitlineitem
+        description: Update Debit Line Item
+        call: m3ter.putdebitlineitem
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{billId}/debitlineitems/{id}
+      name: deletedebitlineitem
+      operations:
+      - method: DELETE
+        name: deletedebitlineitem
+        description: Delete Debit Line Item
+        call: m3ter.deletedebitlineitem
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/latest/{accountId}
+      name: getlatestbill
+      operations:
+      - method: GET
+        name: getlatestbill
+        description: Retrieve latest Bill
+        call: m3ter.getlatestbill
+        with:
+          orgId: rest.orgId
+          accountId: rest.accountId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{billId}/debitlineitems
+      name: listdebitlineitems
+      operations:
+      - method: GET
+        name: listdebitlineitems
+        description: List Debit Line Items
+        call: m3ter.listdebitlineitems
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{billId}/debitlineitems
+      name: postdebitlineitem
+      operations:
+      - method: POST
+        name: postdebitlineitem
+        description: Create Debit Line Item
+        call: m3ter.postdebitlineitem
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{id}
+      name: getbill
+      operations:
+      - method: GET
+        name: getbill
+        description: Retrieve Bill
+        call: m3ter.getbill
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{id}
+      name: deletebill
+      operations:
+      - method: DELETE
+        name: deletebill
+        description: Delete Bill
+        call: m3ter.deletebill
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{balanceId}/balancechargeschedules/{id}
+      name: getbalancechargeschedule
+      operations:
+      - method: GET
+        name: getbalancechargeschedule
+        description: Retrieve BalanceChargeSchedule
+        call: m3ter.getbalancechargeschedule
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{balanceId}/balancechargeschedules/{id}
+      name: updatebalancechargeschedule
+      operations:
+      - method: PUT
+        name: updatebalancechargeschedule
+        description: Update BalanceChargeSchedule
+        call: m3ter.updatebalancechargeschedule
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{balanceId}/balancechargeschedules/{id}
+      name: deletebalancechargeschedule
+      operations:
+      - method: DELETE
+        name: deletebalancechargeschedule
+        description: Delete BalanceChargeSchedule
+        call: m3ter.deletebalancechargeschedule
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{balanceId}/balancetransactionschedules
+      name: listbalancetransactionschedule
+      operations:
+      - method: GET
+        name: listbalancetransactionschedule
+        description: List BalanceTransactionSchedule
+        call: m3ter.listbalancetransactionschedule
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{balanceId}/balancetransactionschedules
+      name: createbalancetransactionschedule
+      operations:
+      - method: POST
+        name: createbalancetransactionschedule
+        description: Create BalanceTransactionSchedule
+        call: m3ter.createbalancetransactionschedule
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{billId}/creditlineitems/{id}
+      name: getcreditlineitem
+      operations:
+      - method: GET
+        name: getcreditlineitem
+        description: Retrieve Credit Line Item
+        call: m3ter.getcreditlineitem
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{billId}/creditlineitems/{id}
+      name: putcreditlineitem
+      operations:
+      - method: PUT
+        name: putcreditlineitem
+        description: Update Credit Line Item
+        call: m3ter.putcreditlineitem
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{billId}/creditlineitems/{id}
+      name: deletecreditlineitem
+      operations:
+      - method: DELETE
+        name: deletecreditlineitem
+        description: Delete Credit Line Item
+        call: m3ter.deletecreditlineitem
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/statementjobs/{id}/cancel
+      name: cancelstatementjob
+      operations:
+      - method: POST
+        name: cancelstatementjob
+        description: Cancel StatementJob
+        call: m3ter.cancelstatementjob
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{balanceId}/balancetransactionschedules/{id}
+      name: getbalancetransactionschedule
+      operations:
+      - method: GET
+        name: getbalancetransactionschedule
+        description: Retrieve BalanceTransactionSchedule
+        call: m3ter.getbalancetransactionschedule
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{balanceId}/balancetransactionschedules/{id}
+      name: updatebalancetransactionschedule
+      operations:
+      - method: PUT
+        name: updatebalancetransactionschedule
+        description: Update BalanceTransactionSchedule
+        call: m3ter.updatebalancetransactionschedule
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{balanceId}/balancetransactionschedules/{id}
+      name: deletebalancetransactionschedule
+      operations:
+      - method: DELETE
+        name: deletebalancetransactionschedule
+        description: Delete BalanceTransactionSchedule
+        call: m3ter.deletebalancetransactionschedule
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/billconfig
+      name: getbillconfig
+      operations:
+      - method: GET
+        name: getbillconfig
+        description: Retrieve BillConfig
+        call: m3ter.getbillconfig
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/billconfig
+      name: updatebillconfig
+      operations:
+      - method: PUT
+        name: updatebillconfig
+        description: Update BillConfig
+        call: m3ter.updatebillconfig
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills
+      name: listbills
+      operations:
+      - method: GET
+        name: listbills
+        description: List Bills
+        call: m3ter.listbills
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{id}/status
+      name: updatebillstatus
+      operations:
+      - method: PUT
+        name: updatebillstatus
+        description: Update Bill Status
+        call: m3ter.updatebillstatus
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{id}/statement/json
+      name: getbilljsonstatement
+      operations:
+      - method: GET
+        name: getbilljsonstatement
+        description: Retrieve Bill Statement in JSON Format
+        call: m3ter.getbilljsonstatement
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{billId}/lineitems
+      name: listbilllineitems
+      operations:
+      - method: GET
+        name: listbilllineitems
+        description: List Line Items
+        call: m3ter.listbilllineitems
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{balanceId}/transactions
+      name: listbalancetransactions
+      operations:
+      - method: GET
+        name: listbalancetransactions
+        description: List Transactions
+        call: m3ter.listbalancetransactions
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{balanceId}/transactions
+      name: postbalancetransaction
+      operations:
+      - method: POST
+        name: postbalancetransaction
+        description: Create Balance Transaction
+        call: m3ter.postbalancetransaction
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/accountid/{accountId}
+      name: getallbillsforaccount
+      operations:
+      - method: GET
+        name: getallbillsforaccount
+        description: Retrieve Bills for an Account ID
+        call: m3ter.getallbillsforaccount
+        with:
+          orgId: rest.orgId
+          accountId: rest.accountId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{balanceId}/balancetransactionschedules/preview
+      name: previewbalancetransactionschedule
+      operations:
+      - method: POST
+        name: previewbalancetransactionschedule
+        description: Preview ScheduledBalanceTransactions
+        call: m3ter.previewbalancetransactionschedule
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{billId}/lineitems/{id}
+      name: getbilllineitem
+      operations:
+      - method: GET
+        name: getbilllineitem
+        description: Retrieve Line Item
+        call: m3ter.getbilllineitem
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{id}/lock
+      name: lockbill
+      operations:
+      - method: PUT
+        name: lockbill
+        description: Lock Bill
+        call: m3ter.lockbill
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/billingperiod/{lastDateInBillingPeriod}/{billingFrequency}/approve
+      name: approveallbillsinbillingperiod
+      operations:
+      - method: POST
+        name: approveallbillsinbillingperiod
+        description: Approve Bills in Billing Period
+        call: m3ter.approveallbillsinbillingperiod
+        with:
+          orgId: rest.orgId
+          lastDateInBillingPeriod: rest.lastDateInBillingPeriod
+          billingFrequency: rest.billingFrequency
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/charges
+      name: listcharges
+      operations:
+      - method: GET
+        name: listcharges
+        description: List Charges
+        call: m3ter.listcharges
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/charges
+      name: createcharge
+      operations:
+      - method: POST
+        name: createcharge
+        description: Create Charge
+        call: m3ter.createcharge
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{balanceId}/transactions/summary
+      name: getbalancetransactionssummary
+      operations:
+      - method: GET
+        name: getbalancetransactionssummary
+        description: Get Balance Transactions Summary
+        call: m3ter.getbalancetransactionssummary
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/billjobs/{id}
+      name: getbilljob
+      operations:
+      - method: GET
+        name: getbilljob
+        description: Retrieve BillJob
+        call: m3ter.getbilljob
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances
+      name: listbalances
+      operations:
+      - method: GET
+        name: listbalances
+        description: List Balances
+        call: m3ter.listbalances
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances
+      name: postbalance
+      operations:
+      - method: POST
+        name: postbalance
+        description: Create Balance
+        call: m3ter.postbalance
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/statementjobs/{id}
+      name: getstatementjob
+      operations:
+      - method: GET
+        name: getstatementjob
+        description: Get StatementJob
+        call: m3ter.getstatementjob
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{id}/statement/csv
+      name: getbillcsvstatement
+      operations:
+      - method: GET
+        name: getbillcsvstatement
+        description: Retrieve Bill Statement in CSV Format
+        call: m3ter.getbillcsvstatement
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{id}/statement/csv
+      name: createbillcsvstatement
+      operations:
+      - method: POST
+        name: createbillcsvstatement
+        description: Create Bill Statement in CSV Format
+        call: m3ter.createbillcsvstatement
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/billjobs
+      name: listbilljobs
+      operations:
+      - method: GET
+        name: listbilljobs
+        description: List BillJobs
+        call: m3ter.listbilljobs
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/billjobs
+      name: createbilljob
+      operations:
+      - method: POST
+        name: createbilljob
+        description: Create BillJob
+        call: m3ter.createbilljob
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{balanceId}/balancechargeschedules/preview
+      name: previewscheduledcharge
+      operations:
+      - method: POST
+        name: previewscheduledcharge
+        description: Preview ScheduledBalanceCharges
+        call: m3ter.previewscheduledcharge
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/lineitems
+      name: listlineitems
+      operations:
+      - method: GET
+        name: listlineitems
+        description: List Line Items
+        call: m3ter.listlineitems
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{id}
+      name: getbalance
+      operations:
+      - method: GET
+        name: getbalance
+        description: Retrieve Balance
+        call: m3ter.getbalance
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{id}
+      name: putbalance
+      operations:
+      - method: PUT
+        name: putbalance
+        description: Update Balance
+        call: m3ter.putbalance
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/balances/{id}
+      name: deletebalance
+      operations:
+      - method: DELETE
+        name: deletebalance
+        description: Delete Balance
+        call: m3ter.deletebalance
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/billjobs/{id}/cancel
+      name: cancelbilljob
+      operations:
+      - method: POST
+        name: cancelbilljob
+        description: Cancel BillJob
+        call: m3ter.cancelbilljob
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/counteradjustments
+      name: listcounteradjustments
+      operations:
+      - method: GET
+        name: listcounteradjustments
+        description: List CounterAdjustments
+        call: m3ter.listcounteradjustments
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/counteradjustments
+      name: postcounteradjustment
+      operations:
+      - method: POST
+        name: postcounteradjustment
+        description: Create CounterAdjustment
+        call: m3ter.postcounteradjustment
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/preview
+      name: previewbill
+      operations:
+      - method: POST
+        name: previewbill
+        description: Preview Bill
+        call: m3ter.previewbill
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/statementjobs/batch
+      name: createstatementjobbatch
+      operations:
+      - method: POST
+        name: createstatementjobbatch
+        description: Create Batch StatementJobs
+        call: m3ter.createstatementjobbatch
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/counteradjustments/{id}
+      name: getcounteradjustment
+      operations:
+      - method: GET
+        name: getcounteradjustment
+        description: Retrieve CounterAdjustment
+        call: m3ter.getcounteradjustment
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/counteradjustments/{id}
+      name: putcounteradjustment
+      operations:
+      - method: PUT
+        name: putcounteradjustment
+        description: Update CounterAdjustment
+        call: m3ter.putcounteradjustment
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/counteradjustments/{id}
+      name: deletecounteradjustment
+      operations:
+      - method: DELETE
+        name: deletecounteradjustment
+        description: Delete CounterAdjustment
+        call: m3ter.deletecounteradjustment
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/billjobs/recalculate
+      name: recalculatebilljob
+      operations:
+      - method: POST
+        name: recalculatebilljob
+        description: Create Recalculation BillJob
+        call: m3ter.recalculatebilljob
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{billId}/lineitems/{id}/usage/json
+      name: getbilllineitemjsonusage
+      operations:
+      - method: GET
+        name: getbilllineitemjsonusage
+        description: Retrieve Line Item Usage in JSON Format
+        call: m3ter.getbilllineitemjsonusage
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /organizations/{orgId}/bills/{billId}/creditlineitems
+      name: listcreditlineitems
+      operations:
+      - method: GET
+        name: listcreditlineitems
+        description: List Credit Line Items
+        call: m3ter.listcreditlineitems
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    port: 9090
+    namespace: m3ter-mcp
+    transport: http
+    description: MCP adapter for m3ter API for AI agent use.
+    tools:
+    - name: getdebitlineitem
+      description: Retrieve Debit Line Item
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getdebitlineitem
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      - name: billId
+        type: string
+        description: UUID of the bill.
+        required: true
+      - name: id
+        type: string
+        description: The UUID of the debit line item to retrieve.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: putdebitlineitem
+      description: Update Debit Line Item
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter.putdebitlineitem
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      - name: billId
+        type: string
+        description: UUID of the bill.
+        required: true
+      - name: id
+        type: string
+        description: The UUID of the debit line item to update.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deletedebitlineitem
+      description: Delete Debit Line Item
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter.deletedebitlineitem
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      - name: billId
+        type: string
+        description: UUID of the bill.
+        required: true
+      - name: id
+        type: string
+        description: UUID of the debit line item.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getlatestbill
+      description: Retrieve latest Bill
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getlatestbill
+      with:
+        orgId: tools.orgId
+        accountId: tools.accountId
+        additional: tools.additional
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: accountId
+        type: string
+        description: The unique identifier (UUID) of the Account for which the latest Bill should be retrieved.
+        required: true
+      - name: additional
+        type: array
+        description: Comma separated list of additional fields.
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: listdebitlineitems
+      description: List Debit Line Items
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.listdebitlineitems
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      - name: billId
+        type: string
+        description: UUID of the bill.
+        required: true
+      - name: pageSize
+        type: integer
+        description: Number of line items to retrieve per page.
+      - name: nextToken
+        type: string
+        description: '`nextToken` for multi page retrievals.'
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: postdebitlineitem
+      description: Create Debit Line Item
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.postdebitlineitem
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      - name: billId
+        type: string
+        description: UUID of the bill.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getbill
+      description: Retrieve Bill
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getbill
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        additional: tools.additional
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: id
+        type: string
+        description: The unique identifier (UUID) of the Bill to retrieve.
+        required: true
+      - name: additional
+        type: array
+        description: Comma separated list of additional fields.
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deletebill
+      description: Delete Bill
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter.deletebill
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: id
+        type: string
+        description: The unique identifier (UUID) of the Bill to delete.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getbalancechargeschedule
+      description: Retrieve BalanceChargeSchedule
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getbalancechargeschedule
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization
+        required: true
+      - name: balanceId
+        type: string
+        description: UUID of the balance
+        required: true
+      - name: id
+        type: string
+        description: The UUID of the BalanceChargeSchedule to retrieve.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: updatebalancechargeschedule
+      description: Update BalanceChargeSchedule
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter.updatebalancechargeschedule
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization
+        required: true
+      - name: balanceId
+        type: string
+        description: UUID of the balance
+        required: true
+      - name: id
+        type: string
+        description: The UUID of the BalanceChargeSchedule to update.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deletebalancechargeschedule
+      description: Delete BalanceChargeSchedule
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter.deletebalancechargeschedule
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization
+        required: true
+      - name: balanceId
+        type: string
+        description: UUID of the balance
+        required: true
+      - name: id
+        type: string
+        description: The UUID of the BalanceChargeSchedule to update.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: listbalancetransactionschedule
+      description: List BalanceTransactionSchedule
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.listbalancetransactionschedule
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        ids: tools.ids
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization
+        required: true
+      - name: balanceId
+        type: string
+        description: UUID of the balance
+        required: true
+      - name: pageSize
+        type: integer
+        description: Number of BalanceTransactionSchedules to retrieve per page
+      - name: nextToken
+        type: string
+        description: nextToken for multi page retrievals
+      - name: ids
+        type: array
+        description: ids
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createbalancetransactionschedule
+      description: Create BalanceTransactionSchedule
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.createbalancetransactionschedule
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization
+        required: true
+      - name: balanceId
+        type: string
+        description: UUID of the balance
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getcreditlineitem
+      description: Retrieve Credit Line Item
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getcreditlineitem
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      - name: billId
+        type: string
+        description: UUID of the Bill.
+        required: true
+      - name: id
+        type: string
+        description: The UUID of the Credit line item to retrieve.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: putcreditlineitem
+      description: Update Credit Line Item
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter.putcreditlineitem
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      - name: billId
+        type: string
+        description: UUID of the bill.
+        required: true
+      - name: id
+        type: string
+        description: The UUID of the credit line item to update.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deletecreditlineitem
+      description: Delete Credit Line Item
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter.deletecreditlineitem
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      - name: billId
+        type: string
+        description: UUID of the bill.
+        required: true
+      - name: id
+        type: string
+        description: UUID of the credit line item to delete.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: cancelstatementjob
+      description: Cancel StatementJob
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.cancelstatementjob
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: id
+        type: string
+        description: The unique identifier (UUID) of the StatementJob to cancel.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getbalancetransactionschedule
+      description: Retrieve BalanceTransactionSchedule
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getbalancetransactionschedule
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization
+        required: true
+      - name: balanceId
+        type: string
+        description: UUID of the balance
+        required: true
+      - name: id
+        type: string
+        description: The UUID of the BalanceTransactionSchedule to retrieve.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: updatebalancetransactionschedule
+      description: Update BalanceTransactionSchedule
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter.updatebalancetransactionschedule
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization
+        required: true
+      - name: balanceId
+        type: string
+        description: UUID of the balance
+        required: true
+      - name: id
+        type: string
+        description: The UUID of the BalanceTransactionSchedule to update.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deletebalancetransactionschedule
+      description: Delete BalanceTransactionSchedule
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter.deletebalancetransactionschedule
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization
+        required: true
+      - name: balanceId
+        type: string
+        description: UUID of the balance
+        required: true
+      - name: id
+        type: string
+        description: The UUID of the BalanceTransactionSchedule to update.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getbillconfig
+      description: Retrieve BillConfig
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getbillconfig
+      with:
+        orgId: tools.orgId
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: updatebillconfig
+      description: Update BillConfig
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter.updatebillconfig
+      with:
+        orgId: tools.orgId
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: listbills
+      description: List Bills
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.listbills
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        accountId: tools.accountId
+        locked: tools.locked
+        excludeLineItems: tools.excludeLineItems
+        includeBillTotal: tools.includeBillTotal
+        status: tools.status
+        billDate: tools.billDate
+        billDateStart: tools.billDateStart
+        billDateEnd: tools.billDateEnd
+        externalInvoiceDateStart: tools.externalInvoiceDateStart
+        externalInvoiceDateEnd: tools.externalInvoiceDateEnd
+        ids: tools.ids
+        billJobId: tools.billJobId
+        additional: tools.additional
+        billingFrequency: tools.billingFrequency
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: pageSize
+        type: integer
+        description: Specifies the maximum number of Bills to retrieve per page.
+      - name: nextToken
+        type: string
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Bills in a paginated
+          list.
+      - name: accountId
+        type: string
+        description: Optional filter. An Account ID - returns the Bills for the single specified Account.
+      - name: locked
+        type: boolean
+        description: Boolean flag specifying whether to include Bills with "locked" status. * **TRUE** - the list inlcudes
+          "locked" Bills. * **FALSE** - excludes "locked" Bills from
+      - name: excludeLineItems
+        type: boolean
+        description: Exclude Line Items
+      - name: includeBillTotal
+        type: boolean
+        description: Include Bill Total
+      - name: status
+        type: string
+        description: Only include Bills having the given status
+      - name: billDate
+        type: string
+        description: The specific date in ISO 8601 format for which you want to retrieve Bills.
+      - name: billDateStart
+        type: string
+        description: Only include Bills with bill dates equal to or later than this date.
+      - name: billDateEnd
+        type: string
+        description: Only include Bills with bill dates earlier than this date.
+      - name: externalInvoiceDateStart
+        type: string
+        description: Only include Bills with external invoice dates equal to or later than this date.
+      - name: externalInvoiceDateEnd
+        type: string
+        description: Only include Bills with external invoice dates earlier than this date.
+      - name: ids
+        type: array
+        description: Optional filter. The list of Bill IDs to retrieve.
+      - name: billJobId
+        type: string
+        description: List Bill entities by the bill job that last calculated them.
+      - name: additional
+        type: array
+        description: Comma separated list of additional fields.
+      - name: billingFrequency
+        type: string
+        description: billingFrequency
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: updatebillstatus
+      description: Update Bill Status
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter.updatebillstatus
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: id
+        type: string
+        description: The unique identifier (UUID) of the Bill whose status you want to update.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getbilljsonstatement
+      description: Retrieve Bill Statement in JSON Format
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getbilljsonstatement
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: id
+        type: string
+        description: The unique identifier (UUID) of the Bill for which you want to retrieve the Statement.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: listbilllineitems
+      description: List Line Items
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.listbilllineitems
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        additional: tools.additional
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: billId
+        type: string
+        description: The unique identifier (UUID) of the Bill for which you want to list the line items.
+        required: true
+      - name: pageSize
+        type: integer
+        description: Specifies the maximum number of line items to retrieve per page.
+      - name: nextToken
+        type: string
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of line items in a paginated
+          list.
+      - name: additional
+        type: array
+        description: Comma separated list of additional fields.
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: listbalancetransactions
+      description: List Transactions
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.listbalancetransactions
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        transactionTypeId: tools.transactionTypeId
+        entityType: tools.entityType
+        entityId: tools.entityId
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: balanceId
+        type: string
+        description: The unique identifier (UUID) for the Balance whose Transactions you want to retrieve.
+        required: true
+      - name: pageSize
+        type: integer
+        description: The maximum number of transactions to return per page.
+      - name: nextToken
+        type: string
+        description: '`nextToken` for multi page retrievals. A token for retrieving the next page of transactions. You''ll
+          get this from the response to your request.'
+      - name: transactionTypeId
+        type: string
+        description: transactionTypeId
+      - name: entityType
+        type: string
+        description: entityType
+      - name: entityId
+        type: string
+        description: entityId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: postbalancetransaction
+      description: Create Balance Transaction
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.postbalancetransaction
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: balanceId
+        type: string
+        description: The unique identifier (UUID) for the Balance to which you want to add a transaction.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getallbillsforaccount
+      description: Retrieve Bills for an Account ID
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getallbillsforaccount
+      with:
+        orgId: tools.orgId
+        accountId: tools.accountId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        additional: tools.additional
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: accountId
+        type: string
+        description: The unique identifier (UUID) of the Account for which you want to retrieve Bills.
+        required: true
+      - name: pageSize
+        type: integer
+        description: Specifies the maximum number of Bills to retrieve per page.
+      - name: nextToken
+        type: string
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Bills in a paginated
+          list.
+      - name: additional
+        type: array
+        description: Comma separated list of additional fields.
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: previewbalancetransactionschedule
+      description: Preview ScheduledBalanceTransactions
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.previewbalancetransactionschedule
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization
+        required: true
+      - name: balanceId
+        type: string
+        description: UUID of the balance
+        required: true
+      - name: pageSize
+        type: integer
+        description: Number of BalanceTransactions to retrieve per page
+      - name: nextToken
+        type: string
+        description: nextToken for multi page retrievals
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getbilllineitem
+      description: Retrieve Line Item
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getbilllineitem
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+        id: tools.id
+        additional: tools.additional
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: billId
+        type: string
+        description: The unique identifier (UUID) of the Bill containing the line item.
+        required: true
+      - name: id
+        type: string
+        description: The unique identifier (UUID) of the line item you want to retrieve.
+        required: true
+      - name: additional
+        type: array
+        description: Comma separated list of additional fields.
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: lockbill
+      description: Lock Bill
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter.lockbill
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: id
+        type: string
+        description: The unique identifier (UUID) of the Bill to lock.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: approveallbillsinbillingperiod
+      description: Approve Bills in Billing Period
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.approveallbillsinbillingperiod
+      with:
+        orgId: tools.orgId
+        lastDateInBillingPeriod: tools.lastDateInBillingPeriod
+        billingFrequency: tools.billingFrequency
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: lastDateInBillingPeriod
+        type: string
+        description: The last date of the billing period for which you want to approve Bills. This date defines the range
+          of Bills to be approved.
+        required: true
+      - name: billingFrequency
+        type: string
+        description: The billing frequency for the specified period. Valid options are daily, weekly, monthly, or annually.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: listcharges
+      description: List Charges
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.listcharges
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        accountId: tools.accountId
+        entityType: tools.entityType
+        entityId: tools.entityId
+        billDate: tools.billDate
+        ids: tools.ids
+        scheduleId: tools.scheduleId
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization
+        required: true
+      - name: pageSize
+        type: integer
+        description: Number of Charges to retrieve per page
+      - name: nextToken
+        type: string
+        description: nextToken for multi page retrievals
+      - name: accountId
+        type: string
+        description: List Charge items for the Account UUID
+      - name: entityType
+        type: string
+        description: List Charge items for the EntityType
+      - name: entityId
+        type: string
+        description: List Charge items for the Entity UUID
+      - name: billDate
+        type: string
+        description: List Charge items for the Bill Date
+      - name: ids
+        type: array
+        description: List of Charge UUIDs to retrieve
+      - name: scheduleId
+        type: string
+        description: List Charge items for the Schedule UUID
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createcharge
+      description: Create Charge
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.createcharge
+      with:
+        orgId: tools.orgId
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getbalancetransactionssummary
+      description: Get Balance Transactions Summary
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getbalancetransactionssummary
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization
+        required: true
+      - name: balanceId
+        type: string
+        description: The UUID of the Balance
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getbilljob
+      description: Retrieve BillJob
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getbilljob
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization
+        required: true
+      - name: id
+        type: string
+        description: The UUID of the Bill Job to retrieve.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: listbalances
+      description: List Balances
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.listbalances
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        accountId: tools.accountId
+        endDateStart: tools.endDateStart
+        endDateEnd: tools.endDateEnd
+        contract: tools.contract
+        contractId: tools.contractId
+        ids: tools.ids
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) for your organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: pageSize
+        type: integer
+        description: The maximum number of Balances to return per page.
+      - name: nextToken
+        type: string
+        description: The `nextToken` for retrieving the next page of Balances. It is used to fetch the next page of Balances
+          in a paginated list.
+      - name: accountId
+        type: string
+        description: The unique identifier (UUID) for the end customer's account.
+      - name: endDateStart
+        type: string
+        description: Only include Balances with end dates equal to or later than this date. If a Balance has a rollover amount
+          configured, then the `rolloverEndDate` will be used as
+      - name: endDateEnd
+        type: string
+        description: Only include Balances with end dates earlier than this date. If a Balance has a rollover amount configured,
+          then the `rolloverEndDate` will be used as the end d
+      - name: contract
+        type: string
+        description: contract
+      - name: contractId
+        type: string
+        description: Filter Balances by contract id. Use '' with accountId to fetch unlinked balances.
+      - name: ids
+        type: array
+        description: A list of unique identifiers (UUIDs) for specific Balances to retrieve.
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: postbalance
+      description: Create Balance
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.postbalance
+      with:
+        orgId: tools.orgId
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getstatementjob
+      description: Get StatementJob
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getstatementjob
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: id
+        type: string
+        description: id
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getbillcsvstatement
+      description: Retrieve Bill Statement in CSV Format
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getbillcsvstatement
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: id
+        type: string
+        description: The unique identifier (UUID) of the Bill for which to retrieve the Statement in CSV format.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createbillcsvstatement
+      description: Create Bill Statement in CSV Format
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.createbillcsvstatement
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: id
+        type: string
+        description: The unique identifier (UUID) of the Bill for which you want to generate the Statement in CSV format.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: listbilljobs
+      description: List BillJobs
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.listbilljobs
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        active: tools.active
+        status: tools.status
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: pageSize
+        type: integer
+        description: Specifies the maximum number of BillJobs to retrieve per page.
+      - name: nextToken
+        type: string
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of BillJobs in a paginated
+          list.
+      - name: active
+        type: string
+        description: Boolean filter to retrieve only active BillJobs and exclude completed or cancelled BillJobs from the
+          results. * TRUE - only active BillJobs. * FALSE - all BillJ
+      - name: status
+        type: string
+        description: 'Filter BillJobs by specific status. Allows for targeted retrieval of BillJobs based on their current
+          processing status. Possible states are: * PENDING * INITIAL'
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createbilljob
+      description: Create BillJob
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.createbilljob
+      with:
+        orgId: tools.orgId
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: previewscheduledcharge
+      description: Preview ScheduledBalanceCharges
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.previewscheduledcharge
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization
+        required: true
+      - name: balanceId
+        type: string
+        description: UUID of the balance
+        required: true
+      - name: pageSize
+        type: integer
+        description: Number of Charges to retrieve per page
+      - name: nextToken
+        type: string
+        description: nextToken for multi page retrievals
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: listlineitems
+      description: List Line Items
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.listlineitems
+      with:
+        orgId: tools.orgId
+        commitmentId: tools.commitmentId
+        lineItemType: tools.lineItemType
+        billId: tools.billId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        additional: tools.additional
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      - name: commitmentId
+        type: string
+        description: Filter the line items list using the given Commitment ID.
+      - name: lineItemType
+        type: string
+        description: Filter the line items list using the given line item type. See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-
+      - name: billId
+        type: string
+        description: Filter the line items list using the given Bill ID.
+      - name: pageSize
+        type: integer
+        description: Number of Line Items to retrieve per page.
+      - name: nextToken
+        type: string
+        description: '`nextToken` for multi page retrievals.'
+      - name: additional
+        type: array
+        description: Comma separated list of additional fields.
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getbalance
+      description: Retrieve Balance
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getbalance
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: id
+        type: string
+        description: The unique identifier (UUID) of the Balance to retrieve.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: putbalance
+      description: Update Balance
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter.putbalance
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: id
+        type: string
+        description: The unique identifier (UUID) of the Balance to update.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deletebalance
+      description: Delete Balance
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter.deletebalance
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: id
+        type: string
+        description: The unique identifier (UUID) of the Balance to delete.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: cancelbilljob
+      description: Cancel BillJob
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.cancelbilljob
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: id
+        type: string
+        description: The unique identifier (UUID) of the BillJob to cancel.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: listcounteradjustments
+      description: List CounterAdjustments
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.listcounteradjustments
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        counterId: tools.counterId
+        accountId: tools.accountId
+        date: tools.date
+        endDateStart: tools.endDateStart
+        endDateEnd: tools.endDateEnd
+        sortOrder: tools.sortOrder
+        dateStart: tools.dateStart
+        dateEnd: tools.dateEnd
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      - name: pageSize
+        type: integer
+        description: Number of CounterAdjustments to retrieve per page
+      - name: nextToken
+        type: string
+        description: nextToken for multi page retrievals.
+      - name: counterId
+        type: string
+        description: List CounterAdjustment items for the Counter UUID.
+      - name: accountId
+        type: string
+        description: List CounterAdjustment items for the Account UUID.
+      - name: date
+        type: string
+        description: List CounterAdjustment items for the given date.
+      - name: endDateStart
+        type: string
+        description: Only include CounterAdjustments with end dates equal to or later than this date.
+      - name: endDateEnd
+        type: string
+        description: Only include CounterAdjustments with end dates earlier than this date.
+      - name: sortOrder
+        type: string
+        description: Sort order for the results
+      - name: dateStart
+        type: string
+        description: dateStart
+      - name: dateEnd
+        type: string
+        description: dateEnd
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: postcounteradjustment
+      description: Create CounterAdjustment
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.postcounteradjustment
+      with:
+        orgId: tools.orgId
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: previewbill
+      description: Preview Bill
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.previewbill
+      with:
+        orgId: tools.orgId
+        debug: tools.debug
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: debug
+        type: boolean
+        description: debug
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createstatementjobbatch
+      description: Create Batch StatementJobs
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.createstatementjobbatch
+      with:
+        orgId: tools.orgId
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getcounteradjustment
+      description: Retrieve CounterAdjustment
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getcounteradjustment
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      - name: id
+        type: string
+        description: The UUID of the CounterAdjustment to retrieve.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: putcounteradjustment
+      description: Update CounterAdjustment
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter.putcounteradjustment
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      - name: id
+        type: string
+        description: The UUID of the CounterAdjustment to update.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deletecounteradjustment
+      description: Delete CounterAdjustment
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter.deletecounteradjustment
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      - name: id
+        type: string
+        description: The UUID of the CounterAdjustment to delete.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: recalculatebilljob
+      description: Create Recalculation BillJob
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter.recalculatebilljob
+      with:
+        orgId: tools.orgId
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getbilllineitemjsonusage
+      description: Retrieve Line Item Usage in JSON Format
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.getbilllineitemjsonusage
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+        id: tools.id
+      inputParameters:
+      - name: orgId
+        type: string
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+          customer of our service.
+        required: true
+      - name: billId
+        type: string
+        description: UUID of the Bill
+        required: true
+      - name: id
+        type: string
+        description: The unique identifier (UUID) of the Bill line item for which to retrieve the usage.
+        required: true
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: listcreditlineitems
+      description: List Credit Line Items
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter.listcreditlineitems
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+      inputParameters:
+      - name: orgId
+        type: string
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+          service.
+        required: true
+      - name: billId
+        type: string
+        description: UUID of the bill.
+        required: true
+      - name: pageSize
+        type: integer
+        description: Number of Line Items to retrieve per page.
+      - name: nextToken
+        type: string
+        description: '`nextToken` for multi page retrievals.'
+      outputParameters:
+      - type: object
+        mapping: $.
+binds:
+- namespace: env
+  keys:
+    M3TER_TOKEN: M3TER_TOKEN
