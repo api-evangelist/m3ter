@@ -1,0 +1,494 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — Balances
+  description: 'm3ter API — Balances. 8 operations. Lead operation: List Balances. Self-contained Naftiko capability covering
+    one M3ter business surface.'
+  tags:
+  - M3ter
+  - Balances
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-balances
+    baseUri: https://api.m3ter.com
+    description: m3ter API — Balances business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-balances
+      path: /organizations/{orgId}/balances
+      operations:
+      - name: listbalances
+        method: GET
+        description: List Balances
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: The maximum number of Balances to return per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for retrieving the next page of Balances. It is used to fetch the next page of Balances
+            in a paginated list.
+        - name: accountId
+          in: query
+          type: string
+          description: The unique identifier (UUID) for the end customer's account.
+        - name: endDateStart
+          in: query
+          type: string
+          description: Only include Balances with end dates equal to or later than this date. If a Balance has a rollover
+            amount configured, then the `rolloverEndDate` will be used as
+        - name: endDateEnd
+          in: query
+          type: string
+          description: Only include Balances with end dates earlier than this date. If a Balance has a rollover amount configured,
+            then the `rolloverEndDate` will be used as the end d
+        - name: contract
+          in: query
+          type: string
+        - name: contractId
+          in: query
+          type: string
+          description: Filter Balances by contract id. Use '' with accountId to fetch unlinked balances.
+        - name: ids
+          in: query
+          type: array
+          description: A list of unique identifiers (UUIDs) for specific Balances to retrieve.
+      - name: postbalance
+        method: POST
+        description: Create Balance
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-balances-balanceId-transactions
+      path: /organizations/{orgId}/balances/{balanceId}/transactions
+      operations:
+      - name: listbalancetransactions
+        method: GET
+        description: List Transactions
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: balanceId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for the Balance whose Transactions you want to retrieve.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: The maximum number of transactions to return per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: '`nextToken` for multi page retrievals. A token for retrieving the next page of transactions. You''ll
+            get this from the response to your request.'
+        - name: transactionTypeId
+          in: query
+          type: string
+        - name: entityType
+          in: query
+          type: string
+        - name: entityId
+          in: query
+          type: string
+      - name: postbalancetransaction
+        method: POST
+        description: Create Balance Transaction
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: balanceId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for the Balance to which you want to add a transaction.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-balances-balanceId-transactions-summary
+      path: /organizations/{orgId}/balances/{balanceId}/transactions/summary
+      operations:
+      - name: getbalancetransactionssummary
+        method: GET
+        description: Get Balance Transactions Summary
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: balanceId
+          in: path
+          type: string
+          description: The UUID of the Balance
+          required: true
+    - name: organizations-orgId-balances-id
+      path: /organizations/{orgId}/balances/{id}
+      operations:
+      - name: getbalance
+        method: GET
+        description: Retrieve Balance
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Balance to retrieve.
+          required: true
+      - name: putbalance
+        method: PUT
+        description: Update Balance
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Balance to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletebalance
+        method: DELETE
+        description: Delete Balance
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Balance to delete.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-balances-rest
+    port: 8080
+    description: REST adapter for m3ter API — Balances. One Spectral-compliant resource per consumed operation, prefixed with
+      /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/balances
+      name: organizations-orgid-balances
+      description: REST surface for organizations-orgId-balances.
+      operations:
+      - method: GET
+        name: listbalances
+        description: List Balances
+        call: m3ter-balances.listbalances
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          accountId: rest.accountId
+          endDateStart: rest.endDateStart
+          endDateEnd: rest.endDateEnd
+          contract: rest.contract
+          contractId: rest.contractId
+          ids: rest.ids
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: postbalance
+        description: Create Balance
+        call: m3ter-balances.postbalance
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/balances/{balanceid}/transactions
+      name: organizations-orgid-balances-balanceid-transactions
+      description: REST surface for organizations-orgId-balances-balanceId-transactions.
+      operations:
+      - method: GET
+        name: listbalancetransactions
+        description: List Transactions
+        call: m3ter-balances.listbalancetransactions
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          transactionTypeId: rest.transactionTypeId
+          entityType: rest.entityType
+          entityId: rest.entityId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: postbalancetransaction
+        description: Create Balance Transaction
+        call: m3ter-balances.postbalancetransaction
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/balances/{balanceid}/transactions/summary
+      name: organizations-orgid-balances-balanceid-transactions-summary
+      description: REST surface for organizations-orgId-balances-balanceId-transactions-summary.
+      operations:
+      - method: GET
+        name: getbalancetransactionssummary
+        description: Get Balance Transactions Summary
+        call: m3ter-balances.getbalancetransactionssummary
+        with:
+          orgId: rest.orgId
+          balanceId: rest.balanceId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/balances/{id}
+      name: organizations-orgid-balances-id
+      description: REST surface for organizations-orgId-balances-id.
+      operations:
+      - method: GET
+        name: getbalance
+        description: Retrieve Balance
+        call: m3ter-balances.getbalance
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: putbalance
+        description: Update Balance
+        call: m3ter-balances.putbalance
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletebalance
+        description: Delete Balance
+        call: m3ter-balances.deletebalance
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-balances-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — Balances. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-balances
+      description: List Balances
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-balances.listbalances
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        accountId: tools.accountId
+        endDateStart: tools.endDateStart
+        endDateEnd: tools.endDateEnd
+        contract: tools.contract
+        contractId: tools.contractId
+        ids: tools.ids
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-balance
+      description: Create Balance
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-balances.postbalance
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-transactions
+      description: List Transactions
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-balances.listbalancetransactions
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        transactionTypeId: tools.transactionTypeId
+        entityType: tools.entityType
+        entityId: tools.entityId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-balance-transaction
+      description: Create Balance Transaction
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-balances.postbalancetransaction
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-balance-transactions-summary
+      description: Get Balance Transactions Summary
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-balances.getbalancetransactionssummary
+      with:
+        orgId: tools.orgId
+        balanceId: tools.balanceId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-balance
+      description: Retrieve Balance
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-balances.getbalance
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-balance
+      description: Update Balance
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-balances.putbalance
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-balance
+      description: Delete Balance
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-balances.deletebalance
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

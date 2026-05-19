@@ -1,0 +1,1231 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — Bill
+  description: 'm3ter API — Bill. 19 operations. Lead operation: List Bills. Self-contained Naftiko capability covering one
+    M3ter business surface.'
+  tags:
+  - M3ter
+  - Bill
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-bill
+    baseUri: https://api.m3ter.com
+    description: m3ter API — Bill business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-bills
+      path: /organizations/{orgId}/bills
+      operations:
+      - name: listbills
+        method: GET
+        description: List Bills
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Specifies the maximum number of Bills to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Bills in a paginated
+            list.
+        - name: accountId
+          in: query
+          type: string
+          description: Optional filter. An Account ID - returns the Bills for the single specified Account.
+        - name: locked
+          in: query
+          type: boolean
+          description: Boolean flag specifying whether to include Bills with "locked" status.
+        - name: excludeLineItems
+          in: query
+          type: boolean
+          description: Exclude Line Items
+        - name: includeBillTotal
+          in: query
+          type: boolean
+          description: Include Bill Total
+        - name: status
+          in: query
+          type: string
+          description: Only include Bills having the given status
+        - name: billDate
+          in: query
+          type: string
+          description: The specific date in ISO 8601 format for which you want to retrieve Bills.
+        - name: billDateStart
+          in: query
+          type: string
+          description: Only include Bills with bill dates equal to or later than this date.
+        - name: billDateEnd
+          in: query
+          type: string
+          description: Only include Bills with bill dates earlier than this date.
+        - name: externalInvoiceDateStart
+          in: query
+          type: string
+          description: Only include Bills with external invoice dates equal to or later than this date.
+        - name: externalInvoiceDateEnd
+          in: query
+          type: string
+          description: Only include Bills with external invoice dates earlier than this date.
+        - name: ids
+          in: query
+          type: array
+          description: Optional filter. The list of Bill IDs to retrieve.
+        - name: billJobId
+          in: query
+          type: string
+          description: List Bill entities by the bill job that last calculated them.
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+        - name: billingFrequency
+          in: query
+          type: string
+    - name: organizations-orgId-bills-accountid-accountId
+      path: /organizations/{orgId}/bills/accountid/{accountId}
+      operations:
+      - name: getallbillsforaccount
+        method: GET
+        description: Retrieve Bills for an Account ID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Specifies the maximum number of Bills to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Bills in a paginated
+            list.
+        - name: accountId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Account for which you want to retrieve Bills.
+          required: true
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+    - name: organizations-orgId-bills-approve
+      path: /organizations/{orgId}/bills/approve
+      operations:
+      - name: approvebills
+        method: POST
+        description: Approve Bills
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: externalInvoiceDateStart
+          in: query
+          type: string
+          description: Start date for filtering Bills by external invoice date. Includes Bills with dates equal to or later
+            than this date.
+        - name: externalInvoiceDateEnd
+          in: query
+          type: string
+          description: End date for filtering Bills by external invoice date. Includes Bills with dates earlier than this
+            date.
+        - name: accountIds
+          in: query
+          type: string
+          description: List of Account IDs to filter Bills. This allows you to approve Bills for specific Accounts within
+            the Organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-bills-billingperiod-lastDateInBillingPeriod-billingFrequency
+      path: /organizations/{orgId}/bills/billingperiod/{lastDateInBillingPeriod}/{billingFrequency}
+      operations:
+      - name: getallbillsinbillingperiod
+        method: GET
+        description: Retrieve Bills in Billing Period
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Specifies the maximum number of Bills to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Bills in a paginated
+            list.
+        - name: lastDateInBillingPeriod
+          in: path
+          type: string
+          description: The last date of the billing period for which you want to retrieve Bills. This date defines the range
+            of Bills to be retrieved.
+          required: true
+        - name: billingFrequency
+          in: path
+          type: string
+          description: The billing frequency for the specified period. Valid options are daily, weekly, monthly, or annually.
+          required: true
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+    - name: organizations-orgId-bills-billingperiod-lastDateInBillingPeriod-billingFrequency
+      path: /organizations/{orgId}/bills/billingperiod/{lastDateInBillingPeriod}/{billingFrequency}/approve
+      operations:
+      - name: approveallbillsinbillingperiod
+        method: POST
+        description: Approve Bills in Billing Period
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: lastDateInBillingPeriod
+          in: path
+          type: string
+          description: The last date of the billing period for which you want to approve Bills. This date defines the range
+            of Bills to be approved.
+          required: true
+        - name: billingFrequency
+          in: path
+          type: string
+          description: The billing frequency for the specified period. Valid options are daily, weekly, monthly, or annually.
+          required: true
+    - name: organizations-orgId-bills-download-csv-url
+      path: /organizations/{orgId}/bills/download/csv/url
+      operations:
+      - name: downloadbillscsvurl
+        method: POST
+        description: Download Bills URL
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-bills-latest-accountId
+      path: /organizations/{orgId}/bills/latest/{accountId}
+      operations:
+      - name: getlatestbill
+        method: GET
+        description: Retrieve latest Bill
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: accountId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Account for which the latest Bill should be retrieved.
+          required: true
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+    - name: organizations-orgId-bills-preview
+      path: /organizations/{orgId}/bills/preview
+      operations:
+      - name: previewbill
+        method: POST
+        description: Preview Bill
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: debug
+          in: query
+          type: boolean
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-bills-search
+      path: /organizations/{orgId}/bills/search
+      operations:
+      - name: searchbills
+        method: GET
+        description: Search Bills
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: searchQuery
+          in: query
+          type: string
+          description: 'Query for data using special syntax:'
+        - name: fromDocument
+          in: query
+          type: integer
+          description: '`fromDocument` for multi page retrievals.'
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of Bills to retrieve per page.
+        - name: operator
+          in: query
+          type: string
+          description: Search Operator to be used while querying search.
+        - name: sortBy
+          in: query
+          type: string
+          description: Name of the parameter on which sorting is performed. Use any field available on the Bill entity to
+            sort by, such as `accountId`, `endDate`, and so on.
+        - name: sortOrder
+          in: query
+          type: string
+          description: Sorting order.
+    - name: organizations-orgId-bills-billId-lineitems
+      path: /organizations/{orgId}/bills/{billId}/lineitems
+      operations:
+      - name: listbilllineitems
+        method: GET
+        description: List Line Items
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: billId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Bill for which you want to list the line items.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Specifies the maximum number of line items to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of line items in a paginated
+            list.
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+    - name: organizations-orgId-bills-billId-lineitems-id
+      path: /organizations/{orgId}/bills/{billId}/lineitems/{id}
+      operations:
+      - name: getbilllineitem
+        method: GET
+        description: Retrieve Line Item
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: billId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Bill containing the line item.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the line item you want to retrieve.
+          required: true
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+    - name: organizations-orgId-bills-billId-lineitems-id-usage-json
+      path: /organizations/{orgId}/bills/{billId}/lineitems/{id}/usage/json
+      operations:
+      - name: getbilllineitemjsonusage
+        method: GET
+        description: Retrieve Line Item Usage in JSON Format
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: billId
+          in: path
+          type: string
+          description: UUID of the Bill
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Bill line item for which to retrieve the usage.
+          required: true
+    - name: organizations-orgId-bills-id
+      path: /organizations/{orgId}/bills/{id}
+      operations:
+      - name: getbill
+        method: GET
+        description: Retrieve Bill
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Bill to retrieve.
+          required: true
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+      - name: deletebill
+        method: DELETE
+        description: Delete Bill
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Bill to delete.
+          required: true
+    - name: organizations-orgId-bills-id-lock
+      path: /organizations/{orgId}/bills/{id}/lock
+      operations:
+      - name: lockbill
+        method: PUT
+        description: Lock Bill
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Bill to lock.
+          required: true
+    - name: organizations-orgId-bills-id-statement-csv
+      path: /organizations/{orgId}/bills/{id}/statement/csv
+      operations:
+      - name: getbillcsvstatement
+        method: GET
+        description: Retrieve Bill Statement in CSV Format
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Bill for which to retrieve the Statement in CSV format.
+          required: true
+      - name: createbillcsvstatement
+        method: POST
+        description: Create Bill Statement in CSV Format
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Bill for which you want to generate the Statement in CSV format.
+          required: true
+    - name: organizations-orgId-bills-id-statement-json
+      path: /organizations/{orgId}/bills/{id}/statement/json
+      operations:
+      - name: getbilljsonstatement
+        method: GET
+        description: Retrieve Bill Statement in JSON Format
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Bill for which you want to retrieve the Statement.
+          required: true
+    - name: organizations-orgId-bills-id-status
+      path: /organizations/{orgId}/bills/{id}/status
+      operations:
+      - name: updatebillstatus
+        method: PUT
+        description: Update Bill Status
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Bill whose status you want to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-bill-rest
+    port: 8080
+    description: REST adapter for m3ter API — Bill. One Spectral-compliant resource per consumed operation, prefixed with
+      /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/bills
+      name: organizations-orgid-bills
+      description: REST surface for organizations-orgId-bills.
+      operations:
+      - method: GET
+        name: listbills
+        description: List Bills
+        call: m3ter-bill.listbills
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          accountId: rest.accountId
+          locked: rest.locked
+          excludeLineItems: rest.excludeLineItems
+          includeBillTotal: rest.includeBillTotal
+          status: rest.status
+          billDate: rest.billDate
+          billDateStart: rest.billDateStart
+          billDateEnd: rest.billDateEnd
+          externalInvoiceDateStart: rest.externalInvoiceDateStart
+          externalInvoiceDateEnd: rest.externalInvoiceDateEnd
+          ids: rest.ids
+          billJobId: rest.billJobId
+          additional: rest.additional
+          billingFrequency: rest.billingFrequency
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/accountid/{accountid}
+      name: organizations-orgid-bills-accountid-accountid
+      description: REST surface for organizations-orgId-bills-accountid-accountId.
+      operations:
+      - method: GET
+        name: getallbillsforaccount
+        description: Retrieve Bills for an Account ID
+        call: m3ter-bill.getallbillsforaccount
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          accountId: rest.accountId
+          additional: rest.additional
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/approve
+      name: organizations-orgid-bills-approve
+      description: REST surface for organizations-orgId-bills-approve.
+      operations:
+      - method: POST
+        name: approvebills
+        description: Approve Bills
+        call: m3ter-bill.approvebills
+        with:
+          orgId: rest.orgId
+          externalInvoiceDateStart: rest.externalInvoiceDateStart
+          externalInvoiceDateEnd: rest.externalInvoiceDateEnd
+          accountIds: rest.accountIds
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/billingperiod/{lastdateinbillingperiod}/{billingfrequency}
+      name: organizations-orgid-bills-billingperiod-lastdateinbillingperiod-billingfrequency
+      description: REST surface for organizations-orgId-bills-billingperiod-lastDateInBillingPeriod-billingFrequency.
+      operations:
+      - method: GET
+        name: getallbillsinbillingperiod
+        description: Retrieve Bills in Billing Period
+        call: m3ter-bill.getallbillsinbillingperiod
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          lastDateInBillingPeriod: rest.lastDateInBillingPeriod
+          billingFrequency: rest.billingFrequency
+          additional: rest.additional
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/billingperiod/{lastdateinbillingperiod}/{billingfrequency}/approve
+      name: organizations-orgid-bills-billingperiod-lastdateinbillingperiod-billingfrequency
+      description: REST surface for organizations-orgId-bills-billingperiod-lastDateInBillingPeriod-billingFrequency.
+      operations:
+      - method: POST
+        name: approveallbillsinbillingperiod
+        description: Approve Bills in Billing Period
+        call: m3ter-bill.approveallbillsinbillingperiod
+        with:
+          orgId: rest.orgId
+          lastDateInBillingPeriod: rest.lastDateInBillingPeriod
+          billingFrequency: rest.billingFrequency
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/download/csv/url
+      name: organizations-orgid-bills-download-csv-url
+      description: REST surface for organizations-orgId-bills-download-csv-url.
+      operations:
+      - method: POST
+        name: downloadbillscsvurl
+        description: Download Bills URL
+        call: m3ter-bill.downloadbillscsvurl
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/latest/{accountid}
+      name: organizations-orgid-bills-latest-accountid
+      description: REST surface for organizations-orgId-bills-latest-accountId.
+      operations:
+      - method: GET
+        name: getlatestbill
+        description: Retrieve latest Bill
+        call: m3ter-bill.getlatestbill
+        with:
+          orgId: rest.orgId
+          accountId: rest.accountId
+          additional: rest.additional
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/preview
+      name: organizations-orgid-bills-preview
+      description: REST surface for organizations-orgId-bills-preview.
+      operations:
+      - method: POST
+        name: previewbill
+        description: Preview Bill
+        call: m3ter-bill.previewbill
+        with:
+          orgId: rest.orgId
+          debug: rest.debug
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/search
+      name: organizations-orgid-bills-search
+      description: REST surface for organizations-orgId-bills-search.
+      operations:
+      - method: GET
+        name: searchbills
+        description: Search Bills
+        call: m3ter-bill.searchbills
+        with:
+          orgId: rest.orgId
+          searchQuery: rest.searchQuery
+          fromDocument: rest.fromDocument
+          pageSize: rest.pageSize
+          operator: rest.operator
+          sortBy: rest.sortBy
+          sortOrder: rest.sortOrder
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/{billid}/lineitems
+      name: organizations-orgid-bills-billid-lineitems
+      description: REST surface for organizations-orgId-bills-billId-lineitems.
+      operations:
+      - method: GET
+        name: listbilllineitems
+        description: List Line Items
+        call: m3ter-bill.listbilllineitems
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          additional: rest.additional
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/{billid}/lineitems/{id}
+      name: organizations-orgid-bills-billid-lineitems-id
+      description: REST surface for organizations-orgId-bills-billId-lineitems-id.
+      operations:
+      - method: GET
+        name: getbilllineitem
+        description: Retrieve Line Item
+        call: m3ter-bill.getbilllineitem
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+          id: rest.id
+          additional: rest.additional
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/{billid}/lineitems/{id}/usage/json
+      name: organizations-orgid-bills-billid-lineitems-id-usage-json
+      description: REST surface for organizations-orgId-bills-billId-lineitems-id-usage-json.
+      operations:
+      - method: GET
+        name: getbilllineitemjsonusage
+        description: Retrieve Line Item Usage in JSON Format
+        call: m3ter-bill.getbilllineitemjsonusage
+        with:
+          orgId: rest.orgId
+          billId: rest.billId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/{id}
+      name: organizations-orgid-bills-id
+      description: REST surface for organizations-orgId-bills-id.
+      operations:
+      - method: GET
+        name: getbill
+        description: Retrieve Bill
+        call: m3ter-bill.getbill
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          additional: rest.additional
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletebill
+        description: Delete Bill
+        call: m3ter-bill.deletebill
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/{id}/lock
+      name: organizations-orgid-bills-id-lock
+      description: REST surface for organizations-orgId-bills-id-lock.
+      operations:
+      - method: PUT
+        name: lockbill
+        description: Lock Bill
+        call: m3ter-bill.lockbill
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/{id}/statement/csv
+      name: organizations-orgid-bills-id-statement-csv
+      description: REST surface for organizations-orgId-bills-id-statement-csv.
+      operations:
+      - method: GET
+        name: getbillcsvstatement
+        description: Retrieve Bill Statement in CSV Format
+        call: m3ter-bill.getbillcsvstatement
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createbillcsvstatement
+        description: Create Bill Statement in CSV Format
+        call: m3ter-bill.createbillcsvstatement
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/{id}/statement/json
+      name: organizations-orgid-bills-id-statement-json
+      description: REST surface for organizations-orgId-bills-id-statement-json.
+      operations:
+      - method: GET
+        name: getbilljsonstatement
+        description: Retrieve Bill Statement in JSON Format
+        call: m3ter-bill.getbilljsonstatement
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/bills/{id}/status
+      name: organizations-orgid-bills-id-status
+      description: REST surface for organizations-orgId-bills-id-status.
+      operations:
+      - method: PUT
+        name: updatebillstatus
+        description: Update Bill Status
+        call: m3ter-bill.updatebillstatus
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-bill-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — Bill. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-bills
+      description: List Bills
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-bill.listbills
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        accountId: tools.accountId
+        locked: tools.locked
+        excludeLineItems: tools.excludeLineItems
+        includeBillTotal: tools.includeBillTotal
+        status: tools.status
+        billDate: tools.billDate
+        billDateStart: tools.billDateStart
+        billDateEnd: tools.billDateEnd
+        externalInvoiceDateStart: tools.externalInvoiceDateStart
+        externalInvoiceDateEnd: tools.externalInvoiceDateEnd
+        ids: tools.ids
+        billJobId: tools.billJobId
+        additional: tools.additional
+        billingFrequency: tools.billingFrequency
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-bills-account-id
+      description: Retrieve Bills for an Account ID
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-bill.getallbillsforaccount
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        accountId: tools.accountId
+        additional: tools.additional
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: approve-bills
+      description: Approve Bills
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-bill.approvebills
+      with:
+        orgId: tools.orgId
+        externalInvoiceDateStart: tools.externalInvoiceDateStart
+        externalInvoiceDateEnd: tools.externalInvoiceDateEnd
+        accountIds: tools.accountIds
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-bills-billing-period
+      description: Retrieve Bills in Billing Period
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-bill.getallbillsinbillingperiod
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        lastDateInBillingPeriod: tools.lastDateInBillingPeriod
+        billingFrequency: tools.billingFrequency
+        additional: tools.additional
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: approve-bills-billing-period
+      description: Approve Bills in Billing Period
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-bill.approveallbillsinbillingperiod
+      with:
+        orgId: tools.orgId
+        lastDateInBillingPeriod: tools.lastDateInBillingPeriod
+        billingFrequency: tools.billingFrequency
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: download-bills-url
+      description: Download Bills URL
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-bill.downloadbillscsvurl
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-latest-bill
+      description: Retrieve latest Bill
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-bill.getlatestbill
+      with:
+        orgId: tools.orgId
+        accountId: tools.accountId
+        additional: tools.additional
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: preview-bill
+      description: Preview Bill
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-bill.previewbill
+      with:
+        orgId: tools.orgId
+        debug: tools.debug
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: search-bills
+      description: Search Bills
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-bill.searchbills
+      with:
+        orgId: tools.orgId
+        searchQuery: tools.searchQuery
+        fromDocument: tools.fromDocument
+        pageSize: tools.pageSize
+        operator: tools.operator
+        sortBy: tools.sortBy
+        sortOrder: tools.sortOrder
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-line-items
+      description: List Line Items
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-bill.listbilllineitems
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        additional: tools.additional
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-line-item
+      description: Retrieve Line Item
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-bill.getbilllineitem
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+        id: tools.id
+        additional: tools.additional
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-line-item-usage-json
+      description: Retrieve Line Item Usage in JSON Format
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-bill.getbilllineitemjsonusage
+      with:
+        orgId: tools.orgId
+        billId: tools.billId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-bill
+      description: Retrieve Bill
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-bill.getbill
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        additional: tools.additional
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-bill
+      description: Delete Bill
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-bill.deletebill
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: lock-bill
+      description: Lock Bill
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-bill.lockbill
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-bill-statement-csv-format
+      description: Retrieve Bill Statement in CSV Format
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-bill.getbillcsvstatement
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-bill-statement-csv-format
+      description: Create Bill Statement in CSV Format
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-bill.createbillcsvstatement
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-bill-statement-json-format
+      description: Retrieve Bill Statement in JSON Format
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-bill.getbilljsonstatement
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-bill-status
+      description: Update Bill Status
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-bill.updatebillstatus
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

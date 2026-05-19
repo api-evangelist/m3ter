@@ -1,0 +1,715 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — PermissionPolicy
+  description: 'm3ter API — PermissionPolicy. 13 operations. Lead operation: List PermissionPolicies. Self-contained Naftiko
+    capability covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - PermissionPolicy
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-permissionpolicy
+    baseUri: https://api.m3ter.com
+    description: m3ter API — PermissionPolicy business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-permissionpolicies
+      path: /organizations/{orgId}/permissionpolicies
+      operations:
+      - name: listpermissionpolicies
+        method: GET
+        description: List PermissionPolicies
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of permission polices to retrieve per page
+        - name: nextToken
+          in: query
+          type: string
+          description: nextToken for multi page retrievals
+      - name: postpermissionpolicy
+        method: POST
+        description: Create Permission Policy
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-permissionpolicies-id
+      path: /organizations/{orgId}/permissionpolicies/{id}
+      operations:
+      - name: getpermissionpolicy
+        method: GET
+        description: Retrieve Permission Policy
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the PermissionPolicy to retrieve.
+          required: true
+      - name: putpermissionpolicy
+        method: PUT
+        description: Update Permission Policy
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the PermissionPolicy to update.
+          required: true
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletepermissionpolicy
+        method: DELETE
+        description: Delete Permission Policy
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the PermissionPolicy to delete.
+          required: true
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+    - name: organizations-orgId-permissionpolicies-permissionPolicyId-addtoserviceuser
+      path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtoserviceuser
+      operations:
+      - name: addpermissionpolicytoserviceuser
+        method: POST
+        description: Add a PermissionPolicy to a service user
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: permissionPolicyId
+          in: path
+          type: string
+          description: UUID of the permission policy
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-permissionpolicies-permissionPolicyId-addtosupportusers
+      path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtosupportusers
+      operations:
+      - name: addpermissionpolicytosupportusers
+        method: POST
+        description: Add a PermissionPolicy to support users for an organization
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: permissionPolicyId
+          in: path
+          type: string
+          description: UUID of the permission policy
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-permissionpolicies-permissionPolicyId-addtouser
+      path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtouser
+      operations:
+      - name: addpermissionpolicytouser
+        method: POST
+        description: Add a PermissionPolicy to a user
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: permissionPolicyId
+          in: path
+          type: string
+          description: UUID of the permission policy
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-permissionpolicies-permissionPolicyId-addtousergroup
+      path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtousergroup
+      operations:
+      - name: addpermissionpolicytousergroup
+        method: POST
+        description: Add a PermissionPolicy to a user group
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: permissionPolicyId
+          in: path
+          type: string
+          description: UUID of the permission policy
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-permissionpolicies-permissionPolicyId-removefromserviceuser
+      path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromserviceuser
+      operations:
+      - name: removepermissionpolicyfromserviceuser
+        method: POST
+        description: Remove a PermissionPolicy from a service user
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: permissionPolicyId
+          in: path
+          type: string
+          description: UUID of the permission policy
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-permissionpolicies-permissionPolicyId-removefromsupportusers
+      path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromsupportusers
+      operations:
+      - name: removepermissionpolicyfromsupportusers
+        method: POST
+        description: Remove a PermissionPolicy from support users for an organization
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: permissionPolicyId
+          in: path
+          type: string
+          description: UUID of the permission policy
+          required: true
+    - name: organizations-orgId-permissionpolicies-permissionPolicyId-removefromuser
+      path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromuser
+      operations:
+      - name: removepermissionpolicyfromuser
+        method: POST
+        description: Remove a PermissionPolicy from a user
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: permissionPolicyId
+          in: path
+          type: string
+          description: UUID of the permission policy
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-permissionpolicies-permissionPolicyId-removefromusergroup
+      path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromusergroup
+      operations:
+      - name: removepermissionpolicyfromusergroup
+        method: POST
+        description: Remove a PermissionPolicy from a user group
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: permissionPolicyId
+          in: path
+          type: string
+          description: UUID of the permission policy
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-permissionpolicy-rest
+    port: 8080
+    description: REST adapter for m3ter API — PermissionPolicy. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/permissionpolicies
+      name: organizations-orgid-permissionpolicies
+      description: REST surface for organizations-orgId-permissionpolicies.
+      operations:
+      - method: GET
+        name: listpermissionpolicies
+        description: List PermissionPolicies
+        call: m3ter-permissionpolicy.listpermissionpolicies
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: postpermissionpolicy
+        description: Create Permission Policy
+        call: m3ter-permissionpolicy.postpermissionpolicy
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/permissionpolicies/{id}
+      name: organizations-orgid-permissionpolicies-id
+      description: REST surface for organizations-orgId-permissionpolicies-id.
+      operations:
+      - method: GET
+        name: getpermissionpolicy
+        description: Retrieve Permission Policy
+        call: m3ter-permissionpolicy.getpermissionpolicy
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: putpermissionpolicy
+        description: Update Permission Policy
+        call: m3ter-permissionpolicy.putpermissionpolicy
+        with:
+          id: rest.id
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletepermissionpolicy
+        description: Delete Permission Policy
+        call: m3ter-permissionpolicy.deletepermissionpolicy
+        with:
+          id: rest.id
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/permissionpolicies/{permissionpolicyid}/addtoserviceuser
+      name: organizations-orgid-permissionpolicies-permissionpolicyid-addtoserviceuser
+      description: REST surface for organizations-orgId-permissionpolicies-permissionPolicyId-addtoserviceuser.
+      operations:
+      - method: POST
+        name: addpermissionpolicytoserviceuser
+        description: Add a PermissionPolicy to a service user
+        call: m3ter-permissionpolicy.addpermissionpolicytoserviceuser
+        with:
+          orgId: rest.orgId
+          permissionPolicyId: rest.permissionPolicyId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/permissionpolicies/{permissionpolicyid}/addtosupportusers
+      name: organizations-orgid-permissionpolicies-permissionpolicyid-addtosupportusers
+      description: REST surface for organizations-orgId-permissionpolicies-permissionPolicyId-addtosupportusers.
+      operations:
+      - method: POST
+        name: addpermissionpolicytosupportusers
+        description: Add a PermissionPolicy to support users for an organization
+        call: m3ter-permissionpolicy.addpermissionpolicytosupportusers
+        with:
+          orgId: rest.orgId
+          permissionPolicyId: rest.permissionPolicyId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/permissionpolicies/{permissionpolicyid}/addtouser
+      name: organizations-orgid-permissionpolicies-permissionpolicyid-addtouser
+      description: REST surface for organizations-orgId-permissionpolicies-permissionPolicyId-addtouser.
+      operations:
+      - method: POST
+        name: addpermissionpolicytouser
+        description: Add a PermissionPolicy to a user
+        call: m3ter-permissionpolicy.addpermissionpolicytouser
+        with:
+          orgId: rest.orgId
+          permissionPolicyId: rest.permissionPolicyId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/permissionpolicies/{permissionpolicyid}/addtousergroup
+      name: organizations-orgid-permissionpolicies-permissionpolicyid-addtousergroup
+      description: REST surface for organizations-orgId-permissionpolicies-permissionPolicyId-addtousergroup.
+      operations:
+      - method: POST
+        name: addpermissionpolicytousergroup
+        description: Add a PermissionPolicy to a user group
+        call: m3ter-permissionpolicy.addpermissionpolicytousergroup
+        with:
+          orgId: rest.orgId
+          permissionPolicyId: rest.permissionPolicyId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/permissionpolicies/{permissionpolicyid}/removefromserviceuser
+      name: organizations-orgid-permissionpolicies-permissionpolicyid-removefromserviceuser
+      description: REST surface for organizations-orgId-permissionpolicies-permissionPolicyId-removefromserviceuser.
+      operations:
+      - method: POST
+        name: removepermissionpolicyfromserviceuser
+        description: Remove a PermissionPolicy from a service user
+        call: m3ter-permissionpolicy.removepermissionpolicyfromserviceuser
+        with:
+          orgId: rest.orgId
+          permissionPolicyId: rest.permissionPolicyId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/permissionpolicies/{permissionpolicyid}/removefromsupportusers
+      name: organizations-orgid-permissionpolicies-permissionpolicyid-removefromsupportusers
+      description: REST surface for organizations-orgId-permissionpolicies-permissionPolicyId-removefromsupportusers.
+      operations:
+      - method: POST
+        name: removepermissionpolicyfromsupportusers
+        description: Remove a PermissionPolicy from support users for an organization
+        call: m3ter-permissionpolicy.removepermissionpolicyfromsupportusers
+        with:
+          orgId: rest.orgId
+          permissionPolicyId: rest.permissionPolicyId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/permissionpolicies/{permissionpolicyid}/removefromuser
+      name: organizations-orgid-permissionpolicies-permissionpolicyid-removefromuser
+      description: REST surface for organizations-orgId-permissionpolicies-permissionPolicyId-removefromuser.
+      operations:
+      - method: POST
+        name: removepermissionpolicyfromuser
+        description: Remove a PermissionPolicy from a user
+        call: m3ter-permissionpolicy.removepermissionpolicyfromuser
+        with:
+          orgId: rest.orgId
+          permissionPolicyId: rest.permissionPolicyId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/permissionpolicies/{permissionpolicyid}/removefromusergroup
+      name: organizations-orgid-permissionpolicies-permissionpolicyid-removefromusergroup
+      description: REST surface for organizations-orgId-permissionpolicies-permissionPolicyId-removefromusergroup.
+      operations:
+      - method: POST
+        name: removepermissionpolicyfromusergroup
+        description: Remove a PermissionPolicy from a user group
+        call: m3ter-permissionpolicy.removepermissionpolicyfromusergroup
+        with:
+          orgId: rest.orgId
+          permissionPolicyId: rest.permissionPolicyId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-permissionpolicy-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — PermissionPolicy. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-permissionpolicies
+      description: List PermissionPolicies
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-permissionpolicy.listpermissionpolicies
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-permission-policy
+      description: Create Permission Policy
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-permissionpolicy.postpermissionpolicy
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-permission-policy
+      description: Retrieve Permission Policy
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-permissionpolicy.getpermissionpolicy
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-permission-policy
+      description: Update Permission Policy
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-permissionpolicy.putpermissionpolicy
+      with:
+        id: tools.id
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-permission-policy
+      description: Delete Permission Policy
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-permissionpolicy.deletepermissionpolicy
+      with:
+        id: tools.id
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: add-permissionpolicy-service-user
+      description: Add a PermissionPolicy to a service user
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-permissionpolicy.addpermissionpolicytoserviceuser
+      with:
+        orgId: tools.orgId
+        permissionPolicyId: tools.permissionPolicyId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: add-permissionpolicy-support-users-organization
+      description: Add a PermissionPolicy to support users for an organization
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-permissionpolicy.addpermissionpolicytosupportusers
+      with:
+        orgId: tools.orgId
+        permissionPolicyId: tools.permissionPolicyId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: add-permissionpolicy-user
+      description: Add a PermissionPolicy to a user
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-permissionpolicy.addpermissionpolicytouser
+      with:
+        orgId: tools.orgId
+        permissionPolicyId: tools.permissionPolicyId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: add-permissionpolicy-user-group
+      description: Add a PermissionPolicy to a user group
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-permissionpolicy.addpermissionpolicytousergroup
+      with:
+        orgId: tools.orgId
+        permissionPolicyId: tools.permissionPolicyId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: remove-permissionpolicy-service-user
+      description: Remove a PermissionPolicy from a service user
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-permissionpolicy.removepermissionpolicyfromserviceuser
+      with:
+        orgId: tools.orgId
+        permissionPolicyId: tools.permissionPolicyId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: remove-permissionpolicy-support-users-organization
+      description: Remove a PermissionPolicy from support users for an organization
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-permissionpolicy.removepermissionpolicyfromsupportusers
+      with:
+        orgId: tools.orgId
+        permissionPolicyId: tools.permissionPolicyId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: remove-permissionpolicy-user
+      description: Remove a PermissionPolicy from a user
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-permissionpolicy.removepermissionpolicyfromuser
+      with:
+        orgId: tools.orgId
+        permissionPolicyId: tools.permissionPolicyId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: remove-permissionpolicy-user-group
+      description: Remove a PermissionPolicy from a user group
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-permissionpolicy.removepermissionpolicyfromusergroup
+      with:
+        orgId: tools.orgId
+        permissionPolicyId: tools.permissionPolicyId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

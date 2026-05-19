@@ -1,75 +1,185 @@
 aid: m3ter
 name: M3ter
-description: >-
-  m3ter is a usage-based billing and metering engine providing real-time usage
-  data ingestion, pricing logic, and billing automation for API and SaaS
-  products. The m3ter platform exposes two HTTP-based REST APIs returning JSON
-  responses: an Ingest API for submitting raw usage measurements and a Config
-  API for configuration and billing management. Authentication uses OAuth 2.0
-  Client Credentials with a Service User Access Key id and Api Secret exchanged
-  for a Bearer Token at https://api.m3ter.com/oauth/token.
+description: 'm3ter is a usage-based billing and metering engine providing real-time usage data ingestion, pricing logic,
+  and billing automation for API and SaaS products. The m3ter platform exposes two HTTP-based REST APIs returning JSON responses:
+  an Ingest API for submitting raw usage measurements and a Config API for configuration and billing management. Authentication
+  uses OAuth 2.0 Client Credentials with a Service User Access Key id and Api Secret exchanged for a Bearer Token at https://api.m3ter.com/oauth/token.'
 type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
+- FinOps
+- Usage-Based Billing
+- Metering
+- Billing
+- Pricing
+- SaaS
+url: https://raw.githubusercontent.com/api-evangelist/m3ter/refs/heads/main/apis.yml
+created: '2026-03-27'
+modified: '2026-05-19'
+specificationVersion: '0.19'
+apis:
+- aid: m3ter:m3ter
+  name: M3ter API
+  description: The m3ter REST API provides programmatic access to the m3ter usage-based billing and metering platform. It
+    is split into the Ingest API for submitting raw measurement data and the Config API for managing Accounts, Plans, Products,
+    Aggregations, Counters, Meters, Pricing, Bills, Commitments, Contracts, Balances, BillJobs, Charges, Notifications, Events,
+    Integrations, and Data Exports. Authentication uses OAuth 2.0 Client Credentials. The base URL is https://api.m3ter.com.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
   - FinOps
   - Usage-Based Billing
   - Metering
   - Billing
   - Pricing
-  - SaaS
-url: https://raw.githubusercontent.com/api-evangelist/m3ter/refs/heads/main/apis.yml
-created: '2026-03-27'
-modified: '2026-04-28'
-specificationVersion: '0.19'
-apis:
-  - aid: m3ter:m3ter
-    name: M3ter API
-    description: >-
-      The m3ter REST API provides programmatic access to the m3ter usage-based
-      billing and metering platform. It is split into the Ingest API for
-      submitting raw measurement data and the Config API for managing Accounts,
-      Plans, Products, Aggregations, Counters, Meters, Pricing, Bills,
-      Commitments, Contracts, Balances, BillJobs, Charges, Notifications,
-      Events, Integrations, and Data Exports. Authentication uses OAuth 2.0
-      Client Credentials. The base URL is https://api.m3ter.com.
-    humanURL: https://www.m3ter.com/
-    baseURL: https://api.m3ter.com
-    tags:
-      - FinOps
-      - Usage-Based Billing
-      - Metering
-      - Billing
-      - Pricing
-    properties:
-      - type: Documentation
-        url: https://docs.m3ter.com/
-      - type: APIReference
-        url: https://docs.m3ter.com/api
-      - type: Authentication
-        url: https://docs.m3ter.com/api/authentication
-      - type: GettingStarted
-        url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
-      - type: OpenAPI
-        url: openapi/m3ter-openapi.yml
-      - type: SDK
-        url: https://github.com/m3ter-com/m3ter-sdk-python
-      - type: SDK
-        url: https://github.com/m3ter-com/m3ter-sdk-node
-      - type: SDK
-        url: https://github.com/m3ter-com/m3ter-sdk-java
-      - type: SDK
-        url: https://github.com/m3ter-com/m3ter-sdk-go
-      - type: SDK
-        url: https://github.com/m3ter-com/m3ter-sdk-typescript
-      - type: TerraformProvider
-        url: https://github.com/m3ter-com/terraform-provider-m3ter
-common:
-  - type: Website
-    url: https://www.m3ter.com/
+  properties:
   - type: Documentation
     url: https://docs.m3ter.com/
   - type: APIReference
     url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: OpenAPI
+    url: openapi/m3ter-openapi.yml
+  - type: SDK
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDK
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDK
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDK
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDK
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+  - type: NaftikoCapability
+    url: capabilities/m3ter-account.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-accountplan.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-aggregation.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-auth.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-balancechargeschedule.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-balancetransactionschedule.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-balances.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-bill.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-billconfig.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-billgroupingkey.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-billjob.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-charge.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-commitments.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-compoundaggregation.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-contract.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-counter.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-counteradjustments.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-counterpricing.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-creditreason.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-credits.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-currency.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-customfield.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-dataexplorer.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-dataexplorerv2.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-debitreason.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-debits.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-events.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-exportadhoc.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-exportdestination.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-exportjob.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-exportschedule.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-external-mapping.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-integrations.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-invitations.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-line-item.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-lookuptable.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-lookuptablerevision.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-lookuptablerevisiondata.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-marketplace-integrations.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-measurements.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-meter.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-notifications.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-orgusers.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-organizationconfig.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-permissionpolicy.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-plan.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-plangroup.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-plangrouplink.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-plantemplate.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-pricing.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-product.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-resourcegroup.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-scheduledeventconfigurations.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-statementdefinition.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-statementjob.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-support.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-transactiontype.yaml
+  - type: NaftikoCapability
+    url: capabilities/m3ter-user.yaml
+common:
+- type: LinkedIn
+  url: https://www.linkedin.com/company/m3ter
+- type: Website
+  url: https://www.m3ter.com/
+- type: Documentation
+  url: https://docs.m3ter.com/
+- type: APIReference
+  url: https://docs.m3ter.com/api
 maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+- FN: Kin Lane
+  email: kin@apievangelist.com

@@ -1,0 +1,117 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — Line Item
+  description: 'm3ter API — Line Item. 1 operations. Lead operation: List Line Items. Self-contained Naftiko capability covering
+    one M3ter business surface.'
+  tags:
+  - M3ter
+  - Line Item
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-line-item
+    baseUri: https://api.m3ter.com
+    description: m3ter API — Line Item business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-lineitems
+      path: /organizations/{orgId}/lineitems
+      operations:
+      - name: listlineitems
+        method: GET
+        description: List Line Items
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: commitmentId
+          in: query
+          type: string
+          description: Filter the line items list using the given Commitment ID.
+        - name: lineItemType
+          in: query
+          type: string
+          description: 'Filter the line items list using the given line item type. '
+        - name: billId
+          in: query
+          type: string
+          description: Filter the line items list using the given Bill ID.
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of Line Items to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: '`nextToken` for multi page retrievals.'
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional fields.
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-line-item-rest
+    port: 8080
+    description: REST adapter for m3ter API — Line Item. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/lineitems
+      name: organizations-orgid-lineitems
+      description: REST surface for organizations-orgId-lineitems.
+      operations:
+      - method: GET
+        name: listlineitems
+        description: List Line Items
+        call: m3ter-line-item.listlineitems
+        with:
+          orgId: rest.orgId
+          commitmentId: rest.commitmentId
+          lineItemType: rest.lineItemType
+          billId: rest.billId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          additional: rest.additional
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-line-item-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — Line Item. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-line-items
+      description: List Line Items
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-line-item.listlineitems
+      with:
+        orgId: tools.orgId
+        commitmentId: tools.commitmentId
+        lineItemType: tools.lineItemType
+        billId: tools.billId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        additional: tools.additional
+      outputParameters:
+      - type: object
+        mapping: $.

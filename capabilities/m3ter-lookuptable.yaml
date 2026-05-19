@@ -1,0 +1,299 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — LookupTable
+  description: 'm3ter API — LookupTable. 5 operations. Lead operation: List LookupTable. Self-contained Naftiko capability
+    covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - LookupTable
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-lookuptable
+    baseUri: https://api.m3ter.com
+    description: m3ter API — LookupTable business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-lookuptables
+      path: /organizations/{orgId}/lookuptables
+      operations:
+      - name: listlookuptable
+        method: GET
+        description: List LookupTable
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of Lookup Tables to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: Token to supply for multi page retrievals.
+        - name: codes
+          in: query
+          type: array
+          description: List of Lookup Table codes to retrieve.
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional non-default fields to be included in the response. For example,if
+            you want to include the active Revision for each of the Loo
+      - name: postlookuptable
+        method: POST
+        description: Create LookupTable
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-lookuptables-id
+      path: /organizations/{orgId}/lookuptables/{id}
+      operations:
+      - name: getlookuptable
+        method: GET
+        description: Get LookupTable
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the Lookup Table to retrieve.
+          required: true
+        - name: additional
+          in: query
+          type: array
+          description: Comma separated list of additional non-default fields to be included in the response. For example,if
+            you want to include the active Revision for the Lookup Tabl
+      - name: putlookuptable
+        method: PUT
+        description: Update LookupTable
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the Lookup Table to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletelookuptable
+        method: DELETE
+        description: Delete LookupTable
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the Lookup Table to delete.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-lookuptable-rest
+    port: 8080
+    description: REST adapter for m3ter API — LookupTable. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/lookuptables
+      name: organizations-orgid-lookuptables
+      description: REST surface for organizations-orgId-lookuptables.
+      operations:
+      - method: GET
+        name: listlookuptable
+        description: List LookupTable
+        call: m3ter-lookuptable.listlookuptable
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          codes: rest.codes
+          additional: rest.additional
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: postlookuptable
+        description: Create LookupTable
+        call: m3ter-lookuptable.postlookuptable
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/lookuptables/{id}
+      name: organizations-orgid-lookuptables-id
+      description: REST surface for organizations-orgId-lookuptables-id.
+      operations:
+      - method: GET
+        name: getlookuptable
+        description: Get LookupTable
+        call: m3ter-lookuptable.getlookuptable
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          additional: rest.additional
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: putlookuptable
+        description: Update LookupTable
+        call: m3ter-lookuptable.putlookuptable
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletelookuptable
+        description: Delete LookupTable
+        call: m3ter-lookuptable.deletelookuptable
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-lookuptable-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — LookupTable. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-lookuptable
+      description: List LookupTable
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-lookuptable.listlookuptable
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        codes: tools.codes
+        additional: tools.additional
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-lookuptable
+      description: Create LookupTable
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: m3ter-lookuptable.postlookuptable
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-lookuptable
+      description: Get LookupTable
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-lookuptable.getlookuptable
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        additional: tools.additional
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-lookuptable
+      description: Update LookupTable
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-lookuptable.putlookuptable
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-lookuptable
+      description: Delete LookupTable
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-lookuptable.deletelookuptable
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

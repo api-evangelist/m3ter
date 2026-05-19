@@ -1,0 +1,291 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — PlanTemplate
+  description: 'm3ter API — PlanTemplate. 5 operations. Lead operation: List PlanTemplates. Self-contained Naftiko capability
+    covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - PlanTemplate
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-plantemplate
+    baseUri: https://api.m3ter.com
+    description: m3ter API — PlanTemplate business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-plantemplates
+      path: /organizations/{orgId}/plantemplates
+      operations:
+      - name: listplantemplates
+        method: GET
+        description: List PlanTemplates
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Specifies the maximum number of PlanTemplates to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of PlanTemplates in a
+            paginated list.
+        - name: productId
+          in: query
+          type: string
+          description: The unique identifiers (UUIDs) of the Products to retrieve associated PlanTemplates.
+        - name: ids
+          in: query
+          type: array
+          description: List of specific PlanTemplate UUIDs to retrieve.
+      - name: postplantemplate
+        method: POST
+        description: Create PlanTemplate
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization. The Organization represents your company as a direct customer of our service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-plantemplates-id
+      path: /organizations/{orgId}/plantemplates/{id}
+      operations:
+      - name: getplantemplate
+        method: GET
+        description: Retrieve PlanTemplate
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the PlanTemplate to retrieve.
+          required: true
+      - name: putplantemplate
+        method: PUT
+        description: Update PlanTemplate
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the PlanTemplate to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deleteplantemplate
+        method: DELETE
+        description: Delete PlanTemplate
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the PlanTemplate to update.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-plantemplate-rest
+    port: 8080
+    description: REST adapter for m3ter API — PlanTemplate. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/plantemplates
+      name: organizations-orgid-plantemplates
+      description: REST surface for organizations-orgId-plantemplates.
+      operations:
+      - method: GET
+        name: listplantemplates
+        description: List PlanTemplates
+        call: m3ter-plantemplate.listplantemplates
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          productId: rest.productId
+          ids: rest.ids
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: postplantemplate
+        description: Create PlanTemplate
+        call: m3ter-plantemplate.postplantemplate
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/plantemplates/{id}
+      name: organizations-orgid-plantemplates-id
+      description: REST surface for organizations-orgId-plantemplates-id.
+      operations:
+      - method: GET
+        name: getplantemplate
+        description: Retrieve PlanTemplate
+        call: m3ter-plantemplate.getplantemplate
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: putplantemplate
+        description: Update PlanTemplate
+        call: m3ter-plantemplate.putplantemplate
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteplantemplate
+        description: Delete PlanTemplate
+        call: m3ter-plantemplate.deleteplantemplate
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-plantemplate-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — PlanTemplate. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-plantemplates
+      description: List PlanTemplates
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-plantemplate.listplantemplates
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        productId: tools.productId
+        ids: tools.ids
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-plantemplate
+      description: Create PlanTemplate
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-plantemplate.postplantemplate
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-plantemplate
+      description: Retrieve PlanTemplate
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-plantemplate.getplantemplate
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-plantemplate
+      description: Update PlanTemplate
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-plantemplate.putplantemplate
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-plantemplate
+      description: Delete PlanTemplate
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-plantemplate.deleteplantemplate
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

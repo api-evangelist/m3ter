@@ -1,0 +1,115 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — Marketplace Integrations
+  description: 'm3ter API — Marketplace Integrations. 1 operations. Lead operation: Retrieve reported usage. Self-contained
+    Naftiko capability covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - Marketplace Integrations
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-marketplace-integrations
+    baseUri: https://api.m3ter.com
+    description: m3ter API — Marketplace Integrations business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-integrationdestinations-marketplace-usageReport
+      path: /organizations/{orgId}/integrationdestinations/marketplace/usageReport
+      operations:
+      - name: getusagereport
+        method: GET
+        description: Retrieve reported usage
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: billStartDate
+          in: query
+          type: string
+          description: Only include usage with bill start dates equal to this date
+        - name: accountId
+          in: query
+          type: string
+          description: List usage for the customer UUID
+        - name: externalSystem
+          in: query
+          type: string
+          description: Filter usage for the provided marketplace
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of usage records to retrieve per page
+        - name: nextToken
+          in: query
+          type: string
+          description: nextToken for multi page retrievals
+        - name: billId
+          in: query
+          type: string
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-marketplace-integrations-rest
+    port: 8080
+    description: REST adapter for m3ter API — Marketplace Integrations. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/integrationdestinations/marketplace/usagereport
+      name: organizations-orgid-integrationdestinations-marketplace-usagereport
+      description: REST surface for organizations-orgId-integrationdestinations-marketplace-usageReport.
+      operations:
+      - method: GET
+        name: getusagereport
+        description: Retrieve reported usage
+        call: m3ter-marketplace-integrations.getusagereport
+        with:
+          orgId: rest.orgId
+          billStartDate: rest.billStartDate
+          accountId: rest.accountId
+          externalSystem: rest.externalSystem
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          billId: rest.billId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-marketplace-integrations-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — Marketplace Integrations. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: retrieve-reported-usage
+      description: Retrieve reported usage
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-marketplace-integrations.getusagereport
+      with:
+        orgId: tools.orgId
+        billStartDate: tools.billStartDate
+        accountId: tools.accountId
+        externalSystem: tools.externalSystem
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        billId: tools.billId
+      outputParameters:
+      - type: object
+        mapping: $.

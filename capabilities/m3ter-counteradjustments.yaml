@@ -1,0 +1,325 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — CounterAdjustments
+  description: 'm3ter API — CounterAdjustments. 5 operations. Lead operation: List CounterAdjustments. Self-contained Naftiko
+    capability covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - CounterAdjustments
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-counteradjustments
+    baseUri: https://api.m3ter.com
+    description: m3ter API — CounterAdjustments business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-counteradjustments
+      path: /organizations/{orgId}/counteradjustments
+      operations:
+      - name: listcounteradjustments
+        method: GET
+        description: List CounterAdjustments
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of CounterAdjustments to retrieve per page
+        - name: nextToken
+          in: query
+          type: string
+          description: nextToken for multi page retrievals.
+        - name: counterId
+          in: query
+          type: string
+          description: List CounterAdjustment items for the Counter UUID.
+        - name: accountId
+          in: query
+          type: string
+          description: List CounterAdjustment items for the Account UUID.
+        - name: date
+          in: query
+          type: string
+          description: List CounterAdjustment items for the given date.
+        - name: endDateStart
+          in: query
+          type: string
+          description: Only include CounterAdjustments with end dates equal to or later than this date.
+        - name: endDateEnd
+          in: query
+          type: string
+          description: Only include CounterAdjustments with end dates earlier than this date.
+        - name: sortOrder
+          in: query
+          type: string
+          description: Sort order for the results
+        - name: dateStart
+          in: query
+          type: string
+        - name: dateEnd
+          in: query
+          type: string
+      - name: postcounteradjustment
+        method: POST
+        description: Create CounterAdjustment
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-counteradjustments-id
+      path: /organizations/{orgId}/counteradjustments/{id}
+      operations:
+      - name: getcounteradjustment
+        method: GET
+        description: Retrieve CounterAdjustment
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the CounterAdjustment to retrieve.
+          required: true
+      - name: putcounteradjustment
+        method: PUT
+        description: Update CounterAdjustment
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the CounterAdjustment to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletecounteradjustment
+        method: DELETE
+        description: Delete CounterAdjustment
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the CounterAdjustment to delete.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-counteradjustments-rest
+    port: 8080
+    description: REST adapter for m3ter API — CounterAdjustments. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/counteradjustments
+      name: organizations-orgid-counteradjustments
+      description: REST surface for organizations-orgId-counteradjustments.
+      operations:
+      - method: GET
+        name: listcounteradjustments
+        description: List CounterAdjustments
+        call: m3ter-counteradjustments.listcounteradjustments
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          counterId: rest.counterId
+          accountId: rest.accountId
+          date: rest.date
+          endDateStart: rest.endDateStart
+          endDateEnd: rest.endDateEnd
+          sortOrder: rest.sortOrder
+          dateStart: rest.dateStart
+          dateEnd: rest.dateEnd
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: postcounteradjustment
+        description: Create CounterAdjustment
+        call: m3ter-counteradjustments.postcounteradjustment
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/counteradjustments/{id}
+      name: organizations-orgid-counteradjustments-id
+      description: REST surface for organizations-orgId-counteradjustments-id.
+      operations:
+      - method: GET
+        name: getcounteradjustment
+        description: Retrieve CounterAdjustment
+        call: m3ter-counteradjustments.getcounteradjustment
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: putcounteradjustment
+        description: Update CounterAdjustment
+        call: m3ter-counteradjustments.putcounteradjustment
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletecounteradjustment
+        description: Delete CounterAdjustment
+        call: m3ter-counteradjustments.deletecounteradjustment
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-counteradjustments-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — CounterAdjustments. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-counteradjustments
+      description: List CounterAdjustments
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-counteradjustments.listcounteradjustments
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        counterId: tools.counterId
+        accountId: tools.accountId
+        date: tools.date
+        endDateStart: tools.endDateStart
+        endDateEnd: tools.endDateEnd
+        sortOrder: tools.sortOrder
+        dateStart: tools.dateStart
+        dateEnd: tools.dateEnd
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-counteradjustment
+      description: Create CounterAdjustment
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-counteradjustments.postcounteradjustment
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-counteradjustment
+      description: Retrieve CounterAdjustment
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-counteradjustments.getcounteradjustment
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-counteradjustment
+      description: Update CounterAdjustment
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-counteradjustments.putcounteradjustment
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-counteradjustment
+      description: Delete CounterAdjustment
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-counteradjustments.deletecounteradjustment
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

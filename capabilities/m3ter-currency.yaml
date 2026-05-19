@@ -1,0 +1,299 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — Currency
+  description: 'm3ter API — Currency. 5 operations. Lead operation: List Currencies. Self-contained Naftiko capability covering
+    one M3ter business surface.'
+  tags:
+  - M3ter
+  - Currency
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-currency
+    baseUri: https://api.m3ter.com
+    description: m3ter API — Currency business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-picklists-currency
+      path: /organizations/{orgId}/picklists/currency
+      operations:
+      - name: listcurrencies
+        method: GET
+        description: List Currencies
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Specifies the maximum number of Currencies to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Currencies in a paginated
+            list.
+        - name: ids
+          in: query
+          type: array
+          description: An optional parameter to filter the list based on specific Currency unique identifiers (UUIDs).
+        - name: codes
+          in: query
+          type: array
+          description: An optional parameter to retrieve specific Currencies based on their short codes.
+        - name: archived
+          in: query
+          type: boolean
+          description: Filter by archived flag. A True / False flag indicating whether to return Currencies that are archived
+            *(obsolete)*.
+      - name: createcurrency
+        method: POST
+        description: Create Currency
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-picklists-currency-id
+      path: /organizations/{orgId}/picklists/currency/{id}
+      operations:
+      - name: getcurrency
+        method: GET
+        description: Retrieve Currency
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Currency to retrieve.
+          required: true
+      - name: updatecurrency
+        method: PUT
+        description: Update Currency
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Currency to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletecurrency
+        method: DELETE
+        description: Delete Currency
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Currency to delete.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-currency-rest
+    port: 8080
+    description: REST adapter for m3ter API — Currency. One Spectral-compliant resource per consumed operation, prefixed with
+      /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/picklists/currency
+      name: organizations-orgid-picklists-currency
+      description: REST surface for organizations-orgId-picklists-currency.
+      operations:
+      - method: GET
+        name: listcurrencies
+        description: List Currencies
+        call: m3ter-currency.listcurrencies
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          ids: rest.ids
+          codes: rest.codes
+          archived: rest.archived
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createcurrency
+        description: Create Currency
+        call: m3ter-currency.createcurrency
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/picklists/currency/{id}
+      name: organizations-orgid-picklists-currency-id
+      description: REST surface for organizations-orgId-picklists-currency-id.
+      operations:
+      - method: GET
+        name: getcurrency
+        description: Retrieve Currency
+        call: m3ter-currency.getcurrency
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatecurrency
+        description: Update Currency
+        call: m3ter-currency.updatecurrency
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletecurrency
+        description: Delete Currency
+        call: m3ter-currency.deletecurrency
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-currency-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — Currency. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-currencies
+      description: List Currencies
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-currency.listcurrencies
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        ids: tools.ids
+        codes: tools.codes
+        archived: tools.archived
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-currency
+      description: Create Currency
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-currency.createcurrency
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-currency
+      description: Retrieve Currency
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-currency.getcurrency
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-currency
+      description: Update Currency
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-currency.updatecurrency
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-currency
+      description: Delete Currency
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-currency.deletecurrency
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

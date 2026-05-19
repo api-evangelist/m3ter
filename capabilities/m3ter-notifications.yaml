@@ -1,0 +1,349 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — Notifications
+  description: 'm3ter API — Notifications. 6 operations. Lead operation: List Notifications. Self-contained Naftiko capability
+    covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - Notifications
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-notifications
+    baseUri: https://api.m3ter.com
+    description: m3ter API — Notifications business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-notifications-configurations
+      path: /organizations/{orgId}/notifications/configurations
+      operations:
+      - name: listnotifications
+        method: GET
+        description: List Notifications
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Specifies the maximum number of Notifications to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Notifications in a
+            paginated list.
+        - name: active
+          in: query
+          type: boolean
+          description: A Boolean flag indicating whether to retrieve only active or only inactive Notifications.
+        - name: eventName
+          in: query
+          type: string
+          description: Use this to filter the Notifications returned - only those Notifications that are based on the *Event
+            type* specified by `eventName` are returned.
+        - name: ids
+          in: query
+          type: array
+          description: A list of specific Notification UUIDs to retrieve.
+      - name: createnotification
+        method: POST
+        description: Create Notification
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-notifications-configurations-id
+      path: /organizations/{orgId}/notifications/configurations/{id}
+      operations:
+      - name: getnotification
+        method: GET
+        description: Retrieve Notification
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Notification to retrieve.
+          required: true
+      - name: updatenotification
+        method: PUT
+        description: Update Notification
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Notification to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletenotification
+        method: DELETE
+        description: Delete Notification
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Notification to delete.
+          required: true
+    - name: organizations-orgId-notifications-evaluate
+      path: /organizations/{orgId}/notifications/evaluate
+      operations:
+      - name: evaluatecalculation
+        method: POST
+        description: Evaluate Calculation
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-notifications-rest
+    port: 8080
+    description: REST adapter for m3ter API — Notifications. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/notifications/configurations
+      name: organizations-orgid-notifications-configurations
+      description: REST surface for organizations-orgId-notifications-configurations.
+      operations:
+      - method: GET
+        name: listnotifications
+        description: List Notifications
+        call: m3ter-notifications.listnotifications
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          active: rest.active
+          eventName: rest.eventName
+          ids: rest.ids
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createnotification
+        description: Create Notification
+        call: m3ter-notifications.createnotification
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/notifications/configurations/{id}
+      name: organizations-orgid-notifications-configurations-id
+      description: REST surface for organizations-orgId-notifications-configurations-id.
+      operations:
+      - method: GET
+        name: getnotification
+        description: Retrieve Notification
+        call: m3ter-notifications.getnotification
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatenotification
+        description: Update Notification
+        call: m3ter-notifications.updatenotification
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletenotification
+        description: Delete Notification
+        call: m3ter-notifications.deletenotification
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/notifications/evaluate
+      name: organizations-orgid-notifications-evaluate
+      description: REST surface for organizations-orgId-notifications-evaluate.
+      operations:
+      - method: POST
+        name: evaluatecalculation
+        description: Evaluate Calculation
+        call: m3ter-notifications.evaluatecalculation
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-notifications-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — Notifications. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-notifications
+      description: List Notifications
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-notifications.listnotifications
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        active: tools.active
+        eventName: tools.eventName
+        ids: tools.ids
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-notification
+      description: Create Notification
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-notifications.createnotification
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-notification
+      description: Retrieve Notification
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-notifications.getnotification
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-notification
+      description: Update Notification
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-notifications.updatenotification
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-notification
+      description: Delete Notification
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-notifications.deletenotification
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: evaluate-calculation
+      description: Evaluate Calculation
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-notifications.evaluatecalculation
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

@@ -1,0 +1,124 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — BillConfig
+  description: 'm3ter API — BillConfig. 2 operations. Lead operation: Retrieve BillConfig. Self-contained Naftiko capability
+    covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - BillConfig
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-billconfig
+    baseUri: https://api.m3ter.com
+    description: m3ter API — BillConfig business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-billconfig
+      path: /organizations/{orgId}/billconfig
+      operations:
+      - name: getbillconfig
+        method: GET
+        description: Retrieve BillConfig
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+      - name: updatebillconfig
+        method: PUT
+        description: Update BillConfig
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-billconfig-rest
+    port: 8080
+    description: REST adapter for m3ter API — BillConfig. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/billconfig
+      name: organizations-orgid-billconfig
+      description: REST surface for organizations-orgId-billconfig.
+      operations:
+      - method: GET
+        name: getbillconfig
+        description: Retrieve BillConfig
+        call: m3ter-billconfig.getbillconfig
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatebillconfig
+        description: Update BillConfig
+        call: m3ter-billconfig.updatebillconfig
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-billconfig-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — BillConfig. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: retrieve-billconfig
+      description: Retrieve BillConfig
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-billconfig.getbillconfig
+      with:
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-billconfig
+      description: Update BillConfig
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-billconfig.updatebillconfig
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

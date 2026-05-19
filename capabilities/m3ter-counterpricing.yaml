@@ -1,0 +1,302 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — CounterPricing
+  description: 'm3ter API — CounterPricing. 5 operations. Lead operation: List CounterPricings. Self-contained Naftiko capability
+    covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - CounterPricing
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-counterpricing
+    baseUri: https://api.m3ter.com
+    description: m3ter API — CounterPricing business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-counterpricings
+      path: /organizations/{orgId}/counterpricings
+      operations:
+      - name: listcounterpricings
+        method: GET
+        description: List CounterPricings
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of CounterPricings to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: '`nextToken` for multi page retrievals.'
+        - name: date
+          in: query
+          type: string
+          description: Date on which to retrieve active CounterPricings.
+        - name: planId
+          in: query
+          type: string
+          description: UUID of the Plan to retrieve CounterPricings for.
+        - name: planTemplateId
+          in: query
+          type: string
+          description: UUID of the Plan Template to retrieve CounterPricings for.
+        - name: ids
+          in: query
+          type: array
+          description: List of CounterPricing IDs to retrieve.
+      - name: postcounterpricing
+        method: POST
+        description: Create CounterPricing
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-counterpricings-id
+      path: /organizations/{orgId}/counterpricings/{id}
+      operations:
+      - name: getcounterpricing
+        method: GET
+        description: Retrieve CounterPricing
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the CounterPricing to retrieve.
+          required: true
+      - name: putcounterpricing
+        method: PUT
+        description: Update CounterPricing
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the CounterPricing to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletecounterpricing
+        method: DELETE
+        description: Delete CounterPricing
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the CounterPricing to delete.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-counterpricing-rest
+    port: 8080
+    description: REST adapter for m3ter API — CounterPricing. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/counterpricings
+      name: organizations-orgid-counterpricings
+      description: REST surface for organizations-orgId-counterpricings.
+      operations:
+      - method: GET
+        name: listcounterpricings
+        description: List CounterPricings
+        call: m3ter-counterpricing.listcounterpricings
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          date: rest.date
+          planId: rest.planId
+          planTemplateId: rest.planTemplateId
+          ids: rest.ids
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: postcounterpricing
+        description: Create CounterPricing
+        call: m3ter-counterpricing.postcounterpricing
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/counterpricings/{id}
+      name: organizations-orgid-counterpricings-id
+      description: REST surface for organizations-orgId-counterpricings-id.
+      operations:
+      - method: GET
+        name: getcounterpricing
+        description: Retrieve CounterPricing
+        call: m3ter-counterpricing.getcounterpricing
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: putcounterpricing
+        description: Update CounterPricing
+        call: m3ter-counterpricing.putcounterpricing
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletecounterpricing
+        description: Delete CounterPricing
+        call: m3ter-counterpricing.deletecounterpricing
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-counterpricing-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — CounterPricing. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-counterpricings
+      description: List CounterPricings
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-counterpricing.listcounterpricings
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        date: tools.date
+        planId: tools.planId
+        planTemplateId: tools.planTemplateId
+        ids: tools.ids
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-counterpricing
+      description: Create CounterPricing
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-counterpricing.postcounterpricing
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-counterpricing
+      description: Retrieve CounterPricing
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-counterpricing.getcounterpricing
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-counterpricing
+      description: Update CounterPricing
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-counterpricing.putcounterpricing
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-counterpricing
+      description: Delete CounterPricing
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-counterpricing.deletecounterpricing
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

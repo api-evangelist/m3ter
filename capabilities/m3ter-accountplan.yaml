@@ -1,0 +1,380 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — AccountPlan
+  description: 'm3ter API — AccountPlan. 6 operations. Lead operation: List AccountPlans. Self-contained Naftiko capability
+    covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - AccountPlan
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-accountplan
+    baseUri: https://api.m3ter.com
+    description: m3ter API — AccountPlan business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-accountplans
+      path: /organizations/{orgId}/accountplans
+      operations:
+      - name: listaccountplans
+        method: GET
+        description: List AccountPlans
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: The maximum number of AccountPlans and AccountPlanGroups to return per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for retrieving the next page of AccountPlans and AccountPlanGroups. It is used to fetch
+            the next page of AccountPlans and AccountPlanGroups in a
+        - name: date
+          in: query
+          type: string
+          description: The specific date for which you want to retrieve AccountPlans and AccountPlanGroups.
+        - name: account
+          in: query
+          type: string
+          description: The unique identifier (UUID) for the Account whose AccountPlans and AccountPlanGroups you want to retrieve.
+        - name: plan
+          in: query
+          type: string
+          description: The unique identifier (UUID) for the Plan whose associated AccountPlans you want to retrieve.
+        - name: product
+          in: query
+          type: string
+          description: The unique identifier (UUID) for the Product whose associated AccountPlans you want to retrieve.
+        - name: includeall
+          in: query
+          type: boolean
+          description: A Boolean flag that specifies whether to include both active and inactive AccountPlans and AccountPlanGroups
+            in the list.
+        - name: ids
+          in: query
+          type: array
+          description: A list of unique identifiers (UUIDs) for specific AccountPlans and AccountPlanGroups you want to retrieve.
+        - name: contract
+          in: query
+          type: string
+          description: The unique identifier (UUID) of the Contract which the AccountPlans you want to retrieve have been
+            linked to.
+      - name: postaccountplan
+        method: POST
+        description: Create AccountPlan
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-accountplans-id
+      path: /organizations/{orgId}/accountplans/{id}
+      operations:
+      - name: getaccountplan
+        method: GET
+        description: Retrieve AccountPlan
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the AccountPlan or AccountPlanGroup to retrieve.
+          required: true
+      - name: putaccountplan
+        method: PUT
+        description: Update AccountPlan
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the AccountPlan or AccountPlanGroup to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deleteaccountplan
+        method: DELETE
+        description: Delete AccountPlan
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifer (UUID) of the AccountPlan or AccountPlanGroup to delete.
+          required: true
+    - name: organizations-orgId-accountplans-id-replace
+      path: /organizations/{orgId}/accountplans/{id}/replace
+      operations:
+      - name: replaceaccountplan
+        method: POST
+        description: Replace AccountPlan
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the AccountPlan to replace.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-accountplan-rest
+    port: 8080
+    description: REST adapter for m3ter API — AccountPlan. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/accountplans
+      name: organizations-orgid-accountplans
+      description: REST surface for organizations-orgId-accountplans.
+      operations:
+      - method: GET
+        name: listaccountplans
+        description: List AccountPlans
+        call: m3ter-accountplan.listaccountplans
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          date: rest.date
+          account: rest.account
+          plan: rest.plan
+          product: rest.product
+          includeall: rest.includeall
+          ids: rest.ids
+          contract: rest.contract
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: postaccountplan
+        description: Create AccountPlan
+        call: m3ter-accountplan.postaccountplan
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/accountplans/{id}
+      name: organizations-orgid-accountplans-id
+      description: REST surface for organizations-orgId-accountplans-id.
+      operations:
+      - method: GET
+        name: getaccountplan
+        description: Retrieve AccountPlan
+        call: m3ter-accountplan.getaccountplan
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: putaccountplan
+        description: Update AccountPlan
+        call: m3ter-accountplan.putaccountplan
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteaccountplan
+        description: Delete AccountPlan
+        call: m3ter-accountplan.deleteaccountplan
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/accountplans/{id}/replace
+      name: organizations-orgid-accountplans-id-replace
+      description: REST surface for organizations-orgId-accountplans-id-replace.
+      operations:
+      - method: POST
+        name: replaceaccountplan
+        description: Replace AccountPlan
+        call: m3ter-accountplan.replaceaccountplan
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-accountplan-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — AccountPlan. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-accountplans
+      description: List AccountPlans
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-accountplan.listaccountplans
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        date: tools.date
+        account: tools.account
+        plan: tools.plan
+        product: tools.product
+        includeall: tools.includeall
+        ids: tools.ids
+        contract: tools.contract
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-accountplan
+      description: Create AccountPlan
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-accountplan.postaccountplan
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-accountplan
+      description: Retrieve AccountPlan
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-accountplan.getaccountplan
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-accountplan
+      description: Update AccountPlan
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-accountplan.putaccountplan
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-accountplan
+      description: Delete AccountPlan
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-accountplan.deleteaccountplan
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: replace-accountplan
+      description: Replace AccountPlan
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-accountplan.replaceaccountplan
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

@@ -1,0 +1,406 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — Commitments
+  description: 'm3ter API — Commitments. 6 operations. Lead operation: List Commitments. Self-contained Naftiko capability
+    covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - Commitments
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-commitments
+    baseUri: https://api.m3ter.com
+    description: m3ter API — Commitments business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-commitments
+      path: /organizations/{orgId}/commitments
+      operations:
+      - name: listcommitments
+        method: GET
+        description: List Commitments
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Specifies the maximum number of Commitments to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Commitments in a paginated
+            list.
+        - name: accountId
+          in: query
+          type: string
+          description: The unique identifier (UUID) for the Account. This parameter helps filter the Commitments related to
+            a specific end-customer Account.
+        - name: productId
+          in: query
+          type: string
+          description: The unique identifier (UUID) for the Product. This parameter helps filter the Commitments related to
+            a specific Product.
+        - name: date
+          in: query
+          type: string
+          description: A date *(in ISO-8601 format)* to filter Commitments which are active on this specific date.
+        - name: endDateStart
+          in: query
+          type: string
+          description: A date *(in ISO-8601 format)* used to filter Commitments. Only Commitments with end dates on or after
+            this date will be included.
+        - name: endDateEnd
+          in: query
+          type: string
+          description: A date *(in ISO-8601 format)* used to filter Commitments. Only Commitments with end dates before this
+            date will be included.
+        - name: ids
+          in: query
+          type: array
+          description: A list of unique identifiers (UUIDs) for the Commitments to retrieve. Use this to fetch specific Commitments
+            in a single request.
+        - name: contractId
+          in: query
+          type: string
+      - name: postcommitment
+        method: POST
+        description: Create Commitment
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. This represents your company as a direct customer
+            of our service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-commitments-search
+      path: /organizations/{orgId}/commitments/search
+      operations:
+      - name: searchcommitments
+        method: GET
+        description: Search Commitments
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: searchQuery
+          in: query
+          type: string
+          description: 'Query for data using special syntax:'
+        - name: fromDocument
+          in: query
+          type: integer
+          description: '`fromDocument` for multi page retrievals.'
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of Commitments to retrieve per page.
+        - name: operator
+          in: query
+          type: string
+          description: Search Operator to be used while querying search.
+        - name: sortBy
+          in: query
+          type: string
+          description: Name of the parameter on which sorting is performed. Use any field available on the Commitment entity
+            to sort by, such as `accountId`, `endDate`, and so on.
+        - name: sortOrder
+          in: query
+          type: string
+          description: Sorting order.
+    - name: organizations-orgId-commitments-id
+      path: /organizations/{orgId}/commitments/{id}
+      operations:
+      - name: getcommitment
+        method: GET
+        description: Retrieve Commitment
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the Commitment to retrieve.
+          required: true
+      - name: putcommitment
+        method: PUT
+        description: Update Commitment
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) for the Commitment to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletecommitment
+        method: DELETE
+        description: Delete Commitment
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your organization. The Organization represents your company as a direct
+            customer our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) for the Commitment to delete.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-commitments-rest
+    port: 8080
+    description: REST adapter for m3ter API — Commitments. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/commitments
+      name: organizations-orgid-commitments
+      description: REST surface for organizations-orgId-commitments.
+      operations:
+      - method: GET
+        name: listcommitments
+        description: List Commitments
+        call: m3ter-commitments.listcommitments
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          accountId: rest.accountId
+          productId: rest.productId
+          date: rest.date
+          endDateStart: rest.endDateStart
+          endDateEnd: rest.endDateEnd
+          ids: rest.ids
+          contractId: rest.contractId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: postcommitment
+        description: Create Commitment
+        call: m3ter-commitments.postcommitment
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/commitments/search
+      name: organizations-orgid-commitments-search
+      description: REST surface for organizations-orgId-commitments-search.
+      operations:
+      - method: GET
+        name: searchcommitments
+        description: Search Commitments
+        call: m3ter-commitments.searchcommitments
+        with:
+          orgId: rest.orgId
+          searchQuery: rest.searchQuery
+          fromDocument: rest.fromDocument
+          pageSize: rest.pageSize
+          operator: rest.operator
+          sortBy: rest.sortBy
+          sortOrder: rest.sortOrder
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/commitments/{id}
+      name: organizations-orgid-commitments-id
+      description: REST surface for organizations-orgId-commitments-id.
+      operations:
+      - method: GET
+        name: getcommitment
+        description: Retrieve Commitment
+        call: m3ter-commitments.getcommitment
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: putcommitment
+        description: Update Commitment
+        call: m3ter-commitments.putcommitment
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletecommitment
+        description: Delete Commitment
+        call: m3ter-commitments.deletecommitment
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-commitments-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — Commitments. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-commitments
+      description: List Commitments
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-commitments.listcommitments
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        accountId: tools.accountId
+        productId: tools.productId
+        date: tools.date
+        endDateStart: tools.endDateStart
+        endDateEnd: tools.endDateEnd
+        ids: tools.ids
+        contractId: tools.contractId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-commitment
+      description: Create Commitment
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-commitments.postcommitment
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: search-commitments
+      description: Search Commitments
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-commitments.searchcommitments
+      with:
+        orgId: tools.orgId
+        searchQuery: tools.searchQuery
+        fromDocument: tools.fromDocument
+        pageSize: tools.pageSize
+        operator: tools.operator
+        sortBy: tools.sortBy
+        sortOrder: tools.sortOrder
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-commitment
+      description: Retrieve Commitment
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-commitments.getcommitment
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-commitment
+      description: Update Commitment
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-commitments.putcommitment
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-commitment
+      description: Delete Commitment
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-commitments.deletecommitment
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

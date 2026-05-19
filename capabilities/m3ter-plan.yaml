@@ -1,0 +1,297 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — Plan
+  description: 'm3ter API — Plan. 5 operations. Lead operation: List Plans. Self-contained Naftiko capability covering one
+    M3ter business surface.'
+  tags:
+  - M3ter
+  - Plan
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-plan
+    baseUri: https://api.m3ter.com
+    description: m3ter API — Plan business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-plans
+      path: /organizations/{orgId}/plans
+      operations:
+      - name: listplans
+        method: GET
+        description: List Plans
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of Plans to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: '`nextToken` for multi-page retrievals.'
+        - name: productId
+          in: query
+          type: string
+          description: UUID of the Product to retrieve Plans for.
+        - name: accountId
+          in: query
+          type: array
+          description: List of Account IDs the Plan belongs to.
+        - name: ids
+          in: query
+          type: array
+          description: List of Plan IDs to retrieve.
+      - name: postplan
+        method: POST
+        description: Create Plan
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-plans-id
+      path: /organizations/{orgId}/plans/{id}
+      operations:
+      - name: getplan
+        method: GET
+        description: Retrieve Plan
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the Plan to retrieve.
+          required: true
+      - name: putplan
+        method: PUT
+        description: Update Plan
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the Plan to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deleteplan
+        method: DELETE
+        description: Delete Plan
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the Plan to delete.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-plan-rest
+    port: 8080
+    description: REST adapter for m3ter API — Plan. One Spectral-compliant resource per consumed operation, prefixed with
+      /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/plans
+      name: organizations-orgid-plans
+      description: REST surface for organizations-orgId-plans.
+      operations:
+      - method: GET
+        name: listplans
+        description: List Plans
+        call: m3ter-plan.listplans
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          productId: rest.productId
+          accountId: rest.accountId
+          ids: rest.ids
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: postplan
+        description: Create Plan
+        call: m3ter-plan.postplan
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/plans/{id}
+      name: organizations-orgid-plans-id
+      description: REST surface for organizations-orgId-plans-id.
+      operations:
+      - method: GET
+        name: getplan
+        description: Retrieve Plan
+        call: m3ter-plan.getplan
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: putplan
+        description: Update Plan
+        call: m3ter-plan.putplan
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteplan
+        description: Delete Plan
+        call: m3ter-plan.deleteplan
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-plan-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — Plan. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-plans
+      description: List Plans
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-plan.listplans
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        productId: tools.productId
+        accountId: tools.accountId
+        ids: tools.ids
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-plan
+      description: Create Plan
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-plan.postplan
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-plan
+      description: Retrieve Plan
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-plan.getplan
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-plan
+      description: Update Plan
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-plan.putplan
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-plan
+      description: Delete Plan
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-plan.deleteplan
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

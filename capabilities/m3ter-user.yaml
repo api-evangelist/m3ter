@@ -1,0 +1,80 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — User
+  description: 'm3ter API — User. 1 operations. Lead operation: Retrieve current user information. Self-contained Naftiko
+    capability covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - User
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-user
+    baseUri: https://api.m3ter.com
+    description: m3ter API — User business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-users-me
+      path: /organizations/{orgId}/users/me
+      operations:
+      - name: getme
+        method: GET
+        description: Retrieve current user information
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-user-rest
+    port: 8080
+    description: REST adapter for m3ter API — User. One Spectral-compliant resource per consumed operation, prefixed with
+      /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/users/me
+      name: organizations-orgid-users-me
+      description: REST surface for organizations-orgId-users-me.
+      operations:
+      - method: GET
+        name: getme
+        description: Retrieve current user information
+        call: m3ter-user.getme
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-user-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — User. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: retrieve-current-user-information
+      description: Retrieve current user information
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-user.getme
+      with:
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.

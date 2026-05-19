@@ -1,0 +1,292 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — PlanGroup
+  description: 'm3ter API — PlanGroup. 5 operations. Lead operation: List PlanGroups. Self-contained Naftiko capability covering
+    one M3ter business surface.'
+  tags:
+  - M3ter
+  - PlanGroup
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-plangroup
+    baseUri: https://api.m3ter.com
+    description: m3ter API — PlanGroup business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-plangroups
+      path: /organizations/{orgId}/plangroups
+      operations:
+      - name: listplangroups
+        method: GET
+        description: List PlanGroups
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Specifies the maximum number of PlanGroups to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of PlanGroups in a paginated
+            list.
+        - name: accountId
+          in: query
+          type: array
+          description: Optional filter. The list of Account IDs to which the PlanGroups belong.
+        - name: ids
+          in: query
+          type: array
+          description: Optional filter. The list of PlanGroup IDs to retrieve.
+      - name: postplangroup
+        method: POST
+        description: Create PlanGroup
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-plangroups-id
+      path: /organizations/{orgId}/plangroups/{id}
+      operations:
+      - name: getplangroup
+        method: GET
+        description: Retrieve PlanGroup
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the PlanGroup to retrieve.
+          required: true
+      - name: putplangroup
+        method: PUT
+        description: Update PlanGroup
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the PlanGroup to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deleteplangroup
+        method: DELETE
+        description: Delete PlanGroup
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the PlanGroup to delete.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-plangroup-rest
+    port: 8080
+    description: REST adapter for m3ter API — PlanGroup. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/plangroups
+      name: organizations-orgid-plangroups
+      description: REST surface for organizations-orgId-plangroups.
+      operations:
+      - method: GET
+        name: listplangroups
+        description: List PlanGroups
+        call: m3ter-plangroup.listplangroups
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          accountId: rest.accountId
+          ids: rest.ids
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: postplangroup
+        description: Create PlanGroup
+        call: m3ter-plangroup.postplangroup
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/plangroups/{id}
+      name: organizations-orgid-plangroups-id
+      description: REST surface for organizations-orgId-plangroups-id.
+      operations:
+      - method: GET
+        name: getplangroup
+        description: Retrieve PlanGroup
+        call: m3ter-plangroup.getplangroup
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: putplangroup
+        description: Update PlanGroup
+        call: m3ter-plangroup.putplangroup
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteplangroup
+        description: Delete PlanGroup
+        call: m3ter-plangroup.deleteplangroup
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-plangroup-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — PlanGroup. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-plangroups
+      description: List PlanGroups
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-plangroup.listplangroups
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        accountId: tools.accountId
+        ids: tools.ids
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-plangroup
+      description: Create PlanGroup
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-plangroup.postplangroup
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-plangroup
+      description: Retrieve PlanGroup
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-plangroup.getplangroup
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-plangroup
+      description: Update PlanGroup
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-plangroup.putplangroup
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-plangroup
+      description: Delete PlanGroup
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-plangroup.deleteplangroup
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

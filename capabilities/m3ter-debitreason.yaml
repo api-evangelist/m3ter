@@ -1,0 +1,297 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — DebitReason
+  description: 'm3ter API — DebitReason. 5 operations. Lead operation: List Debit Reasons. Self-contained Naftiko capability
+    covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - DebitReason
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-debitreason
+    baseUri: https://api.m3ter.com
+    description: m3ter API — DebitReason business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-picklists-debitreasons
+      path: /organizations/{orgId}/picklists/debitreasons
+      operations:
+      - name: listdebitreasons
+        method: GET
+        description: List Debit Reasons
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of Debit Reasons to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: '`nextToken` for multi page retrievals.'
+        - name: ids
+          in: query
+          type: array
+          description: List of Debit Reason IDs to retrieve.
+        - name: codes
+          in: query
+          type: array
+          description: List of Debit Reason short codes to retrieve.
+        - name: archived
+          in: query
+          type: boolean
+          description: Filter using the boolean archived flag. DebitReasons can be archived if they are obsolete.
+      - name: createdebitreason
+        method: POST
+        description: Create Debit Reason
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-picklists-debitreasons-id
+      path: /organizations/{orgId}/picklists/debitreasons/{id}
+      operations:
+      - name: getdebitreason
+        method: GET
+        description: Retrieve Debit Reason
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the Debit Reason to retrieve.
+          required: true
+      - name: updatedebitreason
+        method: PUT
+        description: Update Debit Reason
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the Debit Reason to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletedebitreason
+        method: DELETE
+        description: Delete Debit Reason
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the Debit Reason to delete.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-debitreason-rest
+    port: 8080
+    description: REST adapter for m3ter API — DebitReason. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/picklists/debitreasons
+      name: organizations-orgid-picklists-debitreasons
+      description: REST surface for organizations-orgId-picklists-debitreasons.
+      operations:
+      - method: GET
+        name: listdebitreasons
+        description: List Debit Reasons
+        call: m3ter-debitreason.listdebitreasons
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          ids: rest.ids
+          codes: rest.codes
+          archived: rest.archived
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createdebitreason
+        description: Create Debit Reason
+        call: m3ter-debitreason.createdebitreason
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/picklists/debitreasons/{id}
+      name: organizations-orgid-picklists-debitreasons-id
+      description: REST surface for organizations-orgId-picklists-debitreasons-id.
+      operations:
+      - method: GET
+        name: getdebitreason
+        description: Retrieve Debit Reason
+        call: m3ter-debitreason.getdebitreason
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatedebitreason
+        description: Update Debit Reason
+        call: m3ter-debitreason.updatedebitreason
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletedebitreason
+        description: Delete Debit Reason
+        call: m3ter-debitreason.deletedebitreason
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-debitreason-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — DebitReason. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-debit-reasons
+      description: List Debit Reasons
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-debitreason.listdebitreasons
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        ids: tools.ids
+        codes: tools.codes
+        archived: tools.archived
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-debit-reason
+      description: Create Debit Reason
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-debitreason.createdebitreason
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-debit-reason
+      description: Retrieve Debit Reason
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-debitreason.getdebitreason
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-debit-reason
+      description: Update Debit Reason
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-debitreason.updatedebitreason
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-debit-reason
+      description: Delete Debit Reason
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-debitreason.deletedebitreason
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

@@ -1,0 +1,1377 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — Integrations
+  description: 'm3ter API — Integrations. 24 operations. Lead operation: List All IntegrationConfigs. Self-contained Naftiko
+    capability covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - Integrations
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-integrations
+    baseUri: https://api.m3ter.com
+    description: m3ter API — Integrations business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-integrationconfigs
+      path: /organizations/{orgId}/integrationconfigs
+      operations:
+      - name: getintegrationconfigs
+        method: GET
+        description: List All IntegrationConfigs
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for the organization. This specifies the organization within which the
+            webhook destination is created.
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Specifies the maximum number of integration configurations to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of integration configurations
+            in a paginated list.
+        - name: destinationId
+          in: query
+          type: string
+          description: optional filter for a specific destination
+      - name: postintegrationconfig
+        method: POST
+        description: Create IntegrationConfig
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-integrationconfigs-available
+      path: /organizations/{orgId}/integrationconfigs/available
+      operations:
+      - name: getavailableconfig
+        method: GET
+        description: Retrieve Available Configurations
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: systemName
+          in: query
+          type: string
+          description: The system to retrieve the configuration for.
+        - name: entityType
+          in: query
+          type: string
+          description: The entity to retrieve the configuration for.
+    - name: organizations-orgId-integrationconfigs-available-systems
+      path: /organizations/{orgId}/integrationconfigs/available/systems
+      operations:
+      - name: getavailablesystems
+        method: GET
+        description: Retrieve Available Integration Systems
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: entityType
+          in: query
+          type: string
+          description: The entity to retrieve the configuration for.
+    - name: organizations-orgId-integrationconfigs-available-systemName-auth-entityType
+      path: /organizations/{orgId}/integrationconfigs/available/{systemName}/auth/{entityType}
+      operations:
+      - name: getavailableauthforsystemandentitytype
+        method: GET
+        description: Retrieve Available Auth Config for System and Entity Type
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: systemName
+          in: path
+          type: string
+          description: The system to retrieve the configuration for.
+          required: true
+        - name: entityType
+          in: path
+          type: string
+          description: The entity to retrieve the configuration for.
+          required: true
+    - name: organizations-orgId-integrationconfigs-available-systemName-entities
+      path: /organizations/{orgId}/integrationconfigs/available/{systemName}/entities
+      operations:
+      - name: getavailablesystementities
+        method: GET
+        description: Retrieve Available Entity Types for System
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: systemName
+          in: path
+          type: string
+          description: The system to retrieve the configuration for.
+          required: true
+    - name: organizations-orgId-integrationconfigs-entity-entityType
+      path: /organizations/{orgId}/integrationconfigs/entity/{entityType}
+      operations:
+      - name: getintegrationconfigfortype
+        method: GET
+        description: Retrieve IntegrationConfig
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: entityType
+          in: path
+          type: string
+          description: The entity to retrieve the configuration for.
+          required: true
+        - name: entityId
+          in: query
+          type: string
+          description: UUID of the entity to retrieve IntegrationConfigs for
+        - name: destination
+          in: query
+          type: string
+          description: Destination type to retrieve IntegrationConfigs for
+        - name: destinationId
+          in: query
+          type: string
+          description: UUID of the destination to retrieve IntegrationConfigs for
+        - name: nextToken
+          in: query
+          type: string
+          description: nextToken for multi page retrievals
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of configs to retrieve per page
+    - name: organizations-orgId-integrationconfigs-values-systemName-configOption
+      path: /organizations/{orgId}/integrationconfigs/values/{systemName}/{configOption}
+      operations:
+      - name: getconfigoptionvalues
+        method: GET
+        description: Get ConfigOption Values
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: systemName
+          in: path
+          type: string
+          description: The name of the system.
+          required: true
+        - name: configOption
+          in: path
+          type: string
+          description: The entity to retrieve the configuration for.
+          required: true
+    - name: organizations-orgId-integrationconfigs-id
+      path: /organizations/{orgId}/integrationconfigs/{id}
+      operations:
+      - name: getintegrationconfig
+        method: GET
+        description: Retrieve IntegrationConfig for UUID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the integration configuration. This ID specifies which integration's configuration details
+            are being requested.
+          required: true
+      - name: updateintegrationconfig
+        method: PUT
+        description: Update IntegrationConfig
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the IntegrationConfig. This ID identifies which specific integration configuration you
+            wish to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deleteintegrationconfig
+        method: DELETE
+        description: Delete IntegrationConfig
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the IntegrationConfig to be deleted. This ID specifies the exact integration configuration
+            that needs removal.
+          required: true
+    - name: organizations-orgId-integrationconfigs-id-enable
+      path: /organizations/{orgId}/integrationconfigs/{id}/enable
+      operations:
+      - name: enableintegrationconfig
+        method: POST
+        description: Enable IntegrationConfig
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: UUID of the integration configuration
+          required: true
+    - name: organizations-orgId-integrationdestinations-webhooks
+      path: /organizations/{orgId}/integrationdestinations/webhooks
+      operations:
+      - name: listwebhookintegrations
+        method: GET
+        description: List Destinations
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of WebhookIntegrations to retrieve per page
+        - name: nextToken
+          in: query
+          type: string
+          description: nextToken for multi page retrievals
+        - name: ids
+          in: query
+          type: array
+      - name: createwebhookdestination
+        method: POST
+        description: Create Webhook Destination
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for the organization. This specifies the organization within which the
+            webhook destination is created.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-integrationdestinations-webhooks-id
+      path: /organizations/{orgId}/integrationdestinations/webhooks/{id}
+      operations:
+      - name: getwebhookintegrationdestination
+        method: GET
+        description: Retrieve Destination
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the webhook destination.
+          required: true
+      - name: updatewebhookdestination
+        method: PUT
+        description: Update Destination
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the WebhookDestination to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletewebhookdestination
+        method: DELETE
+        description: Delete Webhook Destination
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the webhook destination to be deleted.
+          required: true
+    - name: organizations-orgId-integrationdestinations-webhooks-id-active
+      path: /organizations/{orgId}/integrationdestinations/webhooks/{id}/active
+      operations:
+      - name: activatewebhookdestination
+        method: PUT
+        description: Activate Webhook Destination
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The unique identifier (UUID) of the webhook destination. This ID is used to specify which webhook integration
+            is being targeted for activation or deactivation.
+          required: true
+        - name: active
+          in: query
+          type: boolean
+          description: active status of the webhook
+    - name: organizations-orgId-integrationruns-destinations-destinationId
+      path: /organizations/{orgId}/integrationruns/destinations/{destinationId}
+      operations:
+      - name: listintegrationrunsbydestinationid
+        method: GET
+        description: List IntegrationRuns By DestinationId
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: destinationId
+          in: path
+          type: string
+          description: The UUID of the destination.
+          required: true
+        - name: destination
+          in: query
+          type: string
+          description: Destination system
+        - name: startDate
+          in: query
+          type: string
+          description: Retrieve entities started after the specified date.
+        - name: endDate
+          in: query
+          type: string
+          description: Retrieve entities started before the specified date.
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of products to retrieve per page
+        - name: nextToken
+          in: query
+          type: string
+          description: nextToken for multi page retrievals
+        - name: status
+          in: query
+          type: string
+          description: Status of the integration run
+        - name: order
+          in: query
+          type: string
+          description: Integration runs order
+    - name: organizations-orgId-integrationruns-logs-id
+      path: /organizations/{orgId}/integrationruns/logs/{id}
+      operations:
+      - name: getintegrationrunlogs
+        method: GET
+        description: Get IntegrationRun Log
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID associated with the integrationrun. This ID helps in pinpointing the exact integrationrun
+            logs you are looking to retrieve.
+          required: true
+    - name: organizations-orgId-integrationruns-entityType-latest
+      path: /organizations/{orgId}/integrationruns/{entityType}/latest
+      operations:
+      - name: getintegrationrunlatestforids
+        method: GET
+        description: Retrieve IntegrationRuns
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: entityType
+          in: path
+          type: string
+          description: The type of the entity (e.g. Bill).
+          required: true
+        - name: ids
+          in: query
+          type: array
+          description: List of ids to retrieve
+    - name: organizations-orgId-integrationruns-entityType-latest-id
+      path: /organizations/{orgId}/integrationruns/{entityType}/latest/{id}
+      operations:
+      - name: getintegrationrunlatest
+        method: GET
+        description: Retrieve Latest IntegrationRun
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: entityType
+          in: path
+          type: string
+          description: 'The type of the entity you want to retrieve the last integration run for. Two options:'
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the entity to retrieve the latest integration run for.
+          required: true
+    - name: organizations-orgId-integrationruns-entityType-entityId
+      path: /organizations/{orgId}/integrationruns/{entityType}/{entityId}
+      operations:
+      - name: listintegrationruns
+        method: GET
+        description: List IntegrationRuns
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct
+            customer of our service.
+          required: true
+        - name: entityId
+          in: path
+          type: string
+          description: The UUID of the entity to retrieve the integration runs for.
+          required: true
+        - name: entityType
+          in: path
+          type: string
+          description: 'The type of the entity you want to retrieve the integration runs for. Two options:'
+          required: true
+        - name: startDate
+          in: query
+          type: string
+          description: Retrieve only those integration runs started after the specified date/time.*(ISO 8601 formatted)*
+        - name: endDate
+          in: query
+          type: string
+          description: Retrieve only those integration runs started before or on the specified date/time.*(ISO 8601 formatted)*
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of integration runs to retrieve per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: '`nextToken` for multi page retrievals.'
+        - name: status
+          in: query
+          type: string
+          description: Status of the integration run
+        - name: order
+          in: query
+          type: string
+          description: Integration runs order
+    - name: organizations-orgId-integrationruns-id
+      path: /organizations/{orgId}/integrationruns/{id}
+      operations:
+      - name: getintegrationrun
+        method: GET
+        description: Get IntegrationRun for the UUID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the entity.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-integrations-rest
+    port: 8080
+    description: REST adapter for m3ter API — Integrations. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/integrationconfigs
+      name: organizations-orgid-integrationconfigs
+      description: REST surface for organizations-orgId-integrationconfigs.
+      operations:
+      - method: GET
+        name: getintegrationconfigs
+        description: List All IntegrationConfigs
+        call: m3ter-integrations.getintegrationconfigs
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          destinationId: rest.destinationId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: postintegrationconfig
+        description: Create IntegrationConfig
+        call: m3ter-integrations.postintegrationconfig
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationconfigs/available
+      name: organizations-orgid-integrationconfigs-available
+      description: REST surface for organizations-orgId-integrationconfigs-available.
+      operations:
+      - method: GET
+        name: getavailableconfig
+        description: Retrieve Available Configurations
+        call: m3ter-integrations.getavailableconfig
+        with:
+          orgId: rest.orgId
+          systemName: rest.systemName
+          entityType: rest.entityType
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationconfigs/available/systems
+      name: organizations-orgid-integrationconfigs-available-systems
+      description: REST surface for organizations-orgId-integrationconfigs-available-systems.
+      operations:
+      - method: GET
+        name: getavailablesystems
+        description: Retrieve Available Integration Systems
+        call: m3ter-integrations.getavailablesystems
+        with:
+          orgId: rest.orgId
+          entityType: rest.entityType
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationconfigs/available/{systemname}/auth/{entitytype}
+      name: organizations-orgid-integrationconfigs-available-systemname-auth-entitytype
+      description: REST surface for organizations-orgId-integrationconfigs-available-systemName-auth-entityType.
+      operations:
+      - method: GET
+        name: getavailableauthforsystemandentitytype
+        description: Retrieve Available Auth Config for System and Entity Type
+        call: m3ter-integrations.getavailableauthforsystemandentitytype
+        with:
+          orgId: rest.orgId
+          systemName: rest.systemName
+          entityType: rest.entityType
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationconfigs/available/{systemname}/entities
+      name: organizations-orgid-integrationconfigs-available-systemname-entities
+      description: REST surface for organizations-orgId-integrationconfigs-available-systemName-entities.
+      operations:
+      - method: GET
+        name: getavailablesystementities
+        description: Retrieve Available Entity Types for System
+        call: m3ter-integrations.getavailablesystementities
+        with:
+          orgId: rest.orgId
+          systemName: rest.systemName
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationconfigs/entity/{entitytype}
+      name: organizations-orgid-integrationconfigs-entity-entitytype
+      description: REST surface for organizations-orgId-integrationconfigs-entity-entityType.
+      operations:
+      - method: GET
+        name: getintegrationconfigfortype
+        description: Retrieve IntegrationConfig
+        call: m3ter-integrations.getintegrationconfigfortype
+        with:
+          orgId: rest.orgId
+          entityType: rest.entityType
+          entityId: rest.entityId
+          destination: rest.destination
+          destinationId: rest.destinationId
+          nextToken: rest.nextToken
+          pageSize: rest.pageSize
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationconfigs/values/{systemname}/{configoption}
+      name: organizations-orgid-integrationconfigs-values-systemname-configoption
+      description: REST surface for organizations-orgId-integrationconfigs-values-systemName-configOption.
+      operations:
+      - method: GET
+        name: getconfigoptionvalues
+        description: Get ConfigOption Values
+        call: m3ter-integrations.getconfigoptionvalues
+        with:
+          orgId: rest.orgId
+          systemName: rest.systemName
+          configOption: rest.configOption
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationconfigs/{id}
+      name: organizations-orgid-integrationconfigs-id
+      description: REST surface for organizations-orgId-integrationconfigs-id.
+      operations:
+      - method: GET
+        name: getintegrationconfig
+        description: Retrieve IntegrationConfig for UUID
+        call: m3ter-integrations.getintegrationconfig
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateintegrationconfig
+        description: Update IntegrationConfig
+        call: m3ter-integrations.updateintegrationconfig
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteintegrationconfig
+        description: Delete IntegrationConfig
+        call: m3ter-integrations.deleteintegrationconfig
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationconfigs/{id}/enable
+      name: organizations-orgid-integrationconfigs-id-enable
+      description: REST surface for organizations-orgId-integrationconfigs-id-enable.
+      operations:
+      - method: POST
+        name: enableintegrationconfig
+        description: Enable IntegrationConfig
+        call: m3ter-integrations.enableintegrationconfig
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationdestinations/webhooks
+      name: organizations-orgid-integrationdestinations-webhooks
+      description: REST surface for organizations-orgId-integrationdestinations-webhooks.
+      operations:
+      - method: GET
+        name: listwebhookintegrations
+        description: List Destinations
+        call: m3ter-integrations.listwebhookintegrations
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          ids: rest.ids
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createwebhookdestination
+        description: Create Webhook Destination
+        call: m3ter-integrations.createwebhookdestination
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationdestinations/webhooks/{id}
+      name: organizations-orgid-integrationdestinations-webhooks-id
+      description: REST surface for organizations-orgId-integrationdestinations-webhooks-id.
+      operations:
+      - method: GET
+        name: getwebhookintegrationdestination
+        description: Retrieve Destination
+        call: m3ter-integrations.getwebhookintegrationdestination
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatewebhookdestination
+        description: Update Destination
+        call: m3ter-integrations.updatewebhookdestination
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletewebhookdestination
+        description: Delete Webhook Destination
+        call: m3ter-integrations.deletewebhookdestination
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationdestinations/webhooks/{id}/active
+      name: organizations-orgid-integrationdestinations-webhooks-id-active
+      description: REST surface for organizations-orgId-integrationdestinations-webhooks-id-active.
+      operations:
+      - method: PUT
+        name: activatewebhookdestination
+        description: Activate Webhook Destination
+        call: m3ter-integrations.activatewebhookdestination
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          active: rest.active
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationruns/destinations/{destinationid}
+      name: organizations-orgid-integrationruns-destinations-destinationid
+      description: REST surface for organizations-orgId-integrationruns-destinations-destinationId.
+      operations:
+      - method: GET
+        name: listintegrationrunsbydestinationid
+        description: List IntegrationRuns By DestinationId
+        call: m3ter-integrations.listintegrationrunsbydestinationid
+        with:
+          orgId: rest.orgId
+          destinationId: rest.destinationId
+          destination: rest.destination
+          startDate: rest.startDate
+          endDate: rest.endDate
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          status: rest.status
+          order: rest.order
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationruns/logs/{id}
+      name: organizations-orgid-integrationruns-logs-id
+      description: REST surface for organizations-orgId-integrationruns-logs-id.
+      operations:
+      - method: GET
+        name: getintegrationrunlogs
+        description: Get IntegrationRun Log
+        call: m3ter-integrations.getintegrationrunlogs
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationruns/{entitytype}/latest
+      name: organizations-orgid-integrationruns-entitytype-latest
+      description: REST surface for organizations-orgId-integrationruns-entityType-latest.
+      operations:
+      - method: GET
+        name: getintegrationrunlatestforids
+        description: Retrieve IntegrationRuns
+        call: m3ter-integrations.getintegrationrunlatestforids
+        with:
+          orgId: rest.orgId
+          entityType: rest.entityType
+          ids: rest.ids
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationruns/{entitytype}/latest/{id}
+      name: organizations-orgid-integrationruns-entitytype-latest-id
+      description: REST surface for organizations-orgId-integrationruns-entityType-latest-id.
+      operations:
+      - method: GET
+        name: getintegrationrunlatest
+        description: Retrieve Latest IntegrationRun
+        call: m3ter-integrations.getintegrationrunlatest
+        with:
+          orgId: rest.orgId
+          entityType: rest.entityType
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationruns/{entitytype}/{entityid}
+      name: organizations-orgid-integrationruns-entitytype-entityid
+      description: REST surface for organizations-orgId-integrationruns-entityType-entityId.
+      operations:
+      - method: GET
+        name: listintegrationruns
+        description: List IntegrationRuns
+        call: m3ter-integrations.listintegrationruns
+        with:
+          orgId: rest.orgId
+          entityId: rest.entityId
+          entityType: rest.entityType
+          startDate: rest.startDate
+          endDate: rest.endDate
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          status: rest.status
+          order: rest.order
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/integrationruns/{id}
+      name: organizations-orgid-integrationruns-id
+      description: REST surface for organizations-orgId-integrationruns-id.
+      operations:
+      - method: GET
+        name: getintegrationrun
+        description: Get IntegrationRun for the UUID
+        call: m3ter-integrations.getintegrationrun
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-integrations-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — Integrations. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-all-integrationconfigs
+      description: List All IntegrationConfigs
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.getintegrationconfigs
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        destinationId: tools.destinationId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-integrationconfig
+      description: Create IntegrationConfig
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-integrations.postintegrationconfig
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-available-configurations
+      description: Retrieve Available Configurations
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.getavailableconfig
+      with:
+        orgId: tools.orgId
+        systemName: tools.systemName
+        entityType: tools.entityType
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-available-integration-systems
+      description: Retrieve Available Integration Systems
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.getavailablesystems
+      with:
+        orgId: tools.orgId
+        entityType: tools.entityType
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-available-auth-config-system
+      description: Retrieve Available Auth Config for System and Entity Type
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.getavailableauthforsystemandentitytype
+      with:
+        orgId: tools.orgId
+        systemName: tools.systemName
+        entityType: tools.entityType
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-available-entity-types-system
+      description: Retrieve Available Entity Types for System
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.getavailablesystementities
+      with:
+        orgId: tools.orgId
+        systemName: tools.systemName
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-integrationconfig
+      description: Retrieve IntegrationConfig
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.getintegrationconfigfortype
+      with:
+        orgId: tools.orgId
+        entityType: tools.entityType
+        entityId: tools.entityId
+        destination: tools.destination
+        destinationId: tools.destinationId
+        nextToken: tools.nextToken
+        pageSize: tools.pageSize
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-configoption-values
+      description: Get ConfigOption Values
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.getconfigoptionvalues
+      with:
+        orgId: tools.orgId
+        systemName: tools.systemName
+        configOption: tools.configOption
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-integrationconfig-uuid
+      description: Retrieve IntegrationConfig for UUID
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.getintegrationconfig
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-integrationconfig
+      description: Update IntegrationConfig
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.updateintegrationconfig
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-integrationconfig
+      description: Delete IntegrationConfig
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-integrations.deleteintegrationconfig
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: enable-integrationconfig
+      description: Enable IntegrationConfig
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-integrations.enableintegrationconfig
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-destinations
+      description: List Destinations
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.listwebhookintegrations
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        ids: tools.ids
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-webhook-destination
+      description: Create Webhook Destination
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-integrations.createwebhookdestination
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-destination
+      description: Retrieve Destination
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.getwebhookintegrationdestination
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-destination
+      description: Update Destination
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.updatewebhookdestination
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-webhook-destination
+      description: Delete Webhook Destination
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-integrations.deletewebhookdestination
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: activate-webhook-destination
+      description: Activate Webhook Destination
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.activatewebhookdestination
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        active: tools.active
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-integrationruns-destinationid
+      description: List IntegrationRuns By DestinationId
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.listintegrationrunsbydestinationid
+      with:
+        orgId: tools.orgId
+        destinationId: tools.destinationId
+        destination: tools.destination
+        startDate: tools.startDate
+        endDate: tools.endDate
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        status: tools.status
+        order: tools.order
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-integrationrun-log
+      description: Get IntegrationRun Log
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.getintegrationrunlogs
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-integrationruns
+      description: Retrieve IntegrationRuns
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.getintegrationrunlatestforids
+      with:
+        orgId: tools.orgId
+        entityType: tools.entityType
+        ids: tools.ids
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-latest-integrationrun
+      description: Retrieve Latest IntegrationRun
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.getintegrationrunlatest
+      with:
+        orgId: tools.orgId
+        entityType: tools.entityType
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-integrationruns
+      description: List IntegrationRuns
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.listintegrationruns
+      with:
+        orgId: tools.orgId
+        entityId: tools.entityId
+        entityType: tools.entityType
+        startDate: tools.startDate
+        endDate: tools.endDate
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        status: tools.status
+        order: tools.order
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-integrationrun-uuid
+      description: Get IntegrationRun for the UUID
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-integrations.getintegrationrun
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

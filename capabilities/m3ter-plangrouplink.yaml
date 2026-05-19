@@ -1,0 +1,292 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — PlanGroupLink
+  description: 'm3ter API — PlanGroupLink. 5 operations. Lead operation: List PlanGroupLinks. Self-contained Naftiko capability
+    covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - PlanGroupLink
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-plangrouplink
+    baseUri: https://api.m3ter.com
+    description: m3ter API — PlanGroupLink business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-plangrouplinks
+      path: /organizations/{orgId}/plangrouplinks
+      operations:
+      - name: listplangrouplinks
+        method: GET
+        description: List PlanGroupLinks
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of PlanGroupLinks to retrieve per page
+        - name: nextToken
+          in: query
+          type: string
+          description: nextToken for multi page retrievals
+        - name: planGroup
+          in: query
+          type: string
+          description: UUID of the PlanGroup to retrieve PlanGroupLinks for
+        - name: plan
+          in: query
+          type: string
+          description: UUID of the Plan to retrieve PlanGroupLinks for
+        - name: ids
+          in: query
+          type: array
+          description: list of IDs to retrieve
+      - name: postplangrouplink
+        method: POST
+        description: Create PlanGroupLink
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-plangrouplinks-id
+      path: /organizations/{orgId}/plangrouplinks/{id}
+      operations:
+      - name: getplangrouplink
+        method: GET
+        description: Retrieve PlanGroupLink
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the PlanGroupLink to retrieve.
+          required: true
+      - name: putplangrouplink
+        method: PUT
+        description: Update PlanGroupLink
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the PlanGroupLink to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deleteplangrouplink
+        method: DELETE
+        description: Delete PlanGroupLink
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the PlanGroupLink to delete.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-plangrouplink-rest
+    port: 8080
+    description: REST adapter for m3ter API — PlanGroupLink. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/plangrouplinks
+      name: organizations-orgid-plangrouplinks
+      description: REST surface for organizations-orgId-plangrouplinks.
+      operations:
+      - method: GET
+        name: listplangrouplinks
+        description: List PlanGroupLinks
+        call: m3ter-plangrouplink.listplangrouplinks
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          planGroup: rest.planGroup
+          plan: rest.plan
+          ids: rest.ids
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: postplangrouplink
+        description: Create PlanGroupLink
+        call: m3ter-plangrouplink.postplangrouplink
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/plangrouplinks/{id}
+      name: organizations-orgid-plangrouplinks-id
+      description: REST surface for organizations-orgId-plangrouplinks-id.
+      operations:
+      - method: GET
+        name: getplangrouplink
+        description: Retrieve PlanGroupLink
+        call: m3ter-plangrouplink.getplangrouplink
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: putplangrouplink
+        description: Update PlanGroupLink
+        call: m3ter-plangrouplink.putplangrouplink
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteplangrouplink
+        description: Delete PlanGroupLink
+        call: m3ter-plangrouplink.deleteplangrouplink
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-plangrouplink-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — PlanGroupLink. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-plangrouplinks
+      description: List PlanGroupLinks
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-plangrouplink.listplangrouplinks
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        planGroup: tools.planGroup
+        plan: tools.plan
+        ids: tools.ids
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-plangrouplink
+      description: Create PlanGroupLink
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-plangrouplink.postplangrouplink
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-plangrouplink
+      description: Retrieve PlanGroupLink
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-plangrouplink.getplangrouplink
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-plangrouplink
+      description: Update PlanGroupLink
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-plangrouplink.putplangrouplink
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-plangrouplink
+      description: Delete PlanGroupLink
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-plangrouplink.deleteplangrouplink
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

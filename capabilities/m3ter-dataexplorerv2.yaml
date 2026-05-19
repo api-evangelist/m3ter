@@ -1,0 +1,329 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — DataExplorerV2
+  description: 'm3ter API — DataExplorerV2. 6 operations. Lead operation: Query and filter usage data. Self-contained Naftiko
+    capability covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - DataExplorerV2
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-dataexplorerv2
+    baseUri: https://api.m3ter.com
+    description: m3ter API — DataExplorerV2 business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-usage-query
+      path: /organizations/{orgId}/usage/query
+      operations:
+      - name: postusagedataquery
+        method: POST
+        description: Query and filter usage data
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter
+            service.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-usage-savedqueries
+      path: /organizations/{orgId}/usage/savedqueries
+      operations:
+      - name: listusagesavedqueries
+        method: GET
+        description: List UsageSavedQueries
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of UsageSavedQueries to retrieve per page
+        - name: nextToken
+          in: query
+          type: string
+          description: nextToken for multi page retrievals
+        - name: ids
+          in: query
+          type: array
+      - name: createusagesavedquery
+        method: POST
+        description: Create UsageSavedQuery
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-usage-savedqueries-id
+      path: /organizations/{orgId}/usage/savedqueries/{id}
+      operations:
+      - name: getusagesavedquery
+        method: GET
+        description: Retrieve UsageSavedQuery
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the UsageSavedQuery to retrieve.
+          required: true
+      - name: updateusagesavedquery
+        method: PUT
+        description: Update UsageSavedQuery
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the UsageSavedQuery to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deleteusagesavedquery
+        method: DELETE
+        description: Delete UsageSavedQuery
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the UsageSavedQuery to update.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-dataexplorerv2-rest
+    port: 8080
+    description: REST adapter for m3ter API — DataExplorerV2. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/usage/query
+      name: organizations-orgid-usage-query
+      description: REST surface for organizations-orgId-usage-query.
+      operations:
+      - method: POST
+        name: postusagedataquery
+        description: Query and filter usage data
+        call: m3ter-dataexplorerv2.postusagedataquery
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/usage/savedqueries
+      name: organizations-orgid-usage-savedqueries
+      description: REST surface for organizations-orgId-usage-savedqueries.
+      operations:
+      - method: GET
+        name: listusagesavedqueries
+        description: List UsageSavedQueries
+        call: m3ter-dataexplorerv2.listusagesavedqueries
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          ids: rest.ids
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createusagesavedquery
+        description: Create UsageSavedQuery
+        call: m3ter-dataexplorerv2.createusagesavedquery
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/usage/savedqueries/{id}
+      name: organizations-orgid-usage-savedqueries-id
+      description: REST surface for organizations-orgId-usage-savedqueries-id.
+      operations:
+      - method: GET
+        name: getusagesavedquery
+        description: Retrieve UsageSavedQuery
+        call: m3ter-dataexplorerv2.getusagesavedquery
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateusagesavedquery
+        description: Update UsageSavedQuery
+        call: m3ter-dataexplorerv2.updateusagesavedquery
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteusagesavedquery
+        description: Delete UsageSavedQuery
+        call: m3ter-dataexplorerv2.deleteusagesavedquery
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-dataexplorerv2-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — DataExplorerV2. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: query-and-filter-usage-data
+      description: Query and filter usage data
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: m3ter-dataexplorerv2.postusagedataquery
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-usagesavedqueries
+      description: List UsageSavedQueries
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-dataexplorerv2.listusagesavedqueries
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        ids: tools.ids
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-usagesavedquery
+      description: Create UsageSavedQuery
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: m3ter-dataexplorerv2.createusagesavedquery
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-usagesavedquery
+      description: Retrieve UsageSavedQuery
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-dataexplorerv2.getusagesavedquery
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-usagesavedquery
+      description: Update UsageSavedQuery
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-dataexplorerv2.updateusagesavedquery
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-usagesavedquery
+      description: Delete UsageSavedQuery
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-dataexplorerv2.deleteusagesavedquery
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

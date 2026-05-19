@@ -1,0 +1,329 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: m3ter API — ExportDestination
+  description: 'm3ter API — ExportDestination. 6 operations. Lead operation: List ExportDestinations. Self-contained Naftiko
+    capability covering one M3ter business surface.'
+  tags:
+  - M3ter
+  - ExportDestination
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    M3TER_API_KEY: M3TER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: m3ter-exportdestination
+    baseUri: https://api.m3ter.com
+    description: m3ter API — ExportDestination business capability. Self-contained, no shared references.
+    resources:
+    - name: organizations-orgId-dataexports-destinations
+      path: /organizations/{orgId}/dataexports/destinations
+      operations:
+      - name: listdestinations
+        method: GET
+        description: List ExportDestinations
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of returned Export Destinations to list per page.
+        - name: nextToken
+          in: query
+          type: string
+          description: nextToken for multi page retrievals
+        - name: ids
+          in: query
+          type: array
+          description: List of Export Destination UUIDs to retrieve.
+      - name: postdestination
+        method: POST
+        description: Create ExportDestination
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: organizations-orgId-dataexports-destinations-id
+      path: /organizations/{orgId}/dataexports/destinations/{id}
+      operations:
+      - name: getexportdestination
+        method: GET
+        description: Retrieve ExportDestination
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the ExportDestination to retrieve.
+          required: true
+      - name: putdestination
+        method: PUT
+        description: Update ExportDestination
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the Export Destination to update.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletedestination
+        method: DELETE
+        description: Delete ExportDestination
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the organization
+          required: true
+        - name: id
+          in: path
+          type: string
+          description: The UUID of the Export Destination to delete.
+          required: true
+    - name: organizations-orgId-dataexports-jobs-jobId-getdownloadurl
+      path: /organizations/{orgId}/dataexports/jobs/{jobId}/getdownloadurl
+      operations:
+      - name: generatedataexportfiledownloadurl
+        method: GET
+        description: Get Data Export File Download URL
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: path
+          type: string
+          description: UUID of the Organization
+          required: true
+        - name: jobId
+          in: path
+          type: string
+          description: The job ID
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.M3TER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: m3ter-exportdestination-rest
+    port: 8080
+    description: REST adapter for m3ter API — ExportDestination. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/organizations/{orgid}/dataexports/destinations
+      name: organizations-orgid-dataexports-destinations
+      description: REST surface for organizations-orgId-dataexports-destinations.
+      operations:
+      - method: GET
+        name: listdestinations
+        description: List ExportDestinations
+        call: m3ter-exportdestination.listdestinations
+        with:
+          orgId: rest.orgId
+          pageSize: rest.pageSize
+          nextToken: rest.nextToken
+          ids: rest.ids
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: postdestination
+        description: Create ExportDestination
+        call: m3ter-exportdestination.postdestination
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/dataexports/destinations/{id}
+      name: organizations-orgid-dataexports-destinations-id
+      description: REST surface for organizations-orgId-dataexports-destinations-id.
+      operations:
+      - method: GET
+        name: getexportdestination
+        description: Retrieve ExportDestination
+        call: m3ter-exportdestination.getexportdestination
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: putdestination
+        description: Update ExportDestination
+        call: m3ter-exportdestination.putdestination
+        with:
+          orgId: rest.orgId
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletedestination
+        description: Delete ExportDestination
+        call: m3ter-exportdestination.deletedestination
+        with:
+          orgId: rest.orgId
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/organizations/{orgid}/dataexports/jobs/{jobid}/getdownloadurl
+      name: organizations-orgid-dataexports-jobs-jobid-getdownloadurl
+      description: REST surface for organizations-orgId-dataexports-jobs-jobId-getdownloadurl.
+      operations:
+      - method: GET
+        name: generatedataexportfiledownloadurl
+        description: Get Data Export File Download URL
+        call: m3ter-exportdestination.generatedataexportfiledownloadurl
+        with:
+          orgId: rest.orgId
+          jobId: rest.jobId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: m3ter-exportdestination-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for m3ter API — ExportDestination. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-exportdestinations
+      description: List ExportDestinations
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-exportdestination.listdestinations
+      with:
+        orgId: tools.orgId
+        pageSize: tools.pageSize
+        nextToken: tools.nextToken
+        ids: tools.ids
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-exportdestination
+      description: Create ExportDestination
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: m3ter-exportdestination.postdestination
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-exportdestination
+      description: Retrieve ExportDestination
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-exportdestination.getexportdestination
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-exportdestination
+      description: Update ExportDestination
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: m3ter-exportdestination.putdestination
+      with:
+        orgId: tools.orgId
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-exportdestination
+      description: Delete ExportDestination
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: m3ter-exportdestination.deletedestination
+      with:
+        orgId: tools.orgId
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-data-export-file-download
+      description: Get Data Export File Download URL
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: m3ter-exportdestination.generatedataexportfiledownloadurl
+      with:
+        orgId: tools.orgId
+        jobId: tools.jobId
+      outputParameters:
+      - type: object
+        mapping: $.
