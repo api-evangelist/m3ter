@@ -7,7 +7,7 @@ description: >-
   management. Authentication uses OAuth 2.0 Client Credentials with a Service User Access Key id and Api Secret
   exchanged for a Bearer Token at https://api.m3ter.com/oauth/token.
 type: Index
-image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 tags:
   - FinOps
   - Usage-Based Billing
