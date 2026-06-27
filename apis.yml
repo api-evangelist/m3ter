@@ -47,15 +47,15 @@ apis:
         url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
       - type: OpenAPI
         url: openapi/m3ter-openapi.yml
-      - type: SDK
+      - type: SDKs
         url: https://github.com/m3ter-com/m3ter-sdk-python
-      - type: SDK
+      - type: SDKs
         url: https://github.com/m3ter-com/m3ter-sdk-node
-      - type: SDK
+      - type: SDKs
         url: https://github.com/m3ter-com/m3ter-sdk-java
-      - type: SDK
+      - type: SDKs
         url: https://github.com/m3ter-com/m3ter-sdk-go
-      - type: SDK
+      - type: SDKs
         url: https://github.com/m3ter-com/m3ter-sdk-typescript
       - type: TerraformProvider
         url: https://github.com/m3ter-com/terraform-provider-m3ter
@@ -68,7 +68,7 @@ common:
     url: https://docs.m3ter.com/
   - type: APIReference
     url: https://docs.m3ter.com/api
-  - type: LLMsTxt
+  - type: LlmsText
     url: https://docs.m3ter.com/llms.txt
 maintainers:
   - FN: Kin Lane
