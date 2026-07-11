@@ -1,0 +1,57 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/m3ter-openapi.yml
+schemes:
+- name: OAuth2
+  source: openapi/m3ter-openapi.yml
+  flows:
+  - flow: clientCredentials
+    tokenUrl: /oauth/token
+  - flow: authorizationCode
+    authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+    tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+  description: |-
+    m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.
+
+    The `authorizationCode` flow controls access for human users via the m3ter Console application.
+scopes:
+- scope: email
+  description: email
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/m3ter-openapi.yml
+- scope: m3ter-resources/m3ter-scope
+  description: m3ter resources
+  flows:
+  - authorizationCode
+  - clientCredentials
+  sources:
+  - openapi/m3ter-openapi.yml
+- scope: measurements:fileUpload
+  description: Upload file
+  flows:
+  - authorizationCode
+  - clientCredentials
+  sources:
+  - openapi/m3ter-openapi.yml
+- scope: measurements:retrieve
+  description: Retrieve measurements
+  flows:
+  - authorizationCode
+  - clientCredentials
+  sources:
+  - openapi/m3ter-openapi.yml
+- scope: measurements:upload
+  description: Upload measurements
+  flows:
+  - authorizationCode
+  - clientCredentials
+  sources:
+  - openapi/m3ter-openapi.yml
+- scope: openid
+  description: OpenID
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/m3ter-openapi.yml

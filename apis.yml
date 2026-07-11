@@ -60,6 +60,8 @@ apis:
       - type: TerraformProvider
         url: https://github.com/m3ter-com/terraform-provider-m3ter
 common:
+  - type: OAuthScopes
+    url: scopes/m3ter-scopes.yml
   - type: LinkedIn
     url: https://www.linkedin.com/company/m3ter
   - type: Website
@@ -70,6 +72,8 @@ common:
     url: https://docs.m3ter.com/api
   - type: LlmsText
     url: https://docs.m3ter.com/llms.txt
+  - url: https://www.m3ter.com/blog/feed/
+    type: Blog
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
