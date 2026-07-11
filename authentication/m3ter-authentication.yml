@@ -1,0 +1,26 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/m3ter-openapi.yml
+summary:
+  types:
+  - oauth2
+  oauth2_flows:
+  - authorizationCode
+  - clientCredentials
+schemes:
+- name: OAuth2
+  type: oauth2
+  flows:
+  - flow: clientCredentials
+    tokenUrl: /oauth/token
+    scopes: 4
+  - flow: authorizationCode
+    authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+    tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+    scopes: 6
+  description: |-
+    m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.
+
+    The `authorizationCode` flow controls access for human users via the m3ter Console application.
+  sources:
+  - openapi/m3ter-openapi.yml
