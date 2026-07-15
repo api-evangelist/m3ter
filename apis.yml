@@ -60,6 +60,8 @@ apis:
       - type: TerraformProvider
         url: https://github.com/m3ter-com/terraform-provider-m3ter
 common:
+  - type: AgenticAccess
+    url: agentic-access/m3ter-agentic-access.yml
   - type: TrustCenter
     url: security/m3ter-trust-center.yml
   - type: VulnerabilityDisclosure
