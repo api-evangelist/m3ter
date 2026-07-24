@@ -1,0 +1,644 @@
+openapi: 3.0.1
+info:
+  title: m3ter Account OrgUsers API
+  description: "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->"
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: OrgUsers
+  description: 'This section contains the endpoints for managing users within an Organization *(OrgUsers)*. These endpoints allow you to retrieve, update, and analyze user data, as well as their associated permissions and user groups.
+
+
+    See the following topics in the m3ter documentation for further information:
+
+    * [Understanding, Creating, and Managing Permission Policies](https://www.m3ter.com/docs/guides/organization-and-access-management/creating-and-managing-permissions)
+
+    * [Mangaging Access and Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users)'
+paths:
+  /organizations/{orgId}/users:
+    get:
+      tags:
+      - OrgUsers
+      summary: List OrgUsers
+      description: 'Retrieve a list of OrgUsers.
+
+
+        Retrieves a list of all users within a specified Organization. Use this endpoint to get an overview of all users and their basic details. The list can be paginated for easier management.'
+      operationId: ListOrgUsers
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of OrgUsers to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of OrgUsers in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: list of ids to retrieve
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns a list of OrgUsers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrgUserResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/users/{id}:
+    get:
+      tags:
+      - OrgUsers
+      summary: Retrieve OrgUser
+      description: 'Retrieve the OrgUser with the given UUID.
+
+
+        Retrieves detailed information for a specific user within an Organization, using their unique identifier (UUID).'
+      operationId: GetOrgUser
+      parameters:
+      - name: id
+        in: path
+        description: 'The unique identifier (UUID) of the Organization User to retrieve.
+
+
+          **Note:** The `orgId` path parameter is also required.'
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: orgId
+        in: path
+        description: 'UUID of the organization.
+
+          The Organization represents your company as a direct customer of the m3ter service. '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      responses:
+        '200':
+          description: Returns the OrgUser
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgUserResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - OrgUsers
+      summary: Update OrgUser
+      description: 'Update the OrgUser with the given UUID.
+
+
+        Updates the details for a specific user within an Organization using their unique identifier (UUID). Use this endpoint when you need to modify user information such as their permission policy.'
+      operationId: PutOrgUser
+      parameters:
+      - name: id
+        in: path
+        description: 'The unique identifier (UUID) of the OrgUser to update.
+
+
+          **Note:** The `orgId` path parameter is also required.'
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: orgId
+        in: path
+        description: 'UUID of the organization.
+
+          The Organization represents your company as a direct customer of the m3ter service. '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgUserRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated OrgUser
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgUserResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/users/{id}/usergroups:
+    get:
+      tags:
+      - OrgUsers
+      summary: Retrieve OrgUser Groups
+      description: "Retrieve a list of User Groups for an OrgUser.\n\nRetrieves a list of all User Groups that a specific user belongs to within an Organization. The list can be paginated for easier management.\n\n**Notes:**\n- **User Groups as Resource Groups**. A User Group is a Resource Group - one used to group resources of type `user`. You can use the *Create ResourceGroup* call detailed in the [ResourceGroup](https://www.m3ter.com/docs/api#tag/ResourceGroup) section to create a User Resource Group, and then use the *Add Item* and *Remove Item* calls to manage which Users belong to the User Resource Group.\n- **Using the `inherited` parameter for the Retrieve OrgUser Groups call**. Resource Groups can be nested, which means a User Resource Group can contain another User Resource Group as a member. You can use the `inherited` parameter with this *Retrieve OrgUser Groups* call as a *QUERY PARAMETER* to control which User Resource Groups are returned:\n\n* If the user specified belongs to a User Resource Group that is nested as part of another User Resource Group:\n\t* If `inherited = TRUE`, then any Groups the user belongs to AND any parent Groups those Groups belong to as nested Groups are returned.\n\t* If `inherited = FALSE`, then only those User Resource Groups to which the user belongs are returned.\n"
+      operationId: GetOrgUserGroups
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the user.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of User Groups to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of User Groups in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns a list of User Groups
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/users/{id}/password/resend:
+    put:
+      tags:
+      - OrgUsers
+      summary: Resend temporary password for user
+      description: Resend temporary password for user
+      operationId: AdminResendTempPass
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: UUID of the user
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Temporary password email sent successfully
+        '400':
+          description: User in improper state.
+        '401':
+          description: User is not allowed to perform this action.
+        '404':
+          description: No user was found with the given ID.
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/users/{id}/permissions:
+    get:
+      tags:
+      - OrgUsers
+      summary: Retrieve OrgUser Permissions
+      description: 'Retrieve the permissions for the OrgUser with the given UUID.
+
+
+        Retrieves a list of all permissions associated with a specific user in an Organization using their UUID. The list can be paginated for easier management.'
+      operationId: GetOrgUserPermissions
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the user whose permissions you want to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of Permission Policies to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Permission Policies in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns a list of Permission Policies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionPolicyResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    PermissionStatement:
+      required:
+      - action
+      - effect
+      - resource
+      type: object
+      properties:
+        effect:
+          description: 'Specifies whether or not the user is allowed to perform the action on the resource.
+
+
+            **NOTE:** Use lower case, for example: `"allow"`. If you use upper case, you''ll receive an error.'
+          $ref: '#/components/schemas/PermissionEffect'
+        action:
+          type: array
+          description: 'The actions available to users who are assigned the Permission Policy - what they can do or cannot do with respect to the specified resource.
+
+
+            **NOTE:** Use lower case and a colon-separated format, for example, if you want to confer full CRUD, use:
+
+            ```
+
+            "config:create",
+
+            "config:delete",
+
+            "config:retrieve",
+
+            "config:update"
+
+            ```'
+          items:
+            $ref: '#/components/schemas/PermissionAction'
+        resource:
+          minItems: 1
+          type: array
+          description: See [Statements - Available Resources](https://www.m3ter.com/docs/guides/managing-organization-and-users/creating-and-managing-permissions#statements---available-resources) for a listing of available resources for Permission Policy statements.
+          items:
+            type: string
+      description: ''
+    UserResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          firstName:
+            type: string
+            description: The first name of the user.
+          lastName:
+            type: string
+            description: 'The surname of the user. '
+          contactNumber:
+            type: string
+            description: The user's contact telephone number.
+          email:
+            type: string
+            description: 'The email address for this user. '
+          organizations:
+            type: array
+            description: An array listing the Organizations where this user has access.
+            items:
+              type: string
+          firstAcceptedTermsAndConditions:
+            type: string
+            description: 'The date and time *(in ISO 8601 format)* when this user first accepted the the m3ter terms and conditions.  '
+            format: date-time
+          lastAcceptedTermsAndConditions:
+            type: string
+            description: 'The date and time *(in ISO 8601 format)* when this user last accepted the the m3ter terms and conditions.  '
+            format: date-time
+          supportUser:
+            type: boolean
+            description: 'Indicates whether this is a m3ter Support user. '
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the user was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the user was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The user who created this user.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this user record.
+            x-stainless-skip:
+            - terraform
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PermissionEffect:
+      type: string
+      description: ''
+      enum:
+      - ALLOW
+      - DENY
+    PermissionPolicyResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the Permission Policy.
+          permissionPolicy:
+            type: array
+            description: 'Array containing the Permission Policies information. '
+            items:
+              $ref: '#/components/schemas/PermissionStatement'
+          managedPolicy:
+            type: boolean
+            description: 'Indicates whether this is a system generated Managed Permission Policy. '
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Permission Policy was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Permission Policy was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this Permission Policy.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this Permission Policy.
+            x-stainless-skip:
+            - terraform
+    ResourceGroupResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the Resource Group.
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Resource Group was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Resource Group was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this Resource Group.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this Resource Group.
+            x-stainless-skip:
+            - terraform
+    OrgUserRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+
+            - **Newly created entity:** On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:** On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.
+
+            '
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        permissionPolicy:
+          type: array
+          description: 'An array of permission statements for the user. Each permission statement defines a specific permission for the user.
+
+
+            See [Understanding, Creating, and Managing Permission Policies](https://www.m3ter.com/docs/guides/organization-and-access-management/creating-and-managing-permissions) for more information.'
+          items:
+            $ref: '#/components/schemas/PermissionStatement'
+        dtEndAccess:
+          type: string
+          description: The date and time *(in ISO 8601 format)* when the user's access will end. Use this to set or update the expiration of the user's access.
+          format: date-time
+      description: ''
+    PermissionAction:
+      type: string
+      description: ''
+      enum:
+      - ALL
+      - CONFIG_CREATE
+      - CONFIG_RETRIEVE
+      - CONFIG_UPDATE
+      - CONFIG_DELETE
+      - CONFIG_EXPORT
+      - ANALYTICS_QUERY
+      - MEASUREMENTS_UPLOAD
+      - MEASUREMENTS_FILEUPLOAD
+      - MEASUREMENTS_RETRIEVE
+      - MEASUREMENTS_EXPORT
+      - FORECAST_RETRIEVE
+      - HEALTHSCORES_RETRIEVE
+      - ANOMALIES_RETRIEVE
+      - EXPORTS_DOWNLOAD
+      - MARKETPLACE_USAGE_CREATE
+      - MARKETPLACE_USAGE_RETRIEVE
+      - AUDIT_RETRIEVE
+    PaginatedOrgUserResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/OrgUserResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    OrgUserResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/UserResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          permissionPolicy:
+            type: array
+            description: An array of permission statements for the user. Each permission statement defines a specific permission for the user.
+            items:
+              $ref: '#/components/schemas/PermissionStatement'
+          dtEndAccess:
+            type: string
+            description: The date and time *(in ISO 8601 format)* when the user's access will end. Used to set or update the date and time a user's access expires.
+            format: date-time
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

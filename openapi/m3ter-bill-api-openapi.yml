@@ -1,0 +1,2077 @@
+openapi: 3.0.1
+info:
+  title: m3ter Account Bill API
+  description: "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->"
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Bill
+  description: 'Endpoints for billing operations such as creating, updating, listing,downloading, and deleting Bills.
+
+
+    Bills are generated for an Account, and are calculated in accordance with the usage-based pricing Plans applied for the Products the Account consumes. These endpoints enable interaction with the billing system, allowing you to obtain billing details and insights into the consumption patterns and charges of your end-customer Accounts.'
+paths:
+  /organizations/{orgId}/bills/latest/{accountId}:
+    get:
+      tags:
+      - Bill
+      summary: Retrieve latest Bill
+      description: 'Retrieve the latest Bill for the given Account.
+
+
+        This endpoint retrieves the latest Bill for the given Account in the specified Organization. It facilitates tracking of the most recent charges and consumption details. '
+      operationId: GetLatestBill
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: accountId
+        in: path
+        description: The unique identifier (UUID) of the Account for which the latest Bill should be retrieved.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: additional
+        in: query
+        description: Comma separated list of additional fields.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns the latest Bill for the given Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/{id}:
+    get:
+      tags:
+      - Bill
+      summary: Retrieve Bill
+      description: 'Retrieve the Bill with the given UUID.
+
+
+        This endpoint retrieves the Bill with the given unique identifier (UUID) and specific Organization. '
+      operationId: GetBill
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Bill to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: additional
+        in: query
+        description: Comma separated list of additional fields.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns the requested Bill
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - Bill
+      summary: Delete Bill
+      description: 'Delete the Bill with the given UUID.
+
+
+        This endpoint deletes the specified Bill with the given unique identifier. Use with caution since deleted Bills cannot be recovered. Suitable for removing incorrect or obsolete Bills, and for Bills that have not been sent to customers.  Where end-customer invoices for Bills have been sent to customers, Bills should not be deleted to ensure you have an audit trail of how the invoice was created. '
+      operationId: DeleteBill
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Bill to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted Bill
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills:
+    get:
+      tags:
+      - Bill
+      summary: List Bills
+      description: 'Retrieve a list of Bills.
+
+
+        This endpoint retrieves a list of all Bills for the given Account within the specified Organization. Optional filters can be applied such as by date range, lock status, or other attributes. The list can also be paginated for easier management.'
+      operationId: ListBills
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of Bills to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Bills in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: accountId
+        in: query
+        description: Optional filter. An Account ID - returns the Bills for the single specified Account.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: locked
+        in: query
+        description: 'Boolean flag specifying whether to include Bills with "locked" status.
+
+
+          * **TRUE** - the list inlcudes "locked" Bills.
+
+          * **FALSE** - excludes "locked" Bills from the list.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      - name: excludeLineItems
+        in: query
+        description: Exclude Line Items
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      - name: includeBillTotal
+        in: query
+        description: Include Bill Total
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      - name: status
+        in: query
+        description: Only include Bills having the given status
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/BillStatus'
+      - name: billDate
+        in: query
+        description: The specific date in ISO 8601 format for which you want to retrieve Bills.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: billDateStart
+        in: query
+        description: Only include Bills with bill dates equal to or later than this date.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: billDateEnd
+        in: query
+        description: Only include Bills with bill dates earlier than this date.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: externalInvoiceDateStart
+        in: query
+        description: Only include Bills with external invoice dates equal to or later than this date.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: externalInvoiceDateEnd
+        in: query
+        description: Only include Bills with external invoice dates earlier than this date.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: Optional filter. The list of Bill IDs to retrieve.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: billJobId
+        in: query
+        description: List Bill entities by the bill job that last calculated them.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: additional
+        in: query
+        description: Comma separated list of additional fields.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: billingFrequency
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          nullable: true
+      responses:
+        '200':
+          description: Returns the requested list of Bills
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBillResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/{id}/status:
+    put:
+      tags:
+      - Bill
+      summary: Update Bill Status
+      description: "Updates the status of a specified Bill with the given Bill ID. \n\nThis endpoint allows you to transition a Bill's status through various stages, such as from \"Pending\" to \"Approved\"."
+      operationId: UpdateBillStatus
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Bill whose status you want to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBillStatusRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated Bill
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/{id}/statement/json:
+    get:
+      tags:
+      - Bill
+      summary: Retrieve Bill Statement in JSON Format
+      description: 'Retrieve a Bill Statement in JSON format for a given Bill ID.
+
+
+        Bill Statements are backing sheets to the invoices sent to your customers. Bill Statements provide a breakdown of the usage responsible for the usage charge line items shown on invoices.
+
+
+        The response to this call returns a pre-signed `downloadUrl`, which you use with a `GET` call to obtain the Bill Statement.'
+      operationId: GetBillJsonStatement
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Bill for which you want to retrieve the Statement.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 'Returns the download URL '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectUrlResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/{billId}/lineitems:
+    get:
+      tags:
+      - Bill
+      summary: List Line Items
+      description: "Lists all the line items for a specific Bill. \n\nThis endpoint retrieves a list of line items for the given Bill within the specified Organization. The list can also be paginated for easier management. The line items returned in the list include individual charges, discounts, or adjustments within a Bill.\n"
+      operationId: ListBillLineItems
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: billId
+        in: path
+        description: The unique identifier (UUID) of the Bill for which you want to list the line items.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of line items to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of line items in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: additional
+        in: query
+        description: Comma separated list of additional fields.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns the list of Bill line items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBillLineItemResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/accountid/{accountId}:
+    get:
+      tags:
+      - Bill
+      summary: Retrieve Bills for an Account ID
+      description: 'Retrieve all Bills for the given Account.
+
+
+        This endpoint retrieves all Bills associated with a specific Account ID in a specified organization. The list can also be paginated for easier management.
+
+
+        This is useful for obtaining an overview of all billing activities for an Account.
+
+        '
+      operationId: GetAllBillsForAccount
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of Bills to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Bills in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: accountId
+        in: path
+        description: The unique identifier (UUID) of the Account for which you want to retrieve Bills.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: additional
+        in: query
+        description: Comma separated list of additional fields.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns list of Bills for the requested account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBillResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/{billId}/lineitems/{id}:
+    get:
+      tags:
+      - Bill
+      summary: Retrieve Line Item
+      description: 'Retrieves a specific line item within a Bill.
+
+
+        This endpoint retrieves the line item given by its unique identifier (UUID) from a specific Bill.  '
+      operationId: GetBillLineItem
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: billId
+        in: path
+        description: The unique identifier (UUID) of the Bill containing the line item.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the line item you want to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: additional
+        in: query
+        description: Comma separated list of additional fields.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns the requested line item from a Bill
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillLineItemResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/{id}/lock:
+    put:
+      tags:
+      - Bill
+      summary: Lock Bill
+      description: 'Lock the specific Bill identified by the given UUID. Once a Bill is locked, no further changes can be made to it.
+
+
+        **NOTE:** You cannot lock a Bill whose current status is `PENDING`. You will receive an error message if you try to do this. You must first use the [Approve Bills](https://www.m3ter.com/docs/api#tag/Bill/operation/ApproveBills) call to approve a Bill before you can lock it.'
+      operationId: LockBill
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Bill to lock.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the locked Bill
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/billingperiod/{lastDateInBillingPeriod}/{billingFrequency}/approve:
+    post:
+      tags:
+      - Bill
+      summary: Approve Bills in Billing Period
+      description: "Approve all Bills within a specified billing period. This endpoint allows you to approve Bills on various frequencies, such as daily, weekly, monthly, or annually. Specify the last day of the period to define the range. \n\nFor example, to approve all Bills on monthly billing up to September with due date of 1st of month, use the last day of September, which is September 30th."
+      operationId: ApproveAllBillsInBillingPeriod
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: lastDateInBillingPeriod
+        in: path
+        description: The last date of the billing period for which you want to approve Bills. This date defines the range of Bills to be approved.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: billingFrequency
+        in: path
+        description: The billing frequency for the specified period. Valid options are daily, weekly, monthly, or annually.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns a message indicating the success/failure of Bills approval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillApprovalResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/{id}/statement/csv:
+    get:
+      tags:
+      - Bill
+      summary: Retrieve Bill Statement in CSV Format
+      description: "Retrieve a specific Bill Statement for the given Bill UUID in CSV format. \n\nBill Statements are backing sheets to the invoices sent to your customers. Bill Statements provide a breakdown of the usage responsible for the usage charge line items shown on invoices.\n\nThe response includes a pre-signed `downloadUrl`, which must be used with a separate `GET` call to download the actual Bill Statement. This ensures secure access to the requested information."
+      operationId: GetBillCsvStatement
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Bill for which to retrieve the Statement in CSV format.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the download URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectUrlResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - Bill
+      summary: Create Bill Statement in CSV Format
+      description: "Generate a specific Bill Statement for the provided Bill UUID in CSV format. \n\nBill Statements are backing sheets to the invoices sent to your customers. Bill Statements provide a breakdown of the usage responsible for the usage charge line items shown on invoices.\n\nThe response to this call returns a pre-signed `downloadUrl`, which you then use with a `GET` call to obtain the Bill statement in CSV format."
+      operationId: CreateBillCsvStatement
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Bill for which you want to generate the Statement in CSV format.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 'Returns the download URL '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectUrlResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/preview:
+    post:
+      tags:
+      - Bill
+      summary: Preview Bill
+      description: "Preview the current Bill for a specific account. \n\nThis endpoint is designed to provide a preview of the Bill for exactly one account, allowing you to review charges, frequencies, and other details before finalization. Required parameters include: \n* `accountIds` - exactly 1 account must be specified for previewing a Bill. \n* `billingFrequency` \n* `billFrequencyInterval` \n\nOther request parameters are optional. If `version` is not specified, the latest version of the Bill is previewed."
+      operationId: PreviewBill
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: debug
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+          nullable: true
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillJobRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the Bill preview
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/{billId}/lineitems/{id}/usage/json:
+    get:
+      tags:
+      - Bill
+      summary: Retrieve Line Item Usage in JSON Format
+      description: 'Retrieve the line item with the given UUID in JSON format.
+
+
+        This endpoint retrieves detailed usage information for a specific billing line item in JSON format. It is designed to provide granular insights into the consumption pattern for the given line item.
+
+
+        The response includes a pre-signed `downloadUrl`, which must be used with a separate `GET` call to download the Bill line item. This ensures secure access to the requested information.'
+      operationId: GetBillLineItemJsonUsage
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: billId
+        in: path
+        description: UUID of the Bill
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Bill line item for which to retrieve the usage.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the download URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectUrlResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+      deprecated: true
+  /organizations/{orgId}/bills/approve:
+    post:
+      tags:
+      - Bill
+      summary: Approve Bills
+      description: "Approve multiple Bills for the specified Organization based on the given criteria. \n\nThis endpoint allows you to change currently *Pending* Bills to *Approved* status for further processing.\n\nQuery Parameters:\n- Use `accountIds` to approve Bills for specifed Accounts.\n\nRequest Body Schema Parameter:\n- Use `billIds` to specify a collection of Bills for batch approval.\n\n**Important!** If you use the `billIds` Request Body Schema parameter, any Query parameters you might have also used are ignored when the call is processed.\n\n"
+      operationId: ApproveBills
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: externalInvoiceDateStart
+        in: query
+        description: Start date for filtering Bills by external invoice date. Includes Bills with dates equal to or later than this date.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: externalInvoiceDateEnd
+        in: query
+        description: End date for filtering Bills by external invoice date. Includes Bills with dates earlier than this date.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: accountIds
+        in: query
+        description: List of Account IDs to filter Bills. This allows you to approve Bills for specific Accounts within the Organization.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveBillsRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns a message indicating the success/failure of Bills approval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillApprovalResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/billingperiod/{lastDateInBillingPeriod}/{billingFrequency}:
+    get:
+      tags:
+      - Bill
+      summary: Retrieve Bills in Billing Period
+      description: "Retrieve all Bills within a specified billing period. This endpoint allows you to retrieve Bills on various frequencies, such as daily, weekly, monthly, or annually. Specify the last day of the period to define the range. \n\nFor example, to retrieve all Bills on monthly billing up to September with due date of 1st of month, use the last day of September, which is September 30th.\n\nThe list can also be paginated for easier management."
+      operationId: GetAllBillsInBillingPeriod
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of Bills to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Bills in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: lastDateInBillingPeriod
+        in: path
+        description: The last date of the billing period for which you want to retrieve Bills. This date defines the range of Bills to be retrieved.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: billingFrequency
+        in: path
+        description: The billing frequency for the specified period. Valid options are daily, weekly, monthly, or annually.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: additional
+        in: query
+        description: Comma separated list of additional fields.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns the list of Bills within the billing period
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBillResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/download/csv/url:
+    post:
+      tags:
+      - Bill
+      summary: Download Bills URL
+      description: "Generate a URL for downloading a CSV file containing a comprehensive list of Bills data  for the specified organization for a specified period. This endpoint facilitates easy exporting of billing data for external analysis and reporting.\n\nThe response to this call returns a pre-signed `downloadUrl`, which you then enter into your browser to download the CSV file of the Bill entities.\n\nYou can use the `externalSystem` request parameter to control the format of the Bills data in the CSV file:\n- **STANDARD** A wider range of Bills data columns is given.\n- **XERO** A more limited range of data columns is given and compatible with loading into your 3rd-party Xero system.\n\n**NOTES:** \n- **Download Limits**. You can only download Bills for a period of up to 31 days or up to a maximum of 5000 Bills. If you attempt a download that exceeds either of these two limits, you'll receive an error message\n- **Empty Bills**. The CSV formatted file is compiled for download by taking each of the line items found in Bills that exist in your Organization for the specified period. The Bill for each line item record is given, along with Bill Total and other billing attributes. However, this means that if you have an *empty Bill* that exists for the specified period - one for which *no line items currently exist* - then no line item records will be shown for this Bill in the CSV file you download."
+      operationId: DownloadBillsCsvUrl
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadCsvRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the download URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectUrlResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/search:
+    get:
+      tags:
+      - Bill
+      summary: Search Bills
+      description: 'Search for Bill entities.
+
+
+        This endpoint executes a search query for Bills based on the user specified search criteria. The search query is customizable, allowing for complex nested conditions and sorting. The returned list of Bills can be paginated for easier management.'
+      operationId: SearchBills
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: searchQuery
+        in: query
+        description: "Query for data using special syntax:\n- Query parameters should be delimited using $ (dollar sign).\n- Allowed comparators are:\n\t- (greater than) >\n\t- (greater than or equal to) >=\n\t- (equal to) : \n\t- (less than) < \n\t- (less than or equal to) <= \n\t- (match phrase/prefix) ~ \n-  Allowed parameters: accountId, locked, billDate, startDate, endDate, dueDate, billingFrequency, id, createdBy, dtCreated, lastModifiedBy, ids.\n-  Query example:\n\t-  searchQuery=startDate>2023-01-01$accountId:62eaad67-5790-407e-b853-881564f0e543.\n\t-  This query is translated into: find Bills that startDate is older than 2023-01-01 AND accountId is equal to 62eaad67-5790-407e-b853-881564f0e543.\n\n**Note:** Using the ~ match phrase/prefix comparator. For best results, we recommend treating this as a \"starts with\" comparator for your search query."
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: fromDocument
+        in: query
+        description: '`fromDocument` for multi page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'Number of Bills to retrieve per page.
+
+
+          **NOTE:** If not defined, default is 10.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: operator
+        in: query
+        description: Search Operator to be used while querying search.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - AND
+          - OR
+      - name: sortBy
+        in: query
+        description: Name of the parameter on which sorting is performed. Use any field available on the Bill entity to sort by, such as `accountId`, `endDate`, and so on.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sortOrder
+        in: query
+        description: Sorting order.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+      responses:
+        '200':
+          description: Returns the Bills matching the search criteria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBillResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    CurrencyConversion:
+      required:
+      - from
+      - to
+      type: object
+      properties:
+        from:
+          minLength: 1
+          type: string
+          description: 'Currency to convert from. For example: GBP.'
+          example: EUR
+        to:
+          minLength: 1
+          type: string
+          description: 'Currency to convert to. For example: USD.'
+          example: USD
+        multiplier:
+          minimum: 0
+          exclusiveMinimum: true
+          type: number
+          description: Conversion rate between currencies.
+          format: double
+          example: 1.12
+      description: An array of currency conversion rates from Bill currency to Organization currency. For example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate.
+    BillLineItemResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractBillLineItemResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          productName:
+            type: string
+            description: 'The name of the Product associated with this line item. '
+          productCode:
+            type: string
+            description: The code of the Product associated with this line item.
+          accountingProductId:
+            type: string
+            description: The unique identifier (UUID) for the associated Accounting Product.
+          accountingProductName:
+            type: string
+            description: The name of the Accounting Product associated with this line item.
+          accountingProductCode:
+            type: string
+            description: The code of the Accounting Product associated with this line item.
+          aggregationId:
+            type: string
+            description: 'A unique identifier (UUID) for the Aggregation that contributes to this Bill line item. '
+          compoundAggregationId:
+            type: string
+            description: A unique identifier (UUID) for the Compound Aggregation, if applicable.
+          counterId:
+            type: string
+            description: The unique identifier (UUID) for the Counter associated with this line item.
+          chargeId:
+            type: string
+            description: The unique identifier (UUID) for the Charge associated with this line item.
+          segment:
+            type: object
+            additionalProperties:
+              type: string
+            description: Specifies the segment name or identifier when segmented Aggregation is used. This is relevant for more complex billing structures.
+          group:
+            type: object
+            additionalProperties:
+              type: string
+            description: ''
+          meterId:
+            type: string
+            description: 'The unique identifier (UUID) of the Meter responsible for tracking usage. '
+          planId:
+            type: string
+            description: 'A unique identifier (UUID) for the billing Plan associated with this line item. '
+          planGroupId:
+            type: string
+            description: The unique identifier (UUID) of the Plan Group associated with this line item.
+          commitmentId:
+            type: string
+            description: 'The unique identifier (UUID) of the Commitment associated with this line item. '
+          balanceId:
+            type: string
+            description: The unique identifier (UUID) for the Balance associated with this line item.
+          billId:
+            type: string
+            description: 'The unique identifier (UUID) for the Bill that includes this line item. '
+          quantity:
+            type: number
+            description: The amount of the product or service used in this line item.
+          units:
+            type: number
+            description: "The number of units rated in the line item, each of which is of the type specified in the `unit` field. For example: 400 api_calls. \n\nIn this example, the unit type of **api_calls** is read from the `unit` field."
+          unit:
+            type: string
+            description: 'Specifies the unit type. For example: **MB**, **GB**, **api_calls**, and so on.  '
+          subtotal:
+            type: number
+            description: The subtotal amount when not currency converted *(in the cases where currency conversion is required)*.
+          currency:
+            type: string
+            description: 'The currency in which the line item is billed, represented as a currency code. For example, USD, GBP, or EUR. '
+          conversionRate:
+            type: number
+            description: The currency conversion rate *(if used)* for the line item.
+          convertedSubtotal:
+            type: number
+            description: The subtotal amount for this line item after currency conversion, if applicable.
+          creditTypeId:
+            type: string
+            description: The unique identifier (UUID) for the type of credit applied to this line item.
+          pricingId:
+            type: string
+            description: 'The unique identifier (UUID) of the Pricing used for this line item, '
+          bandUsage:
+            type: array
+            description: Array containing the pricing band information, which shows the details for each pricing band or tier.
+            items:
+              $ref: '#/components/schemas/BillLineItemPricingBandUsage'
+          reasonId:
+            type: string
+            description: 'A unique identifier (UUID) for the reason or justification for this line item, if applicable. '
+          contractId:
+            type: string
+            description: 'The unique identifier (UUID) for the Contract associated with this line item. '
+          jsonUsageGenerated:
+            type: boolean
+            description: Boolean flag indicating whether the Bill line item has associated statement usage in JSON format. When a Bill statement is generated, usage line items have their usage stored in JSON format.
+            deprecated: true
+          averageUnitPrice:
+            type: number
+            description: Represents the average unit price calculated across all pricing bands or tiers for this line item.
+          sequenceNumber:
+            type: integer
+            description: 'The line item sequence number. '
+            format: int32
+          additional:
+            type: object
+            additionalProperties: true
+            description: ''
+    AbstractBillLineItemResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          lineItemType:
+            description: ''
+            $ref: '#/components/schemas/LineItemType'
+          productId:
+            type: string
+            description: ''
+          description:
+            type: string
+            description: ''
+          servicePeriodStartDate:
+            type: string
+            description: ''
+            format: date-time
+          servicePeriodEndDate:
+            type: string
+            description: ''
+            format: date-time
+          referencedBillId:
+            type: string
+            description: ''
+          referencedLineItemId:
+            type: string
+            description: ''
+          dtCreated:
+            type: string
+            description: The DateTime when the line item was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the line item was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this line item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this line item.
+            x-stainless-skip:
+            - terraform
+    BillResponse:
+      type: object
+      properties:
+        lineItems:
+          type: array
+          description: An array of the Bill line items.
+          items:
+            $ref: '#/components/schemas/BillLineItem'
+        purchaseOrderNumber:
+          type: string
+          description: Purchase Order number linked to the Account the Bill is for.
+        externalInvoiceReference:
+          type: string
+          description: 'The reference ID to use for external invoice. '
+        externalInvoiceDate:
+          type: string
+          description: 'For accounting purposes, the date set at Organization level to use for external invoicing with respect to billing periods - two options:
+
+            * `FIRST_DAY_OF_NEXT_PERIOD` *(Default)*.
+
+            * `LAST_DAY_OF_ARREARS`
+
+
+            For example, if the retrieved Bill was on a monthly billing frequency and the billing period for the Bill is September 2023 and the *External invoice date* is set at `FIRST_DAY_OF_NEXT_PERIOD`, then the `externalInvoiceDate` will be `"2023-10-01"`.
+
+
+            **NOTE:** To change the `externalInvoiceDate` setting for your Organization, you can use the [Update OrganizationConfig](https://www.m3ter.com/docs/api#tag/OrganizationConfig/operation/GetOrganizationConfig) call.'
+          format: date
+        jsonStatementGenerated:
+          type: boolean
+          description: 'Flag to indicate that the statement in JSON format has been generated for the Bill.
+
+
+            * **TRUE** - JSON statement has been generated.
+
+            * **FALSE** - no JSON statement generated.'
+        csvStatementGenerated:
+          type: boolean
+          description: 'Flag to indicate that the statement in CSV format has been generated for the Bill.
+
+
+            * **TRUE** - CSV statement has been generated.
+
+            * **FALSE** - no CSV statement generated.'
+        statementStale:
+          type: boolean
+          description: True if the existing bill statement (JSON or CSV) is marked as stale/outdated.
+        billTotal:
+          type: number
+          description: 'The sum total for the Bill. '
+        sequentialInvoiceNumber:
+          type: string
+          description: 'The sequential invoice number of the Bill.
+
+
+            **NOTE:** If you have not defined a `billPrefix` for your Organization, a `sequentialInvoiceNumber` is not returned in the response. See [Update OrganizationConfig](https://www.m3ter.com/docs/api#tag/OrganizationConfig/operation/UpdateOrganizationConfig)
+
+            '
+        dtCreated:
+          type: string
+          description: The date and time *(in ISO 8601 format)* when the Bill was first created.
+          format: date-time
+          x-stainless-skip:
+          - terraform
+        dtLastModified:
+          type: string
+          description: The date and time *(in ISO 8601 format)* when the Bill was last modified.
+          format: date-time
+          x-stainless-skip:
+          - terraform
+        createdBy:
+          type: string
+          description: The unique identifier (UUID) for the user who created the Bill.
+          x-stainless-skip:
+          - terraform
+        lastModifiedBy:
+          type: string
+          description: The unique identifier (UUID) for the user who last modified this Bill.
+          x-stainless-skip:
+          - terraform
+        dtApproved:
+          type: string
+          description: The DateTime when the bill was approved.
+          format: date-time
+        approvedBy:
+          type: string
+          description: The id of the user who approved this bill.
+        dtLocked:
+          type: string
+          description: The DateTime when the bill was locked.
+          format: date-time
+        lockedBy:
+          type: string
+          description: The id of the user who locked this bill.
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractBillResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+    BillJobBillingFrequency:
+      type: string
+      description: 'Defines how often Bills are generated.
+
+        - **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
+
+        - **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
+
+        - **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
+
+        - **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
+
+        - **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
+
+        '
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - ANNUALLY
+      - AD_HOC
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    ObjectUrlResponse:
+      type: object
+      properties:
+        downloadUrl:
+          type: string
+          description: The pre-signed download URL.
+          format: url
+      description: ''
+    UpdateBillStatusRequest:
+      required:
+      - status
+      type: object
+      properties:
+        status:
+          description: The new status you want to assign to the Bill. Must be one "Pending" or "Approved".
+          $ref: '#/components/schemas/BillStatus'
+      description: ''
+    AbstractBillResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          accountId:
+            type: string
+            description: ''
+          accountCode:
+            type: string
+            description: ''
+          startDate:
+            type: string
+            description: ''
+            format: date
+          endDate:
+            type: string
+            description: ''
+            format: date
+          startDateTimeUTC:
+            type: string
+            description: ''
+            format: date-time
+          endDateTimeUTC:
+            type: string
+            description: ''
+            format: date-time
+          billDate:
+            type: string
+            description: ''
+            format: date
+          dueDate:
+            type: string
+            description: ''
+            format: date
+          billingFrequency:
+            description: ''
+            $ref: '#/components/schemas/BillingFrequency'
+          billFrequencyInterval:
+            type: integer
+            description: ''
+            format: int32
+          timezone:
+            type: string
+            description: ''
+            example: UTC
+            default: UTC
+          currency:
+            type: string
+            description: ''
+          locked:
+            type: boolean
+            description: ''
+          createdDate:
+            type: string
+            description: ''
+            format: date-time
+          status:
+            description: ''
+            $ref: '#/components/schemas/BillStatus'
+          billJobId:
+            type: string
+            description: ''
+          currencyConversions:
+            type: array
+            description: ''
+            items:
+              $ref: '#/components/schemas/CurrencyConversion'
+          lastCalculatedDate:
+            type: string
+            description: ''
+            format: date-time
+    ExternalSystem:
+      type: string
+      description: '*(Optional)*. Specifies the format of the Bills data given:
+
+        - **STANDARD** A wider range of data columns is given.
+
+        - **XERO** A more limited range of data columns is given and compatible with loading into your 3rd-party Xero system.'
+      enum:
+      - STANDARD
+      - XERO
+    BillStatus:
+      type: string
+      description: 'Indicates whether the Bill has passed human/manual approval.
+
+
+        * **Pending** - Bill has not yet been passed by a human reviewer.
+
+        * **Approved** - Bill has been approved after manual review. '
+      enum:
+      - PENDING
+      - APPROVED
+    ApproveBillsRequest:
+      required:
+      - billIds
+      type: object
+      properties:
+        billIds:
+          minItems: 1
+          type: array
+          description: Use to specify a collection of Bills by their IDs for batch approval
+          items:
+            type: string
+      description: ''
+    LineItemType:
+      type: string
+      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
+      enum:
+      - STANDING_CHARGE
+      - USAGE
+      - COUNTER_RUNNING_TOTAL_CHARGE
+      - COUNTER_ADJUSTMENT_DEBIT
+      - COUNTER_ADJUSTMENT_CREDIT
+      - USAGE_CREDIT
+      - MINIMUM_SPEND
+      - MINIMUM_SPEND_REFUND
+      - CREDIT_DEDUCTION
+      - MANUAL_ADJUSTMENT
+      - CREDIT_MEMO
+      - DEBIT_MEMO
+      - COMMITMENT_CONSUMED
+      - COMMITMENT_FEE
+      - OVERAGE_SURCHARGE
+      - OVERAGE_USAGE
+      - BALANCE_CONSUMED
+      - BALANCE_FEE
+      - AD_HOC
+    BillLineItemPricingBandUsage:
+      type: object
+      properties:
+        pricingBandId:
+          type: string
+          description: 'The UUID for the pricing band. '
+        lowerLimit:
+          type: number
+          description: The lower limit *(start)* of the pricing band.
+          format: double
+        fixedPrice:
+          type: number
+          description: 'Fixed price is a charge entered for certain pricing types such as Stairstep, Custom Tiered, and Custom Volume. It is a set price and not dependent on usage.
+
+
+
+            '
+        unitSubtotal:
+          type: number
+          description: 'The subtotal of the unit usage. '
+        unitPrice:
+          type: number
+          description: 'The price per unit in the band. '
+        bandUnits:
+          type: number
+          description: 'The number of units used within the band. '
+        bandQuantity:
+          type: number
+          description: 'Usage amount within the band. '
+        bandSubtotal:
+          type: number
+          description: 'Subtotal amount for the band. '
+        creditTypeId:
+          type: string
+          description: The UUID of the credit type.
+        convertedBandSubtotal:
+          type: number
+          description: ''
+      description: Array containing the pricing band information, which shows the details for each pricing band or tier.
+    BillJobRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          lastDateInBillingPeriod:
+            type: string
+            description: 'Specifies the date *(in ISO 8601 format)* of the last day in the billing period, defining the time range for the associated Bills.
+
+
+              For example: `"2023-03-24"`.'
+            format: date
+          billingFrequency:
+            description: 'How often Bills are generated.
+
+
+              * **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
+
+
+              * **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
+
+
+              * **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
+
+
+              * **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
+
+
+              * **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
+
+              '
+            $ref: '#/components/schemas/BillJobBillingFrequency'
+          billFrequencyInterval:
+            type: integer
+            description: 'How often Bills are issued - used in conjunction with `billingFrequency`.
+
+
+              For example, if `billingFrequency` is set to Monthly and `billFrequencyInterval` is set to 3, Bills are issued every three months.'
+            format: int32
+          billDate:
+            type: string
+            description: 'The specific billing date *(in ISO 8601 format)*, determining when the Bill was generated.
+
+
+              For example: `"2023-01-24"`.'
+            format: date
+          externalInvoiceDate:
+            type: string
+            description: 'For accounting purposes, the date set at Organization level to use for external invoicing with respect to billing periods - two options:
+
+              * `FIRST_DAY_OF_NEXT_PERIOD` *(Default)*. Used when you want to recognize usage revenue in the following period.
+
+              * `LAST_DAY_OF_ARREARS`. Used when you want to recognize usage revenue in the same period that it''s consumed, instead of in the following period.
+
+
+              For example, if the retrieved Bill was on a monthly billing frequency and the billing period for the Bill is September 2023 and the *External invoice date* is set at `FIRST_DAY_OF_NEXT_PERIOD`, then the `externalInvoiceDate` will be `"2023-10-01"`.
+
+
+              **NOTE:** To change the `externalInvoiceDate` setting for your Organization, you can use the [Update OrganizationConfig](https://www.m3ter.com/docs/api#tag/OrganizationConfig/operation/GetOrganizationConfig) call.'
+            format: date
+          dueDate:
+            type: string
+            description: 'The due date *(in ISO 8601 format)* for payment of the Bill.
+
+
+              For example: `"2023-02-24"`.'
+            format: date
+          accountIds:
+            maxItems: 100
+            minItems: 1
+            type: array
+            description: An array of UUIDs representing the end customer Accounts associated with the BillJob.
+            items:
+              type: string
+          targetCurrency:
+            maxLength: 3
+            minLength: 3
+            type: string
+            description: The currency code used for the Bill, such as USD, GBP, or EUR.
+          currencyConversions:
+            maxItems: 250
+            type: array
+            description: An array of currency conversion rates from Bill currency to Organization currency. For example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate.
+            items:
+              $ref: '#/components/schemas/CurrencyConversion'
+          timezone:
+            type: string
+            description: Specifies the time zone used for the generated Bills, ensuring alignment with the local time zone.
+            example: UTC
+            default: UTC
+          yearEpoch:
+            type: string
+            description: The starting date *(epoch)* for Yearly billing frequency *(in ISO 8601 format)*, determining the first Bill date for yearly Bills.
+            format: date
+          monthEpoch:
+            type: string
+            description: The starting date *(epoch)* for Monthly billing frequency *(in ISO 8601 format)*, determining the first Bill date for monthly Bills.
+            format: date
+          weekEpoch:
+            type: string
+            description: The starting date *(epoch)* for Weekly billing frequency *(in ISO 8601 format)*, determining the first Bill date for weekly Bills.
+            format: date
+          dayEpoch:
+            type: string
+            description: The starting date *(epoch)* for Daily billing frequency *(in ISO 8601 format)*, determining the first Bill date for daily Bills.
+            format: date
+    BillingFrequency:
+      type: string
+      description: 'Defines how often Bills are generated.
+
+
+        * **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
+
+
+        * **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
+
+
+        * **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
+
+
+        * **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
+
+
+        * **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
+
+        '
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - ANNUALLY
+      - AD_HOC
+      - MIXED
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PaginatedBillLineItemResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/BillLineItemResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    PaginatedBillResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/BillResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    BillLineItem:
+      required:
+      - averageUnitPrice
+      - conversionRate
+      - convertedSubtotal
+      - currency
+      - description
+      - lineItemType
+      - quantity
+      - subtotal
+      - unit
+      - units
+      type: object
+      properties:
+        id:
+          type: string
+          description: The UUID for the line item.
+        productId:
+          type: string
+          description: The UUID of the Product for the line item.
+        productName:
+          type: string
+          description: 'The name of the Product for the line item. '
+        productCode:
+          type: string
+          description: ''
+        accountingProductId:
+          type: string
+          description: ''
+        accountingProductName:
+          type: string
+          description: ''
+        accountingProductCode:
+          type: string
+          description: ''
+        aggregationId:
+          type: string
+          description: 'The Aggregation ID used for the line item. '
+        compoundAggregationId:
+          type: string
+          description: 'The Compound Aggregation ID for the line item if a Compound Aggregation has been used. '
+        counterId:
+          type: string
+          description: ''
+        chargeId:
+          type: string
+          description: ''
+        segment:
+          type: object
+          additionalProperties:
+            type: string
+          description: 'Applies only when segmented Aggregations have been used. The Segment to which the usage data in this line item belongs. '
+        group:
+          type: object
+          additionalProperties:
+            type: string
+          description: ''
+        meterId:
+          type: string
+          description: 'The UUID of the Meter used in the line item. '
+        planId:
+          type: string
+          description: 'The ID of the Plan used for the line item. '
+        planGroupId:
+          type: string
+          description: 'The UUID of the PlanGroup, provided the line item used a PlanGroup. '
+        commitmentId:
+          type: string
+          description: If Commitments *(prepayments)* are used in the line item, this shows the Commitment UUID.
+        balanceId:
+          type: string
+          description: ''
+        description:
+          minLength: 1
+          type: string
+          description: 'Line item description. '
+        quantity:
+          type: number
+          description: 'The amount of usage for the line item. '
+        units:
+          type: number
+          description: 'The number of units used for the line item. '
+        unit:
+          type: string
+          description: 'The unit for the usage data in thie line item. For example: **GB** of disk storage space.'
+        subtotal:
+          type: number
+          description: 'The subtotal amount for the line item, before any currency conversions. '
+        currency:
+          minLength: 1
+          type: string
+          description: 'The currency code for the currency used in the line item. For example: USD, GBP, or EUR.'
+        conversionRate:
+          type: number
+          description: 'The currency conversion rate if currency conversion is required for the line item. '
+        convertedSubtotal:
+          type: number
+          description: The converted subtotal amount if currency conversions have been used.
+        creditTypeId:
+          type: string
+          description: ''
+        lineItemType:
+          description: ''
+          $ref: '#/components/schemas/LineItemType'
+        pricingId:
+          type: string
+          description: 'The UUID of the Pricing used on the line item. '
+        childAccountId:
+          type: string
+          description: If part of a Parent/Child account billing hierarchy, this is the child Account UUID.
+        childAccountCode:
+          type: string
+          description: 'If part of a Parent/Child account billing hierarchy, this is the code for the child Account. '
+        usagePerPricingBand:
+          type: array
+          description: 'Shows the usage by pricing band for tiered pricing structures. '
+          items:
+            $ref: '#/components/schemas/BillLineItemPricingBandUsage'
+        servicePeriodStartDate:
+          type: string
+          description: 'The starting date *(inclusive)* for the service period *(in ISO 8601 format)*. '
+          format: date-time
+        servicePeriodEndDate:
+          type: string
+          description: 'The ending date *(exclusive)* for the service period *(in ISO 8601 format)*. '
+          format: date-time
+        referencedBillId:
+          type: string
+          description: ''
+        referencedLineItemId:
+          type: string
+          description: ''
+        reasonId:
+          type: string
+          description: ''
+        contractId:
+          type: string
+          description: The UUID for the Contract used in the line item.
+        averageUnitPrice:
+          type: number
+          description: 'The average unit price across all tiers / pricing bands. '
+        sequenceNumber:
+          type: integer
+          description: 'The number used for sequential invoices. '
+          format: int32
+        additional:
+          type: object
+          additionalProperties: true
+          description: ''
+      description: ''
+    DownloadCsvRequest:
+      type: object
+      properties:
+        startDate:
+          type: string
+          description: Specifies the start date of the billing period for downloading Bills. Format should be a valid date in ISO 8601 format. Bills with a start date on or after this date will be included in the download.
+          format: date-time
+        endDate:
+          type: string
+          description: Specifies the end date of the billing period for downloading Bills. Format should be a valid date in ISO 8601. Bills with an end date on or before this date will be included in the download.
+          format: date-time
+        externalInvoiceDateStart:
+          type: string
+          description: '*(Optional)*. Specifies the start date in ISO 8601 format for filtering Bills by external invoice date.'
+          format: date-time
+        externalInvoiceDateEnd:
+          type: string
+          description: '*(Optional)*. Specifies the end date in ISO 8601 format for filtering Bills by external invoice date.'
+          format: date-time
+        externalSystem:
+          description: 'Use this parameter if you have implemented an integration with your Xero system and want a downloaded CSV file to be loaded into Xero.
+
+
+            * **XERO** - loads into the Xero system.
+
+            * **STANDARD** - not loaded into the external system.'
+          $ref: '#/components/schemas/ExternalSystem'
+      description: ''
+      example:
+        startDate: '2019-08-24T14:15:22Z'
+        endDate: '2019-08-24T14:15:22Z'
+        externalSystem: STANDARD
+    BillApprovalResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A message indicating the success or failure of the Bills' approval, along with relevant details.
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

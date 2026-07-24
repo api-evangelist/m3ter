@@ -1,0 +1,843 @@
+openapi: 3.0.1
+info:
+  title: m3ter Account ExportSchedule API
+  description: "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->"
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: ExportSchedule
+  description: 'Endpoints for creating, updating, retrieving, or deleting Data Export schedules. You can set up an Export Schedule to export one of two types of data from your m3ter Organization - either *Usage data* or *Operational data* for entities.
+
+
+    **NOTE:** You cannot create a single Export Schedule for exporting *both types of data under a single Schedule*.
+
+
+    **Export Destinations** When creating an Export Schedule:
+
+    * You can define one or more Export Destinations - see the [ExportDestination](https://www.m3ter.com/docs/api#tag/ExportDestination) section of this API Reference. When the export runs, the data is sent through to the sepecified Destination. However, the export file is also made available for you to download it locally.
+
+    * You can set up and run Data Exports without defining a Destination. The data is not exported but the compiled export file is made available for downloading locally.
+
+    * For details on downloading an export file, see the [Get Data Export File Download URL](https://www.m3ter.com/docs/api#tag/ExportDestination/operation/GenerateDataExportFileDownloadUrl) endpoint in this API Reference.
+
+
+    **Preview Version!** The Data Export feature is currently available only in Preview release version. See [Feature Release Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages) for Preview release definition. ExportSchedule endpoints will only be available if Data Export has been enabled for your Organization. For more details see [Data Export(Preview)](https://www.m3ter.com/docs/guides/data-exports) in our main User documentation. If you''re interested in previewing the Data Export feature, please get in touch with m3ter Support or your m3ter contact.
+
+    '
+paths:
+  /organizations/{orgId}/dataexports/schedules/{id}:
+    get:
+      tags:
+      - ExportSchedule
+      summary: Retrieve Schedule
+      description: 'Retrieve a Data Export Schedule for the given UUID. Each Schedule can be configured for exporting *only one* of either Usage or Operational data.
+
+        '
+      operationId: GetSchedule
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Schedule to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the requested Export Schedule
+          content:
+            application/json:
+              schema:
+                discriminator:
+                  propertyName: sourceType
+                  mapping:
+                    USAGE: '#/components/schemas/UsageDataExportConfigurationResponseV2'
+                    OPERATIONAL: '#/components/schemas/OperationalDataExportConfigurationResponse'
+                anyOf:
+                - $ref: '#/components/schemas/OperationalDataExportConfigurationResponse'
+                - $ref: '#/components/schemas/UsageDataExportConfigurationResponseV2'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - ExportSchedule
+      summary: Update Schedule
+      description: 'Update a Data Export Schedule for the given UUID. Each Schedule can be configured for exporting *only one* of either Usage or Operational data:
+
+
+        **Operational Data Exports**.
+
+        * Use the `operationalDataTypes` parameter to specify the entities whose operational data you want to include in the export each time the Export Schedule runs.
+
+        * For each of the entity types you select, each time the Export Schedule runs a separate file is compiled containing the operational data for all entities of that type that exist in your Organization
+
+
+        **Usage Data Exports**.
+
+        * Select the Meters and Accounts whose usage data you want to include in the export each time the Export Schedule runs.
+
+        * You can use the `dimensionFilters` parameter to filter the usage data returned for export by adding specific values of non-numeric Dimension data fields on included Meters. Only the data collected for the values you''ve added for the selected Dimension fields will be included in the export.
+
+        * You can use the `aggregations` to apply aggregation methods the usage data returned for export. This restricts the range of usage data returned for export to only the data collected by aggregated fields on selected Meters. Nothing is returned for any non-aggregated fields on Meters. The usage data for Meter fields is returned as the values resulting from applying the selected aggregation method. See the [Aggregations for Queries - Options and Consequences](https://www.m3ter.com/docs/guides/data-explorer/usage-data-explorer-v2#aggregations-for-queries---understanding-options-and-consequences) for more details.
+
+        * If you''ve applied `aggregations` to the usage returned for export, you can then use the `groups` parameter to group the data by *Account*, *Dimension*, or *Time*.
+
+
+        '
+      operationId: UpdateSchedule
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Schedule to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              discriminator:
+                propertyName: sourceType
+                mapping:
+                  USAGE: '#/components/schemas/UsageDataExportConfigurationRequestV2'
+                  OPERATIONAL: '#/components/schemas/OperationalDataExportConfigurationRequest'
+              anyOf:
+              - $ref: '#/components/schemas/OperationalDataExportConfigurationRequest'
+              - $ref: '#/components/schemas/UsageDataExportConfigurationRequestV2'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated Export Schedule
+          content:
+            application/json:
+              schema:
+                discriminator:
+                  propertyName: sourceType
+                  mapping:
+                    USAGE: '#/components/schemas/UsageDataExportConfigurationResponseV2'
+                    OPERATIONAL: '#/components/schemas/OperationalDataExportConfigurationResponse'
+                anyOf:
+                - $ref: '#/components/schemas/OperationalDataExportConfigurationResponse'
+                - $ref: '#/components/schemas/UsageDataExportConfigurationResponseV2'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - ExportSchedule
+      summary: Delete Schedule
+      description: Delete the Data Export Schedule for the given UUID. Each Schedule can be configured for exporting *only one* of either Usage or Operational data.
+      operationId: DeleteSchedule
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Schedule to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted Export Schedule.
+          content:
+            application/json:
+              schema:
+                discriminator:
+                  propertyName: sourceType
+                  mapping:
+                    USAGE: '#/components/schemas/UsageDataExportConfigurationResponseV2'
+                    OPERATIONAL: '#/components/schemas/OperationalDataExportConfigurationResponse'
+                anyOf:
+                - $ref: '#/components/schemas/OperationalDataExportConfigurationResponse'
+                - $ref: '#/components/schemas/UsageDataExportConfigurationResponseV2'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexports/schedules:
+    get:
+      tags:
+      - ExportSchedule
+      summary: List Schedules
+      description: 'Retrieve a list of Data Export Schedules created for your Organization. You can filter the response by Schedules `ids`.
+
+
+        The response will contain an array for both the operational and usage Data Export Schedules in your Organization.'
+      operationId: listSchedules
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Number of schedules to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: '`nextToken` for multi page retrievals'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: Data Export Schedule IDs to filter the returned list by.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns a list of Export Schedules.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDataExportConfigurationResponseBaseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - ExportSchedule
+      summary: Create Schedule
+      description: 'Create a new Data Export Schedule. Each Schedule can be configured for exporting *only one* of either Usage or Operational data:
+
+
+        **Operational Data Exports**.
+
+        * Use the `operationalDataTypes` parameter to specify the entities whose operational data you want to include in the export each time the Export Schedule runs.
+
+        * For each of the entity types you select, each time the Export Schedule runs a separate file is compiled containing the operational data for all entities of that type that exist in your Organization
+
+
+        **Usage Data Exports**.
+
+        * Select the Meters and Accounts whose usage data you want to include in the export each time the Export Schedule runs.
+
+        * You can use the `dimensionFilters` parameter to filter the usage data returned for export by adding specific values of non-numeric Dimension data fields on included Meters. Only the data collected for the values you''ve added for the selected Dimension fields will be included in the export.
+
+        * You can use the `aggregations` to apply aggregation methods the usage data returned for export. This restricts the range of usage data returned for export to only the data collected by aggregated fields on selected Meters. Nothing is returned for any non-aggregated fields on Meters. The usage data for Meter fields is returned as the values resulting from applying the selected aggregation method. See the [Aggregations for Queries - Options and Consequences](https://www.m3ter.com/docs/guides/data-explorer/usage-data-explorer-v2#aggregations-for-queries---understanding-options-and-consequences) for more details.
+
+        * If you''ve applied `aggregations` to the usage returned for export, you can then use the `groups` parameter to group the data by *Account*, *Dimension*, or *Time*.
+
+
+        Request and Response schema:
+
+        * Use the selector under the `sourceType` parameter to expose the relevant request and response schema for the source data type.
+
+
+        Request and Response samples:
+
+        * Use the **Example** selector to show the relevant request and response samples for source data type.
+
+        '
+      operationId: CreateSchedule
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              discriminator:
+                propertyName: sourceType
+                mapping:
+                  USAGE: '#/components/schemas/UsageDataExportConfigurationRequestV2'
+                  OPERATIONAL: '#/components/schemas/OperationalDataExportConfigurationRequest'
+              anyOf:
+              - $ref: '#/components/schemas/OperationalDataExportConfigurationRequest'
+              - $ref: '#/components/schemas/UsageDataExportConfigurationRequestV2'
+        required: true
+      responses:
+        '200':
+          description: Returns the created Export Schedule
+          content:
+            application/json:
+              schema:
+                discriminator:
+                  propertyName: sourceType
+                  mapping:
+                    USAGE: '#/components/schemas/UsageDataExportConfigurationResponseV2'
+                    OPERATIONAL: '#/components/schemas/OperationalDataExportConfigurationResponse'
+                anyOf:
+                - $ref: '#/components/schemas/OperationalDataExportConfigurationResponse'
+                - $ref: '#/components/schemas/UsageDataExportConfigurationResponseV2'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    OperationalDataType:
+      type: string
+      description: ''
+      enum:
+      - BILLS
+      - COMMITMENTS
+      - ACCOUNTS
+      - BALANCES
+      - CONTRACTS
+      - ACCOUNT_PLANS
+      - AGGREGATIONS
+      - PLANS
+      - PRICING
+      - PRICING_BANDS
+      - BILL_LINE_ITEMS
+      - METERS
+      - PRODUCTS
+      - COMPOUND_AGGREGATIONS
+      - PLAN_GROUPS
+      - PLAN_GROUP_LINKS
+      - PLAN_TEMPLATES
+      - BALANCE_TRANSACTIONS
+      - TRANSACTION_TYPES
+      - CHARGES
+    PaginatedDataExportConfigurationResponseBaseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/DataExportConfigurationResponseBase'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    OperationalDataExportConfigurationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the schedule.
+        operationalDataTypes:
+          type: array
+          description: A list of the entities whose operational data is included in the data export.
+          items:
+            $ref: '#/components/schemas/OperationalDataType'
+      description: Response representing an operational data export configuration.
+      allOf:
+      - $ref: '#/components/schemas/DataExportConfigurationResponseBase'
+      - $ref: '#/components/schemas/AbstractResponse'
+    DataExplorerGroupType:
+      type: string
+      description: Type of group
+      enum:
+      - ACCOUNT
+      - DIMENSION
+      - TIME
+    ScheduleType:
+      type: string
+      description: ''
+      enum:
+      - HOUR
+      - DAY
+      - MINUTE
+      - AD_HOC
+    TimePeriod:
+      type: string
+      description: 'Define a time period to control the range of usage data you want the data export to contain when it runs:
+
+
+        * **TODAY**. Data collected for the current day up until the time the export is scheduled to run.
+
+        * **YESTERDAY**. Data collected for the day before the export runs under the schedule - that is, the 24 hour period from midnight to midnight of the day before.
+
+        * **PREVIOUS_WEEK**, **PREVIOUS_MONTH**, **PREVIOUS_QUARTER**, **PREVIOUS_YEAR**. Data collected for the previous full week, month, quarter, or year period. For example if **PREVIOUS_WEEK**, weeks run Monday to Monday - if the export is scheduled to run on June 12th 2024, which is a Wednesday, the export will contain data for the period running from Monday, June 3rd 2024 to midnight on Sunday, June 9th 2024.
+
+        * **WEEK_TO_DATE**, **MONTH_TO_DATE**, or **YEAR_TO_DATE**. Data collected for the period covering the current week, month, or year period. For example if **WEEK_TO_DATE**, weeks run Monday to Monday - if the Export is scheduled to run at 10 a.m. UTC on October 16th 2024, which is a Wednesday, it will contain all usage data collected starting Monday October 14th 2024 through to the Wednesday at 10 a.m. UTC of the current week.
+
+        * **LAST_12_HOURS**. Data collected for the twelve hour period up to the start of the hour in which the export is scheduled to run.
+
+        * **LAST_7_DAYS**, **LAST_30_DAYS**, **LAST_35_DAYS**, **LAST_90_DAYS**, **LAST_120_DAYS** **LAST_YEAR**. Data collected for the selected period prior to the date the export is scheduled to run. For example if **LAST_30_DAYS** and the export is scheduled to run for any time on June 15th 2024, it will contain usage data collected for the previous 30 days - starting May 16th 2024 through to midnight on June 14th 2024
+
+
+        For more details and examples, see the [Time Period](https://www.m3ter.com/docs/guides/data-exports/creating-export-schedules#time-period) section in our main User Documentation.'
+      enum:
+      - TODAY
+      - YESTERDAY
+      - WEEK_TO_DATE
+      - MONTH_TO_DATE
+      - YEAR_TO_DATE
+      - PREVIOUS_WEEK
+      - PREVIOUS_MONTH
+      - PREVIOUS_QUARTER
+      - PREVIOUS_YEAR
+      - LAST_12_HOURS
+      - LAST_7_DAYS
+      - LAST_30_DAYS
+      - LAST_35_DAYS
+      - LAST_90_DAYS
+      - LAST_120_DAYS
+      - LAST_YEAR
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    DataExportConfigurationResponseBase:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the Data Export Schedule.
+        name:
+          type: string
+          description: The name of the Data Export Schedule.
+        code:
+          type: string
+          description: Unique short code of the Data Export Schedule.
+        sourceType:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/SourceType'
+          - description: 'The type of data to export. Possible values: OPERATIONAL or USAGE.'
+        destinationIds:
+          type: array
+          description: The Export Destination ids.
+          items:
+            type: string
+        scheduleType:
+          description: The type of interval used for when Data Exports are run for the Schedule.
+          allOf:
+          - $ref: '#/components/schemas/ScheduleType'
+          - description: The schedule type.
+        period:
+          type: integer
+          description: Defines the Schedule frequency for the Data Export to run in Hours, Days, or Minutes. Used in conjunction with the `scheduleType` parameter.
+          format: int32
+        offset:
+          type: integer
+          description: Offset indicating starting point of the export within the configured scheduleType. For DAY, offset is in hours. For HOUR, offset is in minutes. Offset is not valid for MINUTE.
+          format: int32
+        cronExpression:
+          type: string
+          description: A cron expression (https://en.wikipedia.org/wiki/Cron) describing the frequency of the expression. Executions cannot be more frequent than every 15 minutes.
+        exportFileFormat:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/ExportFileFormat'
+          - description: The export file format.
+        dtCreated:
+          type: string
+          description: The DateTime when the Data Export Schedule was created.
+          format: date-time
+          x-stainless-skip:
+          - terraform
+        dtLastModified:
+          type: string
+          description: The DateTime when the Schedule was last modified.
+          format: date-time
+          x-stainless-skip:
+          - terraform
+        createdBy:
+          type: string
+          description: The id of the user who created this Schedule.
+          x-stainless-skip:
+          - terraform
+        lastModifiedBy:
+          type: string
+          description: The id of the user who last modified this Data Export Schedule.
+          x-stainless-skip:
+          - terraform
+      description: Base Response containing data export configuration
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+    DataExplorerGroup:
+      type: object
+      properties:
+        groupType:
+          description: ''
+          $ref: '#/components/schemas/DataExplorerGroupType'
+      description: Group by a field
+      discriminator:
+        propertyName: groupType
+        mapping:
+          ACCOUNT: '#/components/schemas/DataExplorerAccountGroup'
+          DIMENSION: '#/components/schemas/DataExplorerDimensionGroup'
+          TIME: '#/components/schemas/DataExplorerTimeGroup'
+    UsageDataExportConfigurationRequestV2:
+      required:
+      - sourceType
+      - timePeriod
+      type: object
+      properties:
+        sourceType:
+          allOf:
+          - type: string
+            enum:
+            - USAGE
+          - description: 'The type of data to export. Possible values are: USAGE'
+        meterIds:
+          type: array
+          description: List of meter IDs to export
+          items:
+            type: string
+        accountIds:
+          type: array
+          description: List of account IDs to export
+          items:
+            type: string
+        dimensionFilters:
+          type: array
+          description: List of dimension filters to apply
+          items:
+            $ref: '#/components/schemas/DataExplorerDimensionFilter'
+        aggregations:
+          type: array
+          description: List of aggregations to apply
+          items:
+            $ref: '#/components/schemas/DataExplorerAggregation'
+        groups:
+          type: array
+          description: List of groups to apply
+          items:
+            $ref: '#/components/schemas/DataExplorerGroup'
+        timePeriod:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/TimePeriod'
+          - description: Time period for which the usage data should be exported.
+      description: Request representing an usage schedule configuration.
+      allOf:
+      - $ref: '#/components/schemas/DataExportConfigurationRequestBase'
+      - $ref: '#/components/schemas/AbstractRequest'
+    DataExplorerDimensionFilter:
+      required:
+      - values
+      type: object
+      properties:
+        values:
+          minItems: 1
+          type: array
+          description: Values to filter by
+          items:
+            type: string
+      description: Filter by dimension
+      allOf:
+      - $ref: '#/components/schemas/DataExplorerMeterField'
+    DataExportConfigurationRequestBase:
+      required:
+      - code
+      - name
+      - sourceType
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the Data Export Schedule.
+        code:
+          maxLength: 80
+          minLength: 1
+          pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+          type: string
+          description: Unique short code of the Data Export Schedule.
+        sourceType:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/SourceType'
+          - description: 'The type of data to export. Possible values are: OPERATIONAL, USAGE.'
+        destinationIds:
+          type: array
+          description: 'The Export Destination ids.
+
+
+            **Note:** When creating or updating an Export Schedule, you can:
+
+            * Define at least one Export Destination - see the [ExportDestination](https://www.m3ter.com/docs/api#tag/ExportDestination) section of this API Reference.
+
+            * Alternatively, omit a Destination. Even if you omit a Destinations when the Export job runs and has succeeded, you can download the data export file locally. For details, see the [Get Data Export File Download URL](https://www.m3ter.com/docs/api#tag/ExportDestination/operation/GenerateDataExportFileDownloadUrl) endpoint in this API Reference.'
+          items:
+            type: string
+        scheduleType:
+          pattern: HOUR|DAY|MINUTE
+          type: string
+          description: 'The type of interval used for when Data Exports are run for the Schedule. Possible values are: HOURLY or DAILY or MINUTE.
+
+
+            Used in conjunction with the `period` parameter to define the frequency of Data Exports in hours, days, or minutes.'
+        period:
+          minimum: 1
+          type: integer
+          description: 'Defines the Schedule frequency for the Data Export to run in Hours, Days, or Minutes. Used in conjunction with the `scheduleType` parameter:
+
+            * Lowest frequency is every 3 days.
+
+            * Highest frequency is every 15 minutes.'
+          format: int32
+        offset:
+          minimum: 1
+          type: integer
+          description: Offset indicating starting point of the export
+          format: int32
+        cronExpression:
+          type: string
+          description: ''
+        exportFileFormat:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/ExportFileFormat'
+          - description: The export file format.
+      description: Base mode request containing data export configuration
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+    DataExplorerFieldType:
+      type: string
+      description: Type of field
+      enum:
+      - DIMENSION
+      - MEASURE
+    OperationalDataExportConfigurationRequest:
+      required:
+      - operationalDataTypes
+      - sourceType
+      type: object
+      properties:
+        sourceType:
+          allOf:
+          - type: string
+            enum:
+            - OPERATIONAL
+          - description: 'The type of data to export. Possible values are: OPERATIONAL'
+        operationalDataTypes:
+          minItems: 1
+          type: array
+          description: A list of the entities whose operational data is included in the data export.
+          items:
+            $ref: '#/components/schemas/OperationalDataType'
+      description: Request representing an operational schedule configuration.
+      allOf:
+      - $ref: '#/components/schemas/DataExportConfigurationRequestBase'
+      - $ref: '#/components/schemas/AbstractRequest'
+    ExportFileFormat:
+      type: string
+      description: ''
+      enum:
+      - CSV
+      - JSONL
+    DataExplorerMeterField:
+      required:
+      - fieldCode
+      - meterId
+      type: object
+      properties:
+        meterId:
+          minLength: 1
+          type: string
+          description: Meter ID
+        fieldCode:
+          minLength: 1
+          type: string
+          description: Field code
+      description: Meter field
+    DataExplorerAggregationFunction:
+      type: string
+      description: Aggregation function
+      enum:
+      - SUM
+      - MIN
+      - MAX
+      - COUNT
+      - LATEST
+      - MEAN
+      - UNIQUE
+    UsageDataExportConfigurationResponseV2:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the schedule configuration.
+        meterIds:
+          type: array
+          description: List of meter IDs for which the usage data will be exported.
+          items:
+            type: string
+        accountIds:
+          type: array
+          description: List of account IDs for which the usage data will be exported.
+          items:
+            type: string
+        timePeriod:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/TimePeriod'
+          - description: Time period for which the usage data should be exported.
+        dimensionFilters:
+          type: array
+          description: List of dimension filters to apply
+          items:
+            $ref: '#/components/schemas/DataExplorerDimensionFilter'
+        aggregations:
+          type: array
+          description: List of aggregations to apply
+          items:
+            $ref: '#/components/schemas/DataExplorerAggregation'
+        groups:
+          type: array
+          description: List of groups to apply
+          items:
+            $ref: '#/components/schemas/DataExplorerGroup'
+      description: Response representing an usage schedule configuration.
+      allOf:
+      - $ref: '#/components/schemas/DataExportConfigurationResponseBase'
+      - $ref: '#/components/schemas/AbstractResponse'
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    SourceType:
+      type: string
+      description: ''
+      enum:
+      - USAGE
+      - OPERATIONAL
+    DataExplorerAggregation:
+      required:
+      - fieldType
+      - function
+      type: object
+      properties:
+        fieldType:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/DataExplorerFieldType'
+          - description: Type of field
+        function:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/DataExplorerAggregationFunction'
+          - description: Aggregation function to apply
+      description: Aggregation to be applied to a field
+      allOf:
+      - $ref: '#/components/schemas/DataExplorerMeterField'
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

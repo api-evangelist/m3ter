@@ -1,0 +1,565 @@
+openapi: 3.0.1
+info:
+  title: m3ter Account OrganizationConfig API
+  description: "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->"
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: OrganizationConfig
+  description: "Endpoints for retrieving or updating the Organization Config.\n\nOrganization represents your company as a direct customer of m3ter. Use Organization configuration to define *Organization-wide* settings. For example:\n- Timezone.\n- Currencies and currency conversions.\n- Billing operations settings, such as:\n\t- Epoch dates to control first billing dates.\n\t- Whether to bill customer accounts in advance/in arrears for standing charge amounts, minimum spend amounts, and commitment fees.\n\nFor other aspects of your Organization setup and configuration, see the following sections in this API Reference:\n* [Custom Fields](https://www.m3ter.com/docs/api#tag/CustomField)\n* [Currencies](https://www.m3ter.com/docs/api#tag/Currency)\n* [Credit Reasons](https://www.m3ter.com/docs/api#tag/CreditReason)\n* [Debit Reason](https://www.m3ter.com/docs/api#tag/DebitReason)\n* [Transaction Types](https://www.m3ter.com/docs/api#tag/TransactionType)\n\nSee also:\n- [Managing your Organization](https://www.m3ter.com/docs/guides/managing-organization-and-users/viewing-and-editing-organization).\n\n\n "
+paths:
+  /organizations/{orgId}/organizationconfig:
+    get:
+      tags:
+      - OrganizationConfig
+      summary: Retrieve OrganizationConfig
+      description: Retrieve the Organization-wide configuration details.
+      operationId: GetOrganizationConfig
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      responses:
+        '200':
+          description: Return the Organization configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationConfigResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - OrganizationConfig
+      summary: Update OrganizationConfig
+      description: Update the Organization-wide configuration details.
+      operationId: UpdateOrganizationConfig
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationConfigRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the updated Organization configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationConfigResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    OrganizationConfigResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          timezone:
+            type: string
+            description: 'The timezone for the Organization. '
+            example: UTC
+            default: UTC
+          yearEpoch:
+            type: string
+            description: The first bill date *(in ISO-8601 format)* for yearly billing periods.
+            example: '2022-01-01'
+            default: '2022-01-01'
+          monthEpoch:
+            type: string
+            description: The first bill date *(in ISO-8601 format)* for monthly billing periods.
+            example: '2022-01-01'
+            default: '2022-01-01'
+          weekEpoch:
+            type: string
+            description: The first bill date *(in ISO-8601 format)* for weekly billing periods.
+            example: '2022-01-04'
+            default: '2022-01-04'
+          dayEpoch:
+            type: string
+            description: The first bill date *(in ISO-8601 format)* for daily billing periods.
+            example: '2022-01-01'
+            default: '2022-01-01'
+          currency:
+            type: string
+            description: 'The currency code for the currency used in this Organization. For example: USD, GBP, or EUR.'
+          currencyConversions:
+            type: array
+            description: "Currency conversion rates from Bill currency to Organization currency. \n\nFor example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate. "
+            items:
+              $ref: '#/components/schemas/CurrencyConversion'
+          daysBeforeBillDue:
+            type: integer
+            description: The number of days after the Bill generation date shown on Bills as the due date.
+            format: int32
+          scheduledBillInterval:
+            type: number
+            description: "Specifies the required interval for updating bills. \n\n* **For portions of an hour (minutes)**. Two options: **0.25** (15 minutes) and **0.5** (30 minutes).\n* **For full hours.** Eight possible values: **1**, **2**, **3**, **4**, **6**, **8**, **12**, or **24**.\n* **Default.** The default is **0**, which disables scheduling."
+            format: double
+          scheduledBillOffset:
+            type: integer
+            description: Offset (hours) within the scheduled interval to run the job, interpreted in the organization's timezone. For daily (24h) schedules this is the hour of day (0-23). Only supported when ScheduledBillInterval is 24 (daily) at present.
+            format: int32
+          standingChargeBillInAdvance:
+            type: boolean
+            description: "Specifies whether the standing charge is billed in advance at the start of each billing period, or billed in arrears at the end of each billing period. \n\n* **TRUE** - bill in advance *(start of each billing period)*.\n* **FALSE** - bill in arrears *(end of each billing period)*."
+          commitmentFeeBillInAdvance:
+            type: boolean
+            description: "Specifies whether commitments *(prepayments)* are billed in advance at the start of each billing period, or billed in arrears at the end of each billing period. \n\n* **TRUE** - bill in advance *(start of each billing period)*.\n* **FALSE** - bill in arrears *(end of each billing period)*."
+          minimumSpendBillInAdvance:
+            type: boolean
+            description: "Specifies whether minimum spend amounts are billed in advance at the start of each billing period, or billed in arrears at the end of each billing period. \n\n* **TRUE** - bill in advance *(start of each billing period)*.\n* **FALSE** - bill in arrears *(end of each billing period)*."
+          autoApproveBillsGracePeriod:
+            type: integer
+            description: Grace period before bills are auto-approved. Used in combination with the field `autoApproveBillsGracePeriodUnit`.
+            format: int32
+          autoApproveBillsGracePeriodUnit:
+            description: ' '
+            $ref: '#/components/schemas/TimePeriodUnit'
+          externalInvoiceDate:
+            description: ''
+            $ref: '#/components/schemas/InvoiceDate'
+          suppressedEmptyBills:
+            type: boolean
+            description: "Specifies whether to supress generating bills that have no line items. \n\n* **TRUE** - prevents generating bills with no line items.\n* **FALSE** - bills are still generated even when they have no line items. "
+          consolidateBills:
+            type: boolean
+            description: 'Specifies whether to consolidate different billing frequencies onto the same bill.
+
+
+              * **TRUE** - consolidate different billing frequencies onto the same bill.
+
+              * **FALSE** - bills are not consolidated.'
+          defaultStatementDefinitionId:
+            type: string
+            description: 'Organization level default `statementDefinitionId` to be used when there is no statement definition linked to the account.
+
+
+              Statement definitions are used to generate bill statements, which are informative backing sheets to invoices. '
+          billPrefix:
+            type: string
+            description: Prefix to be used for sequential invoice numbers. This will be combined with the `sequenceStartNumber`.
+          sequenceStartNumber:
+            type: integer
+            description: The starting number to be used for sequential invoice numbers. This will be combined with the `billPrefix`.
+            format: int32
+          autoGenerateStatementMode:
+            description: 'Specifies whether to auto-generate statements once Bills are *approved* or *locked*. It will not auto-generate if a bill is in *pending* state.
+
+
+              The default value is **None**.
+
+
+              - **None**. Statements will not be auto-generated.
+
+              - **JSON**. Statements are auto-generated in JSON format.
+
+              - **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats. '
+            $ref: '#/components/schemas/StatementAutoGenerateMode'
+          creditApplicationOrder:
+            type: array
+            description: 'The order in which any Prepayment or Balance credit amounts on Accounts are to be drawn-down against for billing. Four options:
+
+              - `"PREPAYMENT","BALANCE"`. Draw-down against Prepayment credit before Balance credit.
+
+              - `"BALANCE","PREPAYMENT"`. Draw-down against Balance credit before Prepayment credit.
+
+              - `"PREPAYMENT"`. Only draw-down against Prepayment credit.
+
+              - `"BALANCE"`. Only draw-down against Balance credit.'
+            items:
+              $ref: '#/components/schemas/BillCreditType'
+          allowNegativeBalances:
+            type: boolean
+            description: Allow balance amounts to fall below zero. This feature is enabled on request. Please get in touch with m3ter Support or your m3ter contact if you would like it enabling for your organization(s).
+          allowOverlappingPlans:
+            type: boolean
+            description: Allows plans to overlap time periods for different contracts.
+          dtCreated:
+            type: string
+            description: The DateTime when the organization config was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the organization config was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this organization config.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this organization config.
+            x-stainless-skip:
+            - terraform
+    CurrencyConversion:
+      required:
+      - from
+      - to
+      type: object
+      properties:
+        from:
+          minLength: 1
+          type: string
+          description: 'Currency to convert from. For example: GBP.'
+          example: EUR
+        to:
+          minLength: 1
+          type: string
+          description: 'Currency to convert to. For example: USD.'
+          example: USD
+        multiplier:
+          minimum: 0
+          exclusiveMinimum: true
+          type: number
+          description: Conversion rate between currencies.
+          format: double
+          example: 1.12
+      description: An array of currency conversion rates from Bill currency to Organization currency. For example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate.
+    TimePeriodUnit:
+      type: string
+      description: Time unit of grace period before bills are auto-approved. Used in combination with the field `autoApproveBillsGracePeriod`.
+      enum:
+      - MINUTES
+      - HOURS
+      - DAYS
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    BillCreditType:
+      type: string
+      description: ''
+      enum:
+      - PREPAYMENT
+      - BALANCE
+    StatementAutoGenerateMode:
+      type: string
+      description: "Specify whether to auto-generate statements once Bills are *approved* or *locked*. It will not auto-generate if a bill is in *pending* state. \n\nThe default value is **None**.\n\n- **None**. Statements will not be auto-generated.\n- **JSON**. Statements are auto-generated in JSON format.\n- **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats."
+      enum:
+      - NONE
+      - JSON
+      - JSON_AND_CSV
+    OrganizationConfigRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - currency
+        - dayEpoch
+        - daysBeforeBillDue
+        - monthEpoch
+        - timezone
+        - weekEpoch
+        - yearEpoch
+        properties:
+          timezone:
+            type: string
+            description: 'Sets the timezone for the Organization. '
+            example: UTC
+            default: UTC
+          yearEpoch:
+            type: string
+            description: 'Optional setting that defines the billing cycle date for Accounts that are billed yearly. Defines the date of the first Bill and then acts as reference for when subsequent Bills are created for the Account:
+
+              * For example, suppose the Plan you attach to an Account is configured for yearly billing frequency and will apply to the Account from January 1st, 2022 until January 15th, 2028. If you set a `yearEpoch` date of January 1st, 2023, then the first Bill is created for the Account on that date and subsequent Bills are created for the Account on January 1st of each year following through to the end of the billing service period - January 1st, 2023, January 1st, 2024 and so on.
+
+              * The date is in ISO-8601 format.'
+            example: '2022-01-01'
+            default: '2022-01-01'
+          monthEpoch:
+            type: string
+            description: 'Optional setting that defines the billing cycle date for Accounts that are billed monthly. Defines the date of the first Bill and then acts as reference for when subsequent Bills are created for the Account:
+
+              * For example, suppose the Plan you attach to an Account is configured for monthly billing frequency and will apply to the Account from January 1st, 2022 until June 30th, 2022. If you set a `monthEpoch` date of January 15th, 2022, then the first Bill is created for the Account on that date and subsequent Bills are created for the Account on the 15th of each month following through to the end of the billing service period - February 15th, March 15th, and so on.
+
+              * The date is in ISO-8601 format.'
+            example: '2022-01-01'
+            default: '2022-01-01'
+          weekEpoch:
+            type: string
+            description: 'Optional setting that defines the billing cycle date for Accounts that are billed weekly. Defines the date of the first Bill and then acts as reference for when subsequent Bills are created for the Account:
+
+              * For example, suppose the Plan you attach to an Account is configured for weekly billing frequency and will apply to the Account from January 1st, 2022 until June 30th, 2022. If you set a `weekEpoch` date of January 15th, 2022, which falls on a Saturday, then the first Bill is created for the Account on that date and subsequent Bills are created for the Account on Saturday of each week following through to the end of the billing service period.
+
+              * The date is in ISO-8601 format.'
+            example: '2022-01-04'
+            default: '2022-01-04'
+          dayEpoch:
+            type: string
+            description: 'Optional setting that defines the billing cycle date for Accounts that are billed daily. Defines the date of the first Bill:
+
+              * For example, suppose the Plan you attach to an Account is configured for daily billing frequency and will apply to the Account from January 1st, 2022 until June 30th, 2022. If you set a `dayEpoch` date of January 2nd, 2022, then the first Bill is created for the Account on that date and subsequent Bills are created for the Account each day following through to the end of the billing service period.
+
+              * The date is in ISO-8601 format.'
+            example: '2022-01-01'
+            default: '2022-01-01'
+          currency:
+            minLength: 1
+            type: string
+            description: 'The currency code for the Organization. For example: USD, GBP, or EUR:
+
+              * This defines the *billing currency* for the Organization. You can override this by selecting a different billing currency at individual Account level.
+
+              * You must first define the currencies you want to use in your Organization. See the [Currency](https://www.m3ter.com/docs/api#tag/Currency) section in this API Reference.
+
+
+              **Note:** If you use a different currency as the *pricing currency* for Plans to set charge rates for Product consumption by an Account, you must define a currency conversion rate from the pricing currency to the billing currency before you run billing for the Account, otherwise billing will fail. See below for the `currencyConversions` request parameter.'
+            example: USD
+            default: USD
+          currencyConversions:
+            type: array
+            description: 'Define currency conversion rates from *pricing currency* to *billing currency*:
+
+              * You can use the `currency` request parameter with this call to define the billing currency for your Organization - see above.
+
+              * You can also define a billing currency at the individual Account level and this will override the Organization billing currency.
+
+              * A Plan used to set Product consumption charge rates on an Account might use a different pricing currency. At billing, charges are calculated in the pricing currency and then converted into billing currency amounts to appear on Bills. If you haven''t defined a currency conversion rate from pricing to billing currency, billing will fail for the Account.'
+            items:
+              $ref: '#/components/schemas/CurrencyConversion'
+          daysBeforeBillDue:
+            minimum: 0
+            exclusiveMinimum: true
+            type: integer
+            description: 'Enter the number of days after the Bill generation date that you want to show on Bills as the due date.
+
+
+              **Note:** If you define `daysBeforeBillDue` at individual Account level, this will take precedence over any `daysBeforeBillDue` setting defined at Organization level.
+
+
+              '
+            format: int32
+          scheduledBillInterval:
+            type: number
+            description: 'Sets the required interval for updating bills. It is an optional parameter that can be set as:
+
+
+              * **For portions of an hour (minutes)**. Two options: **0.25** (15 minutes) and **0.5** (30 minutes).
+
+              * **For full hours.** Enter **1** for every hour, **2** for every two hours, and so on. Eight options: **1**, **2**, **3**, **4**, **6**, **8**, **12**, or **24**.
+
+              * **Default.** The default is **0**, which disables scheduling.'
+            format: double
+          standingChargeBillInAdvance:
+            type: boolean
+            description: "Boolean setting to specify whether the standing charge is billed in advance at the start of each billing period, or billed in arrears at the end of each billing period. \n\n* **TRUE** - bill in advance *(start of each billing period)*.\n* **FALSE** - bill in arrears *(end of each billing period)*."
+          commitmentFeeBillInAdvance:
+            type: boolean
+            description: "Boolean setting to specify whether commitments *(prepayments)* are billed in advance at the start of each billing period, or billed in arrears at the end of each billing period. \n\n* **TRUE** - bill in advance *(start of each billing period)*.\n* **FALSE** - bill in arrears *(end of each billing period)*."
+          minimumSpendBillInAdvance:
+            type: boolean
+            description: "Boolean setting to specify whether minimum spend amounts are billed in advance at the start of each billing period, or billed in arrears at the end of each billing period. \n\n* **TRUE** - bill in advance *(start of each billing period)*.\n* **FALSE** - bill in arrears *(end of each billing period)*."
+          scheduledBillOffset:
+            maximum: 23
+            minimum: 0
+            type: integer
+            description: Offset (hours) within the scheduled interval to start the run, interpreted in the organization's timezone. For daily (24h) schedules this is the hour of day (0-23). Only supported when ScheduledBillInterval is 24 (daily) at present.
+            format: int32
+          autoApproveBillsGracePeriod:
+            minimum: 0
+            exclusiveMinimum: true
+            type: integer
+            description: 'Grace period before bills are auto-approved. Used in combination with `autoApproveBillsGracePeriodUnit` parameter.
+
+
+              **Note:** When used in combination with `autoApproveBillsGracePeriodUnit` enables auto-approval of Bills for Organization, which occurs when the specified time period has elapsed after Bill generation.'
+            format: int32
+            example: 2
+          autoApproveBillsGracePeriodUnit:
+            type: string
+            description: 'Time unit of grace period before bills are auto-approved. Used in combination with `autoApproveBillsGracePeriod` parameter. Allowed options are MINUTES, HOURS, or DAYS.
+
+
+              **Note:** When used in combination with `autoApproveBillsGracePeriod` enables auto-approval of Bills for Organization, which occurs when the specified time period has elapsed after Bill generation.'
+            example: DAYS
+          externalInvoiceDate:
+            type: string
+            description: Date to use for the invoice date. Allowed values are `FIRST_DAY_OF_NEXT_PERIOD` or `LAST_DAY_OF_ARREARS`.
+            example: LAST_DAY_OF_ARREARS
+          suppressedEmptyBills:
+            type: boolean
+            description: "Boolean setting that supresses generating bills that have no line items. \n\n* **TRUE** - prevents generating bills with no line items.\n* **FALSE** - bills are still generated even when they have no line items. "
+            example: true
+          consolidateBills:
+            type: boolean
+            description: 'Boolean setting to consolidate different billing frequencies onto the same bill.
+
+
+              * **TRUE** - consolidate different billing frequencies onto the same bill.
+
+              * **FALSE** - bills are not consolidated.'
+            example: true
+          defaultStatementDefinitionId:
+            type: string
+            description: 'Organization level default `statementDefinitionId` to be used when there is no statement definition linked to the account.
+
+
+              Statement definitions are used to generate bill statements, which are informative backing sheets to invoices. '
+          autoGenerateStatementMode:
+            description: 'Specify whether to auto-generate statements once Bills are *approved* or *locked*. It will not auto-generate if a bill is in *pending* state.
+
+
+              The default value is **None**.
+
+
+              - **None**. Statements will not be auto-generated.
+
+              - **JSON**. Statements are auto-generated in JSON format.
+
+              - **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats. '
+            $ref: '#/components/schemas/StatementAutoGenerateMode'
+          creditApplicationOrder:
+            type: array
+            description: 'Define the order in which any Prepayment or Balance amounts on Accounts are to be drawn-down against for billing. Four options:
+
+              - `"PREPAYMENT","BALANCE"`. Draw-down against Prepayment credit before Balance credit.
+
+              - `"BALANCE","PREPAYMENT"`. Draw-down against Balance credit before Prepayment credit.
+
+              - `"PREPAYMENT"`. Only draw-down against Prepayment credit.
+
+              - `"BALANCE"`. Only draw-down against Balance credit.
+
+
+              **NOTES:**
+
+              * You can override this Organization-level setting for `creditApplicationOrder` at the level of an individual Account.
+
+              * If the Account belongs to a Parent/Child Account hierarchy, then the `creditApplicationOrder` settings are not available, and the draw-down order defaults always to Prepayment then Balance order.'
+            items:
+              $ref: '#/components/schemas/BillCreditType'
+          allowNegativeBalances:
+            type: boolean
+            description: Allow balance amounts to fall below zero. This feature is enabled on request. Please get in touch with m3ter Support or your m3ter contact if you would like it enabling for your organization(s).
+            example: false
+          allowOverlappingPlans:
+            type: boolean
+            description: 'Boolean setting to control whether or not multiple plans for the same Product can be active on an Account at the same time:
+
+              * **TRUE** - multiple overlapping plans for the same product can be attached to the same Account.
+
+              * **FALSE** - multiple overlapping plans for the same product cannot be attached to the same Account.(*Default*)'
+            example: false
+          billPrefix:
+            type: string
+            description: 'Prefix to be used for sequential invoice numbers. This will be combined with the `sequenceStartNumber`.
+
+
+              **NOTES:**
+
+              * If you do not define a `billPrefix`, a default will be used in the Console for the Bill **REFERENCE** number. This default will concatenate **INV-** with the last four characters of the `billId`.
+
+              * If you do not define a `billPrefix`, the Bill response schema for API calls that retrieve Bill data will not contain a `sequentialInvoiceNumber`.'
+            example: Bill-
+          sequenceStartNumber:
+            type: integer
+            description: 'The starting number to be used for sequential invoice numbers. This will be combined with the `billPrefix`.
+
+
+              For example, if you define `billPrefix` to be **INVOICE-** and you set the `seqenceStartNumber` as **100**, the first Bill created after updating your Organization Configuration will have a `sequentialInvoiceNumber` assigned of **INVOICE-101**. Subsequent Bills created will be numbered in time sequence for their initial creation date/time.'
+            format: int32
+            example: 1000
+    InvoiceDate:
+      type: string
+      description: 'The date to use for the invoice date. '
+      enum:
+      - LAST_DAY_OF_ARREARS
+      - FIRST_DAY_OF_NEXT_PERIOD
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

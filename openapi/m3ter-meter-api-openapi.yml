@@ -1,0 +1,592 @@
+openapi: 3.0.1
+info:
+  title: m3ter Account Meter API
+  description: "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->"
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Meter
+  description: 'Endpoints for listing, creating, updating, retrieving, or deleting Meters.
+
+
+    Use Meters to submit usage data for the consumption of your products and services by end customers. This usage data then becomes the basis for setting up usage-based pricing for your products and services.
+
+
+    Examples of usage data collected in Meters:
+
+    * Number of logins.
+
+    * Duration of session.
+
+    * Amount of data downloaded.
+
+
+    To collect usage data and ingest it into the platform, you can define two types of fields for Meters:
+
+    - `dataFields` Used to collect raw usage data measures - numeric quantitative data values or non-numeric point data values.
+
+    - `derivedFields` Used to derive usage data measures that are the result of applying a calculation to `dataFields`, `customFields`, or system `Timestamp` fields.
+
+
+    You can also:
+
+    - Create `customFields` for a Meter, which allows you to attach custom data to the Meter as name/value pairs.
+
+    - Create Global Meters, which are not tied to a specific Product and allow you to collect usage data that will form the basis of usage-based pricing across multiple Products.
+
+
+    **IMPORTANT! - use of PII:** The use of any of your end-customers'' Personally Identifiable Information (PII) in m3ter is restricted to a few fields on the **Account** entity. Please ensure that any fields you configure for Meters, such as Data Fields or Derived Fields, do not contain any end-customer PII data. See the [Introduction section](https://www.m3ter.com/docs/api#section/Introduction) above for more details.
+
+
+    See also:
+
+    - [Reviewing Meter Options](https://www.m3ter.com/docs/guides/setting-up-usage-data-meters-and-aggregations/reviewing-meter-options).'
+paths:
+  /organizations/{orgId}/meters/{id}:
+    get:
+      tags:
+      - Meter
+      summary: Retrieve Meter
+      description: Retrieve the Meter with the given UUID.
+      operationId: GetMeter
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Meter to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the requested Meter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeterResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - Meter
+      summary: Update Meter
+      description: 'Update the Meter with the given UUID.
+
+
+        **Note:** If you have created Custom Fields for a Meter, when you use this endpoint to update the Meter use the `customFields` parameter to preserve those Custom Fields. If you omit them from the update request, they will be lost.'
+      operationId: PutMeter
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Meter to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeterRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the updated Meter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeterResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - Meter
+      summary: Delete Meter
+      description: Delete the Meter with the given UUID.
+      operationId: DeleteMeter
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Meter to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the deleted Meter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeterResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/meters:
+    get:
+      tags:
+      - Meter
+      summary: List Meters
+      description: 'Retrieve a list of Meters that can be filtered by Product, Meter ID, or Meter short code. '
+      operationId: ListMeters
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Number of Meters to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: '`nextToken` for multi page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: productId
+        in: query
+        description: The UUIDs of the Products to retrieve Meters for.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: ids
+        in: query
+        description: List of Meter IDs to retrieve.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: codes
+        in: query
+        description: List of Meter codes to retrieve. These are the unique short codes that identify each Meter.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: List of Meters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMeterResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - Meter
+      summary: Create Meter
+      description: 'Create a new Meter.
+
+
+        When you create a Meter, you can define two types of field for usage data collection and ingest into the platform:
+
+        - `dataFields` to collect raw usage data measures - numeric quantitative data values or non-numeric point data values.
+
+        - `derivedFields` to derive usage data measures that are the result of applying a calculation to `dataFields`, `customFields`, or system `Timestamp` fields.
+
+
+        You can also:
+
+        - Create `customFields` for a Meter, which allows you to attach custom data to the Meter as name/value pairs.
+
+        - Create Global Meters, which are not tied to a specific Product and allow you collect to usage data that will form the basis of usage-based pricing across more than one of your Products.
+
+
+        **IMPORTANT! - use of PII:** The use of any of your end-customers'' Personally Identifiable Information (PII) in m3ter is restricted to a few fields on the **Account** entity. Please ensure that any fields you configure for Meters, such as Data Fields or Derived Fields, do not contain any end-customer PII data. See the [Introduction section](https://www.m3ter.com/docs/api#section/Introduction) above for more details.
+
+
+        See also:
+
+        - [Reviewing Meter Options](https://www.m3ter.com/docs/guides/setting-up-usage-data-meters-and-aggregations/reviewing-meter-options).'
+      operationId: PostMeter
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeterRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the created Meter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeterResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    DataField:
+      required:
+      - category
+      - code
+      - name
+      type: object
+      properties:
+        category:
+          description: The type of field (WHO, WHAT, WHERE, MEASURE, METADATA, INCOME, COST, OTHER).
+          $ref: '#/components/schemas/DataFieldCategory'
+        code:
+          maxLength: 80
+          minLength: 1
+          pattern: ^[\p{L}_$][\p{L}_$0-9]*$
+          type: string
+          description: 'Short code to identify the field
+
+
+            **NOTE:** Code has a maximum length of 80 characters and can only contain letters, numbers, underscore, and the dollar character, and must not start with a number.'
+        name:
+          maxLength: 200
+          minLength: 1
+          type: string
+          description: Descriptive name of the field.
+        unit:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: The units to measure the data with. Should conform to *Unified Code for Units of Measure* (UCUM). Required only for numeric field categories.
+      description: ''
+    MeterRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - code
+        - dataFields
+        - derivedFields
+        - name
+        properties:
+          productId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: UUID of the product the Meter belongs to. *(Optional)* - if left blank, the Meter is global.
+          groupId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: UUID of the group the Meter belongs to. *(Optional)*.
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: Descriptive name for the Meter.
+          code:
+            maxLength: 80
+            minLength: 1
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: 'Code of the Meter - unique short code used to identify the Meter.
+
+
+              **NOTE:** Code has a maximum length of 80 characters and must not contain non-printable or whitespace characters (except space), and cannot start/end with whitespace.'
+          dataFields:
+            maxItems: 15
+            minItems: 1
+            type: array
+            description: Used to submit categorized raw usage data values for ingest into the platform - either numeric quantitative values or non-numeric data values. At least one required per Meter; maximum 15 per Meter.
+            items:
+              $ref: '#/components/schemas/DataField'
+          derivedFields:
+            maxItems: 15
+            type: array
+            description: 'Used to submit usage data values for ingest into the platform that are the result of a calculation performed on `dataFields`, `customFields`, or system `Timestamp` fields. Raw usage data is not submitted using `derivedFields`. Maximum 15 per Meter. *(Optional)*.
+
+
+              **Note:** Required parameter. If you want to create a Meter without Derived Fields, use an empty array `[]`. If you use a `null`, you''ll receive an error.'
+            items:
+              $ref: '#/components/schemas/DerivedField'
+    MeterResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          productId:
+            type: string
+            description: UUID of the Product the Meter belongs to. *(Optional)* - if blank, the Meter is global.
+          groupId:
+            type: string
+            description: UUID of the MeterGroup the Meter belongs to. *(Optional)*.
+          name:
+            type: string
+            description: Descriptive name for the Meter.
+          code:
+            type: string
+            description: Code of the Meter - unique short code used to identify the Meter.
+          dataFields:
+            type: array
+            description: Used to submit categorized raw usage data values for ingest into the platform - either numeric quantitative values or non-numeric data values. At least one required per Meter; maximum 15 per Meter.
+            items:
+              $ref: '#/components/schemas/DataField'
+          derivedFields:
+            type: array
+            description: Used to submit usage data values for ingest into the platform that are the result of a calculation performed on `dataFields`, `customFields`, or system `Timestamp` fields. Raw usage data is not submitted using `derivedFields`. Maximum 15 per Meter. *(Optional)*.
+            items:
+              $ref: '#/components/schemas/DerivedField'
+          dtCreated:
+            type: string
+            description: The DateTime when the meter was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the meter was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this meter.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this meter.
+            x-stainless-skip:
+            - terraform
+    DataFieldCategory:
+      type: string
+      description: "The field type, which defines the type of data collected in the field. \n\n* **Who.** String. Use to collect usage data about an individual or organization - data events that answer a \"Who\" question, such as, \"Who or which organization logged-in to the service?\", \"Who was contacted?\", and so on.\n\n* **What.** String. Use to collect usage data about some object or thing, whether it be a physical object in the real world or something in a virtual context.\n\n* **Where.** String. Use to collect usage data about a location - where something happened, whether in physical geographical space or a virtual space.\n\n* **Measure.** Numeric. Use in a general way to collect quantitative usage data.\n\n* **Metadata.** String. *(Max. 256 characters).* Use for high-cardinality fields that you don't intend to segment when you aggregate the data.\n\n* **Income.** Numeric. Use to collect usage data associated with income.\n\n* **Cost.** Numeric. Use to collect usage data associated with costs.\n\n* **Other.** String. Use to collect textual usage not applicable to Who, What, or Where events."
+      enum:
+      - WHO
+      - WHERE
+      - WHAT
+      - OTHER
+      - METADATA
+      - MEASURE
+      - INCOME
+      - COST
+    AbstractRequestWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    DerivedField:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/DataField'
+      - required:
+        - calculation
+        properties:
+          calculation:
+            maxLength: 5000
+            minLength: 1
+            type: string
+            description: "The calculation used to transform the value of submitted `dataFields` in usage data. Calculation can reference `dataFields`, `customFields`, or system `Timestamp` fields. \n*(Example: datafieldms  datafieldgb)* "
+    PaginatedMeterResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/MeterResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

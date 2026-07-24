@@ -1,0 +1,804 @@
+openapi: 3.0.1
+info:
+  title: m3ter Account External Mapping API
+  description: "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->"
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: External Mapping
+  description: "Endpoints for managing External Mapping related operations such as creation, update, list and delete.\n\nWhen you integrate your 3rd-party systems with the m3ter platform, a mapping between entities in the local system *(m3ter)* and external systems is constructed. This *External Mapping* is crucial in scenarios where data from external systems is consumed or where data from the local system is to be synchronized with external systems. \n\nWhen you are working to set up your Integrations and want to test or troubleshoot your implementation before going live, you might need to create External Mappings manually and, at a later date, edit or delete them.\n"
+paths:
+  /organizations/{orgId}/externalmappings:
+    get:
+      tags:
+      - External Mapping
+      summary: List External Mappings
+      description: 'Retrieve a list of all External Mapping entities.
+
+
+        This endpoint retrieves a list of all External Mapping entities for a specific Organization. The list can be paginated for better management, and supports filtering using the external system.  '
+      operationId: ListExternalMappings
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of External Mappings to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of External Mappings in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: externalSystemId
+        in: query
+        description: 'The name of the external system to use as a filter.
+
+
+          For example, if you want to list only those external mappings created for your Organization for the Salesforce external system, use:
+
+
+          `?externalSystemId=Salesforce`'
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: m3terIds
+        in: query
+        description: IDs for m3ter entities
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: integrationConfigId
+        in: query
+        description: ID of the integration config
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 'Returns the list of External Mapping entities '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExternalMappingResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - External Mapping
+      summary: Create an External Mapping
+      description: 'Creates a new External Mapping.
+
+
+        This endpoint enables you to create a new External Mapping for the specified Organization. You need to supply a request body with the details of the new External Mapping.  '
+      operationId: CreateExternalMapping
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalMappingRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the created External Mapping
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalMappingResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/externalmappingconfiguration/values/{destination}/{entityType}/{integrationCredentialsId}:
+    get:
+      tags:
+      - External Mapping
+      summary: Retrieve a list of external entities from the destination system for a particular credential
+      description: Retrieve a list of possible values to create an external mapping using a particular credential. These options are retrieved from the destination system if the system has been successfully authenticated and provides the mechanism to do so. Otherwise an empty response is returned.
+      operationId: GetExternalMappingOptionsForDestinationForCredentialsId
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: destination
+        in: path
+        description: Name of the destination system
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: entityType
+        in: path
+        description: The m3ter entity type.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: integrationCredentialsId
+        in: path
+        description: The UUID of the credentials to use.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: externalTable
+        in: query
+        description: Name of the target externalTable
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return a list of the external systems entities using a particular credential.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExternalEntityResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/externalmappingconfiguration/values/{destination}/{entityType}:
+    get:
+      tags:
+      - External Mapping
+      summary: Retrieve External Entities from Destination
+      description: 'Retrieve a list of external entities from the specified destination system.
+
+
+        This endpoint enables you to retrieve a list of potential values for creating an External Mapping from a specified destination system. The list is only returned if the destination system has been authenticated successfully and it supports such functionality, otherwise, you will receive an empty response.
+
+        '
+      operationId: GetExternalMappingOptionsForDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: destination
+        in: path
+        description: The name of the destination system from where the external entities are to be retrieved.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: entityType
+        in: path
+        description: The m3ter entity type.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: externalTable
+        in: query
+        description: Name of the target externalTable
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns a list of the external systems entities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExternalEntityResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/externalmappingconfiguration:
+    get:
+      tags:
+      - External Mapping
+      summary: Retrieve External Mapping Configuration
+      description: 'Retrieve the global External Mapping configuration.
+
+
+        This endpoint retrieves the global External Mapping configuration for the specified Organization.'
+      operationId: GetExternalMappingConfiguration
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      responses:
+        '200':
+          description: Returns External Mapping configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalMappingConfigurationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/externalmappings/externalid/{system}/{externalTable}/{externalId}:
+    get:
+      tags:
+      - External Mapping
+      summary: List External Mappings for External Entity
+      description: 'Retrieve a list of External Mapping entities for a specified external system entity.
+
+
+        Use this endpoint to retrieve a list of External Mapping entities associated with a specific external system entity. The list can be paginated for easier management.'
+      operationId: ListExternalMappingsForExternalSystemAndEntity
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: system
+        in: path
+        description: The identifier for the external system.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: externalTable
+        in: path
+        description: 'The identifier for the external table. '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: externalId
+        in: path
+        description: The unique identifier (UUID) for the external entity.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of External Mappings to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of External Mappings in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the list of External Mapping entities for the external entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExternalMappingResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/externalmappings/external/{entity}/{m3terId}:
+    get:
+      tags:
+      - External Mapping
+      summary: List External Mappings for a m3ter Entity
+      description: 'Retrieve a list of External Mapping entities for a specified m3ter entity.
+
+
+        Use this endpoint to retrieve a list of External Mapping entities associated with a specific m3ter entity. The list can be paginated for easier management. '
+      operationId: ListExternalMappingsForM3terEntity
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: entity
+        in: path
+        description: The entity type.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: m3terId
+        in: path
+        description: The unique identifer (UUID) of the m3ter entity.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of External Mappings to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of External Mappings in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the list of External Mappings for a m3ter entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExternalMappingResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/externalmappings/{id}:
+    get:
+      tags:
+      - External Mapping
+      summary: Retrieve External Mapping
+      description: 'Retrieve an External Mapping with the given UUID.
+
+
+        This endpoint enables you to retrieve the External Mapping with the specified UUID for a specific Organization.'
+      operationId: GetExternalMapping
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the External Mapping to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the External Mapping
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalMappingResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - External Mapping
+      summary: Update External Mapping
+      description: 'Updates an External Mapping with the given UUID.
+
+
+        This endpoint enables you to update an existing External Mapping entity, identified by its UUID. You must supply a request body with the new details for the External Mapping.'
+      operationId: UpdateExternalMapping
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the External Mapping to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalMappingRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated External Mapping
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalMappingResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - External Mapping
+      summary: Delete an External Mapping
+      description: Delete an External Mapping with the given UUID.
+      operationId: DeleteExternalMapping
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the External Mapping to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted External Mapping
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalMappingResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    ExternalEntityResponse:
+      type: object
+      properties:
+        externalId:
+          type: string
+          description: ''
+        externalName:
+          type: string
+          description: ''
+      description: Response containing an entity on an external system
+    ExternalMappingRequest:
+      required:
+      - externalId
+      - externalSystem
+      - externalTable
+      - m3terEntity
+      - m3terId
+      type: object
+      properties:
+        m3terEntity:
+          minLength: 1
+          pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+          type: string
+          description: 'The name of the m3ter entity that you are creating or modifying an External Mapping for. As an example, this could be an "Account". '
+          example: Account
+        m3terId:
+          minLength: 1
+          pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+          type: string
+          description: 'The unique identifier (UUID) of the m3ter entity. '
+          example: 00000000-0000-0000-0000-000000000000
+        externalSystem:
+          minLength: 1
+          pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+          type: string
+          description: 'The name of the external system where the entity you are mapping resides. '
+          example: Stripe
+        externalTable:
+          minLength: 1
+          pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+          type: string
+          description: 'The name of the table in ther external system where the entity resides. '
+          example: Customer
+        externalId:
+          minLength: 1
+          pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+          type: string
+          description: 'The unique identifier (UUID) of the entity in the external system. This UUID should already exist in the external system. '
+          example: cus_00000000000000
+        integrationConfigId:
+          type: string
+          description: UUID of the integration config to link this mapping to
+          example: 00000000-0000-0000-0000-000000000000
+      description: Request containing an External Mapping entity.
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+    ExternalMappingResponse:
+      type: object
+      description: Response containing an External Mapping entity.
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - required:
+        - externalId
+        - externalSystem
+        - externalTable
+        - m3terEntity
+        - m3terId
+        properties:
+          m3terEntity:
+            minLength: 1
+            type: string
+            description: 'The name of the m3ter entity that is part of the External Mapping. For example, this could be "Account". '
+            example: Account
+          m3terId:
+            minLength: 1
+            type: string
+            description: The unique identifier (UUID) of the m3ter entity.
+            example: 00000000-0000-0000-0000-000000000000
+          externalSystem:
+            minLength: 1
+            type: string
+            description: 'The name of the external system where the entity you are mapping resides. '
+            example: Stripe
+          externalTable:
+            minLength: 1
+            type: string
+            description: 'The name of the table in the external system where the entity resides. '
+            example: Customer
+          externalId:
+            minLength: 1
+            type: string
+            description: The unique identifier (UUID) of the entity in the external system.
+            example: cus_00000000000000
+          integrationConfigId:
+            type: string
+            description: UUID of the configuration this mapping is for
+            example: 00000000-0000-0000-0000-000000000000
+        description: Response containing an ExternalMapping entity
+    PaginatedExternalMappingResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ExternalMappingResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    ExternalSystemResponse:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the external system.
+        tables:
+          type: array
+          description: An array containing the list of external system tables permitted in mappings.
+          items:
+            type: string
+        allowCustomExternalTables:
+          type: boolean
+          description: ''
+      description: Response containing external system and permitted tables.
+    ExternalMappingConfigurationResponse:
+      required:
+      - externalSystems
+      - m3terEntities
+      type: object
+      properties:
+        m3terEntities:
+          type: array
+          description: ' An array of m3ter entity names. For example, this could include "Account".'
+          items:
+            type: string
+        externalSystems:
+          type: array
+          description: An array with the list of external systems.
+          items:
+            $ref: '#/components/schemas/ExternalSystemResponse'
+      description: Response containing permitted External Mapping configuration.
+    AbstractResponseWithAuditFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

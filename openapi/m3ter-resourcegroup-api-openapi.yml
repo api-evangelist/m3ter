@@ -1,0 +1,805 @@
+openapi: 3.0.1
+info:
+  title: m3ter Account ResourceGroup API
+  description: "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->"
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: ResourceGroup
+  description: "Endpoints for ResourceGroup related operations such as creation, update, list and delete.\n\nResourceGroups are used in the context of Permission Policies, which controls what a User who has been given access to your Organization can and cannot do. For example, you might want to create a Permissions Policy that denies Users the ability to retrieve Meters. \n\nResources are defined as m3ter Resource Identifiers *(MRIs)* in the format:\n\n```\nservice:resource-type/item-type/id\n```\n\nWhere:\n\n* service is a distinct part of the overall m3ter system, and which forms a natural functional grouping, such as \"config\" or \"billing\".\n\n* resource-type is the resource type item accessed - for example: \"Plan\", \"Meter\", \"Bill\"\n\n* item-type is one of:\n\n\t* \"item\" - to specify an individual item.\n\n\t* \"group\" - to specify a resource group.\n\n* id is the resource group id or the resource item id\n\nResources can be assigned to one or more ResourceGroups. For example, a Plan can be assigned to Plan ResourceGroups, a Meter can be assigned to Meter ResourceGroups, and so on. This is useful for cases where you want to create Permission Policies which allow or deny access to a specific subset of resources. For example, grant a user access to only some of the Plans in your Organization.\n\nThis concept of grouping resources applies to every resource in m3ter, including ResourceGroups themselves. This allows you to nest ResourceGroups to support hierarchies of groups.\n\nSee [Understanding, Creating, and Managing Permission Policies](https://www.m3ter.com/docs/guides/managing-organization-and-users/creating-and-managing-permissions) in the m3ter documentation for more information.\n\n**Note: User Resource Groups** You can create a User Resource Group to group resources of type = `user`. You can then retrieve a list of the User Resource Groups a user belongs to. For more details, see the [Retrieve OrgUser Groups](https://www.m3ter.com/docs/api#tag/OrgUsers/operation/GetOrgUserGroups) call in the OrgUsers section."
+paths:
+  /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/permissions:
+    get:
+      tags:
+      - ResourceGroup
+      summary: List ResourceGroup permission policies
+      description: Retrieve a list of permission policies for a ResourceGroup
+      operationId: GetResourceGroupPermissions
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: resourceGroupId
+        in: path
+        description: UUID of the ResourceGroup
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of PermissionPolicy entities to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return a list of PermissionPolicies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPermissionPolicyResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/removeresource:
+    post:
+      tags:
+      - ResourceGroup
+      summary: Remove item
+      description: Remove an item from a ResourceGroup.
+      operationId: RemoveResourceFromGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: resourceGroupId
+        in: path
+        description: The UUID of the ResourceGroup to remove the item from.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceGroupItemRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the ResourceGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/resourcegroups/{type}:
+    get:
+      tags:
+      - ResourceGroup
+      summary: List ResourceGroups
+      description: Retrieve a list of ResourceGroup entities
+      operationId: ListResourceGroups
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of ResourceGroups to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ListResourceGroups 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResourceGroupResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - ResourceGroup
+      summary: Create ResourceGroup
+      description: Create a ResourceGroup for the UUID
+      operationId: PostResourceGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceGroupRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the new ResourceGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/resourcegroups/{type}/{id}:
+    get:
+      tags:
+      - ResourceGroup
+      summary: Retrieve ResourceGroup
+      description: Retrieve the ResourceGroup for the UUID
+      operationId: GetResourceGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the ResourceGroup to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the ResourceGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - ResourceGroup
+      summary: Update ResourceGroup
+      description: Update the ResourceGroup for the UUID
+      operationId: PutResourceGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the ResourceGroup to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceGroupRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the updated ResourceGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - ResourceGroup
+      summary: Delete ResourceGroup
+      description: Delete a ResourceGroup for the UUID
+      operationId: DeleteResourceGroup
+      parameters:
+      - name: id
+        in: path
+        description: The UUID of the ResourceGroup to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the deleted ResourceGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/addresource:
+    post:
+      tags:
+      - ResourceGroup
+      summary: Add item
+      description: Add an item to a ResourceGroup.
+      operationId: AddResourceToGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: resourceGroupId
+        in: path
+        description: The UUID of the ResourceGroup to add the item to.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: type
+        in: path
+        description: The type of resource the Resource Group is for, such as a Meter Resource Group.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceGroupItemRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the ResourceGroup Item was added to
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/contents:
+    post:
+      tags:
+      - ResourceGroup
+      summary: List ResourceGroup items
+      description: Retrieve a list of items for a ResourceGroup
+      operationId: ListResourceGroupsForId
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: resourceGroupId
+        in: path
+        description: UUID of the ResourceGroup
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of ResourceGroupItems to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return a list of ResourceGroupItems
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResourceGroupItemResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    TargetType:
+      type: string
+      description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
+      enum:
+      - ITEM
+      - GROUP
+    PaginatedResourceGroupResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ResourceGroupResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    ResourceGroupItemRequest:
+      required:
+      - targetId
+      - targetType
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the group.
+
+            '
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        targetId:
+          minLength: 1
+          type: string
+          description: 'The id of the item or group you want to:
+
+            - *Add Item* call: add to a Resource Group.
+
+            - *Remove Item* call: remove from the Resource Group.'
+        targetType:
+          description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
+          $ref: '#/components/schemas/TargetType'
+      description: ''
+      example:
+        targetId: 06f6b50c-a868-4ca6-XXXX-448e507d5248
+        targetType: item
+    PermissionStatement:
+      required:
+      - action
+      - effect
+      - resource
+      type: object
+      properties:
+        effect:
+          description: 'Specifies whether or not the user is allowed to perform the action on the resource.
+
+
+            **NOTE:** Use lower case, for example: `"allow"`. If you use upper case, you''ll receive an error.'
+          $ref: '#/components/schemas/PermissionEffect'
+        action:
+          type: array
+          description: 'The actions available to users who are assigned the Permission Policy - what they can do or cannot do with respect to the specified resource.
+
+
+            **NOTE:** Use lower case and a colon-separated format, for example, if you want to confer full CRUD, use:
+
+            ```
+
+            "config:create",
+
+            "config:delete",
+
+            "config:retrieve",
+
+            "config:update"
+
+            ```'
+          items:
+            $ref: '#/components/schemas/PermissionAction'
+        resource:
+          minItems: 1
+          type: array
+          description: See [Statements - Available Resources](https://www.m3ter.com/docs/guides/managing-organization-and-users/creating-and-managing-permissions#statements---available-resources) for a listing of available resources for Permission Policy statements.
+          items:
+            type: string
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PermissionEffect:
+      type: string
+      description: ''
+      enum:
+      - ALLOW
+      - DENY
+    PermissionPolicyResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the Permission Policy.
+          permissionPolicy:
+            type: array
+            description: 'Array containing the Permission Policies information. '
+            items:
+              $ref: '#/components/schemas/PermissionStatement'
+          managedPolicy:
+            type: boolean
+            description: 'Indicates whether this is a system generated Managed Permission Policy. '
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Permission Policy was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Permission Policy was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this Permission Policy.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this Permission Policy.
+            x-stainless-skip:
+            - terraform
+    ResourceGroupResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the Resource Group.
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Resource Group was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Resource Group was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this Resource Group.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this Resource Group.
+            x-stainless-skip:
+            - terraform
+    ResourceGroupRequest:
+      required:
+      - name
+      type: object
+      properties:
+        version:
+          type: integer
+          description: ''
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+          description: ''
+      description: ''
+    PaginatedResourceGroupItemResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ResourceGroupItemResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    PermissionAction:
+      type: string
+      description: ''
+      enum:
+      - ALL
+      - CONFIG_CREATE
+      - CONFIG_RETRIEVE
+      - CONFIG_UPDATE
+      - CONFIG_DELETE
+      - CONFIG_EXPORT
+      - ANALYTICS_QUERY
+      - MEASUREMENTS_UPLOAD
+      - MEASUREMENTS_FILEUPLOAD
+      - MEASUREMENTS_RETRIEVE
+      - MEASUREMENTS_EXPORT
+      - FORECAST_RETRIEVE
+      - HEALTHSCORES_RETRIEVE
+      - ANOMALIES_RETRIEVE
+      - EXPORTS_DOWNLOAD
+      - MARKETPLACE_USAGE_CREATE
+      - MARKETPLACE_USAGE_RETRIEVE
+      - AUDIT_RETRIEVE
+    ResourceGroupItemResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          targetId:
+            type: string
+            description: The UUID of the item.
+          targetType:
+            description: ''
+            $ref: '#/components/schemas/TargetType'
+          dtCreated:
+            type: string
+            description: The DateTime when the item was created for the resource group.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the resource group item was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this item for the resource group.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this item for the resource group.
+            x-stainless-skip:
+            - terraform
+    PaginatedPermissionPolicyResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/PermissionPolicyResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

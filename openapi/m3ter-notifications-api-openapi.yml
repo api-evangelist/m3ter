@@ -1,0 +1,551 @@
+openapi: 3.0.1
+info:
+  title: m3ter Account Notifications API
+  description: "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->"
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Notifications
+  description: 'This section provides endpoints for managing Event Notifications.
+
+
+    You can create Notifications based on system Events generated by the platform. When you base a Notification on a specific Event type, you can include a calculation that references the fields available on that Event type to define precise conditions that must be met for the Notification to be triggered when an Event of that type occurs. In this way, you can set up highly customized Notifications that act as timely alerts to inform you about significant occurrences within your Organization. For instance, if you provide a sign-up bonus to new end-customer Accounts, you can set up a Notification to alert you when an end-customer Account has used up a certain percentage of their bonus credit.
+
+
+    You can also set up Notifications based on Scheduled Event types you''ve created for your Organization. See the [ScheduledEventConfigurations](https://www.m3ter.com/docs/api#tag/ScheduledEventConfigurations) section of this API Reference and [Working with Scheduled Events](https://www.m3ter.com/docs/guides/alerts-events-and-notifications/utilizing-events-and-notifications/working-with-scheduled-events) in our user documentation.
+
+
+    For more details on Event types and their fields, see the [Events](https://www.m3ter.com/docs/api#tag/Events) section.
+
+
+    For detailed guidance on working with Events and Notifications, refer to the [Utilizing Events and Notifications](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications) section of the m3ter user documentation.'
+paths:
+  /organizations/{orgId}/notifications/configurations:
+    get:
+      tags:
+      - Notifications
+      summary: List Notifications
+      description: 'Retrieve a list of Event Notifications for the specified Organization.
+
+
+        This endpoint retrieves a list of all Event Notifications for the Organization identified by its UUID. The list can be paginated for easier management. The list also supports filtering by parameters such as Notification UUID. '
+      operationId: ListNotifications
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of Notifications to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Notifications in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: active
+        in: query
+        description: "A Boolean flag indicating whether to retrieve only active or only inactive Notifications.\n\n* **TRUE** - only active Notifications are returned. \n* **FALSE** - only inactive Notifications are returned."
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      - name: eventName
+        in: query
+        description: Use this to filter the Notifications returned - only those Notifications that are based on the *Event type* specified by `eventName` are returned.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: A list of specific Notification UUIDs to retrieve.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns the list of Event Notifications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificationResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - Notifications
+      summary: Create Notification
+      description: "Create a new Notification for an Event.\n\nThis endpoint enables you to create a new Event Notification for the specified Organization. You need to supply a request body with the details of the new Notification.  \n"
+      operationId: CreateNotification
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the created Notification
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/notifications/configurations/{id}:
+    get:
+      tags:
+      - Notifications
+      summary: Retrieve Notification
+      description: 'Retrieve the details of a specific Notification using its UUID. Includes the Event the Notification is based on, and any calculation referencing the Event''s field and which defines further conditions that must be met to trigger the Notification when the Event occurs.
+
+        '
+      operationId: GetNotification
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Notification to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the Notification
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - Notifications
+      summary: Update Notification
+      description: 'Update a Notification with the given UUID.
+
+
+        This endpoint modifies the configuration details of an existing Notification. You can change the Event that triggers the Notification and/or update the conditions for sending the Notification.
+
+        '
+      operationId: UpdateNotification
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Notification to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated Notification
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - Notifications
+      summary: Delete Notification
+      description: 'Delete the Notification with the given UUID.
+
+
+        This endpoint permanently removes a specified Notification and its configuration. This action cannot be undone.
+
+        '
+      operationId: DeleteNotification
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Notification to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted Notification
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/notifications/evaluate:
+    post:
+      tags:
+      - Notifications
+      summary: Evaluate Calculation
+      description: 'Evaluates a calculation against a specific Event or an Event type without triggering a Notification. This is useful for validating your calculation logic before adding it to a Notification.
+
+
+        You can use either the `eventId` or `eventName` to test your calculation against:
+
+        - `eventId` Tests the calculation for validity against a *specific Event* that has been generated for your Organization.
+
+        - `eventName` Tests the calculation for validity against the *Event type*.
+
+
+        Possible outcomes:
+
+        - If in either case the calculation is valid, then `"success" : true` is returned.
+
+        - If in either case the calculation is invalid, then `"success" : false` is returned, together with an `"error message"` giving the reason why the calculation is invaild for use against the specific Event or Event type.
+
+
+        **Note:** If you use both the `eventId` and the `eventName` as request body parameters in a single call, then the `eventName` takes precedence and the calculation is evaluated for validity against the *Event type*.
+
+        '
+      operationId: EvaluateCalculation
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateCalculationRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the calculation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluateCalculationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    PaginatedNotificationResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/NotificationResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    EvaluateCalculationResponse:
+      required:
+      - success
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates whether the calculation evaluated to True against the specified Event.
+        errorMessage:
+          type: string
+          description: Optional message providing details about any errors that occurred during the evaluation. If no errors occurred, this is `null`.
+      description: Response containing the results of a calculation evaluation.
+    NotificationRequest:
+      required:
+      - code
+      - description
+      - eventName
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the Notification.
+          example: Commitment has under 10% remaining
+        description:
+          minLength: 1
+          type: string
+          description: The description for the Notification providing a brief overview of its purpose and functionality.
+          example: Commitment amount fell below 10%
+        active:
+          type: boolean
+          description: "Boolean flag that sets the Notification as active or inactive. Only active Notifications are sent when triggered by the Event they are based on:\n\n* **TRUE** - set Notification as active. \n* **FALSE** - set Notification as inactive."
+          example: true
+        alwaysFireEvent:
+          type: boolean
+          description: "A Boolean flag indicating whether the Notification is always triggered, regardless of other conditions and omitting reference to any calculation. This means the Notification will be triggered simply by the Event it is based on occurring and with no further conditions having to be met.\n \n*  **TRUE** - the Notification is always triggered and omits any reference to the calculation to check for other conditions being true before triggering the Notification.\n*  **FALSE** - the Notification is only triggered when the Event it is based on occurs and any calculation is checked and all conditions defined by the calculation are met."
+          example: false
+        calculation:
+          type: string
+          description: "A logical expression that that is evaluated to a Boolean. If it evaluates as `True`, a Notification for the Event is created and sent to the configured destination. \nCalculations can reference numeric, string, and boolean Event fields.  \n\nSee [Creating Calculations](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications/key-concepts-and-relationships#creating-calculations) in the m3ter documentation for more information. "
+          example: "(new.amountSpent >= ((new.amount*90)/100)) \nAND ((old.amountSpent <= ((old.amount*90)/100)) OR (old.amountSpent == null))"
+        code:
+          minLength: 1
+          type: string
+          description: The short code for the Notification.
+          example: commitment_under_10_percent
+        eventName:
+          minLength: 1
+          type: string
+          description: 'The name of the *Event type* that the Notification is based on. When an Event of this type occurs and any calculation built into the Notification evaluates to `True`, the Notification is triggered.
+
+
+            **Note:** If the Notification is set to always fire, then the Notification will always be sent when the Event of the type it is based on occurs, and without any other conditions defined by a calculation having to be met.'
+          example: configuration.commitment.updated
+      description: Request containing a Notification entity.
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+    NotificationResponse:
+      type: object
+      description: Response containing a Notification entity.
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - required:
+        - code
+        - description
+        - name
+        properties:
+          name:
+            minLength: 1
+            type: string
+            description: The name of the Notification.
+            example: Commitment has under 10% remaining
+          description:
+            minLength: 1
+            type: string
+            description: The description for the Notification providing a brief overview of its purpose and functionality.
+            example: Commitment amount fell below 10%
+          active:
+            type: boolean
+            description: "A Boolean flag indicating whether or not the Notification is active.\n\n* **TRUE** - active Notification. \n* **FALSE** - inactive Notification."
+            example: true
+          alwaysFireEvent:
+            type: boolean
+            description: "A Boolean flag indicating whether the Notification is always triggered, regardless of other conditions and omitting reference to any calculation. This means the Notification will be triggered simply by the Event it is based on occurring and with no further conditions having to be met.\n \n*  **TRUE** - the Notification is always triggered and omits any reference to the calculation to check for other conditions being true before triggering the Notification.\n*  **FALSE** - the Notification is only triggered when the Event it is based on occurs and any calculation is checked and all conditions defined by the calculation are met."
+            example: false
+          eventName:
+            type: string
+            description: 'The name of the Event that the Notification is based on. When this Event occurs and the calculation evaluates to `True`, the Notification is triggered.
+
+
+              **Note:** If the Notification is set to always fire, then the Notification will always be sent when the Event it is based on occurs, and without any other conditions defined by a calculation having to be met.'
+            example: configuration.commitment.updated
+          calculation:
+            type: string
+            description: "A logical expression that that is evaluated to a Boolean. If it evaluates as `True`, a Notification for the Event is created and sent to the configured destination. \nCalculations can reference numeric, string, and boolean Event fields.  \n\nSee [Creating Calculations](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications/key-concepts-and-relationships#creating-calculations) in the m3ter documentation for more information. "
+            example: "(new.amountSpent >= ((new.amount*90)/100)) \nAND ((old.amountSpent <= ((old.amount*90)/100)) OR (old.amountSpent == null))"
+          code:
+            minLength: 1
+            type: string
+            description: The short code for the Notification.
+            example: commitment_under_10_percent
+        description: Response containing a Notification entity
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractResponseWithAuditFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    EvaluateCalculationRequest:
+      type: object
+      properties:
+        eventId:
+          type: string
+          description: The unique identifier (UUID) of the existing Event you want to evaluate the calculation for.
+        eventName:
+          type: string
+          description: The name of the Event type to evaluate the calculation for.
+        calculation:
+          type: string
+          description: "The calculation expression to be evaluated. This should be structured in the same way as the calculation you'll use for a Notification based on an Event of the same type.\n\nThe calculation for a Notification is a logical expression that evaluates to a Boolean. Calculations are used to define the precise conditions for a Notification that is based on an Event of a specifc Type to be triggered. If an Event of that type occurs and the calculation used in a Notification based on that Event type evaluates as `True`, a Notification for the Event is triggered and sent to the configured Notification destination. \nCalculations can reference numeric, string, and boolean Event fields.  \n\nSee [Creating Calculations](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications/key-concepts-and-relationships#creating-calculations) in the m3ter documentation for more information. "
+      description: Request for evaluating a calculation against an existing Event or Event name.
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

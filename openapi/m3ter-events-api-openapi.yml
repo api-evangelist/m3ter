@@ -1,0 +1,539 @@
+openapi: 3.0.1
+info:
+  title: m3ter Account Events API
+  description: "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->"
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Events
+  description: "This section provides Endpoints for operations that allow you to retrieve detailed information about individual Events, list all Events or specific Event Types, and explore dynamic fields available for each Event Type.\n\nEvents encompass specific instances of state changes within the system, such as the creation of a new Prepayment/Commitment for an Account. Each Event is classified under an Event Type framework, providing context about what kind of change occurred to generate the Event.\n\n**Events for Configuration and Billing Entities**\n\nMany Event Types cover common configuration and billing objects, where the Event is generated for a state change of one of these objects - for when the configuration or billing object is **created**, **deleted**, or **updated**. \n\nFor example:\n* configuration.commitment.created\n* configuration.commitment.deleted\n* configuration.commitment.updated\n* configuration.account.created\n* configuration.account.deleted\n* configuration.account.updated\n* billing.bill.created\n* billing.bill.deleted\n* billing.bill.created\n\n**Events for Errors or Failures** \n\nThere are also Event Types for certain kinds of error that can occur:\n\n* For an Integration:\n  * validation\n  * authentication\n  * perform\n  * missing account mapping\n  * disabled\n\n* For a Usage Data Ingest Submission:\n  * validation failure\n\n* For Data Export Jobs:\n  * data export job failure\n\n**Scheduled Events**\n\nIn addition to system-generated Events that occur when a configuration entity undergoes a state change at creation, update, or deletion of the entity, you can use API calls to create and configure *Scheduled Event Configurations*. Scheduled Events are custom Event types, which you can set up by referencing Date/Time fields on configuration and billing entities. See the [ScheduledEventConfigurations](https://www.m3ter.com/docs/api#tag/ScheduledEventConfigurations) section of this API Reference for more details.\n\n**Notifications for Events**\n\nYou can create Notification rules based on Events and these rules can reference and apply calculations to the Event's fields. This allows you to set up customized alerts to be sent out via webhooks when the Event occurs and any conditions you've built into the Notification rule's calculation are satisfied.\n\nSee the [Notifications](https://www.m3ter.com/docs/api#tag/Notifications) section for more details.\n\n**Other Events**\n\nWhen Events occur, they can cause other Events, such as when a Notification is triggered by the Event it is based on. For these Events there are currently two categories:\n* Notification\n* IntegrationEvent\n\nAlso see [Utilizing Events and Notifications](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications) and [Object Definitions and API Calls](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications/object-definitions-and-api-calls) in the m3ter documentation for more guidance.\n"
+paths:
+  /organizations/{orgId}/events/{id}:
+    get:
+      tags:
+      - Events
+      summary: Retrieve EventResponse
+      description: 'Retrieve a specific Event.
+
+
+        Retrieves detailed information about the specific Event with the given UUID. An Event corresponds to a unique instance of a state change within the system, classified under a specific Event Type.
+
+        '
+      operationId: GetEvent
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Event to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the Event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/events/fields:
+    get:
+      tags:
+      - Events
+      summary: List Events
+      description: "List Event Fields. \n\nRetrieves a list of Fields for a specific Event Type. These Fields are dynamic and forward compatibile, enabling calculation operations on the Event schema.\n\n**Notes:**\n- In many of the Response schema for this call, such as when you retrieve the Fields for a `configuration.commitment.created` Event Type, `new` represents the attributes the newly created object has. The Response to a call to retrieve the Fields for a `configuration.commitment.updated` Event Type will contain Field values for both the `old` and `new` objects. The Response to a call to retrieve the Fields for a `configuration.commitment.deleted` Event Type will only contain `old` Fields, for values at point of deletion. Having access to reference both `new` and `old` Field values for an object can be very useful if you want to base a Notification rule on an Event and include a calculation in the rule that, for example, compares `new` values with `old` - for example, trigger a Notification only when a Commitment has been updated and the `new` value for the `amount` is at least $1,000 greater than the `old` value.\n- Some Event types will show `customFields` even though the specific billing or configuration object the Event is for does not yet have the custom fields functionality implemented. For these Events, their `customFields` values will not be populated until such time as the custom fields functionality is implemented for them"
+      operationId: ListEventFields
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: eventName
+        in: query
+        description: The name of the specific Event Type to use as a list filter, for example `configuration.commitment.created`.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the list of Fields for an Event Type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventFieldsResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/events:
+    get:
+      tags:
+      - Events
+      summary: List EventResponse
+      description: 'List all Events.
+
+
+        Retrieve a list of all Events, with options to filter the returned list based on various criteria. Each Event represents a unique instance of a state change within the system, classified under a specific kind of Event.
+
+
+        **NOTES:** You can:
+
+        * Use `eventName` as a valid Query parameter to filter the list of Events returned. For example:
+
+        `.../organizations/{orgId}/events?eventName=configuration.commitment.created`
+
+        * Use the [List Notification Events](https://www.m3ter.com/docs/api#tag/Events/operation/ListEventTypes) endpoint in this section. The response lists the valid Query parameters.'
+      operationId: ListEvents
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of the Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: The maximum number of Events to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: ids
+        in: query
+        description: "List of Event UUIDs to filter the results. \n\n**NOTE:** cannot be used with other filters."
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: notificationId
+        in: query
+        description: Notification UUID to filter the results. Returns the Events that have triggered the Notification.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: accountId
+        in: query
+        description: The Account ID associated with the Event to filter the results. Returns the Events that have been generated for the Account.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: eventType
+        in: query
+        description: 'The category of Events to filter the results by. Options:
+
+          * Notification
+
+          * IntegrationEvent
+
+          * IngestValidationFailure
+
+          * DataExportJobFailure'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: notificationCode
+        in: query
+        description: Short code of the Notification to filter the results. Returns the Events that have triggered the Notification.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: includeActioned
+        in: query
+        description: 'A Boolean flag indicating whether to return Events that have been actioned.
+
+
+          * **TRUE** - include actioned Events.
+
+          * **FALSE** - exclude actioned Events. '
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Events in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: eventName
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          nullable: true
+      - name: resourceId
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          nullable: true
+      responses:
+        '200':
+          description: Returns list of Events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEventResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/events/types:
+    get:
+      tags:
+      - Events
+      summary: List Notification Events
+      description: 'Retrieve a list of Notification Event Types.
+
+
+        This endpoint retrieves a list of Event Types that can have Notification rules configured.'
+      operationId: ListEventTypes
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifer (UUID) of the Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      responses:
+        '200':
+          description: Returns the list of Event Types that can have Notification rules configured
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventTypeResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    EventTypeResponse:
+      type: object
+      properties:
+        events:
+          type: array
+          description: An array containing a list of all Event Types for which Notification rules can be configured. Each Event Type is represented by a string.
+          items:
+            type: string
+      description: Response containing list of Event Types that can have Notification rules configured.
+      example:
+        events:
+        - billing.balance.created
+        - billing.balance.deleted
+        - billing.balance.updated
+        - billing.balanceamount.created
+        - billing.balanceamount.deleted
+        - billing.balanceamount.updated
+        - billing.bill.created
+        - billing.bill.deleted
+        - billing.bill.updated
+        - billing.billconfig.created
+        - billing.billconfig.deleted
+        - billing.billconfig.updated
+        - billing.billjob.created
+        - billing.billjob.deleted
+        - billing.billjob.updated
+        - billing.charge.created
+        - billing.charge.deleted
+        - billing.charge.updated
+        - billing.counteradjustment.created
+        - billing.counteradjustment.deleted
+        - billing.counteradjustment.updated
+        - billing.scheduledbalancecharge.created
+        - billing.scheduledbalancecharge.deleted
+        - billing.scheduledbalancecharge.updated
+        - billing.scheduledbalancetransaction.created
+        - billing.scheduledbalancetransaction.deleted
+        - billing.scheduledbalancetransaction.updated
+        - billing.statementjob.created
+        - billing.statementjob.deleted
+        - billing.statementjob.updated
+        - configuration.account.created
+        - configuration.account.deleted
+        - configuration.account.updated
+        - configuration.accountplan.created
+        - configuration.accountplan.deleted
+        - configuration.accountplan.updated
+        - configuration.aggregation.created
+        - configuration.aggregation.deleted
+        - configuration.aggregation.updated
+        - configuration.alert.created
+        - configuration.alert.deleted
+        - configuration.alert.updated
+        - configuration.commitment.created
+        - configuration.commitment.deleted
+        - configuration.commitment.updated
+        - configuration.compoundaggregation.created
+        - configuration.compoundaggregation.deleted
+        - configuration.compoundaggregation.updated
+        - configuration.contract.created
+        - configuration.contract.deleted
+        - configuration.contract.updated
+        - configuration.counter.created
+        - configuration.counter.deleted
+        - configuration.counter.updated
+        - configuration.counterpricing.created
+        - configuration.counterpricing.deleted
+        - configuration.counterpricing.updated
+        - configuration.creditreason.created
+        - configuration.creditreason.deleted
+        - configuration.creditreason.updated
+        - configuration.customfield.created
+        - configuration.customfield.deleted
+        - configuration.customfield.updated
+        - configuration.meter.created
+        - configuration.meter.deleted
+        - configuration.meter.updated
+        - configuration.metergroup.created
+        - configuration.metergroup.deleted
+        - configuration.metergroup.updated
+        - configuration.organization.created
+        - configuration.organization.deleted
+        - configuration.organization.updated
+        - configuration.organizationconfig.created
+        - configuration.organizationconfig.deleted
+        - configuration.organizationconfig.updated
+        - configuration.plan.created
+        - configuration.plan.deleted
+        - configuration.plan.updated
+        - configuration.plangroup.created
+        - configuration.plangroup.deleted
+        - configuration.plangroup.updated
+        - configuration.plangrouplink.created
+        - configuration.plangrouplink.deleted
+        - configuration.plangrouplink.updated
+        - configuration.plantemplate.created
+        - configuration.plantemplate.deleted
+        - configuration.plantemplate.updated
+        - configuration.pricing.created
+        - configuration.pricing.deleted
+        - configuration.pricing.updated
+        - configuration.pricingband.created
+        - configuration.pricingband.deleted
+        - configuration.pricingband.updated
+        - configuration.product.created
+        - configuration.product.deleted
+        - configuration.product.updated
+        - configuration.transactiontype.created
+        - configuration.transactiontype.deleted
+        - configuration.transactiontype.updated
+        - dataexport.job.failure
+        - ingest.validation.failure
+        - integration.authentication.error
+        - integration.disabled.error
+        - integration.missingaccountmapping.error
+        - integration.perform.error
+        - integration.validation.error
+    EventResponse:
+      required:
+      - dtActioned
+      - eventName
+      - eventTime
+      - id
+      - m3terEvent
+      type: object
+      properties:
+        id:
+          type: string
+          description: The uniqie identifier (UUID) of the Event.
+        eventName:
+          type: string
+          description: The name of the Event as it is registered in the system. This name is used to categorize and trigger associated actions.
+        eventTime:
+          type: string
+          description: The time when the Event was triggered, using the ISO 8601 date and time format.
+          format: date-time
+        m3terEvent:
+          description: 'The Data Transfer Object (DTO) containing the details of the Event. '
+        dtActioned:
+          type: string
+          description: 'When an Event was actioned. It follows the ISO 8601 date and time format.
+
+
+            You can action an Event to indicate that it has been followed up and resolved - this is useful when dealing with integration error Events or ingest failure Events.'
+          format: date-time
+      description: Response containing an Event entity.
+      example:
+        id: 9cb46d85-7cb6-4637-80a1-d4ec38e4ab30
+        eventName: configuration.commitment.created
+        eventTime: '2022-10-28T13:54:49.557Z'
+        dtActioned: '2022-10-28T13:56:49.557Z'
+        m3terEvent:
+          eventData:
+            newDto:
+              commitmentFeeDescription: ''
+              endDate: '2024-12-31'
+              billingInterval: 1
+              orgId: 396d788d-5174-XXXX-9d69-YYYY4671fc33
+              overageSurchargePercent: 5
+              overageDescription: ''
+              currency: USD
+              id: 480d317e-2030-416b-b64b-c07577c418b4
+              amountSpent: 0
+              accountCode: doetech_premium
+              amount: 15000
+              billingOffset: 0
+              lastModifiedBy: USER_810e3a43-XXXX-4dab-YYYY-470977405b58
+              billingPlanId: 0409e75a-8a87-43de-aa58-fc6ec823ce37
+              version: 1
+              accountId: 1cf2a754-476c-498c-b05a-7d41abfc404d
+              dtCreated: '2022-10-28T13:54:48.081781Z'
+              amountPrePaid: 0
+              productIds:
+              - bec371ef-dbad-4e73-a56a-dadecff2287c
+              createdBy: USER_810e3a43-XXXX-4dab-YYYY-470977405b58
+              contractId: 68595d6d-261f-496b-bf88-51fc7d2b5ccc
+              commitmentUsageDescription: ''
+              startDate: '2023-01-01'
+              dtLastModified: '2022-10-28T13:54:48.081781Z'
+    EventFieldsResponse:
+      type: object
+      properties:
+        events:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+          description: "An object containing the list of Fields for the queried Event Type. \n\nSee the 200 Response sample where we have queried to get the Fields for the `configuration.commitment.created` Event Type. \n\n**Note:** `new` represents the attributes the newly created object has."
+      description: Response containing the list of Fields for an Event Type.
+      example:
+        events:
+          configuration.commitment.created:
+            new.accountCode: string
+            new.accountId: string
+            new.accountingProductId: string
+            new.amount: double
+            new.amountFirstBill: double
+            new.amountPrePaid: double
+            new.amountSpent: double
+            new.billEpoch: string
+            new.billingInterval: int
+            new.billingOffset: int
+            new.billingPlanId: string
+            new.commitmentFeeBillInAdvance: boolean
+            new.commitmentFeeDescription: string
+            new.commitmentUsageDescription: string
+            new.contractId: string
+            new.currency: string
+            new.customFields: map
+            new.endDate: string
+            new.feeDates: array
+            new.id: string
+            new.overageDescription: string
+            new.overageSurchargePercent: double
+            new.productIds: array
+            new.startDate: string
+    PaginatedEventResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/EventResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

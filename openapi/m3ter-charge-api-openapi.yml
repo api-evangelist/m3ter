@@ -1,0 +1,584 @@
+openapi: 3.0.1
+info:
+  title: m3ter Account Charge API
+  description: "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->"
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Charge
+  description: 'Endpoints for creating/updating/deleting Charges.
+
+
+    Create Charges for your end-customer Accounts to create ad-hoc line items for Account billing. Charges are:
+
+    * Created for either debit or credit amounts.
+
+    * Linked to a Product for accounting purposes.
+
+    * Optionally linked to a Contract.
+
+    * Given a specific date for billing. When a bill job has run for the specified Charge bill date, a Charge appears as an Ad-hoc line item on the Bill.
+
+    * Assigned a service period.
+
+    * Available in any currency defined for your Organization.
+
+    See [Creating Charges for Accounts](https://www.m3ter.com/docs/guides/end-customer-accounts/creating-charges-for-accounts) in our main user documentation for more details.
+
+
+    Alternatively, you can create a Charge for a Balance on an end-customer Account to create balance fee line items for Account billing. See [Creating Charges for Balances](https://www.m3ter.com/docs/guides/end-customer-accounts/creating-balances-for-accounts/creating-charges-for-balances) in our main user documentation for more details.'
+paths:
+  /organizations/{orgId}/charges:
+    get:
+      tags:
+      - Charge
+      summary: List Charges
+      description: Retrieve a list of Charge entities
+      operationId: ListCharges
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Number of Charges to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: accountId
+        in: query
+        description: List Charge items for the Account UUID
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: entityType
+        in: query
+        description: List Charge items for the EntityType
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/ChargeEntityType'
+      - name: entityId
+        in: query
+        description: List Charge items for the Entity UUID
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: billDate
+        in: query
+        description: List Charge items for the Bill Date
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: date
+      - name: ids
+        in: query
+        description: List of Charge UUIDs to retrieve
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: scheduleId
+        in: query
+        description: List Charge items for the Schedule UUID
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ListCharges 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedChargeResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - Charge
+      summary: Create Charge
+      description: 'Create a new Charge.
+
+
+        **NOTES:**
+
+        * To create an ad-hoc Charge on an Account, use the `accountId` request parameter.
+
+        * To create a balance fee Charge for a Balance, use the `entityId` request parameter to specify which Balance on an Account the Charge is for.
+
+        * To define the value of the Charge amount that is billed, you can simply specify an `amount` or use a number of `units` together with a `unitPrice` for a calculated value = units x unit price. But you cannot specify *both an amount and units/unit price*.'
+      operationId: CreateCharge
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargeRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the created Charge
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargeResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/charges/{id}:
+    get:
+      tags:
+      - Charge
+      summary: Retrieve Charge
+      description: Retrieve a Charge for the given UUID.
+      operationId: GetCharge
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Charge to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the Charge
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargeResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - Charge
+      summary: Update Charge
+      description: 'Update a Charge for the given UUID.
+
+
+        **NOTE:** When you update a Charge on an Account, you can provide either a Charge `amount` or Charge `units` together with a `unitPrice`, but *not both*.'
+      operationId: UpdateCharge
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Charge to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargeRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated Charge
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargeResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - Charge
+      summary: Delete Charge
+      description: Delete the Charge for the given UUID.
+      operationId: DeleteCharge
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Charge to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the deleted Charge
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargeResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    PaginatedChargeResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ChargeResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    ChargeRequest:
+      type: object
+      description: Request containing a Charge entity
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - accountId
+        - code
+        - currency
+        - entityType
+        - lineItemType
+        - name
+        - servicePeriodEndDate
+        - servicePeriodStartDate
+        properties:
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: Name of the Charge. Added to the Bill line item description for this Charge.
+          code:
+            maxLength: 80
+            minLength: 1
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: Unique short code for the Charge.
+          accountId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: The ID of the Account the Charge is being created for.
+          billDate:
+            type: string
+            description: The date when the Charge will be added to a Bill.
+            example: '2022-01-04'
+          amount:
+            type: number
+            description: Amount of the Charge. If `amount` is provided, then `units` and `unitPrice` must be omitted.
+          units:
+            type: number
+            description: Number of units of the Charge. If `amount` is omitted, then provide together with `unitPrice`. When `amount` is provided, `units` must be omitted.
+          unitPrice:
+            type: number
+            description: Unit price. If `amount` is omitted, then provide together with `units`. When `amount` is provided, `unitPrice` must be omitted.
+          currency:
+            minLength: 1
+            type: string
+            description: Charge currency.
+          description:
+            type: string
+            description: The description added to the Bill line item for the Charge.
+          entityType:
+            description: 'The entity type the Charge is created for.
+
+
+              **NOTE:** If `entityType` is `BALANCE`, you must provide the `entityId` of the Balance the Charge is for.'
+            allOf:
+            - $ref: '#/components/schemas/ChargeEntityType'
+            - description: 'The entity this charge is created for, ex: Balance or AD_HOC if none applies'
+          lineItemType:
+            description: The line item type used for Charge billing.
+            allOf:
+            - $ref: '#/components/schemas/ChargeLineItemType'
+            - description: The Line Item Type to be used for this Charge
+          entityId:
+            type: string
+            description: 'The ID of the Charge linked entity. For example, the ID of an Account Balance if a Balance Charge.
+
+
+              **NOTE:** If `entityType` is `BALANCE`, you must provide the `entityId` of the Balance the Charge is for.'
+          accountingProductId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: The Accounting Product ID assigned to the Charge.
+          servicePeriodStartDate:
+            type: string
+            description: The service period start date (*in ISO-8601 format*) for the Charge.
+            format: date-time
+          servicePeriodEndDate:
+            type: string
+            description: 'The service period end date (*in ISO-8601 format*)for the Charge.
+
+
+              **NOTE:** End date is exclusive.'
+            format: date-time
+          notes:
+            type: string
+            description: Used to enter information about the Charge for accounting purposes, such as the reason it was created. This information will not be added to a Bill line item for the Charge.
+          contractId:
+            type: string
+            description: The ID of a Contract on the Account that the Charge will be added to.
+        description: Request containing a Charge entity
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    ChargeResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the Charge. Added to the Bill line item description for Charge.
+        code:
+          type: string
+          description: The unique short code of the Charge.
+        accountId:
+          type: string
+          description: The ID of the Account the Charge was created for.
+        billDate:
+          type: string
+          description: The date when the Charge will be added to a Bill.
+          format: date
+        amount:
+          type: number
+          description: The Charge amount. If `amount` has been defined, then `units` and `unitPrice` cannot be used.
+        units:
+          type: number
+          description: Number of units of the Charge. Provided together with `unitPrice`. If `units` and `unitPrice` are provided, `amount` cannot be used.
+        unitPrice:
+          type: number
+          description: 'Unit Price for the Charge. Provided together with `units`:
+
+            * Null if the Charge was created with `amount` only.
+
+            * If `units` and `unitPrice` are provided, `amount` cannot be used.'
+        currency:
+          type: string
+          description: Charge currency.
+        description:
+          type: string
+          description: The description added to the Bill line item for the Charge.
+        entityType:
+          description: The entity type the Charge has been created for.
+          $ref: '#/components/schemas/ChargeEntityType'
+        entityId:
+          type: string
+          description: The ID of the Charge linked entity. For example, the ID of an Account Balance if a Balance Charge.
+        billId:
+          type: string
+          description: The ID of the Bill created for this Charge.
+        accountingProductId:
+          type: string
+          description: The Accounting Product ID assigned to the Charge.
+        servicePeriodStartDate:
+          type: string
+          description: The service period start date (*in ISO-8601 format*) for the Charge .
+          format: date-time
+        servicePeriodEndDate:
+          type: string
+          description: 'The service period end date (*in ISO-8601 format*) for the Charge.
+
+
+            **NOTE:** End date is exclusive.'
+          format: date-time
+        notes:
+          type: string
+          description: Information about the Charge for accounting purposes, such as the reason it was created. This information will not be added to the created Bill line item for the Charge.
+        contractId:
+          type: string
+          description: The ID of a Contract on the Account that the Charge has been added to.
+        lineItemType:
+          description: The line item type used for billing a Charge.
+          $ref: '#/components/schemas/ChargeLineItemType'
+        dtCreated:
+          type: string
+          description: The date and time (*in ISO-8601 format*) when the Charge was created.
+          format: date-time
+          x-stainless-skip:
+          - terraform
+        dtLastModified:
+          type: string
+          description: The date and time (*in ISO 8601 format*) when the Charge was last modified.
+          format: date-time
+          x-stainless-skip:
+          - terraform
+        createdBy:
+          type: string
+          description: The unique identifier (UUID) of the user who created the Charge.
+          x-stainless-skip:
+          - terraform
+        lastModifiedBy:
+          type: string
+          description: The unique identifier (UUID) of the user who last modified the Charge.
+          x-stainless-skip:
+          - terraform
+        scheduleId:
+          type: string
+          description: The ID of the Balance Charge Schedule that created the Charge.
+      description: Response containing a Charge entity
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+    ChargeLineItemType:
+      type: string
+      description: Available line item types that can be used for billing a Charge.
+      enum:
+      - BALANCE_FEE
+      - AD_HOC
+    ChargeEntityType:
+      type: string
+      description: The entity type the Charge has been created for.
+      enum:
+      - AD_HOC
+      - BALANCE
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

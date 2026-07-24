@@ -1,0 +1,1161 @@
+openapi: 3.0.1
+info:
+  title: m3ter Account LookupTableRevisionData API
+  description: "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->"
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: LookupTableRevisionData
+  description: 'Endpoints for creating/updating/deleting Data for specific Lookup Table Revisions.
+
+
+    When you''ve added fields to create a data schema for a Lookup Table Revision, you can use upsert operations to create or update the data values for those fields:
+
+    * Use [Upsert LookupTableRevisionData](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/PutLookupTableRevisionData) to upsert some or all of a Revision''s field data values.
+
+    * Use [Upsert LookupTableRevisionData Entry](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/PutLookupTableRevisionDataEntry) to upsert an individual Revision field''s data value.
+
+
+    **NOTES:**
+
+    * You can only create or update field data values for DRAFT Revisions.
+
+    * You cannot change the field data values for PUBLISHED Revisions.
+
+
+    **Beta Version!** The Lookup Table feature is currently available in Beta release version. See [Feature Release Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages) for Beta release definition. Lookup Table Revision Data endpoints will only be available if Lookup Tables have been enabled for your Organization. For more details see [Lookup Tables (Beta)](https://www.m3ter.com/docs/guides/lookup-tables) in our main User documentation.'
+paths:
+  /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{lookupTableRevisionId}/data:
+    get:
+      tags:
+      - LookupTableRevisionData
+      summary: Get LookupTableRevisionData
+      description: List Lookup Table Revision Data items for the given UUID.
+      operationId: GetLookupTableRevisionData
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: lookupTableId
+        in: path
+        description: UUID of the Lookup Table.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupTableRevisionId
+        in: path
+        description: UUID of the Lookup Table Revision.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: 'The maximum number of Data items to return. Defaults to 2000. You can set this to return fewer items if required.
+
+
+          If you expect the Revision to contain more than 2000 Data items, you can use the [Trigger Downlad URL Job](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/TriggerDownloadJob) to download the Lookup Table Revision Data.'
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+          format: int32
+          default: 2000
+      - name: additional
+        in: query
+        description: Comma separated list of additional fields. For example, you can use `additional=lookupKey` to get the lookup key returned for each Data item. You can then use a lookup key for the Get/Upsert/Delete data entry endpoints in this section.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns the LookupTableRevisionData
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableRevisionDataResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - LookupTableRevisionData
+      summary: Upsert LookupTableRevisionData
+      description: Create/update the Lookup Table Revision Data for the given UUID.
+      operationId: PutLookupTableRevisionData
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: lookupTableId
+        in: path
+        description: UUID of the Lookup Table.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupTableRevisionId
+        in: path
+        description: UUID of the Lookup Table Revision.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: additional
+        in: query
+        description: Comma separated list of additional fields. For example, you can use `additional=lookupKey` to get the lookup key returned for each Data item. You can then use a lookup key for the Get/Upsert/Delete data entry endpoints in this section.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookupTableRevisionDataRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the upserted LookupTableRevisionData
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableRevisionDataResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - LookupTableRevisionData
+      summary: Delete LookupTableRevisionData
+      description: Delete the Lookup Table Revision Data for the given UUID.
+      operationId: DeleteLookupTableRevisionData
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: lookupTableId
+        in: path
+        description: UUID of the Lookup Table.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupTableRevisionId
+        in: path
+        description: UUID of the Lookup Table Revision.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the result for Delete of LookupTableRevisionData
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableRevisionDataDeleteResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{lookupTableRevisionId}/data/archived:
+    post:
+      tags:
+      - LookupTableRevisionData
+      summary: Get LookupTableRevisionArchivedData URL
+      description: 'Get a URL which you can use to download the data for the specified archived Lookup Table Revision:
+
+        * The `contentType` request parameter is required.
+
+        * The returned URL is presigned - you can copy it into a browser and the data file is downloaded locally.
+
+        * The upload URL is time limited - the `expiry` time is given in the response and the URL is valid for ***one hour***.'
+      operationId: GetLookupTableRevisionArchivedDataUrl
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: lookupTableId
+        in: path
+        description: UUID of the LookupTable
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupTableRevisionId
+        in: path
+        description: UUID of the LookupTableRevision
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookupTableDataArchivedRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the URL.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableDataArchivedResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{lookupTableRevisionId}/data/copy:
+    post:
+      tags:
+      - LookupTableRevisionData
+      summary: Copy LookupTableRevisionData
+      description: 'Copy the Lookup Table Revision Data from a source Revision to an optional target Revision:
+
+        * If you omit a target `revisionId`, then the source Revision and its Data is duplicated. The new Revision is given the source Revision''s name appended with "Copy" but is assigned a new unique id.
+
+        * If you specify a target `revisionId` to copy the source Revision and its Data to, you must ensure that the target Revision has a Data schema that matches the source Revision''s Data schema otherwise you''ll receive an error'
+      operationId: CopyLookupTableRevisionData
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: lookupTableId
+        in: path
+        description: UUID of the Lookup Table.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupTableRevisionId
+        in: path
+        description: UUID of the source Lookup Table Revision to copy from.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookupTableRevisionCopyRequest'
+        required: false
+      responses:
+        '200':
+          description: Returns the Data JobId and target RevisionId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableRevisionCopyResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{lookupTableRevisionId}/data/jobs/{id}:
+    get:
+      tags:
+      - LookupTableRevisionData
+      summary: Get LookupTableRevisionData Job Response.
+      description: 'Get the Lookup Table Revision Data job Response for given job id.
+
+
+        **NOTE:** Use the [List LookupTableRevisionData Jobs](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/ListLookupTableRevisionDataJobs) endpoint to list the Data job Responses for a specific Revision. '
+      operationId: GetLookupTableRevisionDataJobResponse
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: lookupTableId
+        in: path
+        description: UUID of the Lookup Table.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupTableRevisionId
+        in: path
+        description: UUID of the Lookup Table Revision.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: UUID of the Lookup Table Revision Data job.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the LookupTableRevisionDataJob Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableRevisionDataJobResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - LookupTableRevisionData
+      summary: Delete LookupTableRevisionData Job Response
+      description: 'Delete the LookupTableRevisionData Job Response for given job id.
+
+
+        **NOTE:** Use the [List LookupTableRevisionData Jobs](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/ListLookupTableRevisionDataJobs) endpoint to list the Data job Responses for a specific Revision.'
+      operationId: DeleteLookupTableRevisionDataJobResponse
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: lookupTableId
+        in: path
+        description: UUID of the Lookup Table.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupTableRevisionId
+        in: path
+        description: UUID of the Lookup Table Revision.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: UUID of the Lookup Table Revision Data job.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted LookupTableRevisionDataJob Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableRevisionDataJobResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{lookupTableRevisionId}/data/jobs:
+    get:
+      tags:
+      - LookupTableRevisionData
+      summary: List LookupTableRevisionData Jobs
+      description: 'List the Lookup Table Revision Data job Responses for the given Lookup Table Revision.
+
+
+        There are four types of Revision Data jobs:
+
+        * **COPY**. Job runs when you use the [Copy LookupTableRevisionData](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/CopyLookupTableRevisionData) endpoint which returns the `jobId`.
+
+        * **UPLOAD**. Job runs when you use the [Generate LookupTableRevisionData Upload URL](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/GenerateLookupTableDataUploadUrl) endpoint which returns the `jobId`.
+
+        * **DOWNLOAD**. Job runs when you use the [](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/TriggerLookupTableRevisionDataDownloadJob) endpoint which returns the `jobId`.
+
+        * **ARCHIVE**. Job runs when you either manually change a DRAFT Revision to PUBLISHED using the [Update LookupTableRevision Status](https://www.m3ter.com/docs/api#tag/LookupTableRevision/operation/UpdateLookupTableRevisionStatus) endpoint or you publish a DRAFT Revision and the existing PUBLISHED Revision is archived.
+
+
+        **NOTE:** This endpoint returns the id of each Data job. You then use:
+
+        * The [Get LookupTableRevisionData Job Response](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/GetLookupTableRevisionDataJobResponse) endpoint to retrieve a specific Data job Response.
+
+        * The [Delete LookupTableRevisionData Job Response](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/DeleteLookupTableRevisionDataJobResponse) to delete a specific Data job Response.'
+      operationId: ListLookupTableRevisionDataJobs
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: lookupTableId
+        in: path
+        description: UUID of the Lookup Table.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupTableRevisionId
+        in: path
+        description: UUID of the Lookup Table Revision.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: The number of Lookup Table Revision Data Job Responses to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns a List of LookupTableRevisionDataJob Responses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLookupTableRevisionDataJobResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{lookupTableRevisionId}/data/{lookupKey}:
+    get:
+      tags:
+      - LookupTableRevisionData
+      summary: Get LookupTableRevisionData entry
+      description: 'Retrieve a Lookup Table Revision Data item for the given lookup key.
+
+
+        **NOTES:**
+
+        * To obtain the lookup key for a Revision''s data items, use the [Get LookupTableRevisionData](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/GetLookupTableRevisionData) endpoint in this section and use the `additional=lookupKey` query parameter.
+
+        * If the Revision''s Data schema uses multiple key fields, enter these as a comma-separated list for the `lookupKey` path parameter: .../key1,key2,key3 and so on. Importantly, multiple keys must be *entered in the same order* as they are configured in the Revision''s Data schema.'
+      operationId: GetLookupTableRevisionDataEntry
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: lookupTableId
+        in: path
+        description: UUID of the Lookup Table.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupTableRevisionId
+        in: path
+        description: UUID of the Lookup Table Revision.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupKey
+        in: path
+        description: The specific lookup key for the Data item to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the LookupTableRevisionData item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableRevisionDataResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - LookupTableRevisionData
+      summary: Upsert LookupTableRevisionData entry
+      description: 'Create/update a Lookup Table Revision Data item by lookup key.
+
+
+        **NOTES:**
+
+        * To obtain the lookup key for a Revision''s data items, use the [Get LookupTableRevisionData](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/GetLookupTableRevisionData) endpoint in this section and use the `additional=lookupKey` query parameter.
+
+        * If the Revision''s Data schema uses multiple key fields, enter these as a comma-separated list for the `lookupKey` path parameter: .../key1,key2,key3 and so on. Importantly, multiple keys must be *entered in the same order* as they are configured in the Revision''s Data schema.'
+      operationId: PutLookupTableRevisionDataEntry
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: lookupTableId
+        in: path
+        description: UUID of the Lookup Table.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupTableRevisionId
+        in: path
+        description: UUID of the Lookup Table Revision.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupKey
+        in: path
+        description: The specific lookup key for the Data item to upsert.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: additional
+        in: query
+        description: Comma separated list of additional fields. For example, you can use `additional=lookupKey` to get the lookup key returned for the Data item.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookupTableRevisionDataItemUpsertRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the upserted Lookup Table Revision Data item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableRevisionDataResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - LookupTableRevisionData
+      summary: Delete LookupTableRevisionData entry
+      description: 'Delete a Lookup Table Revision Data entry by lookup key.
+
+
+        **NOTES:**
+
+        * To obtain the lookup key for a Revision''s data items, use the [Get LookupTableRevisionData](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/GetLookupTableRevisionData) endpoint in this section and use the `additional=lookupKey` query parameter.
+
+        * If the Revision''s Data schema uses multiple key fields, enter these as a comma-separated list for the `lookupKey` path parameter: .../key1,key2,key3 and so on. Importantly, multiple keys must be *entered in the same order* as they are configured in the Revision''s Data schema.'
+      operationId: DeleteLookupTableRevisionDataEntry
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: lookupTableId
+        in: path
+        description: UUID of the Lookup Table.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupTableRevisionId
+        in: path
+        description: UUID of the Lookup Table Revision.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupKey
+        in: path
+        description: The specific lookup key for the Data item to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookupTableRevisionDataItemDeleteRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the deleted LookupTableRevisionData entry.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableRevisionDataResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{lookupTableRevisionId}/data/jobs/download:
+    post:
+      tags:
+      - LookupTableRevisionData
+      summary: Trigger Download LookupTableRevisionData URL Job
+      description: Trigger an URL job to download the Lookup Table Revision Data. The URL download Data `jobId` is returned and you can then use the [List LookupTableRevisionData Jobs](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/ListLookupTableRevisionDataJobs) endpoint or the [Get LookupTableRevisionData Job Response](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/GetLookupTableRevisionDataJobResponse) endpoint to retrieve the URL and perform the Revision data Download.
+      operationId: TriggerLookupTableRevisionDataDownloadJob
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: lookupTableId
+        in: path
+        description: UUID of the Lookup Table.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupTableRevisionId
+        in: path
+        description: UUID of the Lookup Table Revision.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookupTableDataDownloadJobRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the trigger Download URL jobId.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableDataDownloadJobResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{lookupTableRevisionId}/data/generateuploadurl:
+    post:
+      tags:
+      - LookupTableRevisionData
+      summary: Generate LookupTableRevisionData Upload URL
+      description: 'Generate a URL which can be used to upload a data file for creating or updating the Lookup Table Revision''s data:
+
+
+        * An upload URL is returned together with an UPLOAD `jobId`.
+
+        * You can then upload your data file using a PUT request using the returned upload URL as the endpoint. For the PUT request, map the headers returned and their values and in the request body select the specified CSV or JSONL file containing the Revision Data to upload.
+
+        * You can use the returned UPLOAD `jobId` with the [List LookupTableRevisionData Jobs](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/ListLookupTableRevisionDataJobs) or the [Get LookupTableRevisionData Job Response](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/GetLookupTableRevisionDataJobResponse) endpoints for any follow-up or troubleshooting.
+
+
+        **Important:**
+
+        * The `contentLength` request parameter is required.
+
+        * The upload URL is time limited - it is valid for ***one minute***.
+
+        '
+      operationId: GenerateLookupTableDataUploadUrl
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: lookupTableId
+        in: path
+        description: UUID of the Lookup Table.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: lookupTableRevisionId
+        in: path
+        description: UUID of the Lookup Table Revision.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookupTableDataUploadRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the upload URL.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableDataUploadResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    LookupTableRevisionDataResponse:
+      required:
+      - items
+      type: object
+      properties:
+        items:
+          maxItems: 2000
+          type: array
+          description: The Lookup Table Revision Data.
+          items:
+            type: object
+            additionalProperties: true
+        dtCreated:
+          type: string
+          description: The DateTime when the Lookup Table Revision Data was created.
+          format: date-time
+          x-stainless-skip:
+          - terraform
+        dtLastModified:
+          type: string
+          description: The DateTime when the Lookup Table Revision Data was last modified.
+          format: date-time
+          x-stainless-skip:
+          - terraform
+        createdBy:
+          type: string
+          description: The id of the user who created the Lookup Table Revision Data.
+          x-stainless-skip:
+          - terraform
+        lastModifiedBy:
+          type: string
+          description: The id of the user who last modified the Lookup Table Revision Data.
+          x-stainless-skip:
+          - terraform
+        version:
+          type: integer
+          description: The version of the Lookup Table Revision Data.
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: Response containing data for a Lookup Table Revision
+    LookupTableRevisionDataJobResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: UUID of the Lookup Table Revision Data job.
+        version:
+          type: integer
+          description: Version of the Lookup Table Revision Data job.
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        fileName:
+          type: string
+          description: The file name for a Lookup Table Revision Data UPLOAD or DOWNLOAD job.
+        lookupTableId:
+          type: string
+          description: UUID of the Lookup Table.
+        lookupTableRevisionId:
+          type: string
+          description: UUID of the Lookup Table Revision.
+        destinationLookupTableRevisionId:
+          type: string
+          description: UUID of the destination Lookup Table Revision if the Lookup Table Revision Data job is a COPY job.
+        jobDate:
+          type: string
+          description: The date when the Lookup Table Revision Data job was created.
+        type:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/JobType'
+          - description: The job type
+        status:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/LookupTableDataJobStatus'
+          - description: The job status
+        failureReason:
+          type: string
+          description: The failure reason if the Lookup Table Revision Data job failed.
+        downloadUrl:
+          type: string
+          description: The download Url if the Lookup Table Revision Data job is a DOWNLOAD job.
+        downloadUrlExpiry:
+          type: string
+          description: The download Url expiry if the Lookup Table Revision Data job is a DOWNLOAD job.
+      description: Response containing the LookupTableRevisionData job details
+    LookupTableDataJobStatus:
+      type: string
+      description: The status of a job
+      enum:
+      - PENDING
+      - FAILED
+      - SUCCEEDED
+    LookupTableRevisionDataDeleteResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          description: The result of the Lookup Table Revision Data delete action.
+      description: ''
+    PaginatedLookupTableRevisionDataJobResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/LookupTableRevisionDataJobResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    LookupTableDataUploadRequest:
+      required:
+      - contentLength
+      - contentType
+      - fileName
+      type: object
+      properties:
+        fileName:
+          maxLength: 100
+          minLength: 1
+          type: string
+          description: The name of the file to be uploaded.
+        contentType:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/ContentType'
+          - type: string
+            description: The content type
+            enum:
+            - application/jsonl
+            - text/csv
+        version:
+          type: integer
+          description: Version of the Lookup Table Revision Data.
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        contentLength:
+          maximum: 104857600
+          minimum: 1
+          type: integer
+          description: 'The size of the file body in bytes. For example: `"contentLength": 485`, where 485 is the size in bytes of the file to upload.'
+          format: int64
+      description: Request containing the file details when generating an upload URL
+    JobType:
+      type: string
+      description: ''
+      enum:
+      - COPY
+      - UPLOAD
+      - DOWNLOAD
+      - ARCHIVE
+    LookupTableRevisionDataRequest:
+      required:
+      - items
+      type: object
+      properties:
+        items:
+          maxItems: 2000
+          type: array
+          description: The data for a lookup table revision
+          items:
+            type: object
+            additionalProperties: true
+        version:
+          type: integer
+          description: The version of the LookupTableRevisionData.
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    LookupTableDataArchivedResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The presigned URL
+        expiry:
+          type: string
+          description: The URL expiry time
+          format: date-time
+      description: Response containing the archive job URL details
+    LookupTableRevisionCopyResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+          description: UUID of the Revision Data copy job.
+        revisionId:
+          type: string
+          description: The ID of the destination Revision.
+      description: ''
+    LookupTableRevisionCopyRequest:
+      type: object
+      properties:
+        revisionId:
+          type: string
+          description: The target Revision id that the source Revision's data will be copied to. *(Optional)*
+      description: ''
+    LookupTableDataDownloadJobResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+          description: UUID of the download job
+      description: Response containing the download job details
+    LookupTableDataDownloadJobRequest:
+      required:
+      - contentType
+      type: object
+      properties:
+        contentType:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/ContentType'
+          - type: string
+            description: The content type
+            enum:
+            - application/jsonl
+            - text/csv
+      description: Request containing the file details when triggering a download job
+    ContentType:
+      type: string
+      description: The content type of the file
+    LookupTableRevisionDataItemUpsertRequest:
+      required:
+      - item
+      type: object
+      properties:
+        item:
+          description: ''
+          allOf:
+          - type: object
+            additionalProperties: true
+          - description: The item you want to upsert
+        version:
+          type: integer
+          description: The version of the LookupTableRevisionData.
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    LookupTableDataUploadResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+          description: UUID of the upload job
+        url:
+          type: string
+          description: The presigned URL
+        headers:
+          description: ''
+          allOf:
+          - type: object
+            additionalProperties:
+              type: string
+          - description: The headers
+      description: Response containing the upload job URL details
+    LookupTableRevisionDataItemDeleteRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: The version of the Lookup Table Revision Data.
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    LookupTableDataArchivedRequest:
+      required:
+      - contentType
+      type: object
+      properties:
+        contentType:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/ContentType'
+          - type: string
+            description: The content type
+            enum:
+            - application/jsonl
+            - text/csv
+      description: Request containing the file details when requesting an archived data URL
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

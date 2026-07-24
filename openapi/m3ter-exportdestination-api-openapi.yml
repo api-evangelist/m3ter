@@ -1,0 +1,685 @@
+openapi: 3.0.1
+info:
+  title: m3ter Account ExportDestination API
+  description: "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->"
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: ExportDestination
+  description: 'Endpoints for creating, updating, retrieving, or deleting Data Export Destinations.
+
+
+    Before you can configure and run either [Export Schedules](https://www.m3ter.com/docs/api#tag/ExportSchedule) or [Ad-Hoc Exports](https://www.m3ter.com/docs/api#tag/ExportAdHoc), you can set up Export Destinations. Currently, two options for setting up Data Export Destinations are available:
+
+    * S3 buckets on your AWS account.
+
+    * Buckets in your Google Cloud Storage account.
+
+
+    **NOTE: Exporting without a Destination?** When a Data Export runs, the data is sent through to the specified Destination. However, the export file is also made available for you to download it locally. You can set up and run Data Exports without defining a Destination. The data is not exported but the compiled export file is made available for downloading locally.
+
+
+    **Preview Version!** The Data Export feature is currently available only in Preview release version. See [Feature Release Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages) for Preview release definition. ExportDestination endpoints will only be available if Data Export has been enabled for your Organization. For more details see [Data Export(Preview)](https://www.m3ter.com/docs/guides/data-exports) in our main User documentation. If you''re interested in previewing the Data Export feature, please get in touch with m3ter Support or your m3ter contact.'
+paths:
+  /organizations/{orgId}/dataexports/destinations:
+    get:
+      tags:
+      - ExportDestination
+      summary: List ExportDestinations
+      description: Retrieve a list of Export Destination entities. You can filter the list of Destinations returned by UUID.
+      operationId: ListDestinations
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Number of returned Export Destinations to list per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: List of Export Destination UUIDs to retrieve.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns a list of Export Destinations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExportDestinationBaseResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - ExportDestination
+      summary: Create ExportDestination
+      description: "Create a new Export Destination to use for your Data Export Schedules or Ad-Hoc Data Exports. \n\nCurrently, two options for setting up Data Export Destinations are available:\n* S3 buckets on your AWS account.\n* Buckets in your Google Cloud Storage account.\n\nRequest and Response schema:\n* Use the selector under the `destinationType` parameter to expose the relevant request and response schema for the type of Destination.\n\nRequest and Response samples:\n* Use the **Example** selector to show the relevant request and response samples for the type of Destination."
+      operationId: PostDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              discriminator:
+                propertyName: destinationType
+                mapping:
+                  S3: '#/components/schemas/ExportDestinationS3Request'
+                  GCS: '#/components/schemas/ExportDestinationGoogleCloudStorageRequest'
+              anyOf:
+              - $ref: '#/components/schemas/ExportDestinationS3Request'
+              - $ref: '#/components/schemas/ExportDestinationGoogleCloudStorageRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the created Export Destination.
+          content:
+            application/json:
+              schema:
+                discriminator:
+                  propertyName: destinationType
+                  mapping:
+                    S3: '#/components/schemas/ExportDestinationS3Response'
+                    GCS: '#/components/schemas/ExportDestinationGoogleCloudStorageResponse'
+                anyOf:
+                - $ref: '#/components/schemas/ExportDestinationS3Response'
+                - $ref: '#/components/schemas/ExportDestinationGoogleCloudStorageResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexports/destinations/{id}:
+    get:
+      tags:
+      - ExportDestination
+      summary: Retrieve ExportDestination
+      description: Retrieve an Export Destination for the given UUID.
+      operationId: GetExportDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the ExportDestination to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the Export Destination
+          content:
+            application/json:
+              schema:
+                discriminator:
+                  propertyName: destinationType
+                  mapping:
+                    S3: '#/components/schemas/ExportDestinationS3Response'
+                    GCS: '#/components/schemas/ExportDestinationGoogleCloudStorageResponse'
+                anyOf:
+                - $ref: '#/components/schemas/ExportDestinationS3Response'
+                - $ref: '#/components/schemas/ExportDestinationGoogleCloudStorageResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - ExportDestination
+      summary: Update ExportDestination
+      description: 'Update an Export Destination for the given UUID.
+
+
+        Currently, two options for setting up Data Export Destinations are available:
+
+        * S3 buckets on your AWS account.
+
+        * Buckets in your Google Cloud Storage account.
+
+
+        Request and Response schema:
+
+        * Use the selector under the `destinationType` parameter to expose the relevant request and response schema for the type of Destination.
+
+
+        Request and Response samples:
+
+        * Use the **Example** selector to show the relevant request and response samples for the type of Destination.
+
+        '
+      operationId: PutDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Export Destination to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              discriminator:
+                propertyName: destinationType
+                mapping:
+                  S3: '#/components/schemas/ExportDestinationS3Request'
+                  GCS: '#/components/schemas/ExportDestinationGoogleCloudStorageRequest'
+              anyOf:
+              - $ref: '#/components/schemas/ExportDestinationS3Request'
+              - $ref: '#/components/schemas/ExportDestinationGoogleCloudStorageRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated Export Destination
+          content:
+            application/json:
+              schema:
+                discriminator:
+                  propertyName: destinationType
+                  mapping:
+                    S3: '#/components/schemas/ExportDestinationS3Response'
+                    GCS: '#/components/schemas/ExportDestinationGoogleCloudStorageResponse'
+                anyOf:
+                - $ref: '#/components/schemas/ExportDestinationS3Response'
+                - $ref: '#/components/schemas/ExportDestinationGoogleCloudStorageResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - ExportDestination
+      summary: Delete ExportDestination
+      description: 'Delete an Export Destination for the given UUID.
+
+
+        **NOTE:** If you attempt to delete an Export Destination that is currently linked to a Data Export Schedule, an error message is returned and you won''t be able to delete the Destination.'
+      operationId: DeleteDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Export Destination to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maximum: 36
+          minimum: 36
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted Export Destination
+          content:
+            application/json:
+              schema:
+                discriminator:
+                  propertyName: destinationType
+                  mapping:
+                    S3: '#/components/schemas/ExportDestinationS3Response'
+                    GCS: '#/components/schemas/ExportDestinationGoogleCloudStorageResponse'
+                anyOf:
+                - $ref: '#/components/schemas/ExportDestinationS3Response'
+                - $ref: '#/components/schemas/ExportDestinationGoogleCloudStorageResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexports/jobs/{jobId}/getdownloadurl:
+    get:
+      tags:
+      - ExportDestination
+      summary: Get Data Export File Download URL
+      description: 'Returns a presigned download URL for data export file download based on the `jobId` provided.
+
+
+        If you omit `destinationIds` when setting up your [Ad-Hoc data exports](https://www.m3ter.com/docs/api#tag/ExportAdHoc) or [Scheduled data exports](https://www.m3ter.com/docs/api#tag/ExportSchedule), then the data is not copied to a destination but is available for you to download using the returned download URL.
+
+
+        **Constraints:**
+
+        * Only valid for Export jobs ran in the past 24 hours.
+
+        * The download URL is time-bound and is only valid for 15 minutes.
+
+
+        **NOTE!** This ExportDestination endpoint is available in Beta release version. See [Feature Release Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages) for Beta release definition.'
+      operationId: GenerateDataExportFileDownloadUrl
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: jobId
+        in: path
+        description: The job ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns a presigned URL for data export file download
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateExportDownloadUrlResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    GenerateExportDownloadUrlResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The presigned download URL
+        expirationTime:
+          type: string
+          description: The expiration time of the URL
+          format: date-time
+      description: It contains details for downloading an export file
+    DataExportDestinationType:
+      type: string
+      description: The type of destination
+      enum:
+      - S3
+      - GCS
+    PaginatedExportDestinationBaseResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ExportDestinationBaseResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    ExportDestinationGoogleCloudStorageRequest:
+      title: ExportDestinationGoogleCloudStorageRequest
+      required:
+      - bucketName
+      - poolId
+      - projectNumber
+      - providerId
+      type: object
+      properties:
+        bucketName:
+          maxLength: 63
+          minLength: 3
+          type: string
+          description: The export destination bucket name.
+        prefix:
+          type: string
+          description: The export destination prefix.
+        projectNumber:
+          minLength: 1
+          type: string
+          description: The export destination GCP projectNumber.
+        poolId:
+          minLength: 1
+          type: string
+          description: The export destination Web Identity Federation poolId.
+        providerId:
+          minLength: 1
+          type: string
+          description: The export destination Web Identity Federation identity providerId.
+        serviceAccountEmail:
+          type: string
+          description: The export destination service account email.
+        partitionOrder:
+          description: ''
+          nullable: true
+          allOf:
+          - $ref: '#/components/schemas/PartitionOrder'
+          - description: Output partitioning
+        destinationType:
+          allOf:
+          - type: string
+            enum:
+            - GCS
+          - description: 'The type of destination to create. Possible values are: GCS'
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/ExportDestinationBaseRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+    ExportDestinationS3Request:
+      title: ExportDestinationS3Request
+      required:
+      - bucketName
+      - iamRoleArn
+      type: object
+      properties:
+        bucketName:
+          maxLength: 63
+          minLength: 3
+          type: string
+          description: Name of the S3 bucket for the Export Destination.
+        prefix:
+          type: string
+          description: Location in specified S3 bucket for the Export Destination. If you omit a `prefix`, then the root of the bucket will be used.
+        iamRoleArn:
+          minLength: 1
+          pattern: ^arn:aws:iam::\d+:role/.*$
+          type: string
+          description: 'To enable m3ter to upload a Data Exports to your S3 bucket, the service has to assume an IAM role with PutObject permission for the specified `bucketName`. Create a suitable IAM role in your AWS account and enter ARN:
+
+
+            **Formatting Constraints:**
+
+            * The IAM role ARN must begin with "arn:aws:iam".
+
+            * The general format required is: "arn:aws:iam::<aws account id>:role/<role name>". For example: "arn:aws:iam::922609978421:role/IAMRole636".
+
+            * If the `iamRoleArn` used doesn''t comply with this format, then an error message will be returned.
+
+
+            **More Details:** For more details and examples of the Permission and Trust Policies you can use to create the required IAM Role ARN, see [Creating Data Export Destinations](https://www.m3ter.com/docs/guides/data-exports/creating-data-export-destinations) in our main User documentation.'
+        partitionOrder:
+          description: ''
+          nullable: true
+          allOf:
+          - $ref: '#/components/schemas/PartitionOrder'
+          - description: Output partitioning
+        destinationType:
+          allOf:
+          - type: string
+            enum:
+            - S3
+          - description: 'The type of destination to create. Possible values are: S3'
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/ExportDestinationBaseRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+    PartitionOrder:
+      type: string
+      description: 'Specify how you want the file path to be structured in your bucket destination - by Time first (Default) or Type first.
+
+
+        Type is dependent on whether the Export is for Usage data or Operational data:
+
+        * **Usage.** Type is `measurements`.
+
+        * **Operational.** Type is one of the entities for which operational data exports are available, such as `account`, `commitment`, `meter`, and so on.
+
+
+        Example for Usage Data Export using .CSV format:
+
+        * Time first:
+
+        `{bucketName}/{prefix}/orgId={orgId}/date=2025-01-27/hour=10/type=measurements/b9a317a6-860a-40f9-9bf4-e65c44c72c94_measurements.csv.gz`
+
+        * Type first:
+
+        `{bucketName}/{prefix}/orgId={orgId}/type=measurements/date=2025-01-27/hour=10/b9a317a6-860a-40f9-9bf4-e65c44c72c94_measurements.csv.gz`'
+      enum:
+      - TYPE_FIRST
+      - TIME_FIRST
+    ExportDestinationGoogleCloudStorageResponse:
+      title: ExportDestinationGoogleCloudStorageResponse
+      type: object
+      properties:
+        bucketName:
+          type: string
+          description: The bucket name.
+        prefix:
+          type: string
+          description: The prefix.
+        projectNumber:
+          type: string
+          description: The export destination GCP projectNumber.
+        poolId:
+          type: string
+          description: The export destination Web Identity Federation poolId.
+        providerId:
+          type: string
+          description: The export destination Web Identity Federation identity providerId.
+        serviceAccountEmail:
+          type: string
+          description: The export destination service account email.
+        partitionOrder:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/PartitionOrder'
+          - description: Output partitioning
+      description: The response containing the details of an Google Cloud Storage export destination.
+      allOf:
+      - $ref: '#/components/schemas/ExportDestinationBaseResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    ExportDestinationS3Response:
+      title: ExportDestinationS3Response
+      type: object
+      properties:
+        bucketName:
+          type: string
+          description: Name of the S3 bucket for the Export Destination.
+        prefix:
+          type: string
+          description: Location in specified S3 bucket for the Export Destination. If no `prefix` is specified, then the root of the bucket is used.
+        iamRoleArn:
+          type: string
+          description: The specified IAM role ARN with PutObject permission for the specified `bucketName`, which allows the service to upload Data Exports to your S3 bucket.
+        partitionOrder:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/PartitionOrder'
+          - description: Output partitioning
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/ExportDestinationBaseResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+    ExportDestinationBaseRequest:
+      required:
+      - code
+      - name
+      type: object
+      properties:
+        name:
+          maxLength: 200
+          minLength: 1
+          type: string
+          description: The name of the Export Destination.
+        code:
+          maxLength: 80
+          minLength: 1
+          pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+          type: string
+          description: The code of the Export Destination.
+        destinationType:
+          description: ''
+          $ref: '#/components/schemas/DataExportDestinationType'
+      description: Base mode request containing available destination types
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    ExportDestinationBaseResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the data Export Destination.
+        code:
+          type: string
+          description: The code of the data Export Destination.
+        destinationType:
+          description: ''
+          $ref: '#/components/schemas/DataExportDestinationType'
+        dtCreated:
+          type: string
+          description: The DateTime when the Export Destination was created.
+          format: date-time
+          x-stainless-skip:
+          - terraform
+        dtLastModified:
+          type: string
+          description: The DateTime when the Export Destination was last modified.
+          format: date-time
+          x-stainless-skip:
+          - terraform
+        createdBy:
+          type: string
+          description: The id of the user who created the Export Destination.
+          x-stainless-skip:
+          - terraform
+        lastModifiedBy:
+          type: string
+          description: The id of the user who last modified the Export Destination.
+          x-stainless-skip:
+          - terraform
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

@@ -1,0 +1,1918 @@
+openapi: 3.0.1
+info:
+  title: m3ter Account Integrations API
+  description: "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->"
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Integrations
+  description: "A suite of endpoints for configuring and managing third party integrations within the m3ter platform. The integration endpoints in this section facilitate various operations such as creating, updating, listing, and deletion of integrations.\n\nm3ter integrations enable seamless data synchronization and mapping with external systems required in core business processes. These processes often include sales, pricing, billing and invoicing, and general finance. \n\nWith m3ter integrations, you can establish robust connections with popular business platforms, enhancing your operational capabilities. For example:\n* Chargebee\n* Salesforce\n* Stripe\n* Netsuite\n* Paddle\n* Xero\n* QuickBooks\n"
+paths:
+  /organizations/{orgId}/integrationruns/{entityType}/latest/{id}:
+    get:
+      tags:
+      - Integrations
+      summary: Retrieve Latest IntegrationRun
+      description: Retrieve the latest integration run for the entity.
+      operationId: GetIntegrationRunLatest
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: entityType
+        in: path
+        description: 'The type of the entity you want to retrieve the last integration run for. Two options:
+
+          * Bill
+
+          * Notification'
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The UUID of the entity to retrieve the latest integration run for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the Integration Run
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationRunResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationconfigs/available/{systemName}/entities:
+    get:
+      tags:
+      - Integrations
+      summary: Retrieve Available Entity Types for System
+      description: Retrieve the valid entity types for provided system.
+      operationId: GetAvailableSystemEntities
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: systemName
+        in: path
+        description: The system to retrieve the configuration for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the available entity types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationruns/{entityType}/{entityId}:
+    get:
+      tags:
+      - Integrations
+      summary: List IntegrationRuns
+      description: 'Retrieve a list of the integration runs for the specified entity.
+
+
+        You can filter the list using the `startDate` and `endDate` query parameters to specify date/times to define the time period you want to return integration runs for.'
+      operationId: ListIntegrationRuns
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: entityId
+        in: path
+        description: The UUID of the entity to retrieve the integration runs for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: entityType
+        in: path
+        description: 'The type of the entity you want to retrieve the integration runs for. Two options:
+
+          * Bill
+
+          * Notification'
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: startDate
+        in: query
+        description: Retrieve only those integration runs started after the specified date/time.*(ISO 8601 formatted)*
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: endDate
+        in: query
+        description: Retrieve only those integration runs started before or on the specified date/time.*(ISO 8601 formatted)*
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of integration runs to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: '`nextToken` for multi page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: status
+        in: query
+        description: Status of the integration run
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/RunStatus'
+      - name: order
+        in: query
+        description: Integration runs order
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/IntegrationRunDao.Order'
+      responses:
+        '200':
+          description: Return the Integration Runs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedIntegrationRunResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationconfigs/entity/{entityType}:
+    get:
+      tags:
+      - Integrations
+      summary: Retrieve IntegrationConfig
+      description: Retrieve the integration configuration for the entity
+      operationId: GetIntegrationConfigForType
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: entityType
+        in: path
+        description: The entity to retrieve the configuration for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: entityId
+        in: query
+        description: UUID of the entity to retrieve IntegrationConfigs for
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: destination
+        in: query
+        description: Destination type to retrieve IntegrationConfigs for
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: destinationId
+        in: query
+        description: UUID of the destination to retrieve IntegrationConfigs for
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of configs to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Return the IntegrationConfig
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationRunResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/webhooks/{id}/active:
+    put:
+      tags:
+      - Integrations
+      summary: Activate Webhook Destination
+      description: 'Set the `active` status on a webhook integration destination.
+
+
+        Use this endpoint to activate or deactivate a webhook integration destination. It toggles the `active` status of the specific wehbook destination with the given ID. '
+      operationId: ActivateWebhookDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the webhook destination. This ID is used to specify which webhook integration is being targeted for activation or deactivation.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: active
+        in: query
+        description: active status of the webhook
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Returns the WebhookDestinationRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationconfigs/available/{systemName}/auth/{entityType}:
+    get:
+      tags:
+      - Integrations
+      summary: Retrieve Available Auth Config for System and Entity Type
+      description: Retrieve the valid auth config for provided system and entity type.
+      operationId: GetAvailableAuthForSystemAndEntityType
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: systemName
+        in: path
+        description: The system to retrieve the configuration for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: entityType
+        in: path
+        description: The entity to retrieve the configuration for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the available auth config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigOptions'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationruns/logs/{id}:
+    get:
+      tags:
+      - Integrations
+      summary: Get IntegrationRun Log
+      description: 'Retrieve the integrationrun log for the given UUID.
+
+
+        This endpoint is for retrieving logs of a specific integrationrun. It is useful for debugging and monitoring the performance of integrations within your organization.'
+      operationId: GetIntegrationRunLogs
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID associated with the integrationrun. This ID helps in pinpointing the exact integrationrun logs you are looking to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the IntegrationRun
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationRunLogResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationconfigs/values/{systemName}/{configOption}:
+    get:
+      tags:
+      - Integrations
+      summary: Get ConfigOption Values
+      description: Get possible values for specific configuration setting.
+      operationId: GetConfigOptionValues
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: systemName
+        in: path
+        description: The name of the system.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: configOption
+        in: path
+        description: The entity to retrieve the configuration for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the ConfigOption Values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigOptionsResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/webhooks/{id}:
+    get:
+      tags:
+      - Integrations
+      summary: Retrieve Destination
+      description: Retrieve the webhook Destination for the UUID.
+      operationId: GetWebhookIntegrationDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the webhook destination.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the Destination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - Integrations
+      summary: Update Destination
+      description: Update a destination to be used for a webhook.
+      operationId: UpdateWebhookDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the WebhookDestination to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookDestinationRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the Destination Update Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - Integrations
+      summary: Delete Webhook Destination
+      description: This endpoint deletes a specific webhook destination identified by its UUID.
+      operationId: DeleteWebhookDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the webhook destination to be deleted.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted Destination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationconfigs/available:
+    get:
+      tags:
+      - Integrations
+      summary: Retrieve Available Configurations
+      description: This endpoint gets the available configuration options for integrations.
+      operationId: GetAvailableConfig
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: systemName
+        in: query
+        description: The system to retrieve the configuration for.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: entityType
+        in: query
+        description: The entity to retrieve the configuration for.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the configuration details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailableConfigurationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationruns/destinations/{destinationId}:
+    get:
+      tags:
+      - Integrations
+      summary: List IntegrationRuns By DestinationId
+      description: Retrieve a list of the integration runs for the destination
+      operationId: ListIntegrationRunsByDestinationId
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: destinationId
+        in: path
+        description: The UUID of the destination.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: destination
+        in: query
+        description: Destination system
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: startDate
+        in: query
+        description: Retrieve entities started after the specified date.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: endDate
+        in: query
+        description: Retrieve entities started before the specified date.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of products to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: status
+        in: query
+        description: Status of the integration run
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/RunStatus'
+      - name: order
+        in: query
+        description: Integration runs order
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/IntegrationRunDao.Order'
+      responses:
+        '200':
+          description: ListIntegrationRunsByDestinationId 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedIntegrationRunResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationconfigs/available/systems:
+    get:
+      tags:
+      - Integrations
+      summary: Retrieve Available Integration Systems
+      description: Retrieve the valid integration systems. Can be filtered by entityType.
+      operationId: GetAvailableSystems
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: entityType
+        in: query
+        description: The entity to retrieve the configuration for.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the available integration systems
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SystemResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationconfigs/{id}/enable:
+    post:
+      tags:
+      - Integrations
+      summary: Enable IntegrationConfig
+      description: Enables a previously disabled integration configuration, allowing it to be operational again.
+      operationId: EnableIntegrationConfig
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: UUID of the integration configuration
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the IntegrationConfig
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationConfigResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationconfigs:
+    get:
+      tags:
+      - Integrations
+      summary: List All IntegrationConfigs
+      description: 'List all integration configurations.
+
+
+        This endpoint retrieves a list of all integration configurations for the specified Organization. The list can be paginated for easier management.'
+      operationId: GetIntegrationConfigs
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for the organization. This specifies the organization within which the webhook destination is created.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of integration configurations to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of integration configurations in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: destinationId
+        in: query
+        description: optional filter for a specific destination
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the IntegrationConfigs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedIntegrationConfigResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - Integrations
+      summary: Create IntegrationConfig
+      description: Set the integration configuration for the entity.
+      operationId: PostIntegrationConfig
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IntegrationConfigRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the IntegrationConfig
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationConfigResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/webhooks:
+    get:
+      tags:
+      - Integrations
+      summary: List Destinations
+      description: Retrieve a list of all Destinations created in the Organization.
+      operationId: ListWebhookIntegrations
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Number of WebhookIntegrations to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns a list of Destinations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWebhookDestinationResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - Integrations
+      summary: Create Webhook Destination
+      description: This endpoint creates a new webhook destination. A webhook destination is a URL where webhook payloads will be sent.
+      operationId: CreateWebhookDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for the organization. This specifies the organization within which the webhook destination is created.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookDestinationRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the DestinationCreateRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationruns/{entityType}/latest:
+    get:
+      tags:
+      - Integrations
+      summary: Retrieve IntegrationRuns
+      description: Retrieve the latest integration runs for entity and ids
+      operationId: GetIntegrationRunLatestForIds
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: entityType
+        in: path
+        description: The type of the entity (e.g. Bill).
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: List of ids to retrieve
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Return the IntegrationRuns
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationRunResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationruns/{id}:
+    get:
+      tags:
+      - Integrations
+      summary: Get IntegrationRun for the UUID
+      description: Retrieve the integration run for the id
+      operationId: GetIntegrationRun
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the entity.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the IntegrationRun
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationRunResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationconfigs/{id}:
+    get:
+      tags:
+      - Integrations
+      summary: Retrieve IntegrationConfig for UUID
+      description: 'Retrieve the integration configuration for the given UUID.
+
+
+        This endpoint retrieves the configuration details of a specific integration within an organization. It is useful for obtaining the settings and parameters of an integration.'
+      operationId: GetIntegrationConfig
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the integration configuration. This ID specifies which integration's configuration details are being requested.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the IntegrationConfig
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationRunResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - Integrations
+      summary: Update IntegrationConfig
+      description: 'Update the integration configuration for the given UUID.
+
+
+        This endpoint allows you to update the configuration of a specific integration within your organization. It is used to modify settings or parameters of an existing integration.'
+      operationId: UpdateIntegrationConfig
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the IntegrationConfig. This ID identifies which specific integration configuration you wish to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IntegrationConfigRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the IntegrationConfig
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationConfigResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - Integrations
+      summary: Delete IntegrationConfig
+      description: 'Delete the integration configuration for the given UUID.
+
+
+        Use this endpoint to delete the configuration of a specific integration within your organization. It is intended for removing integration settings that are no longer needed.'
+      operationId: DeleteIntegrationConfig
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the IntegrationConfig to be deleted. This ID specifies the exact integration configuration that needs removal.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the IntegrationConfig
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationConfigResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    WebhookDestinationResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          description: 'The URL to which webhook requests are sent. '
+        credentials:
+          description: 'This schema defines the credentials required for m3ter request signing. '
+          allOf:
+          - $ref: '#/components/schemas/IntegrationM3terSignedCredentialsResponse'
+          - description: Response representing a credential set for m3ter request signing
+      description: Response containing details of a webhook destination.
+      allOf:
+      - $ref: '#/components/schemas/DestinationResponse'
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+    PaginatedIntegrationRunResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/IntegrationRunResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AvailableConfigurationResponse:
+      required:
+      - globalConfigurationOptions
+      - selectedConfigurations
+      - supportedEntities
+      type: object
+      properties:
+        supportedEntities:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/EntityConfiguration'
+          description: An object mapping entity types to their respective `EntityConfiguration`. Provides information on which entities are supported and their configurations.
+        selectedConfigurations:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ConfigOptions'
+          description: ''
+        globalConfigurationOptions:
+          description: An array of objects, each representing a global configuration option available for integrations.
+          $ref: '#/components/schemas/ConfigOptions'
+      description: Response containing available configuration options for integrations.
+    WebhookDestinationRequest:
+      required:
+      - credentials
+      - url
+      type: object
+      properties:
+        url:
+          minLength: 1
+          type: string
+          description: The URL to which the webhook requests will be sent.
+        credentials:
+          description: 'The credentials required for the webhook. '
+          allOf:
+          - $ref: '#/components/schemas/IntegrationM3terSignedCredentialsRequest'
+          - description: Request representing a credential set for m3ter request signing
+      description: This response contains details about the `WebhookDestinationRequest` entity, including the URL and credentials required for webhook activation.
+      allOf:
+      - $ref: '#/components/schemas/DestinationRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+    AbstractResponseWithAuditFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    ConfigOptionsResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ''
+        label:
+          type: string
+          description: ''
+      description: Response containing an options for a configuration
+    IntegrationRunResponse:
+      type: object
+      description: Response containing an IntegrationRun entity.
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - required:
+        - destination
+        - entityId
+        - entityType
+        - status
+        properties:
+          entityType:
+            minLength: 1
+            type: string
+            description: 'The type of entity the integration run is for. Two options:
+
+              * Bill
+
+              * Notification'
+          entityId:
+            minLength: 1
+            type: string
+            description: The unique identifier (UUID) of the entity the integration run is for.
+          dtStarted:
+            type: string
+            description: The date and time the integration run was started *(in ISO-8601 format)*.
+            format: date-time
+          dtCompleted:
+            type: string
+            description: The date and time the integration was completed. *(in ISO-8601 format)*.
+            format: date-time
+          status:
+            description: The current status of the integration run.
+            allOf:
+            - $ref: '#/components/schemas/RunStatus'
+            - description: Status of the integration
+          destination:
+            type: string
+            description: The destination system for the integration run.
+          destinationId:
+            type: string
+            description: Identifier of the destination
+          error:
+            type: string
+            description: Describes any errors encountered during the integration run.
+          url:
+            type: string
+            description: The URL of the entity in the destination system if available.
+          externalId:
+            type: string
+            description: The external ID in the destination system if available.
+          parentIntegrationRunId:
+            type: string
+            description: ID of the parent integration run, or null if this is a parent integration run
+        description: Response containing a IntegrationRun entity
+    AbstractCollection_ConfigSetting_:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          description: ''
+      description: ''
+    AuthType:
+      type: string
+      description: ''
+      enum:
+      - OAUTH_CODE
+      - OAUTH_CLIENT_CREDENTIALS
+      - HTTP_BASIC
+      - M3TER_SIGNED_REQUEST
+      - AWS_INTEGRATION
+      - PADDLE
+      - NETSUITE
+      - CHARGEBEE
+      - M3TER_APP_SIGNATURE
+      - M3TER_SERVICE_USER
+      - STRIPE_SIGNED_REQUEST
+      - OPSGENIE_KEY
+      - SAP_BYD
+      - HUBSPOT_ACCESS_TOKEN
+      - HUBSPOT_CLIENT_SECRET
+      - SLACK_WEBHOOK
+      - SAGE_INTACCT_CLIENT_CREDENTIALS
+      - SAGE_INTACCT_CLIENT_SECRET
+      - STATIC_API_KEY
+    AbstractList_ConfigSetting_:
+      $ref: '#/components/schemas/AbstractCollection_ConfigSetting_'
+    IntegrationConfigRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - destination
+        - entityType
+        properties:
+          entityType:
+            minLength: 1
+            pattern: ^[a-zA-Z0-9_-]*$
+            type: string
+            description: Specifies the type of entity for which the integration configuration is being updated. Must be a valid alphanumeric string.
+            example: Bill
+          entityId:
+            type: string
+            description: The unique identifier (UUID) of the entity. This field is used to specify which entity's integration configuration you're updating.
+            example: 00000000-0000-0000-0000-000000000000
+          destination:
+            minLength: 1
+            pattern: ^[a-zA-Z0-9_-]*$
+            type: string
+            description: Denotes the integration destination. This field identifies the target platform or service for the integration.
+            example: Stripe
+          destinationId:
+            type: string
+            description: The unique identifier (UUID) for the integration destination.
+            example: 00000000-0000-0000-0000-000000000000
+          configData:
+            description: A flexible object to include any additional configuration data specific to the integration.
+            allOf:
+            - type: object
+              additionalProperties: true
+            - default: {}
+          credentials:
+            description: Base model for defining integration credentials across different types of integrations.
+            $ref: '#/components/schemas/IntegrationCredentialsRequestBase'
+          integrationCredentialsId:
+            type: string
+            description: ''
+            example: 00000000-0000-0000-0000-000000000000
+          name:
+            type: string
+            description: ''
+            example: My Integration
+    DestinationResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: ''
+          description:
+            type: string
+            description: ''
+          code:
+            type: string
+            description: ''
+          active:
+            type: boolean
+            description: ''
+        description: Response containing a Destination
+    DestinationConfiguration:
+      required:
+      - apiName
+      - authConfigOptions
+      - authType
+      - categories
+      - destination
+      - destinationConfigOptions
+      - displayName
+      - released
+      type: object
+      properties:
+        apiName:
+          description: ''
+          $ref: '#/components/schemas/DestinationType'
+        destination:
+          type: string
+          description: The destination's unique identifier or name.
+        displayName:
+          type: string
+          description: A human-readable display name for the destination.
+        destinationConfigOptions:
+          description: An array of objects, each representing a specific configuration option available for this destination.
+          $ref: '#/components/schemas/ConfigOptions'
+        authConfigOptions:
+          description: An array of objects detailing authentication configuration options for the destination.
+          $ref: '#/components/schemas/ConfigOptions'
+        released:
+          type: boolean
+          description: 'A boolean indicating whether this destination configuration is released and available for use.
+
+
+            * TRUE - Configuration is released.
+
+            * FALSE - Configuration is not released.'
+        authType:
+          type: string
+          description: The type of authentication required for this destination *(e.g., OAuth, API Key)*.
+        categories:
+          type: array
+          description: ''
+          items:
+            type: string
+      description: Configuration details for a specific destination within an entity.
+    ArrayList_ConfigSetting_:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractList_ConfigSetting_'
+      - $ref: '#/components/schemas/AbstractCollection_ConfigSetting_'
+      - properties:
+          empty:
+            type: boolean
+            description: ''
+    IntegrationM3terSignedCredentialsResponse:
+      type: object
+      properties:
+        apiKey:
+          type: string
+          description: The API key provided by m3ter. This key is part of the credential set required for signing requests and authenticating with m3ter services.
+          example: api key
+        secret:
+          type: string
+          description: The secret associated with the API key. This secret is used in conjunction with the API key to generate a signature for secure authentication.
+          example: api secret
+      description: 'Response representing a set of credentials used for signing m3ter requests. '
+      allOf:
+      - $ref: '#/components/schemas/IntegrationCredentialsResponse'
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+    IntegrationRunLogResponse:
+      type: object
+      properties:
+        Payload:
+          type: string
+          description: Base64 encoded log
+      description: Response containing the log for an IntegrationRun entity
+    PaginatedWebhookDestinationResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/WebhookDestinationResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    RunStatus:
+      type: string
+      description: ''
+      enum:
+      - WAITING
+      - STARTED
+      - COMPLETE
+      - ERROR
+      - AWAITING_RETRY
+      - AUTH_FAILED
+      - ACCOUNTING_PERIOD_CLOSED
+      - INVOICE_ALREADY_PAID
+      - DISABLED
+      - TIMEOUT_LIMIT_EXCEEDED
+      - RATE_LIMIT_RETRY
+    IntegrationM3terSignedCredentialsRequest:
+      type: object
+      description: 'This schema defines the credentials required for m3ter request signing. '
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - $ref: '#/components/schemas/IntegrationCredentialsRequestBase'
+      - required:
+        - apiKey
+        - secret
+        - type
+        properties:
+          type:
+            minLength: 1
+            type: string
+            description: Specifies the authorization type. For this schema, it is exclusively set to M3TER_SIGNED_REQUEST.
+            enum:
+            - M3TER_SIGNED_REQUEST
+          empty:
+            type: boolean
+            description: "A flag to indicate whether the credentials are empty. \n\n* TRUE - empty credentials.\n* FALSE - credential details required."
+          apiKey:
+            minLength: 1
+            type: string
+            description: The API key provided by m3ter. This key is part of the credential set required for signing requests and authenticating with m3ter services.
+            example: api key
+          secret:
+            minLength: 1
+            type: string
+            description: The secret associated with the API key. This secret is used in conjunction with the API key to generate a signature for secure authentication.
+            example: api secret
+        description: Request representing a credential set for m3ter request signing
+    PaginatedIntegrationConfigResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/IntegrationConfigResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    TriggerType:
+      type: string
+      description: 'Specifies the type of trigger for the integration. '
+      enum:
+      - EVENT
+      - SCHEDULE
+    EntityConfiguration:
+      required:
+      - destinations
+      - entityConfigurationOptions
+      - readableName
+      - released
+      type: object
+      properties:
+        readableName:
+          type: string
+          description: A human-readable name for the entity. Helps in identifying the entity type easily.
+        destinations:
+          type: array
+          description: An array of `DestinationConfiguration` objects, detailing available destinations for this entity.
+          items:
+            $ref: '#/components/schemas/DestinationConfiguration'
+        entityConfigurationOptions:
+          description: An array of objects, each representing a specific configuration option available for the entity.
+          $ref: '#/components/schemas/ConfigOptions'
+        released:
+          type: boolean
+          description: 'A boolean indicating whether this entity configuration is released and available for use.
+
+
+            * TRUE - Configuration is released.
+
+            * FALSE - Configuration is not released.'
+      description: Configuration details for a specific entity type in the integration.
+    DestinationRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - description
+        - name
+        properties:
+          name:
+            minLength: 1
+            type: string
+            description: ''
+          description:
+            minLength: 1
+            type: string
+            description: ''
+          code:
+            type: string
+            description: ''
+          active:
+            type: boolean
+            description: ''
+    IntegrationCredentialsRequestBase:
+      required:
+      - type
+      type: object
+      properties:
+        empty:
+          type: boolean
+          description: "A flag to indicate whether the credentials are empty. \n\n* TRUE - empty credentials.\n* FALSE - credential details required."
+        type:
+          minLength: 1
+          type: string
+          description: Specifies the type of authorization required for the integration.
+          enum:
+          - HTTP_BASIC
+          - OAUTH_CLIENT_CREDENTIALS
+          - M3TER_SIGNED_REQUEST
+          - AWS_INTEGRATION
+          - PADDLE_AUTH
+          - NETSUITE_AUTH
+          - CHARGEBEE_AUTH
+          - M3TER_APP_SIGNATURE
+          - M3TER_SERVICE_USER
+          - STRIPE_SIGNED_REQUEST
+          - HUBSPOT_ACCESS_TOKEN
+          - HUBSPOT_CLIENT_SECRET
+          - OPSGENIE_KEY
+          - SAP_BYD
+          - SLACK_WEBHOOK
+          - SAGE_INTACCT_CLIENT_CREDENTIALS
+          - SAGE_INTACCT_CLIENT_SECRET
+          - STATIC_API_KEY
+        name:
+          type: string
+          description: The name of the credentials
+          example: Integration Credentials
+        destination:
+          description: ''
+          $ref: '#/components/schemas/DestinationType'
+      description: Base model for defining integration credentials across different types of integrations.
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    SystemResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: System name
+        displayName:
+          type: string
+          description: User friendly display name
+        validationSupported:
+          type: boolean
+          description: Whether or not m3ter supports validation of requests for this system. Requests will need to made without validation
+        supportedAuthTypes:
+          type: array
+          description: List of supported auth types
+          items:
+            $ref: '#/components/schemas/AuthType'
+      description: Response containing information about a system that m3ter can integrate with
+    IntegrationRunDao.Order:
+      type: string
+      description: ''
+      enum:
+      - ASC
+      - DESC
+    IntegrationConfigResponse:
+      type: object
+      description: Response containing a IntegrationConfigResponse entity.
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - required:
+        - destination
+        - entityType
+        properties:
+          entityType:
+            minLength: 1
+            type: string
+            description: The type of entity the integration is for *(e.g. Bill)*.
+            example: Bill
+          entityId:
+            type: string
+            description: The unique identifier (UUID) of the entity this integration is for *(e.g. the ID of a notification configuration. Optional.)*
+            example: 00000000-0000-0000-0000-000000000000
+          destination:
+            minLength: 1
+            type: string
+            description: The type of destination *(e.g. Netsuite, webhooks)*.
+            example: Stripe
+          destinationId:
+            type: string
+            description: The unique identifier (UUID) of the entity the integration is for.
+            example: 00000000-0000-0000-0000-000000000000
+          configData:
+            description: The configuration data for the integration.
+            allOf:
+            - type: object
+              additionalProperties: true
+            - description: Configuration data for the integration
+          authorized:
+            type: boolean
+            description: "A flag indicating whether the integration configuration is authorized. \n\n* TRUE - authorized.\n* FALSE - not authorized."
+          enabled:
+            type: boolean
+            description: 'A flag indicating whether the integration configuration is currently enabled or disabled.
+
+
+              * TRUE - enabled.
+
+              * FALSE - disabled.'
+          triggerType:
+            description: 'Specifies the type of trigger for the integration. '
+            deprecated: true
+            allOf:
+            - $ref: '#/components/schemas/TriggerType'
+          integrationCredentialsId:
+            type: string
+            description: UUID of the credentials to use for this integration
+            example: 00000000-0000-0000-0000-000000000000
+          name:
+            type: string
+            description: The name of the configuration
+            example: My Integration
+        description: Response containing a IntegrationConfigResponse entity
+    ConfigOptions:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ArrayList_ConfigSetting_'
+      - $ref: '#/components/schemas/AbstractList_ConfigSetting_'
+      - $ref: '#/components/schemas/AbstractCollection_ConfigSetting_'
+    IntegrationCredentialsResponse:
+      type: object
+      description: Response containing a IntegrationCredentials entity
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - required:
+        - destination
+        - type
+        properties:
+          type:
+            minLength: 1
+            type: string
+            description: the type of credentials
+          destination:
+            minLength: 1
+            type: string
+            description: the system the integration is for
+          destinationId:
+            type: string
+            description: the destinationId the integration is for
+          name:
+            type: string
+            description: the name of the credentials
+        description: Response containing a IntegrationCredentials entity
+    DestinationType:
+      type: string
+      description: ''
+      enum:
+      - WEBHOOK
+      - NETSUITE
+      - STRIPE
+      - STRIPE_TEST
+      - AWS
+      - PADDLE
+      - PADDLE_SANDBOX
+      - SALESFORCE
+      - XERO
+      - CHARGEBEE
+      - QUICKBOOKS
+      - QUICKBOOKS_SANDBOX
+      - M3TER
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
