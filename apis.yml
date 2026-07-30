@@ -7,7 +7,20 @@ description: >-
   management. Authentication uses OAuth 2.0 Client Credentials with a Service User Access Key id and Api Secret
   exchanged for a Bearer Token at https://api.m3ter.com/oauth/token.
 type: Index
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: freemium
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Freemium · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/m3ter.png
 tags:
   - FinOps
   - Usage-Based Billing
@@ -20,45 +33,2544 @@ created: '2026-03-27'
 modified: '2026-05-19'
 specificationVersion: '0.19'
 apis:
-  - aid: m3ter:m3ter
-    name: M3ter API
-    description: >-
-      The m3ter REST API provides programmatic access to the m3ter usage-based billing and metering platform. It is
-      split into the Ingest API for submitting raw measurement data and the Config API for managing Accounts, Plans,
-      Products, Aggregations, Counters, Meters, Pricing, Bills, Commitments, Contracts, Balances, BillJobs, Charges,
-      Notifications, Events, Integrations, and Data Exports. Authentication uses OAuth 2.0 Client Credentials. The base
-      URL is https://api.m3ter.com.
-    humanURL: https://www.m3ter.com/
-    baseURL: https://api.m3ter.com
-    tags:
-      - FinOps
-      - Usage-Based Billing
-      - Metering
-      - Billing
-      - Pricing
-    properties:
-      - type: Documentation
-        url: https://docs.m3ter.com/
-      - type: APIReference
-        url: https://docs.m3ter.com/api
-      - type: Authentication
-        url: https://docs.m3ter.com/api/authentication
-      - type: GettingStarted
-        url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
-      - type: OpenAPI
-        url: openapi/m3ter-openapi.yml
-      - type: SDKs
-        url: https://github.com/m3ter-com/m3ter-sdk-python
-      - type: SDKs
-        url: https://github.com/m3ter-com/m3ter-sdk-node
-      - type: SDKs
-        url: https://github.com/m3ter-com/m3ter-sdk-java
-      - type: SDKs
-        url: https://github.com/m3ter-com/m3ter-sdk-go
-      - type: SDKs
-        url: https://github.com/m3ter-com/m3ter-sdk-typescript
-      - type: TerraformProvider
-        url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-account-api
+  name: M3ter Account API
+  description: "Endpoints for Account related operations such as creation, update, list and delete. \n\
+    An Account represents one of your end-customer accounts. \n\nAccounts do not belong to a Product to\
+    \ allow for cases where an end customer takes more than one of your Products, and the charges for\
+    \ these Products differ.\n\nYou typically attach a priced Plan or Plan Template to an Account before\
+    \ you can generate bills for the Account:\n- If a customer consumes several of your Products, you\
+    \ can attach a priced Plan or Plan Template to the Account for charging against each Product.\n- If\
+    \ an Account is charged solely on the basis of an agreed Prepayment/Commitment amount but not all\
+    \ of the Prepayment is prepaid, you can use a customized billing schedule for outstanding fees without\
+    \ having to attach a Plan to the Account to generate Bills.\n\nYou can create Child Accounts for end\
+    \ customers who hold multiple Accounts with you. You can then set up billing for the Parent/Child\
+    \ Account usage to have the end-customer billed once for the Parent Account, instead of having separate\
+    \ bills issued for usage against each of their multiple Accounts.\n\n**IMPORTANT! - use of PII:**\
+    \ The use of any of your end-customers' Personally Identifiable Information (PII) in m3ter is restricted\
+    \ to a few fields on the **Account** entity. Please ensure that only the ``name``, ``address``, or\
+    \ ``emailAddress`` fields contain any end-customer PII data on any Accounts you create. See the [Introduction\
+    \ section](https://www.m3ter.com/docs/api#section/Introduction) above for more details."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Account
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-account-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-accountplan-api
+  name: M3ter AccountPlan API
+  description: "Endpoints for AccountPlan and AccountPlanGroup related operations such as creation, update,\
+    \ list and delete. \n\n**AccountPlans**\nAn Account represents one of your end-customer accounts.\
+    \ To create an AccountPlan, you attach a Product Plan to an Account. The AccountPlan then determines\
+    \ the charges incurred at billing by your end customer for consuming the Product the Plan is for:\n\
+    * **AccountPlan Active/Inactive**. Set start and end dates to define the period the AccountPlan is\
+    \ active for the Account.\n* **AccountPlan per Product**. If an end customer consumes multiple Products,\
+    \ create separate AccountPlans to charge for each Product.\n\n**AccountPlan Constraints:**\n* Only\
+    \ one AccountPlan per Product can be active at any one time for an Account.\n* If you create a Plan\
+    \ as a custom Plan for a specific Account, you can only use it to create an AccountPlan for that Account.\n\
+    \n**AccountPlanGroups**\nPlan Groups are used when you want to apply a minimum spend amount at billing\
+    \ across several of your Products each of which are priced separately - when you create the Plan Group,\
+    \ you define an overall minimum spend and then add any priced Plans you want to include in the Group.\
+    \ To create an AccounPlanGroup, you can attach a Plan Group to an Account that consumes the separate\
+    \ Products which are priced using the included Plans. At billing, the minimum spend you've defined\
+    \ for the Plan Group is applied:\n* **Active AccountPlanGroup**. Set the start and end dates to define\
+    \ the period for which the Plan Group will be active for the Account.\n\n**Plan Group Notes:**\n*\
+    \ You can only add *one Plan for the same Product* to a Plan Group. See the [Plan Group](https://www.m3ter.com/docs/api#tag/PlanGroup)\
+    \ in this API Reference for more details on creating Plan Groups.\n* You can create a *custom Plan\
+    \ Group* for an Account, which means the Plan Group can only be attached to that Account to create\
+    \ an AccountPlanGroup.\n\n**AcountPlanGroup - Notes and Constraints:**\n* **AccountPlanGroup is type\
+    \ of AccountPlan** When you attach a Plan Group to an Account, this creates an AccountPlanGroup. However,\
+    \ the m3ter data model *does not support a separate AccountPlanGroup entity*, and an AccountPlanGroup\
+    \ is a type of AccountPlan where a `planGroupId` is used instead of a `planId` when it's created.\
+    \ See the [Create AccountPlan](https://www.m3ter.com/docs/api#tag/AccountPlan/operation/PostAccountPlan)\
+    \ call in this section and [Attaching Plan Groups to an Account](https://www.m3ter.com/docs/guides/end-customer-accounts/attaching-plan-groups-to-an-account)\
+    \ in our main User Documentation.\n* **Multiple AccountPlan Groups:** You can attach more than one\
+    \ Plan Group to an Account to create multiple AccountPlanGroups, but the rule that *only one attached\
+    \ Plan per Product can be active at any one time for an Account* is preserved:\n\t* Multiple attached\
+    \ Plan Groups on an Account can have overlapping dates only if none of the Plan Groups contain a Plan\
+    \ belonging to the same Product. If you try to attach a Plan Group to an Account with Plan Groups\
+    \ already attached and:\n\t\t* The new Plan Group contains a Product Plan that also belongs to a Plan\
+    \ Group already attached to the Account.\n\t\t* The dates for these \"matched Plan\" Plan Groups being\
+    \ active for the Account would overlap.\n\t\t* Then you'll receive an error and the attachment will\
+    \ be blocked."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - AccountPlan
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-accountplan-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-aggregation-api
+  name: M3ter Aggregation API
+  description: "Endpoints for listing, creating, updating, retrieving, or deleting Aggregations.\n\nAn\
+    \ Aggregation links to a Meter and targets a Data Field or Derived Field on the Meter. You define\
+    \ the method of aggregation used to convert the usage data collected by the targeted Meter field into\
+    \ a numerical unit of measurement. \n\nYou can then use the unit of measurement an Aggregation yields\
+    \ as a metric for pricing Product Plans and apply usage-based pricing to your products and services.\
+    \ You might also want to aggregate raw data measures for other purposes, such as to feed into analytical\
+    \ or business performance tools.\n\n**Notes:**\n* **Contrast with Compound Aggregations**. Standard\
+    \ or simple Aggregations of this type, which apply an aggregation method directly to Meter usage data\
+    \ fields, are contrasted with [Compound Aggregations](https://www.m3ter.com/docs/api#tag/CompoundAggregation).\
+    \ A Compound Aggregation typically references one or more simple Aggregations and applies a calculation\
+    \ to them to derive pricing metrics needed to serve more complex usage-based pricing scenarios.\n\
+    * **Segmented Aggregations**. Segmented Aggregations allow you to segment the usage data collected\
+    \ by a single Meter. This capability is very useful for implementing some pricing and billing use\
+    \ cases. See [Segmented Aggregations](https://www.m3ter.com/docs/guides/usage-data-aggregations/segmented-aggregations)\
+    \ in our main documentation for more details."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Aggregation
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-aggregation-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-auth-api
+  name: M3ter Auth API
+  description: "Endpoint for retrieving a JSON Web Token (JWT) bearer token for a ServiceUser using the\
+    \ Client Credentials Grant flow. \n\nA ServiceUser represents the automated process you want to grant\
+    \ access to your Organization - that is, as an API user."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Auth
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-auth-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-balancechargeschedule-api
+  name: M3ter BalanceChargeSchedule API
+  description: >-
+    Endpoints for creating/updating/deleting BalanceChargeSchedules.
+
+
+    **NOTE!** The BalanceChargeSchedule feature is available in Beta release version. See [Feature Release
+    Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages) for Beta release
+    definition.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - BalanceChargeSchedule
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-balancechargeschedule-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-balances-api
+  name: M3ter Balances API
+  description: "Endpoints for creating/retrieving/updating/deleting Balances on Accounts.\n\nWhen you\
+    \ have created a Balance for an Account, you can create a positive or negative Transaction amounts\
+    \ for the Balance. To do this, you must first define Transaction Types for your Organization, and\
+    \ then use one of these Transaction Types when you add a specific Transaction to a Balance - see the\
+    \ [Create TransactionType](https://www.m3ter.com/docs/api#tag/TransactionType/operation/CreateTransactionType)\
+    \ call in the Transaction Type section in this API Reference for more details.\n\nBalances are typically\
+    \ used when a customer prepays an amount to add a credit to their Account, which can then be draw-down\
+    \ against charges due for product or service consumption. You can include options to top-up the original\
+    \ Balance.\n\nExamples of how Balances for end customer Accounts can be used:\n\n* Onboarding Balance/Free\
+    \ Trials. Offering an onboarding incentive to new customers as an initial free credit Balance on their\
+    \ Account. \n\n* Balance as initial commitment. Add a Balance amount to a new customer Account. This\
+    \ acts as an initial commitment, which allows them to use the service and gain an accurate insight\
+    \ into their usage level. \n\n* Managing Customer Satisfaction. Use Balance as credits that will be\
+    \ applied to subsequent Bills as compensation for acknowledged service delivery issues.\n\n* Facilitating\
+    \ Balance Adjustments:\n\t* Apply negative amounts to immediately write-off outstanding Balances.\n\
+    \n#### What is the difference between Balances and Commitments/Prepayments?\n\nTo manage credit amounts\
+    \ for your end-customer Accounts, you can use Balances or Commitments/Prepayments. However, these\
+    \ two kinds of credits for Accounts serve different purposes.\n\nCommitments - also referred to as\
+    \ Prepayments - are used for amounts end-customers have agreed to pay for consuming your product or\
+    \ services across a full contract term. A customer might pay the entire or only part of the agreed\
+    \ amount upfront, but ***the commitment or prepayment amount is payable regardless of the actual usage\
+    \ by the customer of your service or product.***\n\nIn contrast, a Balance - often referred to as\
+    \ a Top-Up or Prepaid draw-down - is used when a customer wants to add a credit amount to their Account\
+    \ at any time during the service period or when you as service provider want to add a credit to a\
+    \ customer Account. This Balance credit can then be drawn-down against for billing the Account for\
+    \ usage, minimum spend, standing charges, or recurring charges due. Balances therefore serve payment\
+    \ use cases in a more flexible way, for example to be used for a \"Free Credit\" sign-up scheme you\
+    \ offer to encourage sales or to enhance customer satisfaction by adding credit to an Account to compensate\
+    \ for service delivery issues.\n\nYou can use Commitments/Prepayments and Balances together on Account,\
+    \ and define at Organization or individual Account level the order in which any Balance/Commitment\
+    \ credit on an Account is drawn-down - Balance amounts first or Commitment/Prepayment amounts first."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Balances
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-balances-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-balancetransactionschedule-api
+  name: M3ter BalanceTransactionSchedule API
+  description: >-
+    Endpoints for creating/updating/deleting BalanceTransactionSchedules.
+
+
+    **NOTE!** The BalanceTransactionSchedule feature is available in Beta release version. See [Feature
+    Release Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages) for Beta
+    release definition.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - BalanceTransactionSchedule
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-balancetransactionschedule-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-bill-api
+  name: M3ter Bill API
+  description: >-
+    Endpoints for billing operations such as creating, updating, listing,downloading, and deleting Bills.
+
+
+    Bills are generated for an Account, and are calculated in accordance with the usage-based pricing
+    Plans applied for the Products the Account consumes. These endpoints enable interaction with the billing
+    system, allowing you to obtain billing details and insights into the consumption patterns and charges
+    of your end-customer Accounts.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Bill
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-bill-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-billconfig-api
+  name: M3ter BillConfig API
+  description: "Endpoints for updating and retreiving the Bill Configuration for an Organization. \nThe\
+    \ Organization represents your company as a direct customer of the m3ter service.\n\nYou can use the\
+    \ **Update BillConfig** endpoint to set a global lock date for **all** Bills - any Bill with a service\
+    \ period end date on or before the set date will be locked and cannot be updated.\n\n**Warning: Ensure\
+    \ all Bills are Approved!** If you try to set a global lock date when there remains Bills in a *Pending*\
+    \ state whose service period end date is on or before the specified lock date, then you'll receive\
+    \ an error."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - BillConfig
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-billconfig-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-billgroupingkey-api
+  name: M3ter BillGroupingKey API
+  description: >-
+    Endpoints for Bill Grouping Key operations such as creation, update, list, and delete.
+
+
+    Bill Grouping Keys are stored for your Organization, and you can use them to control billing operations.
+    For example, use Bill Grouping Keys to control how Bills for Contracts linked to an Account are generated:
+
+    * Have charges linked to an Account Contract billed exclusively on a separate Bill.
+
+    * Have charges linked to multiple Account Contracts billed collectively on a single Bill.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - BillGroupingKey
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-billgroupingkey-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-billjob-api
+  name: M3ter BillJob API
+  description: >-
+    Endpoints for creating, retrieving, listing, and cancelling Bill Jobs.
+
+
+    Bill Jobs are critical components in billing management, providing asynchronous mechanisms to calculate
+    and handle bills.
+
+
+    Bill Jobs give you the flexibiity to run Bills manually for Accounts to suit different billing management
+    purposes. For example, some historical usage data has come in for an Account and you want to run a
+    Bill for a specific date on that Account to check that the Bill is showing correctly for the charges
+    due on the new usage data.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - BillJob
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-billjob-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-charge-api
+  name: M3ter Charge API
+  description: >-
+    Endpoints for creating/updating/deleting Charges.
+
+
+    Create Charges for your end-customer Accounts to create ad-hoc line items for Account billing. Charges
+    are:
+
+    * Created for either debit or credit amounts.
+
+    * Linked to a Product for accounting purposes.
+
+    * Optionally linked to a Contract.
+
+    * Given a specific date for billing. When a bill job has run for the specified Charge bill date, a
+    Charge appears as an Ad-hoc line item on the Bill.
+
+    * Assigned a service period.
+
+    * Available in any currency defined for your Organization.
+
+    See [Creating Charges for Accounts](https://www.m3ter.com/docs/guides/end-customer-accounts/creating-charges-for-accounts)
+    in our main user documentation for more details.
+
+
+    Alternatively, you can create a Charge for a Balance on an end-customer Account to create balance
+    fee line items for Account billing. See [Creating Charges for Balances](https://www.m3ter.com/docs/guides/end-customer-accounts/creating-balances-for-accounts/creating-charges-for-balances)
+    in our main user documentation for more details.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Charge
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-charge-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-commitments-api
+  name: M3ter Commitments API
+  description: "Endpoints that manage Commitments *(also known as Prepayments)* in the context of usage-based\
+    \ pricing and billing. A Commitment represents an agreement where the end-customer has agreed to pay\
+    \ a fixed minimum amount throughout the contract period. ***The commitment amount is payable regardless\
+    \ of the actual usage by the customer of your service or product.***\n\nThese endpoints enable the\
+    \ creation, updating, retrieval, and deletion of Commitments. Use them to manage your customer's Commitments\
+    \ and ensure optimal revenue recognition:\n* Specify which type of charges can draw-down against a\
+    \ Commitment amount on an Account at billing: usage, minimum spend, standing charges, or recurring\
+    \ charges.\n* Define overage surcharge percentages, which are applied when the usage charges exceed\
+    \ the agreed Commitment amount within the contract duration.\n\n#### What is the difference between\
+    \ Balances and Commitments/Prepayments?\n\nTo manage credit amounts for your end-customer Accounts,\
+    \ you can use Balances or Commitments/Prepayments. However, these two kinds of credits for Accounts\
+    \ serve different purposes.\n\nCommitments/Prepayments are used for amounts end-customers have agreed\
+    \ to pay for consuming your product or services across a full contract term. A customer might pay\
+    \ the entire or only part of the agreed amount upfront, but ***the prepayment amount is payable regardless\
+    \ of the actual usage by the customer of your service or product.***\n\nIn contrast, a Balance - often\
+    \ referred to as a Top-Up or Prepaid draw-down - is used when a customer wants to add a credit amount\
+    \ to their Account at any time during the service period or when you as service provider want to add\
+    \ a credit to a customer Account. This Balance credit can then be drawn-down against for billing the\
+    \ Account for usage, minimum spend, standing charges, or recurring charges due. Balances therefore\
+    \ serve payment use cases in a more flexible way, for example to be used for a \"Free Credit\" sign-up\
+    \ scheme you offer to encourage sales or to enhance customer satisfaction by adding credit to an Account\
+    \ to compensate for service delivery issues.\n\nYou can use Prepayments/Commitments and Balances together\
+    \ on Account, and define at Organization or individual Account level the order in which any Balance/Prepayment\
+    \ credit on an Account is drawn-down - Balance amounts first or Prepayment amounts first.\n\n####\
+    \ Billing for Commitments \n\nIf not all of an agreed Commitment amount is paid at the start of an\
+    \ end-customer contract period, you can choose one of two options for billing the outstanding fees\
+    \ due on the customer Account:\n- Select a Product *Plan to bill with*.\n- Define a *schedule of billing\
+    \ dates*."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Commitments
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-commitments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-compoundaggregation-api
+  name: M3ter CompoundAggregation API
+  description: "Endpoints for Compound Aggregation related operations such as creation, update, list and\
+    \ delete.\n\nUse Compound Aggregations to create numerical measures from usage data by applying a\
+    \ calculation to one or more simple Aggregations or Custom Fields. These numerical measures can then\
+    \ be used as pricing metrics to price your Product Plans, enabling you to implement a wide range of\
+    \ usage-based pricing use cases.\n\nYou can create two types of Compound Aggregation:\n\n**Global**\n\
+    - Pricing: Not tied to any specific product and can be used to price Plans belonging to any Product.\n\
+    - Calculation: can reference all simple Aggregations - both Global simple Aggregations and any product-specific\
+    \ simple Aggregations.\n\n**Product-specific**\n- Pricing: belong to a specific Product and can only\
+    \ be used to price Plans belonging to the same Product.\n- Calculation: can reference any simple Aggregations\
+    \ belonging to the same Product and any Global simple Aggregations.\n\n**IMPORTANT!** If a simple\
+    \ Aggregation referenced by a Compound Aggregation has a **Quantity per unit** defined or a **Rounding**\
+    \ defined, these will not be factored into the value used by the calculation. For example, if the\
+    \ simple Aggregation referenced has a base value of 100 and has **Quantity per unit** set at 10, the\
+    \ Compound Aggregation calculation *will use the base value of 100 not 10*. \n\nTo better understand\
+    \ and use Compound Aggregations, refer to the example [Compound Aggregation Use Case](https://www.m3ter.com/docs/guides/setting-up-usage-data-meters-and-aggregations/compound-aggregations#example-use-case)\
+    \ in the m3ter documentation."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - CompoundAggregation
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-compoundaggregation-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-contract-api
+  name: M3ter Contract API
+  description: >-
+    Endpoints for Contract related operations such as creation, update, list and delete.
+
+
+    Contracts are created for Accounts, which are your end-user customers. Contracts can be used for:
+
+    * **Accounts Reporting**. To serve your general accounting operations and processes, you can report
+    on total Contract values for an Account.
+
+    * **Contract Billing**. Various billing entities associated with an Account can  be linked to Contracts
+    on the Account to meet your specific Contract billing use cases.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Contract
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-contract-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-counter-api
+  name: M3ter Counter API
+  description: >-
+    Endpoints for listing, creating, retrieving, updating, or deleting Counters.
+
+
+    You can create Counters for your m3ter Organization, which can then be used as pricing metrics to
+    apply a unit-based [CounterPricing](https://www.m3ter.com/docs/api#tag/CounterPricing) to Product
+    Plans or Plan Templates for recurring subscription charges on Accounts.
+
+
+    Counters can then be used to post [CounterAdjustments](https://www.m3ter.com/docs/api#tag/CounterAdjustments)
+    on your end-customer Accounts.
+
+
+    Accounts are then billed in accordance with the CounterPricing on Plans attached to the Accounts and
+    for the actual Counter quantities Accounts subscribe to. See [Recurring Charges: Counters](https://www.m3ter.com/docs/guides/recurring-charges-counters)
+    in our main user documentation for more details.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Counter
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-counter-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-counteradjustments-api
+  name: M3ter CounterAdjustments API
+  description: >-
+    Endpoints for listing, creating, updating, retrieving, or deleting CounterAdjustments.
+
+
+    If you attach a Plan to an Account which is priced using a Counter to apply unit-based pricing, you
+    can then create CounterAdjustments for the Account using that Counter to ensure the Account is billed
+    according to the number of Counter units the Account subscribes to in a given billing period.
+
+
+    See [Understanding and Creating Counter Adjustments for Accounts](https://www.m3ter.com/docs/guides/recurring-charges-counters/creating-counter-adjustments-for-accounts)
+    for more information.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - CounterAdjustments
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-counteradjustments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-counterpricing-api
+  name: M3ter CounterPricing API
+  description: >-
+    Endpoints for listing, creating, updating, retrieving, or deleting CounterPricing.
+
+
+    Create the CounterPricing for a Plan/PlanTemplate using a Counter, and define a unit-based pricing
+    structure for charging end customer Accounts put on the Plan.
+
+
+    See [Creating Counters and Pricing Plans](https://www.m3ter.com/docs/guides/recurring-charges-counters/creating-counters)
+    for more information.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - CounterPricing
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-counterpricing-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-creditreason-api
+  name: M3ter CreditReason API
+  description: "Endpoints for CreditReason operations such as creation, update, list, and delete. \n\n\
+    You can create CreditReasons for your Organization, and then use them when creating a credit line\
+    \ item on a bill, or applying a product credit to a bill. CreditReasons provide contextual information\
+    \ as to why a credit was applied."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - CreditReason
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-creditreason-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-credits-api
+  name: M3ter Credits API
+  description: >-
+    Endpoints for Credit line item related operations such as creation, update, list and delete. These
+    are line items on Bills that are specifically related to Credits.
+
+
+    You use the Credit Reasons created for your Organization when you create Credit line items for Bills.
+    See [CreditReason](https://www.m3ter.com/docs/api#tag/CreditReason).
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Credits
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-credits-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-currency-api
+  name: M3ter Currency API
+  description: "Endpoints for Currency operations such as creation, update, list, and delete. Currencies\
+    \ are stored for your Organization, and can then be used to specify currencies on various entities\
+    \ such as plan groups and plan templates.\n\n**IMPORTANT!** \nThe Currencies you want to use in your\
+    \ Organization must be created first.\n\nThe currency you select for your Organization determines\
+    \ the billing currency and overrides any currency settings in your pricing Plans. \nFor example, if\
+    \ the Organization currency is set to USD and a pricing Plan used for an Account is set to GBP, the\
+    \ bill for an Account using that Plan is calculated in GBP, and then each bill line item converted\
+    \ to USD amounts.\n\nCurrency conversion rates are setup in the *OrganizationConfig*. For more details,\
+    \ see [Creating and Managing Currencies](https://www.m3ter.com/docs/guides/organization-and-access-management/viewing-and-editing-organization#creating-and-managing-currencies)\
+    \ in the m3ter Documentation."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Currency
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-currency-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-customfield-api
+  name: M3ter CustomField API
+  description: "Endpoints for retrieving and updating Custom Fields at the Organization level for all\
+    \ entities that support them.\n\nCustom Fields in m3ter allow you to store custom data in the form\
+    \ of number or string values against m3ter entities in a way that does not directly affect the normal\
+    \ working operation of the m3ter platform. Having this capability to store data in a free-hand fashion\
+    \ can prove very useful in helping you to meet specific usage-based pricing and other operational\
+    \ business use cases.\n\nHowever, you can exploit the values stored on Custom Fields in a more direct\
+    \ way by referencing them in Derived Field and Compound Aggregation calculations. Given the key role\
+    \ these calculations can play when implementing usage-based pricing schema, any Custom Fields you\
+    \ reference will then affect how the platform behaves. Referencing Custom Field values in your calculations\
+    \ offers a much wider scope of options when it comes to resolving complex usage-based pricing use\
+    \ cases.\n\nCustom Fields can be added to the following entities at Organizational level:\n* Organization\n\
+    * Account\n* AccountPlan\n* Aggregation\n* Compound Aggregation\n* Meter\n* Product\n* Plan\n* PlanTemplate\n\
+    * Contract\n\nThese all follow the same pattern - a new *(optional)* field is available on the entity\
+    \ request and response bodies called \"customFields\" which is a object in this format:\n```\n\"customFields\"\
+    : {\n\t\t\"exampleCustomField1\": 7.1,\n\t\t\"exampleCustomField2\": \"stringValue\"\n}\n```\nThe\
+    \ value for a Custom Field can be a string or a number.\n\n**Using Custom Field values in calculations:**\n\
+    - You can add Custom Fields at two levels - the Organization level and the individual entity level.\n\
+    - The Organizational level field provides a default value and *must be added* if you want to also\
+    \ add a Custom Field of the same name at the corresponding individual entity level. If you reference\
+    \ the Custom Field in a calculation, the value for the individual entity level field is used. If no\
+    \ field is defined at individual entity level, then the Organization level field value is used.\n\n\
+    **Important: Constraints and Exceptions!**\n\n**Custom Fields at Organization Level**. Currently,\
+    \ you cannot create Custom Fields at the Organization-level for the following enitites:\n* Plan Group\n\
+    * Balance\n* Balance Transaction Schedule\n* Balance Charge Schedule\n\nTherefore you cannot reference\
+    \ the Custom Fields values created at the individual entity level for these entities in your Derived\
+    \ Field or Compound Aggregation calculations.\n\n\n**Derived Field Calculations**. You can *only reference\
+    \ Custom Fields* for the following entities:\n* Organization\n* Meter\n* Account\n\nHowever, if you\
+    \ are using Meters belonging to *a specific Product*, that is, not *Global Meters*, you can also reference\
+    \ Custom Fields added to a Product in Derived Field calculations.\n\n**Compound Aggregation Calculations\
+    \ - Meter Custom Fields**. The value of the *Organization level Meter Custom Field will always be\
+    \ used*, even if you have defined a corresponding field at the individual Meter level.\n\nSee [Working\
+    \ with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields)\
+    \ in the m3ter documentation for more information."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - CustomField
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-customfield-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-dataexplorer-api
+  name: M3ter DataExplorer API
+  description: >-
+    Endpoints for querying the Data Explorer and saving query selections.
+
+
+    The Data Explorer is a m3ter analytics tool, enabling you to query the Usage, Billing, and Prepayments
+    data collected for your Organization in m3ter.
+
+
+    **IMPORTANT: Request Rate Limits for Data Explorer!** As part of the Config API, requests made to
+    the Data Explorer are subject to tighter request rate limits:
+
+    - **Generally** 1 request per second.
+
+
+    - **Burst** 10 requests per second.
+
+
+    If you exceed either of these rate limits, requests are throttled and an HTTP 429 (Too Many Requests)
+    error response is returned. See the [Rate and Payload Limts section](https://www.m3ter.com/docs/api#section/Introduction/Rate-and-Payload-Limits)
+    above for more details.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - DataExplorer
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-dataexplorer-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-dataexplorerv2-api
+  name: M3ter DataExplorerV2 API
+  description: >-
+    Endpoints for querying and filtering Usage data collected for your Organization.
+
+
+    **IMPORTANT: Request Rate Limits for Data Explorer v2!** As part of the Config API, requests made
+    to the Data Explorer v2 are subject to tighter request rate limits:
+
+    - **Generally** 2 requests per second.
+
+    - **Burst** 20 requests per second.
+
+
+    If you exceed either of these rate limits, requests are throttled and an HTTP 429 (Too Many Requests)
+    error response is returned.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - DataExplorerV2
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-dataexplorerv2-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-debitreason-api
+  name: M3ter DebitReason API
+  description: "Endpoints for DebitReason operations such as creation, update, list, and delete. \n\n\
+    You can create DebitReasons for your Organization, and then use them when creating a debit line item\
+    \ on a bill, or applying a product debit to a bill. DebitReasons provide contextual information as\
+    \ to why a debit was applied."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - DebitReason
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-debitreason-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-debits-api
+  name: M3ter Debits API
+  description: >-
+    Endpoints for Debit line item related operations such as creation, update, list and delete. These
+    are line items on Bills that are specifically related to Debits.
+
+
+    You use the Debit Reasons created for your Organization when you create Debit line items for Bills.
+    See the [DebitReason](https://www.m3ter.com/docs/api#tag/DebitReason) section for calls you can use
+    to create and manage Debit Reasons for your Organization.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Debits
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-debits-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-events-api
+  name: M3ter Events API
+  description: "This section provides Endpoints for operations that allow you to retrieve detailed information\
+    \ about individual Events, list all Events or specific Event Types, and explore dynamic fields available\
+    \ for each Event Type.\n\nEvents encompass specific instances of state changes within the system,\
+    \ such as the creation of a new Prepayment/Commitment for an Account. Each Event is classified under\
+    \ an Event Type framework, providing context about what kind of change occurred to generate the Event.\n\
+    \n**Events for Configuration and Billing Entities**\n\nMany Event Types cover common configuration\
+    \ and billing objects, where the Event is generated for a state change of one of these objects - for\
+    \ when the configuration or billing object is **created**, **deleted**, or **updated**. \n\nFor example:\n\
+    * configuration.commitment.created\n* configuration.commitment.deleted\n* configuration.commitment.updated\n\
+    * configuration.account.created\n* configuration.account.deleted\n* configuration.account.updated\n\
+    * billing.bill.created\n* billing.bill.deleted\n* billing.bill.created\n\n**Events for Errors or Failures**\
+    \ \n\nThere are also Event Types for certain kinds of error that can occur:\n\n* For an Integration:\n\
+    \  * validation\n  * authentication\n  * perform\n  * missing account mapping\n  * disabled\n\n* For\
+    \ a Usage Data Ingest Submission:\n  * validation failure\n\n* For Data Export Jobs:\n  * data export\
+    \ job failure\n\n**Scheduled Events**\n\nIn addition to system-generated Events that occur when a\
+    \ configuration entity undergoes a state change at creation, update, or deletion of the entity, you\
+    \ can use API calls to create and configure *Scheduled Event Configurations*. Scheduled Events are\
+    \ custom Event types, which you can set up by referencing Date/Time fields on configuration and billing\
+    \ entities. See the [ScheduledEventConfigurations](https://www.m3ter.com/docs/api#tag/ScheduledEventConfigurations)\
+    \ section of this API Reference for more details.\n\n**Notifications for Events**\n\nYou can create\
+    \ Notification rules based on Events and these rules can reference and apply calculations to the Event's\
+    \ fields. This allows you to set up customized alerts to be sent out via webhooks when the Event occurs\
+    \ and any conditions you've built into the Notification rule's calculation are satisfied.\n\nSee the\
+    \ [Notifications](https://www.m3ter.com/docs/api#tag/Notifications) section for more details.\n\n\
+    **Other Events**\n\nWhen Events occur, they can cause other Events, such as when a Notification is\
+    \ triggered by the Event it is based on. For these Events there are currently two categories:\n* Notification\n\
+    * IntegrationEvent\n\nAlso see [Utilizing Events and Notifications](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications)\
+    \ and [Object Definitions and API Calls](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications/object-definitions-and-api-calls)\
+    \ in the m3ter documentation for more guidance."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Events
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-events-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-exportadhoc-api
+  name: M3ter ExportAdHoc API
+  description: >-
+    Endpoints for triggering one-off, ad-hoc Data Exports. You can set up and run ad-hoc Exports to export
+    two kinds of data from your m3ter Organization:
+
+    * Usage data.
+
+    * Operational data for entities.
+
+
+    **Ad-Hoc Export Destinations** When setting up and running an ad-hoc Export:
+
+    * You can define one or more Export Destinations - see the [ExportDestination](https://www.m3ter.com/docs/api#tag/ExportDestination)
+    section of this API Reference. When the export runs, the data is sent through to the sepecified Destination.
+    However, the export file is also made available for you to download it locally.
+
+    * You can set up and run Data Exports without defining a Destination. The data is not exported but
+    the compiled export file is made available for downloading locally.
+
+    * For details on downloading an export file, see the [Get Data Export File Download URL](https://www.m3ter.com/docs/api#tag/ExportDestination/operation/GenerateDataExportFileDownloadUrl)
+    endpoint in this API Reference.
+
+
+    **Preview Version!** The Data Export feature is currently available only in Preview release version.
+    See [Feature Release Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages)
+    for Preview release definition. ExportAdHoc endpoints will only be available if Data Export has been
+    enabled for your Organization. For more details see [Data Export(Preview)](https://www.m3ter.com/docs/guides/data-exports)
+    in our main User documentation. If you're interested in previewing the Data Export feature, please
+    get in touch with m3ter Support or your m3ter contact.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - ExportAdHoc
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-exportadhoc-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-exportdestination-api
+  name: M3ter ExportDestination API
+  description: >-
+    Endpoints for creating, updating, retrieving, or deleting Data Export Destinations.
+
+
+    Before you can configure and run either [Export Schedules](https://www.m3ter.com/docs/api#tag/ExportSchedule)
+    or [Ad-Hoc Exports](https://www.m3ter.com/docs/api#tag/ExportAdHoc), you can set up Export Destinations.
+    Currently, two options for setting up Data Export Destinations are available:
+
+    * S3 buckets on your AWS account.
+
+    * Buckets in your Google Cloud Storage account.
+
+
+    **NOTE: Exporting without a Destination?** When a Data Export runs, the data is sent through to the
+    specified Destination. However, the export file is also made available for you to download it locally.
+    You can set up and run Data Exports without defining a Destination. The data is not exported but the
+    compiled export file is made available for downloading locally.
+
+
+    **Preview Version!** The Data Export feature is currently available only in Preview release version.
+    See [Feature Release Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages)
+    for Preview release definition. ExportDestination endpoints will only be available if Data Export
+    has been enabled for your Organization. For more details see [Data Export(Preview)](https://www.m3ter.com/docs/guides/data-exports)
+    in our main User documentation. If you're interested in previewing the Data Export feature, please
+    get in touch with m3ter Support or your m3ter contact.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - ExportDestination
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-exportdestination-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-exportjob-api
+  name: M3ter ExportJob API
+  description: >-
+    Endpoints for retrieving/querying Data Export jobs.
+
+
+    **Preview Version!** The Data Export feature is currently available only in Preview release version.
+    See [Feature Release Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages)
+    for Preview release definition. ExportJob endpoints will only be available if Data Export has been
+    enabled for your Organization. For more details see [Data Export(Preview)](https://www.m3ter.com/docs/guides/data-exports)
+    in our main User documentation. If you're interested in previewing the Data Export feature, please
+    get in touch with m3ter Support or your m3ter contact.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - ExportJob
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-exportjob-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-exportschedule-api
+  name: M3ter ExportSchedule API
+  description: >-
+    Endpoints for creating, updating, retrieving, or deleting Data Export schedules. You can set up an
+    Export Schedule to export one of two types of data from your m3ter Organization - either *Usage data*
+    or *Operational data* for entities.
+
+
+    **NOTE:** You cannot create a single Export Schedule for exporting *both types of data under a single
+    Schedule*.
+
+
+    **Export Destinations** When creating an Export Schedule:
+
+    * You can define one or more Export Destinations - see the [ExportDestination](https://www.m3ter.com/docs/api#tag/ExportDestination)
+    section of this API Reference. When the export runs, the data is sent through to the sepecified Destination.
+    However, the export file is also made available for you to download it locally.
+
+    * You can set up and run Data Exports without defining a Destination. The data is not exported but
+    the compiled export file is made available for downloading locally.
+
+    * For details on downloading an export file, see the [Get Data Export File Download URL](https://www.m3ter.com/docs/api#tag/ExportDestination/operation/GenerateDataExportFileDownloadUrl)
+    endpoint in this API Reference.
+
+
+    **Preview Version!** The Data Export feature is currently available only in Preview release version.
+    See [Feature Release Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages)
+    for Preview release definition. ExportSchedule endpoints will only be available if Data Export has
+    been enabled for your Organization. For more details see [Data Export(Preview)](https://www.m3ter.com/docs/guides/data-exports)
+    in our main User documentation. If you're interested in previewing the Data Export feature, please
+    get in touch with m3ter Support or your m3ter contact.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - ExportSchedule
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-exportschedule-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-external-mapping-api
+  name: M3ter External Mapping API
+  description: "Endpoints for managing External Mapping related operations such as creation, update, list\
+    \ and delete.\n\nWhen you integrate your 3rd-party systems with the m3ter platform, a mapping between\
+    \ entities in the local system *(m3ter)* and external systems is constructed. This *External Mapping*\
+    \ is crucial in scenarios where data from external systems is consumed or where data from the local\
+    \ system is to be synchronized with external systems. \n\nWhen you are working to set up your Integrations\
+    \ and want to test or troubleshoot your implementation before going live, you might need to create\
+    \ External Mappings manually and, at a later date, edit or delete them."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - External Mapping
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-external-mapping-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-integrations-api
+  name: M3ter Integrations API
+  description: "A suite of endpoints for configuring and managing third party integrations within the\
+    \ m3ter platform. The integration endpoints in this section facilitate various operations such as\
+    \ creating, updating, listing, and deletion of integrations.\n\nm3ter integrations enable seamless\
+    \ data synchronization and mapping with external systems required in core business processes. These\
+    \ processes often include sales, pricing, billing and invoicing, and general finance. \n\nWith m3ter\
+    \ integrations, you can establish robust connections with popular business platforms, enhancing your\
+    \ operational capabilities. For example:\n* Chargebee\n* Salesforce\n* Stripe\n* Netsuite\n* Paddle\n\
+    * Xero\n* QuickBooks"
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Integrations
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-integrations-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-invitations-api
+  name: M3ter Invitations API
+  description: >-
+    Endpoints for creating and retrieving user invitations. Use invitations to invite other people to
+    join your m3ter Organization.
+
+
+    An invitation sends an email inviting someone to join your Organization. When you set up an invitation,
+    you can:
+
+    *  Assign the required permission policies to control what the invitee can do when they accept the
+    invite and join your Organization.
+
+    *  Set a date for when the invitation will expire.
+
+    *  Set a date for when the invited user's access will expire.
+
+
+    When the invitee receives the invitation email:
+
+    * If the invitee is already a m3ter user and has a m3ter account, they can click a link and use their
+    credentials to log into your Organization.
+
+    * If the invitee is not a m3ter user and does not have a m3ter account, they'll be invited to create
+    a m3ter account before logging into your Organization.
+
+
+    See [Inviting Users to your Organization](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users#inviting-users-to-your-organization)
+    in our user documentation for more details.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Invitations
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-invitations-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-line-item-api
+  name: M3ter Line Item API
+  description: Endpoint for retrieving a list of line items for Bills in an Organization.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Line Item
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-line-item-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-lookuptable-api
+  name: M3ter LookupTable API
+  description: >-
+    Endpoints for creating/updating/deleting Lookup Tables.
+
+
+    Lookup Tables enable you to manage dynamic data mappings that your calculations reference. Use them
+    for currency conversion, pricing tiers, discount rates, and similar scenarios where you require values
+    to change operationally but for calculation logic to remain constant.
+
+
+    **Beta Version!** The Lookup Table feature is currently available in Beta release version. See [Feature
+    Release Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages) for Beta
+    release definition. Lookup Table endpoints will only be available if Lookup Tables have been enabled
+    for your Organization. For more details see [Lookup Tables (Beta)](https://www.m3ter.com/docs/guides/lookup-tables)
+    in our main User documentation.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - LookupTable
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-lookuptable-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-lookuptablerevision-api
+  name: M3ter LookupTableRevision API
+  description: >-
+    Endpoints for creating/updating/deleting Lookup Table Revisions.
+
+
+    Lookup Tables utilize a "Table and Revision" model, which lets you update data cleanly, and extend
+    the schema without modifying existing calculations:
+
+    * Create Revisions for a Lookup Table, which you can use to define data schema and lookup keys.
+
+    * Populate draft Revisions with data values. You can create and edit multiple draft Revisions, but
+    only one can be published at any given time.
+
+    * Publish a Revision to activate it. When you use Lookup functions in your calculations that reference
+    the Lookup Table, the data values defined for the published Revision are used.
+
+    * When you want different, updated data values to be used, publish the draft Revision containing the
+    required new values. The currently published Revision is archived automatically.
+
+
+    **Beta Version!** The Lookup Table feature is currently available in Beta release version. See [Feature
+    Release Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages) for Beta
+    release definition. Lookup Table Revision endpoints will only be available if Lookup Tables have been
+    enabled for your Organization. For more details see [Lookup Tables (Beta)](https://www.m3ter.com/docs/guides/lookup-tables)
+    in our main User documentation.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - LookupTableRevision
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-lookuptablerevision-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-lookuptablerevisiondata-api
+  name: M3ter LookupTableRevisionData API
+  description: >-
+    Endpoints for creating/updating/deleting Data for specific Lookup Table Revisions.
+
+
+    When you've added fields to create a data schema for a Lookup Table Revision, you can use upsert operations
+    to create or update the data values for those fields:
+
+    * Use [Upsert LookupTableRevisionData](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/PutLookupTableRevisionData)
+    to upsert some or all of a Revision's field data values.
+
+    * Use [Upsert LookupTableRevisionData Entry](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/PutLookupTableRevisionDataEntry)
+    to upsert an individual Revision field's data value.
+
+
+    **NOTES:**
+
+    * You can only create or update field data values for DRAFT Revisions.
+
+    * You cannot change the field data values for PUBLISHED Revisions.
+
+
+    **Beta Version!** The Lookup Table feature is currently available in Beta release version. See [Feature
+    Release Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages) for Beta
+    release definition. Lookup Table Revision Data endpoints will only be available if Lookup Tables have
+    been enabled for your Organization. For more details see [Lookup Tables (Beta)](https://www.m3ter.com/docs/guides/lookup-tables)
+    in our main User documentation.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - LookupTableRevisionData
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-lookuptablerevisiondata-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-marketplace-integrations-api
+  name: M3ter Marketplace Integrations API
+  description: Endpoints for retrieving reporting data on Marketplace Integration runs
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Marketplace Integrations
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-marketplace-integrations-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-measurements-api
+  name: M3ter Measurements API
+  description: >-
+    Endpoints for submitting usage data measurements to the m3ter platform:
+
+    - **Directly:** You can use the **Submit Measurements** call to submit raw data measurements directly
+    using the **Ingest API**.
+
+    - **Indirectly:** You can use the platform's file upload service calls to prepare for and submit a
+    file for data ingest using the **Config API**.
+
+
+    To use the file upload service:
+
+    - First, make a **Generate an upload URL** call to obtain a temporary upload URL and an upload job
+    ID.
+
+    - You can then upload your data measurements file using a `PUT` request using the upload URL as the
+    endpoint.
+
+    - Any errors are reported via the normal [Alerts](https://www.m3ter.com/docs/guides/viewing-and-managing-alerts)
+    service in the Console UI.
+
+    - If any issues occur with a file upload, you can use the upload job ID with other file upload service
+    calls we provide to troubleshoot and resolve issues.
+
+
+    **Note:** You can also perform a File Upload via a Meter's Details page in the m3ter Console using
+    a `CSV` formatted file you've prepared for usage data measurements ingest for the Meter.
+
+
+    In the m3ter documentation, see also:
+
+    - [Optimizing Measurement Submissions](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits).
+
+    - [File Uploads for Data Ingest](https://www.m3ter.com/docs/guides/submitting-usage-data/file-uploads-for-data-ingest)
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Measurements
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-measurements-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-meter-api
+  name: M3ter Meter API
+  description: >-
+    Endpoints for listing, creating, updating, retrieving, or deleting Meters.
+
+
+    Use Meters to submit usage data for the consumption of your products and services by end customers.
+    This usage data then becomes the basis for setting up usage-based pricing for your products and services.
+
+
+    Examples of usage data collected in Meters:
+
+    * Number of logins.
+
+    * Duration of session.
+
+    * Amount of data downloaded.
+
+
+    To collect usage data and ingest it into the platform, you can define two types of fields for Meters:
+
+    - `dataFields` Used to collect raw usage data measures - numeric quantitative data values or non-numeric
+    point data values.
+
+    - `derivedFields` Used to derive usage data measures that are the result of applying a calculation
+    to `dataFields`, `customFields`, or system `Timestamp` fields.
+
+
+    You can also:
+
+    - Create `customFields` for a Meter, which allows you to attach custom data to the Meter as name/value
+    pairs.
+
+    - Create Global Meters, which are not tied to a specific Product and allow you to collect usage data
+    that will form the basis of usage-based pricing across multiple Products.
+
+
+    **IMPORTANT! - use of PII:** The use of any of your end-customers' Personally Identifiable Information
+    (PII) in m3ter is restricted to a few fields on the **Account** entity. Please ensure that any fields
+    you configure for Meters, such as Data Fields or Derived Fields, do not contain any end-customer PII
+    data. See the [Introduction section](https://www.m3ter.com/docs/api#section/Introduction) above for
+    more details.
+
+
+    See also:
+
+    - [Reviewing Meter Options](https://www.m3ter.com/docs/guides/setting-up-usage-data-meters-and-aggregations/reviewing-meter-options).
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Meter
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-meter-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-notifications-api
+  name: M3ter Notifications API
+  description: >-
+    This section provides endpoints for managing Event Notifications.
+
+
+    You can create Notifications based on system Events generated by the platform. When you base a Notification
+    on a specific Event type, you can include a calculation that references the fields available on that
+    Event type to define precise conditions that must be met for the Notification to be triggered when
+    an Event of that type occurs. In this way, you can set up highly customized Notifications that act
+    as timely alerts to inform you about significant occurrences within your Organization. For instance,
+    if you provide a sign-up bonus to new end-customer Accounts, you can set up a Notification to alert
+    you when an end-customer Account has used up a certain percentage of their bonus credit.
+
+
+    You can also set up Notifications based on Scheduled Event types you've created for your Organization.
+    See the [ScheduledEventConfigurations](https://www.m3ter.com/docs/api#tag/ScheduledEventConfigurations)
+    section of this API Reference and [Working with Scheduled Events](https://www.m3ter.com/docs/guides/alerts-events-and-notifications/utilizing-events-and-notifications/working-with-scheduled-events)
+    in our user documentation.
+
+
+    For more details on Event types and their fields, see the [Events](https://www.m3ter.com/docs/api#tag/Events)
+    section.
+
+
+    For detailed guidance on working with Events and Notifications, refer to the [Utilizing Events and
+    Notifications](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications) section of the
+    m3ter user documentation.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Notifications
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-notifications-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-organizationconfig-api
+  name: M3ter OrganizationConfig API
+  description: "Endpoints for retrieving or updating the Organization Config.\n\nOrganization represents\
+    \ your company as a direct customer of m3ter. Use Organization configuration to define *Organization-wide*\
+    \ settings. For example:\n- Timezone.\n- Currencies and currency conversions.\n- Billing operations\
+    \ settings, such as:\n\t- Epoch dates to control first billing dates.\n\t- Whether to bill customer\
+    \ accounts in advance/in arrears for standing charge amounts, minimum spend amounts, and commitment\
+    \ fees.\n\nFor other aspects of your Organization setup and configuration, see the following sections\
+    \ in this API Reference:\n* [Custom Fields](https://www.m3ter.com/docs/api#tag/CustomField)\n* [Currencies](https://www.m3ter.com/docs/api#tag/Currency)\n\
+    * [Credit Reasons](https://www.m3ter.com/docs/api#tag/CreditReason)\n* [Debit Reason](https://www.m3ter.com/docs/api#tag/DebitReason)\n\
+    * [Transaction Types](https://www.m3ter.com/docs/api#tag/TransactionType)\n\nSee also:\n- [Managing\
+    \ your Organization](https://www.m3ter.com/docs/guides/managing-organization-and-users/viewing-and-editing-organization)."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - OrganizationConfig
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-organizationconfig-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-orgusers-api
+  name: M3ter OrgUsers API
+  description: >-
+    This section contains the endpoints for managing users within an Organization *(OrgUsers)*. These
+    endpoints allow you to retrieve, update, and analyze user data, as well as their associated permissions
+    and user groups.
+
+
+    See the following topics in the m3ter documentation for further information:
+
+    * [Understanding, Creating, and Managing Permission Policies](https://www.m3ter.com/docs/guides/organization-and-access-management/creating-and-managing-permissions)
+
+    * [Mangaging Access and Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users)
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - OrgUsers
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-orgusers-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-permissionpolicy-api
+  name: M3ter PermissionPolicy API
+  description: >-
+    Endpoints for Permission Policy related operations such as creation, update, add and retrieve.
+
+
+    Permission Policies can restrict or grant access to specific resources for both Users *(people)* and
+    Service Users *(automated processes with direct API access)*. This enables you to control precisely
+    what a User can do in your m3ter Organization.
+
+
+    For more details, see [Understanding, Creating, and Managing Permission Policies](https://www.m3ter.com/docs/guides/organization-and-access-management/creating-and-managing-permissions#permission-policy-statements---available-actions-and-resources)
+    in our main Documentation.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - PermissionPolicy
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-permissionpolicy-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-plan-api
+  name: M3ter Plan API
+  description: >-
+    Endpoints for listing, creating, updating, retrieving, or deleting Plans.
+
+
+    A Plan is based on a PlanTemplate and represents a specific pricing plan for one of your products
+    or services. Each Plan inherits general billing attributes or pricing structure from its parent Plan
+    Template. Some attributes can be overriden for the specific Plan.
+
+
+    When you've created the Plan Templates and Plans you need for your Products, you can configure the
+    exact pricing structures for Plans to charge customers that consume one or more of your Products.
+
+
+    You can then attach the appropriately priced Plans to customer Accounts to create [Account Plans](https://www.m3ter.com/docs/api#tag/AccountPlan)
+    and enable charges to be calculated correctly for billing against those Accounts.
+
+
+    See also:
+
+    - [Reviewing Options for Plans and Plan Templates](https://www.m3ter.com/docs/guides/working-with-plan-templates-and-plans/reviewing-configuration-options-for-plans-and-plan-templates).
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Plan
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-plan-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-plangroup-api
+  name: M3ter PlanGroup API
+  description: >-
+    Endpoints for PlanGroup related operations such as creation, update, retrieve, list and delete.
+
+
+    PlanGroups are constructs that group multiple plans together. This enables a unified approach to efficiently
+    handle various uses cases across different plans. For example applying a minimum spend amount at billing,
+    across several of your products or features that are each priced separately.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - PlanGroup
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-plangroup-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-plangrouplink-api
+  name: M3ter PlanGroupLink API
+  description: >-
+    Endpoints for PlanGroupLink related operations such as creation, update, list and delete.
+
+
+    PlanGroupLinks are the intersection table between a PlanGroup and its associated Plans. A PlanGroupLink
+    is only created when at least 1 Plan is linked to a PlanGroup.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - PlanGroupLink
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-plangrouplink-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-plantemplate-api
+  name: M3ter PlanTemplate API
+  description: >-
+    Endpoints for listing, creating, updating, retrieving, or deleting PlanTemplates.
+
+
+    Use PlanTemplates to define default values for Plans. These default values control the billing operations
+    you want applied to your products. PlanTemplates avoid repetition in configuration work - many Plans
+    will share settings for billing operations and differ only in the details of their pricing structures.
+
+
+    A PlanTemplate is linked to a Product, and each Plan is a child of a PlanTemplate.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - PlanTemplate
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-plantemplate-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-pricing-api
+  name: M3ter Pricing API
+  description: >-
+    Endpoints for listing, creating, updating, retrieving, or deleting Pricing.
+
+
+    Create the Pricing for a Plan/PlanTemplate with usage data Aggregations, and define a usage-based
+    pricing structure for charging end customer Accounts put on the Plan.
+
+
+    See [Reviewing Pricing Options for Plans and Plan Templates](https://www.m3ter.com/docs/guides/pricing-plans/reviewing-pricing-options-and-pricing-plans)
+    for more information.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Pricing
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-pricing-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-product-api
+  name: M3ter Product API
+  description: >-
+    Endpoints for listing, creating, updating, retrieving, or deleting Products.
+
+
+    A Product represents the products and services you offer to your end customers. Products act as a
+    container for the Meters, Aggregations, Pricing, and Plans required to implement usage-based and other
+    pricing models for your Organization.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Product
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-product-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-resourcegroup-api
+  name: M3ter ResourceGroup API
+  description: "Endpoints for ResourceGroup related operations such as creation, update, list and delete.\n\
+    \nResourceGroups are used in the context of Permission Policies, which controls what a User who has\
+    \ been given access to your Organization can and cannot do. For example, you might want to create\
+    \ a Permissions Policy that denies Users the ability to retrieve Meters. \n\nResources are defined\
+    \ as m3ter Resource Identifiers *(MRIs)* in the format:\n\n```\nservice:resource-type/item-type/id\n\
+    ```\n\nWhere:\n\n* service is a distinct part of the overall m3ter system, and which forms a natural\
+    \ functional grouping, such as \"config\" or \"billing\".\n\n* resource-type is the resource type\
+    \ item accessed - for example: \"Plan\", \"Meter\", \"Bill\"\n\n* item-type is one of:\n\n\t* \"item\"\
+    \ - to specify an individual item.\n\n\t* \"group\" - to specify a resource group.\n\n* id is the\
+    \ resource group id or the resource item id\n\nResources can be assigned to one or more ResourceGroups.\
+    \ For example, a Plan can be assigned to Plan ResourceGroups, a Meter can be assigned to Meter ResourceGroups,\
+    \ and so on. This is useful for cases where you want to create Permission Policies which allow or\
+    \ deny access to a specific subset of resources. For example, grant a user access to only some of\
+    \ the Plans in your Organization.\n\nThis concept of grouping resources applies to every resource\
+    \ in m3ter, including ResourceGroups themselves. This allows you to nest ResourceGroups to support\
+    \ hierarchies of groups.\n\nSee [Understanding, Creating, and Managing Permission Policies](https://www.m3ter.com/docs/guides/managing-organization-and-users/creating-and-managing-permissions)\
+    \ in the m3ter documentation for more information.\n\n**Note: User Resource Groups** You can create\
+    \ a User Resource Group to group resources of type = `user`. You can then retrieve a list of the User\
+    \ Resource Groups a user belongs to. For more details, see the [Retrieve OrgUser Groups](https://www.m3ter.com/docs/api#tag/OrgUsers/operation/GetOrgUserGroups)\
+    \ call in the OrgUsers section."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - ResourceGroup
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-resourcegroup-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-scheduledeventconfigurations-api
+  name: M3ter ScheduledEventConfigurations API
+  description: >-
+    Endpoints for retrieving and managing scheduled Events' configurations.
+
+
+    Scheduled Event Configurations define custom Event types that reference Date/Time fields belonging
+    to configuration and billing entities. They therefore provide you with an extra degree of flexibility
+    over and above system-generated Events for setting up Notifications based on Events.
+
+
+    For more details, see the [Working with Scheduled Events](https://www.m3ter.com/docs/guides/alerts-events-and-notifications/utilizing-events-and-notifications/working-with-scheduled-events)
+    in our Documenation.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - ScheduledEventConfigurations
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-scheduledeventconfigurations-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-statementdefinition-api
+  name: M3ter StatementDefinition API
+  description: >-
+    Endpoints for listing, creating, updating, retrieving, or deleting Statement Definitions.
+
+
+    Bill statements are informative backing sheets to invoices. They provide a breakdown of the usage
+    charges that appear on the bill, helping your end customers better understand those charges, and gain
+    a clearer picture of their usage over the billing period.
+
+
+    Statement Definitions specify the way billed usage will be aggregated and compiled in the Statement.
+    For example, if you are billing customers monthly, you might want to breakdown the usage responsible
+    for the monthly charge on a Bill into weekly portions in Bill statements.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - StatementDefinition
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-statementdefinition-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-statementjob-api
+  name: M3ter StatementJob API
+  description: "Endpoints for creating, retrieving, listing, and cancelling statement jobs.\n\nStatementJobs\
+    \ are tasks to asynchronously calculate and generate a bill statement. \n\nBill statements are informative\
+    \ backing sheets to invoices. They provide a breakdown of the usage charges that appear on the bill,\
+    \ helping your end customers better understand those charges, and gain a clearer picture of their\
+    \ usage over the billing period."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - StatementJob
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-statementjob-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-support-api
+  name: M3ter Support API
+  description: >-
+    Endpoints for requesting support and managing m3ter Support users.
+
+
+    For troubleshooting purposes, you can grant m3ter Support access to your Organization. m3ter Support
+    only has access for a limited time that you specify.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Support
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-support-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-transactiontype-api
+  name: M3ter TransactionType API
+  description: "Endpoints for TransactionType operations such as creation, update, list, retrieve, and\
+    \ delete. \n\nYou can create TransactionTypes for your Organization, which can then be used when creating\
+    \ and updating Balances. Example TransactionTypes: \"Balance Amount\" or \"Add Funds\".\n\nFor details\
+    \ on creating a Transaction amount for a Balance using a TransactionType you've created for your Organization,\
+    \ see the [Create Balance Transaction](https://www.m3ter.com/docs/api#tag/Balances/operation/PostBalanceTransaction)\
+    \ call in the [Balances](https://www.m3ter.com/docs/api#tag/Balances) section of this API Reference."
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - TransactionType
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-transactiontype-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-user-api
+  name: M3ter User API
+  description: Endpoints for creating/updating Users
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - User
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-user-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
 common:
   - type: AgenticAccess
     url: agentic-access/m3ter-agentic-access.yml
