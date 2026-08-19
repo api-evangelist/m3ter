@@ -1,0 +1,84 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account Line Item API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Line Item",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Line Items",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/lineitems",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "commitmentId",
+                "value": "",
+                "type": "query",
+                "description": "Filter the line items list using the given Commitment ID. \n"
+              },
+              {
+                "name": "lineItemType",
+                "value": "",
+                "type": "query",
+                "description": "Filter the line items list using the given line item type. \nSee [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information on each line item type. "
+              },
+              {
+                "name": "billId",
+                "value": "",
+                "type": "query",
+                "description": "Filter the line items list using the given Bill ID."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of Line Items to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "`nextToken` for multi page retrievals."
+              },
+              {
+                "name": "additional",
+                "value": "",
+                "type": "query",
+                "description": "Comma separated list of additional fields."
+              }
+            ]
+          },
+          "docs": "List the billing line items for the given Organization, which can be filtered by the type of line item, Bill ID, or Commitment *(prepayment)* ID."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

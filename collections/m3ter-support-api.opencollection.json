@@ -1,0 +1,71 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account Support API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Support",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve Support Details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/support",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              }
+            ]
+          },
+          "docs": "Get support user details on the specific permissions applied and the date and time support access ends."
+        },
+        {
+          "info": {
+            "name": "Request Support",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/support",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Use this call to make a request and grant m3ter Support access to your Organization for a specified timeframe and with specific permissions assigned to Support users. You might want to grant Support access when you've submitted a request for help in resolving an issue you've encountered in your Organization"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

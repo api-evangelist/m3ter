@@ -1,0 +1,168 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account BillJob API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "BillJob",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve BillJob",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/billjobs/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Bill Job to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a Bill Job for the given UUID."
+        },
+        {
+          "info": {
+            "name": "List BillJobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/billjobs",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of BillJobs to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of BillJobs in a paginated list."
+              },
+              {
+                "name": "active",
+                "value": "",
+                "type": "query",
+                "description": "Boolean filter to retrieve only active BillJobs and exclude completed or cancelled BillJobs from the results.\n\n* TRUE - only active BillJobs.\n* FALSE - all BillJobs including completed and cancelled BillJobs."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Filter BillJobs by specific status. Allows for targeted retrieval of BillJobs based on their current processing status.\n\nPossible states are:\n\n* PENDING \n* INITIALIZING \n* RUNNING \n* COMPLETE \n* CANCELLED"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of BillJobs.\n\nThis endpoint retrieves a list of BillJobs for a specified organization. The list can be paginated for easier management, and allows you to query and filter based on various parameters, such as BillJob `status` and whether or not BillJob remains `active`."
+        },
+        {
+          "info": {
+            "name": "Create BillJob",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/billjobs",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new BillJob to handle asynchronous bill calculations for a specific Organization. \n\nThis operation allows you to initiate the processing of bills according to specified parameters. For example, create a BillJob to run only those bills where `billingFrequency` is `MONTHLY`. Note that if you want to run a BillJob for all billing frequencies, simply omit the `billingFrequency` request parameter.\n\nOnce created, the BillJob's progress can be monitored:\n- In the Running Tasks panel in the m3t"
+        },
+        {
+          "info": {
+            "name": "Cancel BillJob",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/billjobs/:id/cancel",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the BillJob to cancel."
+              }
+            ]
+          },
+          "docs": "Cancel an ongoing BillJob for the given Organization and BillJob UUID. \n\nThis endpoint allows you to halt the processing of a specific BillJob, which might be necessary if there are changes in billing requirements or other operational considerations."
+        },
+        {
+          "info": {
+            "name": "Create Recalculation BillJob",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/billjobs/recalculate",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new BillJob specifically to recalculate existing bills for a given Organization. \n\nThis operation is essential when adjustments or corrections are required in previously calculated bills. The recalculated bills when the BillJob is complete can be checked in the m3ter Console Bill Management page or queried by using the [List Bills](https://www.m3ter.com/docs/api#tag/Bill/operation/ListBills) operation.\n\n**NOTE:**\n- **Response Schema**. The response schema for this call is dynamic. This "
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

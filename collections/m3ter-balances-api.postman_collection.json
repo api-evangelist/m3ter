@@ -1,0 +1,2256 @@
+{
+  "item": [
+    {
+      "id": "e6765a44-d498-4cbf-b3e6-5e2a418d5617",
+      "name": "Balances",
+      "description": {
+        "content": "Endpoints for creating/retrieving/updating/deleting Balances on Accounts.\n\nWhen you have created a Balance for an Account, you can create a positive or negative Transaction amounts for the Balance. To do this, you must first define Transaction Types for your Organization, and then use one of these Transaction Types when you add a specific Transaction to a Balance - see the [Create TransactionType](https://www.m3ter.com/docs/api#tag/TransactionType/operation/CreateTransactionType) call in the Transaction Type section in this API Reference for more details.\n\nBalances are typically used when a customer prepays an amount to add a credit to their Account, which can then be draw-down against charges due for product or service consumption. You can include options to top-up the original Balance.\n\nExamples of how Balances for end customer Accounts can be used:\n\n* Onboarding Balance/Free Trials. Offering an onboarding incentive to new customers as an initial free credit Balance on their Account. \n\n* Balance as initial commitment. Add a Balance amount to a new customer Account. This acts as an initial commitment, which allows them to use the service and gain an accurate insight into their usage level. \n\n* Managing Customer Satisfaction. Use Balance as credits that will be applied to subsequent Bills as compensation for acknowledged service delivery issues.\n\n* Facilitating Balance Adjustments:\n\t* Apply negative amounts to immediately write-off outstanding Balances.\n\n#### What is the difference between Balances and Commitments/Prepayments?\n\nTo manage credit amounts for your end-customer Accounts, you can use Balances or Commitments/Prepayments. However, these two kinds of credits for Accounts serve different purposes.\n\nCommitments - also referred to as Prepayments - are used for amounts end-customers have agreed to pay for consuming your product or services across a full contract term. A customer might pay the entire or only part of the agreed amount upfront, but ***the commitment or prepayment amount is payable regardless of the actual usage by the customer of your service or product.***\n\nIn contrast, a Balance - often referred to as a Top-Up or Prepaid draw-down - is used when a customer wants to add a credit amount to their Account at any time during the service period or when you as service provider want to add a credit to a customer Account. This Balance credit can then be drawn-down against for billing the Account for usage, minimum spend, standing charges, or recurring charges due. Balances therefore serve payment use cases in a more flexible way, for example to be used for a \"Free Credit\" sign-up scheme you offer to encourage sales or to enhance customer satisfaction by adding credit to an Account to compensate for service delivery issues.\n\nYou can use Commitments/Prepayments and Balances together on Account, and define at Organization or individual Account level the order in which any Balance/Commitment credit on an Account is drawn-down - Balance amounts first or Commitment/Prepayment amounts first.  \n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "92f3eb76-5a0f-4acd-aab0-8449f5f30583",
+          "name": "List Transactions",
+          "request": {
+            "name": "List Transactions",
+            "description": {
+              "content": "Retrieve all Transactions for a specific Balance.\n\nThis endpoint returns a list of all Transactions associated with a specific Balance. You can paginate through the Transactions by using the `pageSize` and `nextToken` parameters.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "balances",
+                ":balanceId",
+                "transactions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "<integer>",
+                  "description": "The maximum number of transactions to return per page."
+                },
+                {
+                  "disabled": false,
+                  "key": "nextToken",
+                  "value": "<string>",
+                  "description": "`nextToken` for multi page retrievals. A token for retrieving the next page of transactions. You'll get this from the response to your request. "
+                },
+                {
+                  "disabled": false,
+                  "key": "transactionTypeId",
+                  "value": "<string>"
+                },
+                {
+                  "disabled": false,
+                  "key": "entityType",
+                  "value": "<string>"
+                },
+                {
+                  "disabled": false,
+                  "key": "entityId",
+                  "value": "<string>"
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "balanceId",
+                  "description": "(Required) The unique identifier (UUID) for the Balance whose Transactions you want to retrieve."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "edb81693-d76a-4e7e-9049-d7a36444f457",
+              "name": "Returns the list of Balance Transactions",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":balanceId",
+                    "transactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "transactionTypeId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "entityType",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "entityId",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "balanceId",
+                      "description": "(Required) The unique identifier (UUID) for the Balance whose Transactions you want to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"string\",\n      \"version\": 5326,\n      \"description\": \"string\",\n      \"amount\": 5803.620978480464,\n      \"paid\": 7823.883892862845,\n      \"currencyPaid\": \"string\",\n      \"entityType\": \"<string>\",\n      \"entityId\": \"string\",\n      \"transactionTypeId\": \"string\",\n      \"appliedDate\": \"1963-01-29T17:53:51.635Z\",\n      \"transactionDate\": \"1998-01-18T09:08:24.877Z\",\n      \"dtCreated\": \"1982-07-23T17:33:30.511Z\",\n      \"dtLastModified\": \"1979-05-22T18:06:15.662Z\",\n      \"createdBy\": \"string\",\n      \"lastModifiedBy\": \"string\"\n    },\n    {\n      \"id\": \"string\",\n      \"version\": 1984,\n      \"description\": \"string\",\n      \"amount\": 7484.179613697764,\n      \"paid\": 1784.5221071406115,\n      \"currencyPaid\": \"string\",\n      \"entityType\": \"<string>\",\n      \"entityId\": \"string\",\n      \"transactionTypeId\": \"string\",\n      \"appliedDate\": \"2003-02-09T16:39:39.323Z\",\n      \"transactionDate\": \"2015-04-29T09:35:08.760Z\",\n      \"dtCreated\": \"1985-02-17T19:04:29.662Z\",\n      \"dtLastModified\": \"1980-07-22T11:59:27.090Z\",\n      \"createdBy\": \"string\",\n      \"lastModifiedBy\": \"string\"\n    }\n  ],\n  \"nextToken\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "52e26780-7978-46ed-a0a5-9bba76644adc",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":balanceId",
+                    "transactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "transactionTypeId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "entityType",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "entityId",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "balanceId",
+                      "description": "(Required) The unique identifier (UUID) for the Balance whose Transactions you want to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "7897034d-80f8-4701-8413-dfee4ce07e95",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":balanceId",
+                    "transactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "transactionTypeId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "entityType",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "entityId",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "balanceId",
+                      "description": "(Required) The unique identifier (UUID) for the Balance whose Transactions you want to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "23efbb63-4971-4862-806d-8f35d0c68c74",
+          "name": "Create Balance Transaction",
+          "request": {
+            "name": "Create Balance Transaction",
+            "description": {
+              "content": "Add a Transaction to a Balance. This endpoint allows you to create a new Transaction amount for a Balance. This amount then becomes available at billing for draw-down to cover charges due. The Transaction details should be provided in the request body.\n\nBefore you can add a Transaction amount, you must first set up Transaction Types at the Organization Level - see the [Transaction Type](https://www.m3ter.com/docs/api#tag/TransactionType) section in this API Reference for more details. You can then use this call to add an instance of a Transaction Type to a Balance.\n\n**Note:** If you have a customer whose payment is in a different currency to the Balance currency, you can use the `paid` and `paidCurrency` request parameters to record the amount paid and alternative currency respectively. For example, you might add a Transaction amount of 200 USD to a Balance on a customer Account where the customer actually paid you 50 units in virtual currency X.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "balances",
+                ":balanceId",
+                "transactions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "balanceId",
+                  "description": "(Required) The unique identifier (UUID) for the Balance to which you want to add a transaction."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<object>",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "0519c683-6287-47ff-8605-33cf9ff474d3",
+              "name": "Returns the created Balance transaction",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":balanceId",
+                    "transactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "balanceId",
+                      "description": "(Required) The unique identifier (UUID) for the Balance to which you want to add a transaction."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": \"<number>\",\n  \"version\": \"<long>\",\n  \"description\": \"<string>\",\n  \"paid\": \"<number>\",\n  \"currencyPaid\": \"<string>\",\n  \"transactionTypeId\": \"<string>\",\n  \"appliedDate\": \"<dateTime>\",\n  \"transactionDate\": \"<dateTime>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 4911,\n  \"description\": \"string\",\n  \"amount\": 6920.309453080367,\n  \"paid\": 773.6190515438168,\n  \"currencyPaid\": \"string\",\n  \"entityType\": \"<string>\",\n  \"entityId\": \"string\",\n  \"transactionTypeId\": \"string\",\n  \"appliedDate\": \"1954-12-13T08:22:36.221Z\",\n  \"transactionDate\": \"1966-06-12T03:58:21.224Z\",\n  \"dtCreated\": \"1951-12-19T17:22:36.087Z\",\n  \"dtLastModified\": \"1981-03-01T08:16:00.158Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "1a4feba6-a5a4-464d-92b8-f15d82efb405",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":balanceId",
+                    "transactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "balanceId",
+                      "description": "(Required) The unique identifier (UUID) for the Balance to which you want to add a transaction."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": \"<number>\",\n  \"version\": \"<long>\",\n  \"description\": \"<string>\",\n  \"paid\": \"<number>\",\n  \"currencyPaid\": \"<string>\",\n  \"transactionTypeId\": \"<string>\",\n  \"appliedDate\": \"<dateTime>\",\n  \"transactionDate\": \"<dateTime>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2aeb0391-9c53-4953-a1cf-a8193a7e0cdc",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":balanceId",
+                    "transactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "balanceId",
+                      "description": "(Required) The unique identifier (UUID) for the Balance to which you want to add a transaction."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": \"<number>\",\n  \"version\": \"<long>\",\n  \"description\": \"<string>\",\n  \"paid\": \"<number>\",\n  \"currencyPaid\": \"<string>\",\n  \"transactionTypeId\": \"<string>\",\n  \"appliedDate\": \"<dateTime>\",\n  \"transactionDate\": \"<dateTime>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e62da615-e615-4be3-ae0a-55f3873e53bd",
+          "name": "Get Balance Transactions Summary",
+          "request": {
+            "name": "Get Balance Transactions Summary",
+            "description": {
+              "content": "Retrieves the Balance Transactions Summary for a given Balance.\n\nThe response contains useful recorded and calculated Transaction amounts created for a Balance during the time it is active for the Account, including amounts relevant to any rollover amount configured for a Balance:\n* `totalCreditAmount`. The sum of all credits amounts created for the Balance.\n* `totalDebitAmount`. The sum of all debit amounts created for the Balance.\n* `initialCreditAmount`. The initial credit amount created for the Balance.\n* `expiredBalanceAmount`. The amount of the Balance remaining at the time the Balance expires and which is not included in any configured Rollover amount. For example, suppose a Balance reaches its end date and $1000 credit remains unused. If the Balance is configured to rollover $800, then the `expiredBalanceAmount` is calculated as $1000 - $800 = $200.\n* `rolloverConsumed`. The sum of debits made against the configured rollover amount. Note that this amount is dynamic relative to when the API call is made until either the rollover end date is reached or the cap configured for the rollover amount is reached, after which it will be unchanged. If no rollover is configured for a Balance, then this is ignored.\n* `balanceConsumed`. The sum of debits made against the Balance. Note that this amount is dynamic relative to when the API call is made until either the Balance end date is reached or the available Balance amount reaches zero, after which it will be unchanged. ",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "balances",
+                ":balanceId",
+                "transactions",
+                "summary"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) UUID of the organization"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "balanceId",
+                  "description": "(Required) The UUID of the Balance"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "82b46a10-5c1e-43e6-8525-8bbeee3aff66",
+              "name": "Summary of all Balance Transactions",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":balanceId",
+                    "transactions",
+                    "summary"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "balanceId",
+                      "description": "(Required) The UUID of the Balance"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"totalCreditAmount\": 250,\n  \"totalDebitAmount\": 125.5,\n  \"initialCreditAmount\": 300,\n  \"expiredBalanceAmount\": 50,\n  \"rolloverConsumed\": 75,\n  \"balanceConsumed\": 100\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "6aa9f8a8-73f6-4b55-a5fd-3bfb2a6892bc",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":balanceId",
+                    "transactions",
+                    "summary"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "balanceId",
+                      "description": "(Required) The UUID of the Balance"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "04f55973-fe51-45a0-b318-e7f8b31d861c",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":balanceId",
+                    "transactions",
+                    "summary"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "balanceId",
+                      "description": "(Required) The UUID of the Balance"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "afd255d2-f5ce-40ba-9b5a-a18c1b95d40f",
+          "name": "List Balances",
+          "request": {
+            "name": "List Balances",
+            "description": {
+              "content": "Retrieve a list of all Balances for your Organization.\n\nThis endpoint returns a list of all Balances associated with your organization. You can filter the Balances by the end customer's Account UUID and end dates, and paginate through them using the `pageSize` and `nextToken` parameters.\n\n**NOTE:** If a Balance has a rollover amount configured and you want to use the `endDateStart` or `endDateEnd` query parameters, the `rolloverEndDate` is used as the end date for the Balance.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "balances"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "<integer>",
+                  "description": "The maximum number of Balances to return per page."
+                },
+                {
+                  "disabled": false,
+                  "key": "nextToken",
+                  "value": "<string>",
+                  "description": "The `nextToken` for retrieving the next page of Balances. It is used to fetch the next page of Balances in a paginated list."
+                },
+                {
+                  "disabled": false,
+                  "key": "accountId",
+                  "value": "<string>",
+                  "description": "The unique identifier (UUID) for the end customer's account."
+                },
+                {
+                  "disabled": false,
+                  "key": "endDateStart",
+                  "value": "<string>",
+                  "description": "Only include Balances with end dates equal to or later than this date. If a Balance has a rollover amount configured, then the `rolloverEndDate` will be used as the end date."
+                },
+                {
+                  "disabled": false,
+                  "key": "endDateEnd",
+                  "value": "<string>",
+                  "description": "Only include Balances with end dates earlier than this date. If a Balance has a rollover amount configured, then the `rolloverEndDate` will be used as the end date."
+                },
+                {
+                  "disabled": false,
+                  "key": "contract",
+                  "value": "<string>"
+                },
+                {
+                  "disabled": false,
+                  "key": "contractId",
+                  "value": "<string>",
+                  "description": "Filter Balances by contract id. Use '' with accountId to fetch unlinked balances."
+                },
+                {
+                  "disabled": false,
+                  "key": "ids",
+                  "value": "<string>",
+                  "description": "A list of unique identifiers (UUIDs) for specific Balances to retrieve."
+                },
+                {
+                  "disabled": false,
+                  "key": "ids",
+                  "value": "<string>",
+                  "description": "A list of unique identifiers (UUIDs) for specific Balances to retrieve."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) for your organization. The Organization represents your company as a direct customer of our service. "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "4f854e58-0bea-40ab-81f5-3b6953827873",
+              "name": "Returns list of Balances",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "accountId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "endDateStart",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "endDateEnd",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "contract",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "contractId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ids",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ids",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your organization. The Organization represents your company as a direct customer of our service. "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"string\",\n      \"version\": 1134,\n      \"customFields\": {\n        \"key_0\": \"string\",\n        \"key_1\": \"string\",\n        \"key_2\": \"string\",\n        \"key_3\": \"string\"\n      },\n      \"code\": \"string\",\n      \"name\": \"string\",\n      \"description\": \"string\",\n      \"accountId\": \"string\",\n      \"amount\": 4280.59993682488,\n      \"currency\": \"string\",\n      \"startDate\": \"1996-09-28T17:32:36.603Z\",\n      \"endDate\": \"1958-09-10T04:31:52.347Z\",\n      \"rolloverAmount\": 8600.273105065067,\n      \"rolloverEndDate\": \"1970-01-26T02:44:31.858Z\",\n      \"balanceDrawDownDescription\": \"string\",\n      \"overageSurchargePercent\": 6245.084875202197,\n      \"overageDescription\": \"string\",\n      \"productIds\": [\n        \"string\",\n        \"string\"\n      ],\n      \"lineItemTypes\": [\n        \"USAGE\",\n        \"COUNTER_ADJUSTMENT_DEBIT\"\n      ],\n      \"contractId\": \"string\",\n      \"consumptionsAccountingProductId\": \"string\",\n      \"feesAccountingProductId\": \"string\",\n      \"allowOverdraft\": false,\n      \"dtCreated\": \"1975-12-02T14:04:47.598Z\",\n      \"dtLastModified\": \"2013-04-07T21:15:02.574Z\",\n      \"createdBy\": \"string\",\n      \"lastModifiedBy\": \"string\"\n    },\n    {\n      \"id\": \"string\",\n      \"version\": 6963,\n      \"customFields\": {\n        \"key_0\": \"string\",\n        \"key_1\": \"string\"\n      },\n      \"code\": \"string\",\n      \"name\": \"string\",\n      \"description\": \"string\",\n      \"accountId\": \"string\",\n      \"amount\": 9691.504864119508,\n      \"currency\": \"string\",\n      \"startDate\": \"1992-12-08T03:14:33.781Z\",\n      \"endDate\": \"1967-02-17T10:10:46.252Z\",\n      \"rolloverAmount\": 2281.6911617067694,\n      \"rolloverEndDate\": \"2005-09-02T11:03:51.120Z\",\n      \"balanceDrawDownDescription\": \"string\",\n      \"overageSurchargePercent\": 3156.4104126327065,\n      \"overageDescription\": \"string\",\n      \"productIds\": [\n        \"string\",\n        \"string\"\n      ],\n      \"lineItemTypes\": [\n        \"COUNTER_ADJUSTMENT_DEBIT\",\n        \"COUNTER_RUNNING_TOTAL_CHARGE\"\n      ],\n      \"contractId\": \"string\",\n      \"consumptionsAccountingProductId\": \"string\",\n      \"feesAccountingProductId\": \"string\",\n      \"allowOverdraft\": false,\n      \"dtCreated\": \"2001-01-12T18:21:55.531Z\",\n      \"dtLastModified\": \"1985-11-08T04:10:57.823Z\",\n      \"createdBy\": \"string\",\n      \"lastModifiedBy\": \"string\"\n    }\n  ],\n  \"nextToken\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "76cb3666-9623-459c-8969-6648087baf51",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "accountId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "endDateStart",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "endDateEnd",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "contract",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "contractId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ids",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ids",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your organization. The Organization represents your company as a direct customer of our service. "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "12d2f737-50a7-4391-bfb6-c589ddd621ac",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "accountId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "endDateStart",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "endDateEnd",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "contract",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "contractId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ids",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ids",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your organization. The Organization represents your company as a direct customer of our service. "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "50e42aca-623e-4b52-89f2-5759dd9da476",
+          "name": "Create Balance",
+          "request": {
+            "name": "Create Balance",
+            "description": {
+              "content": "Create a new Balance for the given end customer Account. \n\nThis endpoint allows you to create a new Balance for a specific end customer Account. The Balance details should be provided in the request body.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "balances"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<object>",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "b48c4e3e-987d-409b-8829-401311f0bc44",
+              "name": "Returns the created Balance",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountId\": \"<string>\",\n  \"code\": \"<string>\",\n  \"currency\": \"<string>\",\n  \"endDate\": \"<dateTime>\",\n  \"name\": \"<string>\",\n  \"startDate\": \"<dateTime>\",\n  \"version\": \"<long>\",\n  \"customFields\": {\n    \"key_0\": \"<string>\"\n  },\n  \"description\": \"<string>\",\n  \"rolloverAmount\": \"<number>\",\n  \"rolloverEndDate\": \"<dateTime>\",\n  \"balanceDrawDownDescription\": \"<string>\",\n  \"overageSurchargePercent\": \"<double>\",\n  \"overageDescription\": \"<string>\",\n  \"productIds\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"lineItemTypes\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"contractId\": \"<string>\",\n  \"consumptionsAccountingProductId\": \"<string>\",\n  \"feesAccountingProductId\": \"<string>\",\n  \"allowOverdraft\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 2813,\n  \"customFields\": {\n    \"key_0\": \"string\"\n  },\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"accountId\": \"string\",\n  \"amount\": 3229.1550086957154,\n  \"currency\": \"string\",\n  \"startDate\": \"1962-05-24T03:26:28.946Z\",\n  \"endDate\": \"1998-08-23T21:25:58.415Z\",\n  \"rolloverAmount\": 2885.5414880099383,\n  \"rolloverEndDate\": \"1992-07-22T13:40:23.537Z\",\n  \"balanceDrawDownDescription\": \"string\",\n  \"overageSurchargePercent\": 7951.994635020394,\n  \"overageDescription\": \"string\",\n  \"productIds\": [\n    \"string\",\n    \"string\"\n  ],\n  \"lineItemTypes\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"contractId\": \"string\",\n  \"consumptionsAccountingProductId\": \"string\",\n  \"feesAccountingProductId\": \"string\",\n  \"allowOverdraft\": false,\n  \"dtCreated\": \"1992-12-20T07:29:35.442Z\",\n  \"dtLastModified\": \"2001-08-15T11:18:08.281Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d0277ced-5d17-4edb-a000-51969e4a160d",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountId\": \"<string>\",\n  \"code\": \"<string>\",\n  \"currency\": \"<string>\",\n  \"endDate\": \"<dateTime>\",\n  \"name\": \"<string>\",\n  \"startDate\": \"<dateTime>\",\n  \"version\": \"<long>\",\n  \"customFields\": {\n    \"key_0\": \"<string>\"\n  },\n  \"description\": \"<string>\",\n  \"rolloverAmount\": \"<number>\",\n  \"rolloverEndDate\": \"<dateTime>\",\n  \"balanceDrawDownDescription\": \"<string>\",\n  \"overageSurchargePercent\": \"<double>\",\n  \"overageDescription\": \"<string>\",\n  \"productIds\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"lineItemTypes\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"contractId\": \"<string>\",\n  \"consumptionsAccountingProductId\": \"<string>\",\n  \"feesAccountingProductId\": \"<string>\",\n  \"allowOverdraft\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "9c64232b-d602-4176-9263-a10fe3b8bc1c",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountId\": \"<string>\",\n  \"code\": \"<string>\",\n  \"currency\": \"<string>\",\n  \"endDate\": \"<dateTime>\",\n  \"name\": \"<string>\",\n  \"startDate\": \"<dateTime>\",\n  \"version\": \"<long>\",\n  \"customFields\": {\n    \"key_0\": \"<string>\"\n  },\n  \"description\": \"<string>\",\n  \"rolloverAmount\": \"<number>\",\n  \"rolloverEndDate\": \"<dateTime>\",\n  \"balanceDrawDownDescription\": \"<string>\",\n  \"overageSurchargePercent\": \"<double>\",\n  \"overageDescription\": \"<string>\",\n  \"productIds\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"lineItemTypes\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"contractId\": \"<string>\",\n  \"consumptionsAccountingProductId\": \"<string>\",\n  \"feesAccountingProductId\": \"<string>\",\n  \"allowOverdraft\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "cfe035a7-4217-47eb-8b5d-ded6fcb69b46",
+          "name": "Retrieve Balance",
+          "request": {
+            "name": "Retrieve Balance",
+            "description": {
+              "content": "Retrieve a specific Balance.\n\nThis endpoint returns the details of the specified Balance.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "balances",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) The unique identifier (UUID) of the Balance to retrieve."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "804ca2f3-939e-4c66-8ff3-f053044de069",
+              "name": "Returns the Balance",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the Balance to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 2813,\n  \"customFields\": {\n    \"key_0\": \"string\"\n  },\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"accountId\": \"string\",\n  \"amount\": 3229.1550086957154,\n  \"currency\": \"string\",\n  \"startDate\": \"1962-05-24T03:26:28.946Z\",\n  \"endDate\": \"1998-08-23T21:25:58.415Z\",\n  \"rolloverAmount\": 2885.5414880099383,\n  \"rolloverEndDate\": \"1992-07-22T13:40:23.537Z\",\n  \"balanceDrawDownDescription\": \"string\",\n  \"overageSurchargePercent\": 7951.994635020394,\n  \"overageDescription\": \"string\",\n  \"productIds\": [\n    \"string\",\n    \"string\"\n  ],\n  \"lineItemTypes\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"contractId\": \"string\",\n  \"consumptionsAccountingProductId\": \"string\",\n  \"feesAccountingProductId\": \"string\",\n  \"allowOverdraft\": false,\n  \"dtCreated\": \"1992-12-20T07:29:35.442Z\",\n  \"dtLastModified\": \"2001-08-15T11:18:08.281Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "25836c92-78a9-4f82-9f22-123f6ab50afa",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the Balance to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0e634076-ddcb-461f-877b-581ad94af06d",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the Balance to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "28c88338-c310-45b5-a3e0-a74dc5bb08ce",
+          "name": "Update Balance",
+          "request": {
+            "name": "Update Balance",
+            "description": {
+              "content": "Update a specific Balance.\n\nThis endpoint allows you to update the details of a specific Balance. The updated Balance details should be provided in the request body.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "balances",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) The unique identifier (UUID) of the Balance to update."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<object>",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "6ff38b7f-85f8-44e5-ad12-1f62b669d819",
+              "name": "Returns the updated Balance",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the Balance to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountId\": \"<string>\",\n  \"code\": \"<string>\",\n  \"currency\": \"<string>\",\n  \"endDate\": \"<dateTime>\",\n  \"name\": \"<string>\",\n  \"startDate\": \"<dateTime>\",\n  \"version\": \"<long>\",\n  \"customFields\": {\n    \"key_0\": \"<string>\"\n  },\n  \"description\": \"<string>\",\n  \"rolloverAmount\": \"<number>\",\n  \"rolloverEndDate\": \"<dateTime>\",\n  \"balanceDrawDownDescription\": \"<string>\",\n  \"overageSurchargePercent\": \"<double>\",\n  \"overageDescription\": \"<string>\",\n  \"productIds\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"lineItemTypes\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"contractId\": \"<string>\",\n  \"consumptionsAccountingProductId\": \"<string>\",\n  \"feesAccountingProductId\": \"<string>\",\n  \"allowOverdraft\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 2813,\n  \"customFields\": {\n    \"key_0\": \"string\"\n  },\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"accountId\": \"string\",\n  \"amount\": 3229.1550086957154,\n  \"currency\": \"string\",\n  \"startDate\": \"1962-05-24T03:26:28.946Z\",\n  \"endDate\": \"1998-08-23T21:25:58.415Z\",\n  \"rolloverAmount\": 2885.5414880099383,\n  \"rolloverEndDate\": \"1992-07-22T13:40:23.537Z\",\n  \"balanceDrawDownDescription\": \"string\",\n  \"overageSurchargePercent\": 7951.994635020394,\n  \"overageDescription\": \"string\",\n  \"productIds\": [\n    \"string\",\n    \"string\"\n  ],\n  \"lineItemTypes\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"contractId\": \"string\",\n  \"consumptionsAccountingProductId\": \"string\",\n  \"feesAccountingProductId\": \"string\",\n  \"allowOverdraft\": false,\n  \"dtCreated\": \"1992-12-20T07:29:35.442Z\",\n  \"dtLastModified\": \"2001-08-15T11:18:08.281Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4d120ef1-a7ac-4b52-affe-408cecd5e07f",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the Balance to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountId\": \"<string>\",\n  \"code\": \"<string>\",\n  \"currency\": \"<string>\",\n  \"endDate\": \"<dateTime>\",\n  \"name\": \"<string>\",\n  \"startDate\": \"<dateTime>\",\n  \"version\": \"<long>\",\n  \"customFields\": {\n    \"key_0\": \"<string>\"\n  },\n  \"description\": \"<string>\",\n  \"rolloverAmount\": \"<number>\",\n  \"rolloverEndDate\": \"<dateTime>\",\n  \"balanceDrawDownDescription\": \"<string>\",\n  \"overageSurchargePercent\": \"<double>\",\n  \"overageDescription\": \"<string>\",\n  \"productIds\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"lineItemTypes\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"contractId\": \"<string>\",\n  \"consumptionsAccountingProductId\": \"<string>\",\n  \"feesAccountingProductId\": \"<string>\",\n  \"allowOverdraft\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ff49daf5-3a83-45f0-b884-a8e821b72b98",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the Balance to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountId\": \"<string>\",\n  \"code\": \"<string>\",\n  \"currency\": \"<string>\",\n  \"endDate\": \"<dateTime>\",\n  \"name\": \"<string>\",\n  \"startDate\": \"<dateTime>\",\n  \"version\": \"<long>\",\n  \"customFields\": {\n    \"key_0\": \"<string>\"\n  },\n  \"description\": \"<string>\",\n  \"rolloverAmount\": \"<number>\",\n  \"rolloverEndDate\": \"<dateTime>\",\n  \"balanceDrawDownDescription\": \"<string>\",\n  \"overageSurchargePercent\": \"<double>\",\n  \"overageDescription\": \"<string>\",\n  \"productIds\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"lineItemTypes\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"contractId\": \"<string>\",\n  \"consumptionsAccountingProductId\": \"<string>\",\n  \"feesAccountingProductId\": \"<string>\",\n  \"allowOverdraft\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "5f293e5e-03bd-4c56-a671-3a6b746511bc",
+          "name": "Delete Balance",
+          "request": {
+            "name": "Delete Balance",
+            "description": {
+              "content": "Delete a specific Balance.\n\nThis endpoint allows you to delete a specific Balance with the given UUID.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "balances",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) The unique identifier (UUID) of the Balance to delete."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "6522cff4-1069-4d1e-9281-e77ed975cdc6",
+              "name": "Returns the deleted Balance",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the Balance to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 2813,\n  \"customFields\": {\n    \"key_0\": \"string\"\n  },\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"accountId\": \"string\",\n  \"amount\": 3229.1550086957154,\n  \"currency\": \"string\",\n  \"startDate\": \"1962-05-24T03:26:28.946Z\",\n  \"endDate\": \"1998-08-23T21:25:58.415Z\",\n  \"rolloverAmount\": 2885.5414880099383,\n  \"rolloverEndDate\": \"1992-07-22T13:40:23.537Z\",\n  \"balanceDrawDownDescription\": \"string\",\n  \"overageSurchargePercent\": 7951.994635020394,\n  \"overageDescription\": \"string\",\n  \"productIds\": [\n    \"string\",\n    \"string\"\n  ],\n  \"lineItemTypes\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"contractId\": \"string\",\n  \"consumptionsAccountingProductId\": \"string\",\n  \"feesAccountingProductId\": \"string\",\n  \"allowOverdraft\": false,\n  \"dtCreated\": \"1992-12-20T07:29:35.442Z\",\n  \"dtLastModified\": \"2001-08-15T11:18:08.281Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2d6b073c-c9b9-4c0f-8fba-2d4e648cbe5c",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the Balance to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "cb51ec13-7f02-4167-8b7c-b919398e9d20",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "balances",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the Balance to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.m3ter.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "scope",
+        "value": "m3ter-resources/m3ter-scope measurements:upload measurements:fileUpload measurements:retrieve"
+      },
+      {
+        "key": "accessTokenUrl",
+        "value": "/oauth/token"
+      },
+      {
+        "key": "grant_type",
+        "value": "client_credentials"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "f351a119-bba0-4eb9-ac04-877d5f67cb8f",
+    "name": "m3ter Account Balances API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->",
+      "type": "text/plain"
+    }
+  }
+}

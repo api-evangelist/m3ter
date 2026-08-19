@@ -1,0 +1,71 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account OrganizationConfig API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "OrganizationConfig",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve OrganizationConfig",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/organizationconfig",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              }
+            ]
+          },
+          "docs": "Retrieve the Organization-wide configuration details."
+        },
+        {
+          "info": {
+            "name": "Update OrganizationConfig",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/organizationconfig",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the Organization-wide configuration details."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

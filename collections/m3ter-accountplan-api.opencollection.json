@@ -1,0 +1,233 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account AccountPlan API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "AccountPlan",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve AccountPlan",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/accountplans/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the AccountPlan or AccountPlanGroup to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve the AccountPlan or AccountPlanGroup details corresponding to the given UUID."
+        },
+        {
+          "info": {
+            "name": "Update AccountPlan",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/accountplans/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the AccountPlan or AccountPlanGroup to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the AccountPlan or AccountPlanGroup with the given UUID.\n\nThis endpoint updates a new AccountPlan or AccountPlanGroup for a specific Account in your Organization. The updated information should be provided in the request body.\n\n**Notes:**\n* You cannot use this call to update *both* an AccountPlan and AccountPlanGroup for an Account at the same time. If you want to update an AccounPlan and an AccountPlanGroup attached to an Account, you must submit two separate calls.\n* If you have created"
+        },
+        {
+          "info": {
+            "name": "Delete AccountPlan",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/accountplans/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifer (UUID) of the AccountPlan or AccountPlanGroup to delete."
+              }
+            ]
+          },
+          "docs": "Delete the AccountPlan or AccountPlanGroup with the given UUID.\n\nThis endpoint deletes an AccountPlan or AccountPlanGroup that has been attached to a specific Account in your Organization."
+        },
+        {
+          "info": {
+            "name": "List AccountPlans",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/accountplans",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "The maximum number of AccountPlans and AccountPlanGroups to return per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for retrieving the next page of AccountPlans and AccountPlanGroups. It is used to fetch the next page of AccountPlans and AccountPlanGroups in a paginated list."
+              },
+              {
+                "name": "date",
+                "value": "",
+                "type": "query",
+                "description": "The specific date for which you want to retrieve AccountPlans and AccountPlanGroups.\n\n**NOTE:** Returns both active and inactive AccountPlans and AccountPlanGroups for the specified date."
+              },
+              {
+                "name": "account",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier (UUID) for the Account whose AccountPlans and AccountPlanGroups you want to retrieve.\n\n**NOTE:** Only returns the currently active AccountPlans and AccountPlanGroups for the specified Account. Use in combination with the `includeall` query parameter to return both active and inactive."
+              },
+              {
+                "name": "plan",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier (UUID) for the Plan whose associated AccountPlans you want to retrieve.\n\n**NOTE:** Does not return AccountPlanGroups if you use a `planGroupId`."
+              },
+              {
+                "name": "product",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier (UUID) for the Product whose associated AccountPlans you want to retrieve.\n\n**NOTE:** You cannot use the `product` query parameter as a single filter condition, but must always use it in combination with the `account` query parameter."
+              },
+              {
+                "name": "includeall",
+                "value": "",
+                "type": "query",
+                "description": "A Boolean flag that specifies whether to include both active and inactive AccountPlans and AccountPlanGroups in the list.\n\n* **TRUE** - both active and inactive AccountPlans and AccountPlanGroups are included in the list.\n* **FALSE** - only active AccountPlans and AccountPlanGroups are retrieved in the list.*(Default)*\n\n**NOTE:** Only operative if you also have one of `account`, `plan` or `contract` as a query parameter."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "A list of unique identifiers (UUIDs) for specific AccountPlans and AccountPlanGroups you want to retrieve."
+              },
+              {
+                "name": "contract",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier (UUID) of the Contract which the AccountPlans you want to retrieve have been linked to.\n\n**NOTE:** Does not return AccountPlanGroups that have been linked to the Contract."
+              }
+            ]
+          },
+          "docs": "Retrieves a list of AccountPlan and AccountPlanGroup entities for the specified Organization. The list can be paginated for easier management, and supports filtering with various query parameters.\n\n"
+        },
+        {
+          "info": {
+            "name": "Create AccountPlan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/accountplans",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new AccountPlan or AccountPlanGroup.\n\nThis endpoint creates a new AccountPlan or AccountPlanGroup for a specific Account in your Organization. The details of the new AccountPlan or AccountPlanGroup should be supplied in the request body.\n\n**Note:** You cannot use this call to create *both* an AccountPlan and AccountPlanGroup for an Account at the same time. If you want to create both for an Account, you must submit two separate calls."
+        },
+        {
+          "info": {
+            "name": "Replace AccountPlan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/accountplans/:id/replace",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the AccountPlan to replace."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "End-dates the specified AccountPlan at the new startDate and creates the new AccountPlan."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

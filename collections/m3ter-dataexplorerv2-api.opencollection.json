@@ -1,0 +1,190 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account DataExplorerV2 API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "DataExplorerV2",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List UsageSavedQueries",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/usage/savedqueries",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of UsageSavedQueries to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of UsageSavedQuery entities"
+        },
+        {
+          "info": {
+            "name": "Create UsageSavedQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/usage/savedqueries",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new UsageSavedQuery."
+        },
+        {
+          "info": {
+            "name": "Retrieve UsageSavedQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/usage/savedqueries/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the UsageSavedQuery to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a UsageSavedQuery for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Update UsageSavedQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/usage/savedqueries/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the UsageSavedQuery to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a UsageSavedQuery for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Delete UsageSavedQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/usage/savedqueries/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the UsageSavedQuery to update."
+              }
+            ]
+          },
+          "docs": "Delete the UsageSavedQuery for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Query and filter usage data",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/usage/query",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Query and filter usage data collected for your Organization.\n\nYou can use several parameters to filter the range of usage data returned:\n* **Time period.** Use `startDate` and `endDate` to define a period. The query references the `timestamp` values of usage data submissions for applying the defined time period, and not the time submissions were `receivedAt` by the platform. Only usage data with a `timestamp` that falls in the defined time period are returned.(Required)\n* **Meters.** Specify the"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

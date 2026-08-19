@@ -1,0 +1,740 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account Bill API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Bill",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve latest Bill",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/latest/:accountId",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Account for which the latest Bill should be retrieved."
+              },
+              {
+                "name": "additional",
+                "value": "",
+                "type": "query",
+                "description": "Comma separated list of additional fields."
+              }
+            ]
+          },
+          "docs": "Retrieve the latest Bill for the given Account.\n\nThis endpoint retrieves the latest Bill for the given Account in the specified Organization. It facilitates tracking of the most recent charges and consumption details. "
+        },
+        {
+          "info": {
+            "name": "Retrieve Bill",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Bill to retrieve."
+              },
+              {
+                "name": "additional",
+                "value": "",
+                "type": "query",
+                "description": "Comma separated list of additional fields."
+              }
+            ]
+          },
+          "docs": "Retrieve the Bill with the given UUID.\n\nThis endpoint retrieves the Bill with the given unique identifier (UUID) and specific Organization. "
+        },
+        {
+          "info": {
+            "name": "Delete Bill",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Bill to delete."
+              }
+            ]
+          },
+          "docs": "Delete the Bill with the given UUID.\n\nThis endpoint deletes the specified Bill with the given unique identifier. Use with caution since deleted Bills cannot be recovered. Suitable for removing incorrect or obsolete Bills, and for Bills that have not been sent to customers.  Where end-customer invoices for Bills have been sent to customers, Bills should not be deleted to ensure you have an audit trail of how the invoice was created. "
+        },
+        {
+          "info": {
+            "name": "List Bills",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of Bills to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of Bills in a paginated list."
+              },
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "query",
+                "description": "Optional filter. An Account ID - returns the Bills for the single specified Account."
+              },
+              {
+                "name": "locked",
+                "value": "",
+                "type": "query",
+                "description": "Boolean flag specifying whether to include Bills with \"locked\" status.\n\n* **TRUE** - the list inlcudes \"locked\" Bills.\n* **FALSE** - excludes \"locked\" Bills from the list."
+              },
+              {
+                "name": "excludeLineItems",
+                "value": "",
+                "type": "query",
+                "description": "Exclude Line Items"
+              },
+              {
+                "name": "includeBillTotal",
+                "value": "",
+                "type": "query",
+                "description": "Include Bill Total"
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Only include Bills having the given status"
+              },
+              {
+                "name": "billDate",
+                "value": "",
+                "type": "query",
+                "description": "The specific date in ISO 8601 format for which you want to retrieve Bills."
+              },
+              {
+                "name": "billDateStart",
+                "value": "",
+                "type": "query",
+                "description": "Only include Bills with bill dates equal to or later than this date."
+              },
+              {
+                "name": "billDateEnd",
+                "value": "",
+                "type": "query",
+                "description": "Only include Bills with bill dates earlier than this date."
+              },
+              {
+                "name": "externalInvoiceDateStart",
+                "value": "",
+                "type": "query",
+                "description": "Only include Bills with external invoice dates equal to or later than this date."
+              },
+              {
+                "name": "externalInvoiceDateEnd",
+                "value": "",
+                "type": "query",
+                "description": "Only include Bills with external invoice dates earlier than this date."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "Optional filter. The list of Bill IDs to retrieve."
+              },
+              {
+                "name": "billJobId",
+                "value": "",
+                "type": "query",
+                "description": "List Bill entities by the bill job that last calculated them."
+              },
+              {
+                "name": "additional",
+                "value": "",
+                "type": "query",
+                "description": "Comma separated list of additional fields."
+              },
+              {
+                "name": "billingFrequency",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of Bills.\n\nThis endpoint retrieves a list of all Bills for the given Account within the specified Organization. Optional filters can be applied such as by date range, lock status, or other attributes. The list can also be paginated for easier management."
+        },
+        {
+          "info": {
+            "name": "Update Bill Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/:id/status",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Bill whose status you want to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the status of a specified Bill with the given Bill ID. \n\nThis endpoint allows you to transition a Bill's status through various stages, such as from \"Pending\" to \"Approved\"."
+        },
+        {
+          "info": {
+            "name": "Retrieve Bill Statement in JSON Format",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/:id/statement/json",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Bill for which you want to retrieve the Statement."
+              }
+            ]
+          },
+          "docs": "Retrieve a Bill Statement in JSON format for a given Bill ID.\n\nBill Statements are backing sheets to the invoices sent to your customers. Bill Statements provide a breakdown of the usage responsible for the usage charge line items shown on invoices.\n\nThe response to this call returns a pre-signed `downloadUrl`, which you use with a `GET` call to obtain the Bill Statement."
+        },
+        {
+          "info": {
+            "name": "List Line Items",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/:billId/lineitems",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "billId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Bill for which you want to list the line items."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of line items to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of line items in a paginated list."
+              },
+              {
+                "name": "additional",
+                "value": "",
+                "type": "query",
+                "description": "Comma separated list of additional fields."
+              }
+            ]
+          },
+          "docs": "Lists all the line items for a specific Bill. \n\nThis endpoint retrieves a list of line items for the given Bill within the specified Organization. The list can also be paginated for easier management. The line items returned in the list include individual charges, discounts, or adjustments within a Bill.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve Bills for an Account ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/accountid/:accountId",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of Bills to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of Bills in a paginated list."
+              },
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Account for which you want to retrieve Bills."
+              },
+              {
+                "name": "additional",
+                "value": "",
+                "type": "query",
+                "description": "Comma separated list of additional fields."
+              }
+            ]
+          },
+          "docs": "Retrieve all Bills for the given Account.\n\nThis endpoint retrieves all Bills associated with a specific Account ID in a specified organization. The list can also be paginated for easier management.\n\nThis is useful for obtaining an overview of all billing activities for an Account.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve Line Item",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/:billId/lineitems/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "billId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Bill containing the line item."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the line item you want to retrieve."
+              },
+              {
+                "name": "additional",
+                "value": "",
+                "type": "query",
+                "description": "Comma separated list of additional fields."
+              }
+            ]
+          },
+          "docs": "Retrieves a specific line item within a Bill.\n\nThis endpoint retrieves the line item given by its unique identifier (UUID) from a specific Bill.  "
+        },
+        {
+          "info": {
+            "name": "Lock Bill",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/:id/lock",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Bill to lock."
+              }
+            ]
+          },
+          "docs": "Lock the specific Bill identified by the given UUID. Once a Bill is locked, no further changes can be made to it.\n\n**NOTE:** You cannot lock a Bill whose current status is `PENDING`. You will receive an error message if you try to do this. You must first use the [Approve Bills](https://www.m3ter.com/docs/api#tag/Bill/operation/ApproveBills) call to approve a Bill before you can lock it."
+        },
+        {
+          "info": {
+            "name": "Approve Bills in Billing Period",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/billingperiod/:lastDateInBillingPeriod/:billingFrequency/approve",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "lastDateInBillingPeriod",
+                "value": "",
+                "type": "path",
+                "description": "The last date of the billing period for which you want to approve Bills. This date defines the range of Bills to be approved."
+              },
+              {
+                "name": "billingFrequency",
+                "value": "",
+                "type": "path",
+                "description": "The billing frequency for the specified period. Valid options are daily, weekly, monthly, or annually."
+              }
+            ]
+          },
+          "docs": "Approve all Bills within a specified billing period. This endpoint allows you to approve Bills on various frequencies, such as daily, weekly, monthly, or annually. Specify the last day of the period to define the range. \n\nFor example, to approve all Bills on monthly billing up to September with due date of 1st of month, use the last day of September, which is September 30th."
+        },
+        {
+          "info": {
+            "name": "Retrieve Bill Statement in CSV Format",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/:id/statement/csv",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Bill for which to retrieve the Statement in CSV format."
+              }
+            ]
+          },
+          "docs": "Retrieve a specific Bill Statement for the given Bill UUID in CSV format. \n\nBill Statements are backing sheets to the invoices sent to your customers. Bill Statements provide a breakdown of the usage responsible for the usage charge line items shown on invoices.\n\nThe response includes a pre-signed `downloadUrl`, which must be used with a separate `GET` call to download the actual Bill Statement. This ensures secure access to the requested information."
+        },
+        {
+          "info": {
+            "name": "Create Bill Statement in CSV Format",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/:id/statement/csv",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Bill for which you want to generate the Statement in CSV format."
+              }
+            ]
+          },
+          "docs": "Generate a specific Bill Statement for the provided Bill UUID in CSV format. \n\nBill Statements are backing sheets to the invoices sent to your customers. Bill Statements provide a breakdown of the usage responsible for the usage charge line items shown on invoices.\n\nThe response to this call returns a pre-signed `downloadUrl`, which you then use with a `GET` call to obtain the Bill statement in CSV format."
+        },
+        {
+          "info": {
+            "name": "Preview Bill",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/preview",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "debug",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Preview the current Bill for a specific account. \n\nThis endpoint is designed to provide a preview of the Bill for exactly one account, allowing you to review charges, frequencies, and other details before finalization. Required parameters include: \n* `accountIds` - exactly 1 account must be specified for previewing a Bill. \n* `billingFrequency` \n* `billFrequencyInterval` \n\nOther request parameters are optional. If `version` is not specified, the latest version of the Bill is previewed."
+        },
+        {
+          "info": {
+            "name": "Retrieve Line Item Usage in JSON Format",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/:billId/lineitems/:id/usage/json",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "billId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Bill"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Bill line item for which to retrieve the usage."
+              }
+            ]
+          },
+          "docs": "Retrieve the line item with the given UUID in JSON format.\n\nThis endpoint retrieves detailed usage information for a specific billing line item in JSON format. It is designed to provide granular insights into the consumption pattern for the given line item.\n\nThe response includes a pre-signed `downloadUrl`, which must be used with a separate `GET` call to download the Bill line item. This ensures secure access to the requested information."
+        },
+        {
+          "info": {
+            "name": "Approve Bills",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/approve",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "externalInvoiceDateStart",
+                "value": "",
+                "type": "query",
+                "description": "Start date for filtering Bills by external invoice date. Includes Bills with dates equal to or later than this date."
+              },
+              {
+                "name": "externalInvoiceDateEnd",
+                "value": "",
+                "type": "query",
+                "description": "End date for filtering Bills by external invoice date. Includes Bills with dates earlier than this date."
+              },
+              {
+                "name": "accountIds",
+                "value": "",
+                "type": "query",
+                "description": "List of Account IDs to filter Bills. This allows you to approve Bills for specific Accounts within the Organization."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Approve multiple Bills for the specified Organization based on the given criteria. \n\nThis endpoint allows you to change currently *Pending* Bills to *Approved* status for further processing.\n\nQuery Parameters:\n- Use `accountIds` to approve Bills for specifed Accounts.\n\nRequest Body Schema Parameter:\n- Use `billIds` to specify a collection of Bills for batch approval.\n\n**Important!** If you use the `billIds` Request Body Schema parameter, any Query parameters you might have also used are ignored "
+        },
+        {
+          "info": {
+            "name": "Retrieve Bills in Billing Period",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/billingperiod/:lastDateInBillingPeriod/:billingFrequency",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of Bills to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of Bills in a paginated list."
+              },
+              {
+                "name": "lastDateInBillingPeriod",
+                "value": "",
+                "type": "path",
+                "description": "The last date of the billing period for which you want to retrieve Bills. This date defines the range of Bills to be retrieved."
+              },
+              {
+                "name": "billingFrequency",
+                "value": "",
+                "type": "path",
+                "description": "The billing frequency for the specified period. Valid options are daily, weekly, monthly, or annually."
+              },
+              {
+                "name": "additional",
+                "value": "",
+                "type": "query",
+                "description": "Comma separated list of additional fields."
+              }
+            ]
+          },
+          "docs": "Retrieve all Bills within a specified billing period. This endpoint allows you to retrieve Bills on various frequencies, such as daily, weekly, monthly, or annually. Specify the last day of the period to define the range. \n\nFor example, to retrieve all Bills on monthly billing up to September with due date of 1st of month, use the last day of September, which is September 30th.\n\nThe list can also be paginated for easier management."
+        },
+        {
+          "info": {
+            "name": "Download Bills URL",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/download/csv/url",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Generate a URL for downloading a CSV file containing a comprehensive list of Bills data  for the specified organization for a specified period. This endpoint facilitates easy exporting of billing data for external analysis and reporting.\n\nThe response to this call returns a pre-signed `downloadUrl`, which you then enter into your browser to download the CSV file of the Bill entities.\n\nYou can use the `externalSystem` request parameter to control the format of the Bills data in the CSV file:\n- **"
+        },
+        {
+          "info": {
+            "name": "Search Bills",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/bills/search",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "searchQuery",
+                "value": "",
+                "type": "query",
+                "description": "Query for data using special syntax:\n- Query parameters should be delimited using $ (dollar sign).\n- Allowed comparators are:\n\t- (greater than) >\n\t- (greater than or equal to) >=\n\t- (equal to) : \n\t- (less than) < \n\t- (less than or equal to) <= \n\t- (match phrase/prefix) ~ \n-  Allowed parameters: accountId, locked, billDate, startDate, endDate, dueDate, billingFrequency, id, createdBy, dtCreated, lastModifiedBy, ids.\n-  Query example:\n\t-  searchQuery=startDate>2023-01-01$accountId:62eaad67-5790-407e-b853-881564f0e543.\n\t-  This query is translated into: find Bills that startDate is older than 2023-01-01 AND accountId is equal to 62eaad67-5790-407e-b853-881564f0e543.\n\n**Note:** Using the ~ match phrase/prefix comparator. For best results, we recommend treating this as a \"starts with\" comparator for your search query."
+              },
+              {
+                "name": "fromDocument",
+                "value": "",
+                "type": "query",
+                "description": "`fromDocument` for multi page retrievals."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of Bills to retrieve per page.\n\n**NOTE:** If not defined, default is 10."
+              },
+              {
+                "name": "operator",
+                "value": "",
+                "type": "query",
+                "description": "Search Operator to be used while querying search."
+              },
+              {
+                "name": "sortBy",
+                "value": "",
+                "type": "query",
+                "description": "Name of the parameter on which sorting is performed. Use any field available on the Bill entity to sort by, such as `accountId`, `endDate`, and so on."
+              },
+              {
+                "name": "sortOrder",
+                "value": "",
+                "type": "query",
+                "description": "Sorting order."
+              }
+            ]
+          },
+          "docs": "Search for Bill entities.\n\nThis endpoint executes a search query for Bills based on the user specified search criteria. The search query is customizable, allowing for complex nested conditions and sorting. The returned list of Bills can be paginated for easier management."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,174 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account PlanTemplate API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "PlanTemplate",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List PlanTemplates",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/plantemplates",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of PlanTemplates to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of PlanTemplates in a paginated list."
+              },
+              {
+                "name": "productId",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifiers (UUIDs) of the Products to retrieve associated PlanTemplates."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "List of specific PlanTemplate UUIDs to retrieve. "
+              }
+            ]
+          },
+          "docs": "Retrieve a list of PlanTemplates. \n\nThis endpoint enables you to retrieve a paginated list of PlanTemplates belonging to a specific Organization, identified by its UUID. You can filter the list by PlanTemplate IDs or Product IDs for more focused retrieval."
+        },
+        {
+          "info": {
+            "name": "Create PlanTemplate",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/plantemplates",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of our service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new PlanTemplate.\n\nThis endpoint creates a new PlanTemplate within a specific Organization, identified by its unique UUID. The request body should contain the necessary information for the new PlanTemplate."
+        },
+        {
+          "info": {
+            "name": "Retrieve PlanTemplate",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/plantemplates/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the PlanTemplate to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a specific PlanTemplate.\n\nThis endpoint allows you to retrieve a specific PlanTemplate within a specific Organization, both identified by their unique identifiers (UUIDs)."
+        },
+        {
+          "info": {
+            "name": "Update PlanTemplate",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/plantemplates/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the PlanTemplate to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a specific PlanTemplate.\n\nThis endpoint enables you to update a specific PlanTemplate within a specific Organization, both identified by their unique identifiers (UUIDs). The request body should contain the updated information for the PlanTemplate.\n\n**Note:** If you have created Custom Fields for a Plan Template, when you use this endpoint to update the Plan Template use the `customFields` parameter to preserve those Custom Fields. If you omit them from the update request, they will be lo"
+        },
+        {
+          "info": {
+            "name": "Delete PlanTemplate",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/plantemplates/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the PlanTemplate to update."
+              }
+            ]
+          },
+          "docs": "Delete a specific PlanTemplate.\n\nThis endpoint enables you to delete a specific PlanTemplate within a specific Organization, both identified by their unique identifiers (UUIDs)."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

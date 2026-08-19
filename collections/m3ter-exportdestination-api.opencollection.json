@@ -1,0 +1,193 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account ExportDestination API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "ExportDestination",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List ExportDestinations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/dataexports/destinations",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of returned Export Destinations to list per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "List of Export Destination UUIDs to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a list of Export Destination entities. You can filter the list of Destinations returned by UUID."
+        },
+        {
+          "info": {
+            "name": "Create ExportDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/dataexports/destinations",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new Export Destination to use for your Data Export Schedules or Ad-Hoc Data Exports. \n\nCurrently, two options for setting up Data Export Destinations are available:\n* S3 buckets on your AWS account.\n* Buckets in your Google Cloud Storage account.\n\nRequest and Response schema:\n* Use the selector under the `destinationType` parameter to expose the relevant request and response schema for the type of Destination.\n\nRequest and Response samples:\n* Use the **Example** selector to show the rel"
+        },
+        {
+          "info": {
+            "name": "Retrieve ExportDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/dataexports/destinations/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the ExportDestination to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve an Export Destination for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Update ExportDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/dataexports/destinations/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Export Destination to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update an Export Destination for the given UUID.\n\nCurrently, two options for setting up Data Export Destinations are available:\n* S3 buckets on your AWS account.\n* Buckets in your Google Cloud Storage account.\n\nRequest and Response schema:\n* Use the selector under the `destinationType` parameter to expose the relevant request and response schema for the type of Destination.\n\nRequest and Response samples:\n* Use the **Example** selector to show the relevant request and response samples for the typ"
+        },
+        {
+          "info": {
+            "name": "Delete ExportDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/dataexports/destinations/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Export Destination to delete."
+              }
+            ]
+          },
+          "docs": "Delete an Export Destination for the given UUID.\n\n**NOTE:** If you attempt to delete an Export Destination that is currently linked to a Data Export Schedule, an error message is returned and you won't be able to delete the Destination."
+        },
+        {
+          "info": {
+            "name": "Get Data Export File Download URL",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/dataexports/jobs/:jobId/getdownloadurl",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization"
+              },
+              {
+                "name": "jobId",
+                "value": "",
+                "type": "path",
+                "description": "The job ID"
+              }
+            ]
+          },
+          "docs": "Returns a presigned download URL for data export file download based on the `jobId` provided.\n\nIf you omit `destinationIds` when setting up your [Ad-Hoc data exports](https://www.m3ter.com/docs/api#tag/ExportAdHoc) or [Scheduled data exports](https://www.m3ter.com/docs/api#tag/ExportSchedule), then the data is not copied to a destination but is available for you to download using the returned download URL.\n\n**Constraints:**\n* Only valid for Export jobs ran in the past 24 hours.\n* The download UR"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

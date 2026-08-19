@@ -1,0 +1,1387 @@
+{
+  "item": [
+    {
+      "id": "03a8afa6-be1d-424b-bc2e-14c6cb992b93",
+      "name": "Pricing",
+      "description": {
+        "content": "Endpoints for listing, creating, updating, retrieving, or deleting Pricing.\n\nCreate the Pricing for a Plan/PlanTemplate with usage data Aggregations, and define a usage-based pricing structure for charging end customer Accounts put on the Plan.\n\nSee [Reviewing Pricing Options for Plans and Plan Templates](https://www.m3ter.com/docs/guides/pricing-plans/reviewing-pricing-options-and-pricing-plans) for more information. ",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "1bd2da35-619c-4b34-ad69-04f9e3f7e4be",
+          "name": "Retrieve Pricing",
+          "request": {
+            "name": "Retrieve Pricing",
+            "description": {
+              "content": "Retrieve the Pricing with the given UUID.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "pricings",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) The UUID of the Pricing to retrieve."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "9a0bbb16-f31b-4bd6-8dca-27885ac3c325",
+              "name": "Returns the requested Pricing",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The UUID of the Pricing to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 5181,\n  \"dtCreated\": \"1987-07-02T17:24:36.391Z\",\n  \"dtLastModified\": \"1948-11-22T20:43:51.759Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\",\n  \"planId\": \"string\",\n  \"planTemplateId\": \"string\",\n  \"cumulative\": false,\n  \"startDate\": \"1968-05-22T19:23:25.738Z\",\n  \"endDate\": \"2007-05-28T09:44:56.840Z\",\n  \"code\": \"string\",\n  \"description\": \"string\",\n  \"accountingProductId\": \"string\",\n  \"pricingBands\": [\n    {\n      \"fixedPrice\": 905.195643679082,\n      \"lowerLimit\": 1246.46021451997,\n      \"unitPrice\": 9677.25613244093,\n      \"id\": \"string\",\n      \"creditTypeId\": \"string\"\n    },\n    {\n      \"fixedPrice\": 217.34869769113763,\n      \"lowerLimit\": 7936.867805443897,\n      \"unitPrice\": 7965.258521845199,\n      \"id\": \"string\",\n      \"creditTypeId\": \"string\"\n    }\n  ],\n  \"aggregationId\": \"string\",\n  \"compoundAggregationId\": \"string\",\n  \"type\": \"DEBIT\",\n  \"segment\": {\n    \"key_0\": \"string\",\n    \"key_1\": \"string\",\n    \"key_2\": \"string\",\n    \"key_3\": \"string\",\n    \"key_4\": \"string\"\n  },\n  \"tiersSpanPlan\": true,\n  \"minimumSpend\": 6506.283764675013,\n  \"minimumSpendDescription\": \"string\",\n  \"minimumSpendBillInAdvance\": true,\n  \"aggregationType\": \"SIMPLE\",\n  \"segmentString\": \"string\",\n  \"overagePricingBands\": [\n    {\n      \"fixedPrice\": 1797.1115491485523,\n      \"lowerLimit\": 9853.47505192993,\n      \"unitPrice\": 4010.2731174010164,\n      \"id\": \"string\",\n      \"creditTypeId\": \"string\"\n    },\n    {\n      \"fixedPrice\": 6552.691407772189,\n      \"lowerLimit\": 9114.659025675828,\n      \"unitPrice\": 1177.6564601220373,\n      \"id\": \"string\",\n      \"creditTypeId\": \"string\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "8fbf0d34-f782-46aa-98f1-de4c53a011dc",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The UUID of the Pricing to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "64170b23-67a7-4ff0-930a-fc41e30a6866",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The UUID of the Pricing to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "fb30b18f-790a-477a-b633-7e7eb4b69d95",
+          "name": "Update Pricing",
+          "request": {
+            "name": "Update Pricing",
+            "description": {
+              "content": "Update Pricing for the given UUID.\n\n**Notes:**\n* Exactly one of `planId` or `planTemplateId` request parameters are required for this call to be valid. If you omit both, then you will receive a validation error.\n* Exactly one of `aggregationId` or `compoundAggregationId` request parameters are required for this call to be valid. If you omit both, then you will receive a validation error.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "pricings",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) The UUID of the Pricing to update."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<object>",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "6395b0b5-219d-4ccf-87f2-6f63e1885c5e",
+              "name": "Returns the updated Pricing",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The UUID of the Pricing to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"pricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"startDate\": \"<dateTime>\",\n  \"aggregationId\": \"<string>\",\n  \"compoundAggregationId\": \"<string>\",\n  \"type\": \"<string>\",\n  \"segment\": {\n    \"key_0\": \"<string>\"\n  },\n  \"tiersSpanPlan\": \"<boolean>\",\n  \"minimumSpend\": \"<double>\",\n  \"minimumSpendDescription\": \"<string>\",\n  \"minimumSpendBillInAdvance\": \"<boolean>\",\n  \"overagePricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    },\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"version\": \"<long>\",\n  \"code\": \"<string>\",\n  \"planId\": \"<string>\",\n  \"planTemplateId\": \"<string>\",\n  \"cumulative\": \"<boolean>\",\n  \"endDate\": \"<dateTime>\",\n  \"description\": \"<string>\",\n  \"accountingProductId\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 2126,\n  \"dtCreated\": \"2016-02-18T23:29:21.314Z\",\n  \"dtLastModified\": \"1978-08-10T07:09:19.989Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\",\n  \"planId\": \"string\",\n  \"planTemplateId\": \"string\",\n  \"cumulative\": true,\n  \"startDate\": \"1975-03-21T15:46:54.805Z\",\n  \"endDate\": \"2012-01-03T00:18:41.747Z\",\n  \"code\": \"string\",\n  \"description\": \"string\",\n  \"accountingProductId\": \"string\",\n  \"pricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    },\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"aggregationId\": \"string\",\n  \"compoundAggregationId\": \"string\",\n  \"type\": \"<string>\",\n  \"segment\": {\n    \"key_0\": \"string\",\n    \"key_1\": \"string\"\n  },\n  \"tiersSpanPlan\": false,\n  \"minimumSpend\": 6739.64468901037,\n  \"minimumSpendDescription\": \"string\",\n  \"minimumSpendBillInAdvance\": true,\n  \"aggregationType\": \"COMPOUND\",\n  \"segmentString\": \"string\",\n  \"overagePricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    },\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "bb4f11cb-d6e0-499c-b152-cc430cbeab81",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The UUID of the Pricing to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"pricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"startDate\": \"<dateTime>\",\n  \"aggregationId\": \"<string>\",\n  \"compoundAggregationId\": \"<string>\",\n  \"type\": \"<string>\",\n  \"segment\": {\n    \"key_0\": \"<string>\"\n  },\n  \"tiersSpanPlan\": \"<boolean>\",\n  \"minimumSpend\": \"<double>\",\n  \"minimumSpendDescription\": \"<string>\",\n  \"minimumSpendBillInAdvance\": \"<boolean>\",\n  \"overagePricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    },\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"version\": \"<long>\",\n  \"code\": \"<string>\",\n  \"planId\": \"<string>\",\n  \"planTemplateId\": \"<string>\",\n  \"cumulative\": \"<boolean>\",\n  \"endDate\": \"<dateTime>\",\n  \"description\": \"<string>\",\n  \"accountingProductId\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "eca475f9-1f50-4419-b57d-ae537d10f781",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The UUID of the Pricing to update."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"pricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"startDate\": \"<dateTime>\",\n  \"aggregationId\": \"<string>\",\n  \"compoundAggregationId\": \"<string>\",\n  \"type\": \"<string>\",\n  \"segment\": {\n    \"key_0\": \"<string>\"\n  },\n  \"tiersSpanPlan\": \"<boolean>\",\n  \"minimumSpend\": \"<double>\",\n  \"minimumSpendDescription\": \"<string>\",\n  \"minimumSpendBillInAdvance\": \"<boolean>\",\n  \"overagePricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    },\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"version\": \"<long>\",\n  \"code\": \"<string>\",\n  \"planId\": \"<string>\",\n  \"planTemplateId\": \"<string>\",\n  \"cumulative\": \"<boolean>\",\n  \"endDate\": \"<dateTime>\",\n  \"description\": \"<string>\",\n  \"accountingProductId\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "92aba7d2-b956-40b8-b382-48ce0a60d254",
+          "name": "Delete Pricing",
+          "request": {
+            "name": "Delete Pricing",
+            "description": {
+              "content": "Delete the Pricing with the given UUID.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "pricings",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) The UUID of the Pricing to delete."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "013eabab-9d80-48f3-ac1d-26945ca3162f",
+              "name": "Return the deleted Pricing",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The UUID of the Pricing to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 2126,\n  \"dtCreated\": \"2016-02-18T23:29:21.314Z\",\n  \"dtLastModified\": \"1978-08-10T07:09:19.989Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\",\n  \"planId\": \"string\",\n  \"planTemplateId\": \"string\",\n  \"cumulative\": true,\n  \"startDate\": \"1975-03-21T15:46:54.805Z\",\n  \"endDate\": \"2012-01-03T00:18:41.747Z\",\n  \"code\": \"string\",\n  \"description\": \"string\",\n  \"accountingProductId\": \"string\",\n  \"pricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    },\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"aggregationId\": \"string\",\n  \"compoundAggregationId\": \"string\",\n  \"type\": \"<string>\",\n  \"segment\": {\n    \"key_0\": \"string\",\n    \"key_1\": \"string\"\n  },\n  \"tiersSpanPlan\": false,\n  \"minimumSpend\": 6739.64468901037,\n  \"minimumSpendDescription\": \"string\",\n  \"minimumSpendBillInAdvance\": true,\n  \"aggregationType\": \"COMPOUND\",\n  \"segmentString\": \"string\",\n  \"overagePricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    },\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "bb2d5876-0f9e-48dc-b680-949604912a5a",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The UUID of the Pricing to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d55d69cf-68b2-47a8-bf89-3b5f148391f9",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The UUID of the Pricing to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "19828b2c-b05d-4040-baab-8c5401b164ba",
+          "name": "List Pricings",
+          "request": {
+            "name": "List Pricings",
+            "description": {
+              "content": "Retrieve a list of Pricings filtered by date, Plan ID, PlanTemplate ID, or Pricing ID. ",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "pricings"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "<integer>",
+                  "description": "Number of Pricings to retrieve per page."
+                },
+                {
+                  "disabled": false,
+                  "key": "nextToken",
+                  "value": "<string>",
+                  "description": "`nextToken` for multi-page retrievals."
+                },
+                {
+                  "disabled": false,
+                  "key": "date",
+                  "value": "<string>",
+                  "description": "Date on which to retrieve active Pricings."
+                },
+                {
+                  "disabled": false,
+                  "key": "planId",
+                  "value": "<string>",
+                  "description": "UUID of the Plan to retrieve Pricings for."
+                },
+                {
+                  "disabled": false,
+                  "key": "planTemplateId",
+                  "value": "<string>",
+                  "description": "UUID of the PlanTemplate to retrieve Pricings for."
+                },
+                {
+                  "disabled": false,
+                  "key": "aggregationId",
+                  "value": "<string>",
+                  "description": "UUID of the Aggregation to retrieve pricings for"
+                },
+                {
+                  "disabled": false,
+                  "key": "ids",
+                  "value": "<string>",
+                  "description": "List of Pricing IDs to retrieve. "
+                },
+                {
+                  "disabled": false,
+                  "key": "ids",
+                  "value": "<string>",
+                  "description": "List of Pricing IDs to retrieve. "
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "442ac88d-e61a-42ae-8afe-2406603b0a83",
+              "name": "Returns the list of requested Pricings",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "date",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "planId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "planTemplateId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "aggregationId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ids",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ids",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"string\",\n      \"version\": 2726,\n      \"planId\": \"string\",\n      \"planTemplateId\": \"string\",\n      \"cumulative\": true,\n      \"startDate\": \"2015-10-13T22:34:12.138Z\",\n      \"endDate\": \"1992-07-04T15:46:04.440Z\",\n      \"code\": \"string\",\n      \"description\": \"string\",\n      \"accountingProductId\": \"string\",\n      \"dtCreated\": \"2009-07-18T20:19:39.007Z\",\n      \"dtLastModified\": \"1991-05-16T04:17:22.161Z\",\n      \"createdBy\": \"string\",\n      \"lastModifiedBy\": \"string\",\n      \"pricingBands\": [\n        {\n          \"fixedPrice\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"lowerLimit\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"unitPrice\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"id\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"creditTypeId\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"fixedPrice\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"lowerLimit\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"unitPrice\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"id\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"creditTypeId\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ],\n      \"aggregationId\": \"string\",\n      \"compoundAggregationId\": \"string\",\n      \"type\": \"<string>\",\n      \"segment\": {\n        \"key_0\": \"string\"\n      },\n      \"tiersSpanPlan\": true,\n      \"minimumSpend\": 469.8199292219307,\n      \"minimumSpendDescription\": \"string\",\n      \"minimumSpendBillInAdvance\": true,\n      \"aggregationType\": \"COMPOUND\",\n      \"segmentString\": \"string\",\n      \"overagePricingBands\": [\n        {\n          \"fixedPrice\": \"<double>\",\n          \"lowerLimit\": \"<double>\",\n          \"unitPrice\": \"<double>\",\n          \"id\": \"<string>\",\n          \"creditTypeId\": \"<string>\"\n        },\n        {\n          \"fixedPrice\": \"<double>\",\n          \"lowerLimit\": \"<double>\",\n          \"unitPrice\": \"<double>\",\n          \"id\": \"<string>\",\n          \"creditTypeId\": \"<string>\"\n        }\n      ]\n    },\n    {\n      \"id\": \"string\",\n      \"version\": 1718,\n      \"planId\": \"string\",\n      \"planTemplateId\": \"string\",\n      \"cumulative\": true,\n      \"startDate\": \"2000-11-12T21:48:11.661Z\",\n      \"endDate\": \"2003-06-09T00:16:22.589Z\",\n      \"code\": \"string\",\n      \"description\": \"string\",\n      \"accountingProductId\": \"string\",\n      \"dtCreated\": \"1985-08-07T09:58:48.521Z\",\n      \"dtLastModified\": \"2017-06-11T05:15:12.576Z\",\n      \"createdBy\": \"string\",\n      \"lastModifiedBy\": \"string\",\n      \"pricingBands\": [\n        {\n          \"fixedPrice\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"lowerLimit\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"unitPrice\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"id\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"creditTypeId\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"fixedPrice\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"lowerLimit\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"unitPrice\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"id\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"creditTypeId\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ],\n      \"aggregationId\": \"string\",\n      \"compoundAggregationId\": \"string\",\n      \"type\": \"<string>\",\n      \"segment\": {\n        \"key_0\": \"string\",\n        \"key_1\": \"string\"\n      },\n      \"tiersSpanPlan\": false,\n      \"minimumSpend\": 6708.79016388586,\n      \"minimumSpendDescription\": \"string\",\n      \"minimumSpendBillInAdvance\": false,\n      \"aggregationType\": \"SIMPLE\",\n      \"segmentString\": \"string\",\n      \"overagePricingBands\": [\n        {\n          \"fixedPrice\": \"<double>\",\n          \"lowerLimit\": \"<double>\",\n          \"unitPrice\": \"<double>\",\n          \"id\": \"<string>\",\n          \"creditTypeId\": \"<string>\"\n        },\n        {\n          \"fixedPrice\": \"<double>\",\n          \"lowerLimit\": \"<double>\",\n          \"unitPrice\": \"<double>\",\n          \"id\": \"<string>\",\n          \"creditTypeId\": \"<string>\"\n        }\n      ]\n    }\n  ],\n  \"nextToken\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "256a7812-4495-4528-8802-c270a07181e2",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "date",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "planId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "planTemplateId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "aggregationId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ids",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ids",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "69877f68-9bf9-47eb-bad4-7228afef479e",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "date",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "planId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "planTemplateId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "aggregationId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ids",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ids",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "d4dbcddc-5464-46d4-b6a2-d030034f99f6",
+          "name": "Create Pricing",
+          "request": {
+            "name": "Create Pricing",
+            "description": {
+              "content": "Create a new Pricing.\n\n**Notes:**\n* Exactly one of `planId` or `planTemplateId` request parameters are required for this call to be valid. If you omit both, then you will receive a validation error.\n* Exactly one of `aggregationId` or `compoundAggregationId` request parameters are required for this call to be valid. If you omit both, then you will receive a validation error.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "pricings"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<object>",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "cb5c03cc-23ab-4d63-95e4-87ae349f0b49",
+              "name": "Returns the created Pricing",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"pricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"startDate\": \"<dateTime>\",\n  \"aggregationId\": \"<string>\",\n  \"compoundAggregationId\": \"<string>\",\n  \"type\": \"<string>\",\n  \"segment\": {\n    \"key_0\": \"<string>\"\n  },\n  \"tiersSpanPlan\": \"<boolean>\",\n  \"minimumSpend\": \"<double>\",\n  \"minimumSpendDescription\": \"<string>\",\n  \"minimumSpendBillInAdvance\": \"<boolean>\",\n  \"overagePricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    },\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"version\": \"<long>\",\n  \"code\": \"<string>\",\n  \"planId\": \"<string>\",\n  \"planTemplateId\": \"<string>\",\n  \"cumulative\": \"<boolean>\",\n  \"endDate\": \"<dateTime>\",\n  \"description\": \"<string>\",\n  \"accountingProductId\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 2126,\n  \"dtCreated\": \"2016-02-18T23:29:21.314Z\",\n  \"dtLastModified\": \"1978-08-10T07:09:19.989Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\",\n  \"planId\": \"string\",\n  \"planTemplateId\": \"string\",\n  \"cumulative\": true,\n  \"startDate\": \"1975-03-21T15:46:54.805Z\",\n  \"endDate\": \"2012-01-03T00:18:41.747Z\",\n  \"code\": \"string\",\n  \"description\": \"string\",\n  \"accountingProductId\": \"string\",\n  \"pricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    },\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"aggregationId\": \"string\",\n  \"compoundAggregationId\": \"string\",\n  \"type\": \"<string>\",\n  \"segment\": {\n    \"key_0\": \"string\",\n    \"key_1\": \"string\"\n  },\n  \"tiersSpanPlan\": false,\n  \"minimumSpend\": 6739.64468901037,\n  \"minimumSpendDescription\": \"string\",\n  \"minimumSpendBillInAdvance\": true,\n  \"aggregationType\": \"COMPOUND\",\n  \"segmentString\": \"string\",\n  \"overagePricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    },\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "71876a93-469c-4b77-ad51-fdcf2ecaecea",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"pricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"startDate\": \"<dateTime>\",\n  \"aggregationId\": \"<string>\",\n  \"compoundAggregationId\": \"<string>\",\n  \"type\": \"<string>\",\n  \"segment\": {\n    \"key_0\": \"<string>\"\n  },\n  \"tiersSpanPlan\": \"<boolean>\",\n  \"minimumSpend\": \"<double>\",\n  \"minimumSpendDescription\": \"<string>\",\n  \"minimumSpendBillInAdvance\": \"<boolean>\",\n  \"overagePricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    },\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"version\": \"<long>\",\n  \"code\": \"<string>\",\n  \"planId\": \"<string>\",\n  \"planTemplateId\": \"<string>\",\n  \"cumulative\": \"<boolean>\",\n  \"endDate\": \"<dateTime>\",\n  \"description\": \"<string>\",\n  \"accountingProductId\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "22f5acad-eafc-4516-9ac0-61ea359280fa",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "pricings"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"pricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"startDate\": \"<dateTime>\",\n  \"aggregationId\": \"<string>\",\n  \"compoundAggregationId\": \"<string>\",\n  \"type\": \"<string>\",\n  \"segment\": {\n    \"key_0\": \"<string>\"\n  },\n  \"tiersSpanPlan\": \"<boolean>\",\n  \"minimumSpend\": \"<double>\",\n  \"minimumSpendDescription\": \"<string>\",\n  \"minimumSpendBillInAdvance\": \"<boolean>\",\n  \"overagePricingBands\": [\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    },\n    {\n      \"fixedPrice\": \"<double>\",\n      \"lowerLimit\": \"<double>\",\n      \"unitPrice\": \"<double>\",\n      \"id\": \"<string>\",\n      \"creditTypeId\": \"<string>\"\n    }\n  ],\n  \"version\": \"<long>\",\n  \"code\": \"<string>\",\n  \"planId\": \"<string>\",\n  \"planTemplateId\": \"<string>\",\n  \"cumulative\": \"<boolean>\",\n  \"endDate\": \"<dateTime>\",\n  \"description\": \"<string>\",\n  \"accountingProductId\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.m3ter.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "scope",
+        "value": "m3ter-resources/m3ter-scope measurements:upload measurements:fileUpload measurements:retrieve"
+      },
+      {
+        "key": "accessTokenUrl",
+        "value": "/oauth/token"
+      },
+      {
+        "key": "grant_type",
+        "value": "client_credentials"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "e34065ba-0b0e-4352-99c1-3137241b44c2",
+    "name": "m3ter Account Pricing API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->",
+      "type": "text/plain"
+    }
+  }
+}

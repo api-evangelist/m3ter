@@ -1,0 +1,806 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account Integrations API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Integrations",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve Latest IntegrationRun",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationruns/:entityType/latest/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "entityType",
+                "value": "",
+                "type": "path",
+                "description": "The type of the entity you want to retrieve the last integration run for. Two options:\n* Bill\n* Notification"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the entity to retrieve the latest integration run for."
+              }
+            ]
+          },
+          "docs": "Retrieve the latest integration run for the entity."
+        },
+        {
+          "info": {
+            "name": "Retrieve Available Entity Types for System",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationconfigs/available/:systemName/entities",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "systemName",
+                "value": "",
+                "type": "path",
+                "description": "The system to retrieve the configuration for."
+              }
+            ]
+          },
+          "docs": "Retrieve the valid entity types for provided system."
+        },
+        {
+          "info": {
+            "name": "List IntegrationRuns",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationruns/:entityType/:entityId",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "entityId",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the entity to retrieve the integration runs for."
+              },
+              {
+                "name": "entityType",
+                "value": "",
+                "type": "path",
+                "description": "The type of the entity you want to retrieve the integration runs for. Two options:\n* Bill\n* Notification"
+              },
+              {
+                "name": "startDate",
+                "value": "",
+                "type": "query",
+                "description": "Retrieve only those integration runs started after the specified date/time.*(ISO 8601 formatted)*"
+              },
+              {
+                "name": "endDate",
+                "value": "",
+                "type": "query",
+                "description": "Retrieve only those integration runs started before or on the specified date/time.*(ISO 8601 formatted)*"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of integration runs to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "`nextToken` for multi page retrievals."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Status of the integration run"
+              },
+              {
+                "name": "order",
+                "value": "",
+                "type": "query",
+                "description": "Integration runs order"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of the integration runs for the specified entity.\n\nYou can filter the list using the `startDate` and `endDate` query parameters to specify date/times to define the time period you want to return integration runs for."
+        },
+        {
+          "info": {
+            "name": "Retrieve IntegrationConfig",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationconfigs/entity/:entityType",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "entityType",
+                "value": "",
+                "type": "path",
+                "description": "The entity to retrieve the configuration for."
+              },
+              {
+                "name": "entityId",
+                "value": "",
+                "type": "query",
+                "description": "UUID of the entity to retrieve IntegrationConfigs for"
+              },
+              {
+                "name": "destination",
+                "value": "",
+                "type": "query",
+                "description": "Destination type to retrieve IntegrationConfigs for"
+              },
+              {
+                "name": "destinationId",
+                "value": "",
+                "type": "query",
+                "description": "UUID of the destination to retrieve IntegrationConfigs for"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of configs to retrieve per page"
+              }
+            ]
+          },
+          "docs": "Retrieve the integration configuration for the entity"
+        },
+        {
+          "info": {
+            "name": "Activate Webhook Destination",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationdestinations/webhooks/:id/active",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the webhook destination. This ID is used to specify which webhook integration is being targeted for activation or deactivation."
+              },
+              {
+                "name": "active",
+                "value": "",
+                "type": "query",
+                "description": "active status of the webhook"
+              }
+            ]
+          },
+          "docs": "Set the `active` status on a webhook integration destination.\n\nUse this endpoint to activate or deactivate a webhook integration destination. It toggles the `active` status of the specific wehbook destination with the given ID. "
+        },
+        {
+          "info": {
+            "name": "Retrieve Available Auth Config for System and Entity Type",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationconfigs/available/:systemName/auth/:entityType",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "systemName",
+                "value": "",
+                "type": "path",
+                "description": "The system to retrieve the configuration for."
+              },
+              {
+                "name": "entityType",
+                "value": "",
+                "type": "path",
+                "description": "The entity to retrieve the configuration for."
+              }
+            ]
+          },
+          "docs": "Retrieve the valid auth config for provided system and entity type."
+        },
+        {
+          "info": {
+            "name": "Get IntegrationRun Log",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationruns/logs/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID associated with the integrationrun. This ID helps in pinpointing the exact integrationrun logs you are looking to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve the integrationrun log for the given UUID.\n\nThis endpoint is for retrieving logs of a specific integrationrun. It is useful for debugging and monitoring the performance of integrations within your organization."
+        },
+        {
+          "info": {
+            "name": "Get ConfigOption Values",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationconfigs/values/:systemName/:configOption",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "systemName",
+                "value": "",
+                "type": "path",
+                "description": "The name of the system."
+              },
+              {
+                "name": "configOption",
+                "value": "",
+                "type": "path",
+                "description": "The entity to retrieve the configuration for."
+              }
+            ]
+          },
+          "docs": "Get possible values for specific configuration setting."
+        },
+        {
+          "info": {
+            "name": "Retrieve Destination",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationdestinations/webhooks/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the webhook destination."
+              }
+            ]
+          },
+          "docs": "Retrieve the webhook Destination for the UUID."
+        },
+        {
+          "info": {
+            "name": "Update Destination",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationdestinations/webhooks/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the WebhookDestination to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a destination to be used for a webhook."
+        },
+        {
+          "info": {
+            "name": "Delete Webhook Destination",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationdestinations/webhooks/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the webhook destination to be deleted."
+              }
+            ]
+          },
+          "docs": "This endpoint deletes a specific webhook destination identified by its UUID."
+        },
+        {
+          "info": {
+            "name": "Retrieve Available Configurations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationconfigs/available",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "systemName",
+                "value": "",
+                "type": "query",
+                "description": "The system to retrieve the configuration for."
+              },
+              {
+                "name": "entityType",
+                "value": "",
+                "type": "query",
+                "description": "The entity to retrieve the configuration for."
+              }
+            ]
+          },
+          "docs": "This endpoint gets the available configuration options for integrations."
+        },
+        {
+          "info": {
+            "name": "List IntegrationRuns By DestinationId",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationruns/destinations/:destinationId",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "destinationId",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the destination."
+              },
+              {
+                "name": "destination",
+                "value": "",
+                "type": "query",
+                "description": "Destination system"
+              },
+              {
+                "name": "startDate",
+                "value": "",
+                "type": "query",
+                "description": "Retrieve entities started after the specified date."
+              },
+              {
+                "name": "endDate",
+                "value": "",
+                "type": "query",
+                "description": "Retrieve entities started before the specified date."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of products to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Status of the integration run"
+              },
+              {
+                "name": "order",
+                "value": "",
+                "type": "query",
+                "description": "Integration runs order"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of the integration runs for the destination"
+        },
+        {
+          "info": {
+            "name": "Retrieve Available Integration Systems",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationconfigs/available/systems",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "entityType",
+                "value": "",
+                "type": "query",
+                "description": "The entity to retrieve the configuration for."
+              }
+            ]
+          },
+          "docs": "Retrieve the valid integration systems. Can be filtered by entityType."
+        },
+        {
+          "info": {
+            "name": "Enable IntegrationConfig",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationconfigs/:id/enable",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the integration configuration"
+              }
+            ]
+          },
+          "docs": "Enables a previously disabled integration configuration, allowing it to be operational again."
+        },
+        {
+          "info": {
+            "name": "List All IntegrationConfigs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationconfigs",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for the organization. This specifies the organization within which the webhook destination is created."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of integration configurations to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of integration configurations in a paginated list."
+              },
+              {
+                "name": "destinationId",
+                "value": "",
+                "type": "query",
+                "description": "optional filter for a specific destination"
+              }
+            ]
+          },
+          "docs": "List all integration configurations.\n\nThis endpoint retrieves a list of all integration configurations for the specified Organization. The list can be paginated for easier management."
+        },
+        {
+          "info": {
+            "name": "Create IntegrationConfig",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationconfigs",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Set the integration configuration for the entity."
+        },
+        {
+          "info": {
+            "name": "List Destinations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationdestinations/webhooks",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of WebhookIntegrations to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of all Destinations created in the Organization."
+        },
+        {
+          "info": {
+            "name": "Create Webhook Destination",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationdestinations/webhooks",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for the organization. This specifies the organization within which the webhook destination is created."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "This endpoint creates a new webhook destination. A webhook destination is a URL where webhook payloads will be sent."
+        },
+        {
+          "info": {
+            "name": "Retrieve IntegrationRuns",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationruns/:entityType/latest",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "entityType",
+                "value": "",
+                "type": "path",
+                "description": "The type of the entity (e.g. Bill)."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "List of ids to retrieve"
+              }
+            ]
+          },
+          "docs": "Retrieve the latest integration runs for entity and ids"
+        },
+        {
+          "info": {
+            "name": "Get IntegrationRun for the UUID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationruns/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the entity."
+              }
+            ]
+          },
+          "docs": "Retrieve the integration run for the id"
+        },
+        {
+          "info": {
+            "name": "Retrieve IntegrationConfig for UUID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationconfigs/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the integration configuration. This ID specifies which integration's configuration details are being requested."
+              }
+            ]
+          },
+          "docs": "Retrieve the integration configuration for the given UUID.\n\nThis endpoint retrieves the configuration details of a specific integration within an organization. It is useful for obtaining the settings and parameters of an integration."
+        },
+        {
+          "info": {
+            "name": "Update IntegrationConfig",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationconfigs/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the IntegrationConfig. This ID identifies which specific integration configuration you wish to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the integration configuration for the given UUID.\n\nThis endpoint allows you to update the configuration of a specific integration within your organization. It is used to modify settings or parameters of an existing integration."
+        },
+        {
+          "info": {
+            "name": "Delete IntegrationConfig",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationconfigs/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the IntegrationConfig to be deleted. This ID specifies the exact integration configuration that needs removal."
+              }
+            ]
+          },
+          "docs": "Delete the integration configuration for the given UUID.\n\nUse this endpoint to delete the configuration of a specific integration within your organization. It is intended for removing integration settings that are no longer needed."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

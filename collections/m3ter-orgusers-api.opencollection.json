@@ -1,0 +1,219 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account OrgUsers API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "OrgUsers",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List OrgUsers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/users",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of OrgUsers to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of OrgUsers in a paginated list."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "list of ids to retrieve"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of OrgUsers.\n\nRetrieves a list of all users within a specified Organization. Use this endpoint to get an overview of all users and their basic details. The list can be paginated for easier management."
+        },
+        {
+          "info": {
+            "name": "Retrieve OrgUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/users/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Organization User to retrieve.\n\n**Note:** The `orgId` path parameter is also required."
+              },
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization.\nThe Organization represents your company as a direct customer of the m3ter service. "
+              }
+            ]
+          },
+          "docs": "Retrieve the OrgUser with the given UUID.\n\nRetrieves detailed information for a specific user within an Organization, using their unique identifier (UUID)."
+        },
+        {
+          "info": {
+            "name": "Update OrgUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/users/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the OrgUser to update.\n\n**Note:** The `orgId` path parameter is also required."
+              },
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization.\nThe Organization represents your company as a direct customer of the m3ter service. "
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the OrgUser with the given UUID.\n\nUpdates the details for a specific user within an Organization using their unique identifier (UUID). Use this endpoint when you need to modify user information such as their permission policy."
+        },
+        {
+          "info": {
+            "name": "Retrieve OrgUser Groups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/users/:id/usergroups",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the user."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of User Groups to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of User Groups in a paginated list."
+              }
+            ]
+          },
+          "docs": "Retrieve a list of User Groups for an OrgUser.\n\nRetrieves a list of all User Groups that a specific user belongs to within an Organization. The list can be paginated for easier management.\n\n**Notes:**\n- **User Groups as Resource Groups**. A User Group is a Resource Group - one used to group resources of type `user`. You can use the *Create ResourceGroup* call detailed in the [ResourceGroup](https://www.m3ter.com/docs/api#tag/ResourceGroup) section to create a User Resource Group, and then use th"
+        },
+        {
+          "info": {
+            "name": "Resend temporary password for user",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/users/:id/password/resend",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the user"
+              }
+            ]
+          },
+          "docs": "Resend temporary password for user"
+        },
+        {
+          "info": {
+            "name": "Retrieve OrgUser Permissions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/users/:id/permissions",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the user whose permissions you want to retrieve."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of Permission Policies to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of Permission Policies in a paginated list."
+              }
+            ]
+          },
+          "docs": "Retrieve the permissions for the OrgUser with the given UUID.\n\nRetrieves a list of all permissions associated with a specific user in an Organization using their UUID. The list can be paginated for easier management."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

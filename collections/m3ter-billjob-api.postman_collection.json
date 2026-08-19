@@ -1,0 +1,1291 @@
+{
+  "item": [
+    {
+      "id": "2b1c0eed-134e-4c25-8223-282e186fd2f2",
+      "name": "BillJob",
+      "description": {
+        "content": "Endpoints for creating, retrieving, listing, and cancelling Bill Jobs.\n\nBill Jobs are critical components in billing management, providing asynchronous mechanisms to calculate and handle bills.\n\nBill Jobs give you the flexibiity to run Bills manually for Accounts to suit different billing management purposes. For example, some historical usage data has come in for an Account and you want to run a Bill for a specific date on that Account to check that the Bill is showing correctly for the charges due on the new usage data.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "60d642dd-251d-4717-82c3-fad04febf62d",
+          "name": "Retrieve BillJob",
+          "request": {
+            "name": "Retrieve BillJob",
+            "description": {
+              "content": "Retrieve a Bill Job for the given UUID.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "billjobs",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) UUID of the organization"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) The UUID of the Bill Job to retrieve."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "ef01b41c-283f-48f5-93cd-8b4931954b81",
+              "name": "Returns the Bill Job",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The UUID of the Bill Job to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 2748,\n  \"lastDateInBillingPeriod\": \"2015-07-07\",\n  \"billingFrequency\": \"DAILY\",\n  \"billFrequencyInterval\": 9343,\n  \"billDate\": \"1995-12-16\",\n  \"externalInvoiceDate\": \"2007-02-02\",\n  \"dueDate\": \"2015-10-09\",\n  \"accountIds\": [\n    \"string\",\n    \"string\"\n  ],\n  \"billIds\": [\n    \"string\",\n    \"string\"\n  ],\n  \"targetCurrency\": \"string\",\n  \"currencyConversions\": [\n    {\n      \"from\": \"EUR\",\n      \"to\": \"USD\",\n      \"multiplier\": 1.12\n    },\n    {\n      \"from\": \"EUR\",\n      \"to\": \"USD\",\n      \"multiplier\": 1.12\n    }\n  ],\n  \"timezone\": \"UTC\",\n  \"yearEpoch\": \"2009-11-05\",\n  \"monthEpoch\": \"1957-08-01\",\n  \"weekEpoch\": \"1979-12-14\",\n  \"dayEpoch\": \"1979-04-24\",\n  \"status\": \"INITIALIZING\",\n  \"total\": 5818,\n  \"pending\": 2717,\n  \"type\": \"CREATE\",\n  \"dtCreated\": \"1985-05-31T12:07:11.839Z\",\n  \"dtLastModified\": \"1973-07-25T00:52:34.658Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5b37297b-0edf-4590-b189-8bc060f1b16f",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The UUID of the Bill Job to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e76746ae-9c95-4306-b30d-5512124d5cb6",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the organization"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The UUID of the Bill Job to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "524e19e7-c9a4-4658-a796-eb91d167dba9",
+          "name": "List BillJobs",
+          "request": {
+            "name": "List BillJobs",
+            "description": {
+              "content": "Retrieve a list of BillJobs.\n\nThis endpoint retrieves a list of BillJobs for a specified organization. The list can be paginated for easier management, and allows you to query and filter based on various parameters, such as BillJob `status` and whether or not BillJob remains `active`.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "billjobs"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "<integer>",
+                  "description": "Specifies the maximum number of BillJobs to retrieve per page."
+                },
+                {
+                  "disabled": false,
+                  "key": "nextToken",
+                  "value": "<string>",
+                  "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of BillJobs in a paginated list."
+                },
+                {
+                  "disabled": false,
+                  "key": "active",
+                  "value": "<string>",
+                  "description": "Boolean filter to retrieve only active BillJobs and exclude completed or cancelled BillJobs from the results.\n\n* TRUE - only active BillJobs.\n* FALSE - all BillJobs including completed and cancelled BillJobs."
+                },
+                {
+                  "disabled": false,
+                  "key": "status",
+                  "value": "<string>",
+                  "description": "Filter BillJobs by specific status. Allows for targeted retrieval of BillJobs based on their current processing status.\n\nPossible states are:\n\n* PENDING \n* INITIALIZING \n* RUNNING \n* COMPLETE \n* CANCELLED"
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "0ce1bd2d-b305-4ba0-897a-d1c2e6229132",
+              "name": "Returns list of BillJobs",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "active",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"string\",\n      \"version\": 1817,\n      \"lastDateInBillingPeriod\": \"1962-04-10\",\n      \"billingFrequency\": \"WEEKLY\",\n      \"billFrequencyInterval\": 2245,\n      \"billDate\": \"1967-10-07\",\n      \"externalInvoiceDate\": \"1978-05-17\",\n      \"dueDate\": \"1965-08-02\",\n      \"accountIds\": [\n        \"string\",\n        \"string\"\n      ],\n      \"billIds\": [\n        \"string\",\n        \"string\"\n      ],\n      \"targetCurrency\": \"string\",\n      \"currencyConversions\": [\n        {\n          \"from\": \"EUR\",\n          \"to\": \"USD\",\n          \"multiplier\": 1.12\n        },\n        {\n          \"from\": \"EUR\",\n          \"to\": \"USD\",\n          \"multiplier\": 1.12\n        }\n      ],\n      \"timezone\": \"UTC\",\n      \"yearEpoch\": \"1971-06-20\",\n      \"monthEpoch\": \"2006-12-20\",\n      \"weekEpoch\": \"1970-03-04\",\n      \"dayEpoch\": \"1956-05-24\",\n      \"status\": \"INITIALIZING\",\n      \"total\": 6716,\n      \"pending\": 7942,\n      \"type\": \"CREATE\",\n      \"dtCreated\": \"1964-11-15T11:48:16.136Z\",\n      \"dtLastModified\": \"2004-12-24T09:22:02.318Z\",\n      \"createdBy\": \"string\",\n      \"lastModifiedBy\": \"string\"\n    },\n    {\n      \"id\": \"string\",\n      \"version\": 4564,\n      \"lastDateInBillingPeriod\": \"2014-09-05\",\n      \"billingFrequency\": \"WEEKLY\",\n      \"billFrequencyInterval\": 9079,\n      \"billDate\": \"1952-07-09\",\n      \"externalInvoiceDate\": \"1970-06-09\",\n      \"dueDate\": \"1986-07-10\",\n      \"accountIds\": [\n        \"string\",\n        \"string\"\n      ],\n      \"billIds\": [\n        \"string\",\n        \"string\"\n      ],\n      \"targetCurrency\": \"string\",\n      \"currencyConversions\": [\n        {\n          \"from\": \"EUR\",\n          \"to\": \"USD\",\n          \"multiplier\": 1.12\n        },\n        {\n          \"from\": \"EUR\",\n          \"to\": \"USD\",\n          \"multiplier\": 1.12\n        }\n      ],\n      \"timezone\": \"UTC\",\n      \"yearEpoch\": \"1989-11-17\",\n      \"monthEpoch\": \"2005-02-22\",\n      \"weekEpoch\": \"2015-11-09\",\n      \"dayEpoch\": \"1984-12-22\",\n      \"status\": \"PENDING\",\n      \"total\": 2704,\n      \"pending\": 6607,\n      \"type\": \"CREATE\",\n      \"dtCreated\": \"1965-02-19T14:49:23.587Z\",\n      \"dtLastModified\": \"1988-02-29T19:47:20.557Z\",\n      \"createdBy\": \"string\",\n      \"lastModifiedBy\": \"string\"\n    }\n  ],\n  \"nextToken\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "6b9f0967-aa4c-48f3-a089-88005cd73707",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "active",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "dde30918-1204-4d01-bc5b-28d82d134710",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "active",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "9bd8d582-3bae-45d3-b371-3dc83351e5f8",
+          "name": "Create BillJob",
+          "request": {
+            "name": "Create BillJob",
+            "description": {
+              "content": "Create a new BillJob to handle asynchronous bill calculations for a specific Organization. \n\nThis operation allows you to initiate the processing of bills according to specified parameters. For example, create a BillJob to run only those bills where `billingFrequency` is `MONTHLY`. Note that if you want to run a BillJob for all billing frequencies, simply omit the `billingFrequency` request parameter.\n\nOnce created, the BillJob's progress can be monitored:\n- In the Running Tasks panel in the m3ter Console - for more details, see [Running Bills Manually](https://www.m3ter.com/docs/guides/billing-and-usage-data/running-viewing-and-managing-bills/running-bills-and-viewing-bill-details#running-bills-manually)\n- Queried using the [List BillJobs](https://www.m3ter.com/docs/api#tag/BillJob/operation/ListBillJobs) operation.\n\n**NOTES:**\n- **Consolidated bills**. If you've already run billing with the Consolidate bills option disabled for your Organization but you then enable it, subsequent Bills for specific bill dates will now start afresh and not update earlier non-consolidated Bills for the same bill date. To avoid any billing conflicts, you might want to archive these earlier versions or delete them entirely.\n- **Maximum concurrent BillJobs**. If you already have 10 BillJobs currently running, and try to create another one, you'll get an HTTP 429 response (Too many requests). When one of the existing BillJobs has completed, you'll be able to submit another job",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "billjobs"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<object>",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "f58dd3ea-09cd-446f-87f2-fb94d1bfdb25",
+              "name": "Returns the details of the created BillJob",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"version\": \"<long>\",\n  \"lastDateInBillingPeriod\": \"<date>\",\n  \"billingFrequency\": \"<string>\",\n  \"billFrequencyInterval\": \"<integer>\",\n  \"billDate\": \"<date>\",\n  \"externalInvoiceDate\": \"<date>\",\n  \"dueDate\": \"<date>\",\n  \"accountIds\": [\n    \"<string>\"\n  ],\n  \"targetCurrency\": \"<string>\",\n  \"currencyConversions\": [\n    {\n      \"from\": \"EUR\",\n      \"to\": \"USD\",\n      \"multiplier\": 1.12\n    },\n    {\n      \"from\": \"EUR\",\n      \"to\": \"USD\",\n      \"multiplier\": 1.12\n    }\n  ],\n  \"timezone\": \"UTC\",\n  \"yearEpoch\": \"<date>\",\n  \"monthEpoch\": \"<date>\",\n  \"weekEpoch\": \"<date>\",\n  \"dayEpoch\": \"<date>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 8829,\n  \"lastDateInBillingPeriod\": \"1991-10-31\",\n  \"billingFrequency\": \"<string>\",\n  \"billFrequencyInterval\": 5971,\n  \"billDate\": \"1964-11-26\",\n  \"externalInvoiceDate\": \"1981-03-18\",\n  \"dueDate\": \"2022-06-18\",\n  \"accountIds\": [\n    \"string\",\n    \"string\"\n  ],\n  \"billIds\": [\n    \"string\",\n    \"string\"\n  ],\n  \"targetCurrency\": \"string\",\n  \"currencyConversions\": [\n    {\n      \"from\": \"EUR\",\n      \"to\": \"USD\",\n      \"multiplier\": 1.12\n    },\n    {\n      \"from\": \"EUR\",\n      \"to\": \"USD\",\n      \"multiplier\": 1.12\n    }\n  ],\n  \"timezone\": \"UTC\",\n  \"yearEpoch\": \"1998-04-21\",\n  \"monthEpoch\": \"1971-12-05\",\n  \"weekEpoch\": \"1982-01-16\",\n  \"dayEpoch\": \"2008-07-26\",\n  \"status\": \"RUNNING\",\n  \"total\": 8739,\n  \"pending\": 2914,\n  \"type\": \"CREATE\",\n  \"dtCreated\": \"1963-02-02T14:17:31.441Z\",\n  \"dtLastModified\": \"1964-05-20T07:37:22.684Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "8c798f5d-d5c3-47e5-a7ec-4c163811e24f",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"version\": \"<long>\",\n  \"lastDateInBillingPeriod\": \"<date>\",\n  \"billingFrequency\": \"<string>\",\n  \"billFrequencyInterval\": \"<integer>\",\n  \"billDate\": \"<date>\",\n  \"externalInvoiceDate\": \"<date>\",\n  \"dueDate\": \"<date>\",\n  \"accountIds\": [\n    \"<string>\"\n  ],\n  \"targetCurrency\": \"<string>\",\n  \"currencyConversions\": [\n    {\n      \"from\": \"EUR\",\n      \"to\": \"USD\",\n      \"multiplier\": 1.12\n    },\n    {\n      \"from\": \"EUR\",\n      \"to\": \"USD\",\n      \"multiplier\": 1.12\n    }\n  ],\n  \"timezone\": \"UTC\",\n  \"yearEpoch\": \"<date>\",\n  \"monthEpoch\": \"<date>\",\n  \"weekEpoch\": \"<date>\",\n  \"dayEpoch\": \"<date>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ea76b3f6-38ef-431e-9b5c-1d864a63c5b7",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"version\": \"<long>\",\n  \"lastDateInBillingPeriod\": \"<date>\",\n  \"billingFrequency\": \"<string>\",\n  \"billFrequencyInterval\": \"<integer>\",\n  \"billDate\": \"<date>\",\n  \"externalInvoiceDate\": \"<date>\",\n  \"dueDate\": \"<date>\",\n  \"accountIds\": [\n    \"<string>\"\n  ],\n  \"targetCurrency\": \"<string>\",\n  \"currencyConversions\": [\n    {\n      \"from\": \"EUR\",\n      \"to\": \"USD\",\n      \"multiplier\": 1.12\n    },\n    {\n      \"from\": \"EUR\",\n      \"to\": \"USD\",\n      \"multiplier\": 1.12\n    }\n  ],\n  \"timezone\": \"UTC\",\n  \"yearEpoch\": \"<date>\",\n  \"monthEpoch\": \"<date>\",\n  \"weekEpoch\": \"<date>\",\n  \"dayEpoch\": \"<date>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "9f83b00f-b185-4552-b894-e910d898eb45",
+          "name": "Cancel BillJob",
+          "request": {
+            "name": "Cancel BillJob",
+            "description": {
+              "content": "Cancel an ongoing BillJob for the given Organization and BillJob UUID. \n\nThis endpoint allows you to halt the processing of a specific BillJob, which might be necessary if there are changes in billing requirements or other operational considerations.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "billjobs",
+                ":id",
+                "cancel"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) The unique identifier (UUID) of the BillJob to cancel."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "eb839287-7092-4109-9b54-9818de3de5b9",
+              "name": "Returns the cancelled BillJob",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs",
+                    ":id",
+                    "cancel"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the BillJob to cancel."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 8829,\n  \"lastDateInBillingPeriod\": \"1991-10-31\",\n  \"billingFrequency\": \"<string>\",\n  \"billFrequencyInterval\": 5971,\n  \"billDate\": \"1964-11-26\",\n  \"externalInvoiceDate\": \"1981-03-18\",\n  \"dueDate\": \"2022-06-18\",\n  \"accountIds\": [\n    \"string\",\n    \"string\"\n  ],\n  \"billIds\": [\n    \"string\",\n    \"string\"\n  ],\n  \"targetCurrency\": \"string\",\n  \"currencyConversions\": [\n    {\n      \"from\": \"EUR\",\n      \"to\": \"USD\",\n      \"multiplier\": 1.12\n    },\n    {\n      \"from\": \"EUR\",\n      \"to\": \"USD\",\n      \"multiplier\": 1.12\n    }\n  ],\n  \"timezone\": \"UTC\",\n  \"yearEpoch\": \"1998-04-21\",\n  \"monthEpoch\": \"1971-12-05\",\n  \"weekEpoch\": \"1982-01-16\",\n  \"dayEpoch\": \"2008-07-26\",\n  \"status\": \"RUNNING\",\n  \"total\": 8739,\n  \"pending\": 2914,\n  \"type\": \"CREATE\",\n  \"dtCreated\": \"1963-02-02T14:17:31.441Z\",\n  \"dtLastModified\": \"1964-05-20T07:37:22.684Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f5173cc6-ebd9-481d-8027-3fef7cdb25f7",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs",
+                    ":id",
+                    "cancel"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the BillJob to cancel."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f571061b-265e-46da-810e-855618da0690",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs",
+                    ":id",
+                    "cancel"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the BillJob to cancel."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "6a31926a-e690-402d-bab5-af0592d62650",
+          "name": "Create Recalculation BillJob",
+          "request": {
+            "name": "Create Recalculation BillJob",
+            "description": {
+              "content": "Create a new BillJob specifically to recalculate existing bills for a given Organization. \n\nThis operation is essential when adjustments or corrections are required in previously calculated bills. The recalculated bills when the BillJob is complete can be checked in the m3ter Console Bill Management page or queried by using the [List Bills](https://www.m3ter.com/docs/api#tag/Bill/operation/ListBills) operation.\n\n**NOTE:**\n- **Response Schema**. The response schema for this call is dynamic. This means that the response might not contain all of the parameters listed.  If set to null,the parameter is hidden to help simplify the output as well as to reduce its size and improve  performance.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "billjobs",
+                "recalculate"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<object>",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "0037b8b1-1cab-46a9-bac4-c8758fbe133b",
+              "name": "Returns the recalculated BillJob",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs",
+                    "recalculate"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"billIds\": [\n    \"<string>\"\n  ],\n  \"version\": \"<long>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 8829,\n  \"lastDateInBillingPeriod\": \"1991-10-31\",\n  \"billingFrequency\": \"<string>\",\n  \"billFrequencyInterval\": 5971,\n  \"billDate\": \"1964-11-26\",\n  \"externalInvoiceDate\": \"1981-03-18\",\n  \"dueDate\": \"2022-06-18\",\n  \"accountIds\": [\n    \"string\",\n    \"string\"\n  ],\n  \"billIds\": [\n    \"string\",\n    \"string\"\n  ],\n  \"targetCurrency\": \"string\",\n  \"currencyConversions\": [\n    {\n      \"from\": \"EUR\",\n      \"to\": \"USD\",\n      \"multiplier\": 1.12\n    },\n    {\n      \"from\": \"EUR\",\n      \"to\": \"USD\",\n      \"multiplier\": 1.12\n    }\n  ],\n  \"timezone\": \"UTC\",\n  \"yearEpoch\": \"1998-04-21\",\n  \"monthEpoch\": \"1971-12-05\",\n  \"weekEpoch\": \"1982-01-16\",\n  \"dayEpoch\": \"2008-07-26\",\n  \"status\": \"RUNNING\",\n  \"total\": 8739,\n  \"pending\": 2914,\n  \"type\": \"CREATE\",\n  \"dtCreated\": \"1963-02-02T14:17:31.441Z\",\n  \"dtLastModified\": \"1964-05-20T07:37:22.684Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "16f186ec-63dc-4d5e-b4c5-936ebf6349d9",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs",
+                    "recalculate"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"billIds\": [\n    \"<string>\"\n  ],\n  \"version\": \"<long>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "1650b715-0d97-4b40-b673-e9c2b3224ec0",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "billjobs",
+                    "recalculate"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"billIds\": [\n    \"<string>\"\n  ],\n  \"version\": \"<long>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.m3ter.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "scope",
+        "value": "m3ter-resources/m3ter-scope measurements:upload measurements:fileUpload measurements:retrieve"
+      },
+      {
+        "key": "accessTokenUrl",
+        "value": "/oauth/token"
+      },
+      {
+        "key": "grant_type",
+        "value": "client_credentials"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "5201d452-3cd1-4dac-a553-f048f8df00fb",
+    "name": "m3ter Account BillJob API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->",
+      "type": "text/plain"
+    }
+  }
+}

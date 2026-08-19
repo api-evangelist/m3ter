@@ -1,0 +1,233 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account LookupTableRevision API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "LookupTableRevision",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Update LookupTableRevision Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:id/status",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Lookup Table Revision to update the status for."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table the Revision belongs to."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the status of a Lookup Table Revision for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Retrieve LookupTableRevision",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Lookup Table Revision to retrieve."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Lookup Table the Revision belongs to."
+              }
+            ]
+          },
+          "docs": "Retrieve a Lookup Table Revision for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Update LookupTableRevision",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Lookup Table Revision to update."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Lookup Table the Revision belongs to."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Lookup Table Revision for the given UUID.\n\n**NOTE:** If you've already added data to a Lookup Table Revision - see the following [Lookup Table Revision Data](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData) section - then you won't be able to change the Revision's field schema and you'll receive an error if you try do this. Create a new Revision instead, or delete the data items first."
+        },
+        {
+          "info": {
+            "name": "Delete LookupTableRevision",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Lookup Table Revision to update."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Lookup Table the Revision belongs to."
+              }
+            ]
+          },
+          "docs": "Delete the Lookup Table Revision for the given UUID."
+        },
+        {
+          "info": {
+            "name": "List LookupTableRevision",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization"
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "The lookup table Id"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of LookupTable to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "Token to supply for multi page retrievals"
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "List of Lookup Table Revision IDs to retrieve"
+              }
+            ]
+          },
+          "docs": "List LookupTableRevision entities"
+        },
+        {
+          "info": {
+            "name": "Create LookupTableRevision",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table the Revision will be created for."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new Revision for a Lookup Table.\n\nFields and Keys for Revision schema: Use the `fields` parameter to define a Revision schema containing up to 10 number or string fields. Use the `keys` parameter to specify which are the key fields:\n* At least one field must be a non-key field and at least one a key field.\n* Up to 5 key fields can be defined.\n* Using multiple key fields: ensure that the order in which they are defined matches the order in which you want to use them in any Lookup functio"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

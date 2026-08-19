@@ -1,0 +1,180 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account BillGroupingKey API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "BillGroupingKey",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Bill Grouping Keys",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/picklists/billgroupingkeys",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of Bill Grouping Keys to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "`nextToken` for multi page retrievals"
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "List of Bill Grouping Key IDs to retrieve."
+              },
+              {
+                "name": "codes",
+                "value": "",
+                "type": "query",
+                "description": "List of Bill Grouping Key codes to retrieve."
+              },
+              {
+                "name": "archived",
+                "value": "",
+                "type": "query",
+                "description": "Filter by archived flag"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of Bill Grouping Keys created for your Organization."
+        },
+        {
+          "info": {
+            "name": "Create BillGroupingKey",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/picklists/billgroupingkeys",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization.The Organization represents your company as a direct customer of the m3ter service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new BillGroupingKey."
+        },
+        {
+          "info": {
+            "name": "Retrieve BillGroupingKey",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/picklists/billgroupingkeys/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Bill Grouping Key to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a Bill Grouping Key for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Update BillGroupingKey",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/picklists/billgroupingkeys/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Bill Grouping Key to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Bill Grouping Key for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Delete BillGroupingKey",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/picklists/billgroupingkeys/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Bill Grouping Key to delete."
+              }
+            ]
+          },
+          "docs": "Delete a Bill Grouping Key for the given UUID."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

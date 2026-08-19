@@ -1,0 +1,180 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account TransactionType API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "TransactionType",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve TransactionType",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/picklists/transactiontypes/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the TransactionType to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieves the TransactionType with the given UUID from the specified Organization.\n\n"
+        },
+        {
+          "info": {
+            "name": "Update TransactionType",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/picklists/transactiontypes/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifer (UUID) of the TransactionType to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the TransactionType with the specified UUID for the specified Organization. Update details for the TransactionType should be included in the request body. "
+        },
+        {
+          "info": {
+            "name": "Delete TransactionType",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/picklists/transactiontypes/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the TransactionType to delete."
+              }
+            ]
+          },
+          "docs": "Deletes the TransactionType with the given UUID from the specified Organization."
+        },
+        {
+          "info": {
+            "name": "List TransactionTypes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/picklists/transactiontypes",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of TransactionTypes to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of TransactionTypes in a paginated list."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "A list of TransactionType unique identifiers (UUIDs) to retrieve."
+              },
+              {
+                "name": "codes",
+                "value": "",
+                "type": "query",
+                "description": "A list of TransactionType short codes to retrieve."
+              },
+              {
+                "name": "archived",
+                "value": "",
+                "type": "query",
+                "description": "Filter with this Boolean flag whether to include TransactionTypes that are archived. \n\n* TRUE - include archived TransactionTypes in the list.\n* FALSE - exclude archived TransactionTypes. "
+              }
+            ]
+          },
+          "docs": "Retrieves a list of TransactionType entities for the specified Organization. The list can be paginated for easier management, and supports filtering by various parameters. "
+        },
+        {
+          "info": {
+            "name": "Create TransactionType",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/picklists/transactiontypes",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new TransactionType for the specified Organization. Details of the new TransactionType should be included in the request body."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

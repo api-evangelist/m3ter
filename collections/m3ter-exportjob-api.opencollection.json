@@ -1,0 +1,115 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account ExportJob API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "ExportJob",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve Job",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/dataexports/jobs/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Job to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve an Export Job for the given UUID.\n\nThe response returns:\n* The source type for the data exported by the Export Job: one of USAGE or OPERATIONAL.\n* The status of the Export Job."
+        },
+        {
+          "info": {
+            "name": "List Jobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/dataexports/jobs",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "List Job entities for the given UUIDs"
+              },
+              {
+                "name": "scheduleId",
+                "value": "",
+                "type": "query",
+                "description": "List Job entities for the schedule UUID"
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "List Job entities for the status"
+              },
+              {
+                "name": "dateCreatedStart",
+                "value": "",
+                "type": "query",
+                "description": "Include only Job entities created on or after this date. Format: yyyy-MM-dd'T'HH:mm:ss'Z'"
+              },
+              {
+                "name": "dateCreatedEnd",
+                "value": "",
+                "type": "query",
+                "description": "Include only Job entities created before this date. Format: yyyy-MM-dd'T'HH:mm:ss'Z'"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of Jobs to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of Export Job entities."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

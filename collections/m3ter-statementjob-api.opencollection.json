@@ -1,0 +1,173 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account StatementJob API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "StatementJob",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Cancel StatementJob",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/statementjobs/:id/cancel",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the StatementJob to cancel."
+              }
+            ]
+          },
+          "docs": "Cancel the StatementJob with the given UUID.\n\nUse this endpoint to halt the execution of a specific StatementJob identified by its UUID. This operation may be useful if you need to stop a StatementJob due to unforeseen issues or changes."
+        },
+        {
+          "info": {
+            "name": "Get StatementJob",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/statementjobs/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Retrieves the details of a specific StatementJob using its UUID.\n\nUse this call to obtain the time-bound pre-signed download URL for the generated Bill Statement if the initial [Create StatementJob](https://www.m3ter.com/docs/api#tag/StatementJob/operation/CreateStatementJob) returned a response showing the `statementJobStatus` not yet complete and as `PENDING` or `RUNNING`.\n\n**Note:** When you have submitted a StatementJob and a Bill Statement has been generated, you can also download the State"
+        },
+        {
+          "info": {
+            "name": "Create Batch StatementJobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/statementjobs/batch",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a batch of StatementJobs for multiple bills.\n\nInitiate the creation of multiple StatementJobs asynchronously for the list of bills with the given UUIDs:\n* The default format for generating Bill Statements is in JSON format and according to the Bill Statement Definition you've specified at either Organization level or Account level.\n* If you also want to generate the Statements in CSV format, use the `includeCsvFormat` request body parameter.\n* The response body provides a time-bound pre-s"
+        },
+        {
+          "info": {
+            "name": "List Statement Jobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/statementjobs",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of StatementJobs to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of StatementJobs in a paginated list."
+              },
+              {
+                "name": "active",
+                "value": "",
+                "type": "query",
+                "description": "Boolean filter on whether to only retrieve active *(i.e. not completed/cancelled)* StatementJobs.\n\n* TRUE - only active StatementJobs retrieved.\n* FALSE - all StatementJobs retrieved.\n"
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Filter using the StatementJobs status. Possible values:\n\n* `PENDING`\n* `RUNNING`\n* `COMPLETE`\n* `CANCELLED`\n* `FAILED`"
+              },
+              {
+                "name": "billId",
+                "value": "",
+                "type": "query",
+                "description": "Filter Statement Jobs by billId"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of StatementJobs.\n\nRetrieves a list of all StatementJobs for a specific Organization. You can filter the results based on:\n* StatementJob status.\n* Whether StatementJob is neither completed nor cancelled but remains active.\n* The ID of the Bill the StatementJob is associated with.\n\nYou can also paginate the results for easier management.\n\n**WARNING!**\n* You can use only one of the valid Query parameters: `active`, `status`, or `billId` in any call. If you use more than one of the"
+        },
+        {
+          "info": {
+            "name": "Create a StatementJob",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/statementjobs",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "This endpoint creates a StatementJob for a single bill within an Organization using the Bill UUID. \n\nThe Bill Statement is generated asynchronously:\n* The default format for generating the Statement is in JSON format and according to the Bill Statement Definition you've specified at either Organization level or Account level.\n* If you also want to generate the Statement in CSV format, use the `includeCsvFormat` request body parameter.\n* The response body provides a time-bound pre-signed URL, whi"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

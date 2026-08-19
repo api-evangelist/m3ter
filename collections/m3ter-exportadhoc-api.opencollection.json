@@ -1,0 +1,52 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account ExportAdHoc API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "ExportAdHoc",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Trigger data export.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/dataexports/adhoc",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Trigger an ad-hoc Data Export. Each ad-hoc Export can be configured for exporting *only one of* either Usage or Operational data:\n\n**Operational Data Exports**.\n* **Entity Types**. Use the `operationalDataTypes` parameter to specify the entities whose operational data you want to include in the ad-hoc export.\n* **Export Files**. For each of the entity types you select, when the ad-hoc export runs a separate file is compiled containing the operational data for all entities of that type that exist"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

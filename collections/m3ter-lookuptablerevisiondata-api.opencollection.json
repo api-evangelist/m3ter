@@ -1,0 +1,526 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account LookupTableRevisionData API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "LookupTableRevisionData",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get LookupTableRevisionData",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:lookupTableRevisionId/data",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table."
+              },
+              {
+                "name": "lookupTableRevisionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table Revision."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The maximum number of Data items to return. Defaults to 2000. You can set this to return fewer items if required.\n\nIf you expect the Revision to contain more than 2000 Data items, you can use the [Trigger Downlad URL Job](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/TriggerDownloadJob) to download the Lookup Table Revision Data."
+              },
+              {
+                "name": "additional",
+                "value": "",
+                "type": "query",
+                "description": "Comma separated list of additional fields. For example, you can use `additional=lookupKey` to get the lookup key returned for each Data item. You can then use a lookup key for the Get/Upsert/Delete data entry endpoints in this section."
+              }
+            ]
+          },
+          "docs": "List Lookup Table Revision Data items for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Upsert LookupTableRevisionData",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:lookupTableRevisionId/data",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table."
+              },
+              {
+                "name": "lookupTableRevisionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table Revision."
+              },
+              {
+                "name": "additional",
+                "value": "",
+                "type": "query",
+                "description": "Comma separated list of additional fields. For example, you can use `additional=lookupKey` to get the lookup key returned for each Data item. You can then use a lookup key for the Get/Upsert/Delete data entry endpoints in this section."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create/update the Lookup Table Revision Data for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Delete LookupTableRevisionData",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:lookupTableRevisionId/data",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table."
+              },
+              {
+                "name": "lookupTableRevisionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table Revision."
+              }
+            ]
+          },
+          "docs": "Delete the Lookup Table Revision Data for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Get LookupTableRevisionArchivedData URL",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:lookupTableRevisionId/data/archived",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the LookupTable"
+              },
+              {
+                "name": "lookupTableRevisionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the LookupTableRevision"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Get a URL which you can use to download the data for the specified archived Lookup Table Revision:\n* The `contentType` request parameter is required.\n* The returned URL is presigned - you can copy it into a browser and the data file is downloaded locally.\n* The upload URL is time limited - the `expiry` time is given in the response and the URL is valid for ***one hour***."
+        },
+        {
+          "info": {
+            "name": "Copy LookupTableRevisionData",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:lookupTableRevisionId/data/copy",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table."
+              },
+              {
+                "name": "lookupTableRevisionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the source Lookup Table Revision to copy from."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Copy the Lookup Table Revision Data from a source Revision to an optional target Revision:\n* If you omit a target `revisionId`, then the source Revision and its Data is duplicated. The new Revision is given the source Revision's name appended with \"Copy\" but is assigned a new unique id.\n* If you specify a target `revisionId` to copy the source Revision and its Data to, you must ensure that the target Revision has a Data schema that matches the source Revision's Data schema otherwise you'll recei"
+        },
+        {
+          "info": {
+            "name": "Get LookupTableRevisionData Job Response.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:lookupTableRevisionId/data/jobs/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table."
+              },
+              {
+                "name": "lookupTableRevisionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table Revision."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table Revision Data job."
+              }
+            ]
+          },
+          "docs": "Get the Lookup Table Revision Data job Response for given job id.\n\n**NOTE:** Use the [List LookupTableRevisionData Jobs](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/ListLookupTableRevisionDataJobs) endpoint to list the Data job Responses for a specific Revision. "
+        },
+        {
+          "info": {
+            "name": "Delete LookupTableRevisionData Job Response",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:lookupTableRevisionId/data/jobs/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table."
+              },
+              {
+                "name": "lookupTableRevisionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table Revision."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table Revision Data job."
+              }
+            ]
+          },
+          "docs": "Delete the LookupTableRevisionData Job Response for given job id.\n\n**NOTE:** Use the [List LookupTableRevisionData Jobs](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/ListLookupTableRevisionDataJobs) endpoint to list the Data job Responses for a specific Revision."
+        },
+        {
+          "info": {
+            "name": "List LookupTableRevisionData Jobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:lookupTableRevisionId/data/jobs",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table."
+              },
+              {
+                "name": "lookupTableRevisionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table Revision."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "The number of Lookup Table Revision Data Job Responses to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The nextToken for multi page retrievals"
+              }
+            ]
+          },
+          "docs": "List the Lookup Table Revision Data job Responses for the given Lookup Table Revision.\n\nThere are four types of Revision Data jobs:\n* **COPY**. Job runs when you use the [Copy LookupTableRevisionData](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/CopyLookupTableRevisionData) endpoint which returns the `jobId`.\n* **UPLOAD**. Job runs when you use the [Generate LookupTableRevisionData Upload URL](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/GenerateLo"
+        },
+        {
+          "info": {
+            "name": "Get LookupTableRevisionData entry",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:lookupTableRevisionId/data/:lookupKey",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table."
+              },
+              {
+                "name": "lookupTableRevisionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table Revision."
+              },
+              {
+                "name": "lookupKey",
+                "value": "",
+                "type": "path",
+                "description": "The specific lookup key for the Data item to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a Lookup Table Revision Data item for the given lookup key.\n\n**NOTES:**\n* To obtain the lookup key for a Revision's data items, use the [Get LookupTableRevisionData](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/GetLookupTableRevisionData) endpoint in this section and use the `additional=lookupKey` query parameter.\n* If the Revision's Data schema uses multiple key fields, enter these as a comma-separated list for the `lookupKey` path parameter: .../key1,key2,key3 "
+        },
+        {
+          "info": {
+            "name": "Upsert LookupTableRevisionData entry",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:lookupTableRevisionId/data/:lookupKey",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table."
+              },
+              {
+                "name": "lookupTableRevisionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table Revision."
+              },
+              {
+                "name": "lookupKey",
+                "value": "",
+                "type": "path",
+                "description": "The specific lookup key for the Data item to upsert."
+              },
+              {
+                "name": "additional",
+                "value": "",
+                "type": "query",
+                "description": "Comma separated list of additional fields. For example, you can use `additional=lookupKey` to get the lookup key returned for the Data item."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create/update a Lookup Table Revision Data item by lookup key.\n\n**NOTES:**\n* To obtain the lookup key for a Revision's data items, use the [Get LookupTableRevisionData](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/GetLookupTableRevisionData) endpoint in this section and use the `additional=lookupKey` query parameter.\n* If the Revision's Data schema uses multiple key fields, enter these as a comma-separated list for the `lookupKey` path parameter: .../key1,key2,key3 and so"
+        },
+        {
+          "info": {
+            "name": "Delete LookupTableRevisionData entry",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:lookupTableRevisionId/data/:lookupKey",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table."
+              },
+              {
+                "name": "lookupTableRevisionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table Revision."
+              },
+              {
+                "name": "lookupKey",
+                "value": "",
+                "type": "path",
+                "description": "The specific lookup key for the Data item to delete."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Delete a Lookup Table Revision Data entry by lookup key.\n\n**NOTES:**\n* To obtain the lookup key for a Revision's data items, use the [Get LookupTableRevisionData](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/GetLookupTableRevisionData) endpoint in this section and use the `additional=lookupKey` query parameter.\n* If the Revision's Data schema uses multiple key fields, enter these as a comma-separated list for the `lookupKey` path parameter: .../key1,key2,key3 and so on. I"
+        },
+        {
+          "info": {
+            "name": "Trigger Download LookupTableRevisionData URL Job",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:lookupTableRevisionId/data/jobs/download",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table."
+              },
+              {
+                "name": "lookupTableRevisionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table Revision."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Trigger an URL job to download the Lookup Table Revision Data. The URL download Data `jobId` is returned and you can then use the [List LookupTableRevisionData Jobs](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/ListLookupTableRevisionDataJobs) endpoint or the [Get LookupTableRevisionData Job Response](https://www.m3ter.com/docs/api#tag/LookupTableRevisionData/operation/GetLookupTableRevisionDataJobResponse) endpoint to retrieve the URL and perform the Revision data Downlo"
+        },
+        {
+          "info": {
+            "name": "Generate LookupTableRevisionData Upload URL",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:lookupTableId/revisions/:lookupTableRevisionId/data/generateuploadurl",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "lookupTableId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table."
+              },
+              {
+                "name": "lookupTableRevisionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Lookup Table Revision."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Generate a URL which can be used to upload a data file for creating or updating the Lookup Table Revision's data:\n\n* An upload URL is returned together with an UPLOAD `jobId`.\n* You can then upload your data file using a PUT request using the returned upload URL as the endpoint. For the PUT request, map the headers returned and their values and in the request body select the specified CSV or JSONL file containing the Revision Data to upload.\n* You can use the returned UPLOAD `jobId` with the [Li"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

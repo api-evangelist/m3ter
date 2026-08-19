@@ -1,0 +1,238 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account BalanceTransactionSchedule API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "BalanceTransactionSchedule",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List BalanceTransactionSchedule",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/balances/:balanceId/balancetransactionschedules",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "balanceId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the balance"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of BalanceTransactionSchedules to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of BalanceTransactionSchedule entities."
+        },
+        {
+          "info": {
+            "name": "Create BalanceTransactionSchedule",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/balances/:balanceId/balancetransactionschedules",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "balanceId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the balance"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new BalanceTransactionSchedule."
+        },
+        {
+          "info": {
+            "name": "Retrieve BalanceTransactionSchedule",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/balances/:balanceId/balancetransactionschedules/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "balanceId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the balance"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the BalanceTransactionSchedule to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a BalanceTransactionSchedule for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Update BalanceTransactionSchedule",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/balances/:balanceId/balancetransactionschedules/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "balanceId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the balance"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the BalanceTransactionSchedule to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a BalanceTransactionSchedule for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Delete BalanceTransactionSchedule",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/balances/:balanceId/balancetransactionschedules/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "balanceId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the balance"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the BalanceTransactionSchedule to update."
+              }
+            ]
+          },
+          "docs": "Delete the BalanceTransactionSchedule for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Preview ScheduledBalanceTransactions",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/balances/:balanceId/balancetransactionschedules/preview",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "balanceId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the balance"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of BalanceTransactions to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Previews the BalanceTransactions this Schedule would create, without persisting them. You can use this call to obtain a preview of the Transactions a Schedule you plan to create for a Balance would generate."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

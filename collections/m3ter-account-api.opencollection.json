@@ -1,0 +1,293 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Account",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Search Accounts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/accounts/search",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization."
+              },
+              {
+                "name": "searchQuery",
+                "value": "",
+                "type": "query",
+                "description": "Query for data using special syntax:\n- Query parameters should be delimited using the $ (dollar sign).\n- Allowed comparators are:\n\t- (greater than) > \n\t- (greater than or equal to) >= \n\t- (equal to) : \n\t- (less than) <\n\t- (less than or equal to) <=\n\t- (match phrase/prefix) ~\n-  Allowed parameters are: name, code, currency, purchaseOrderNumber, parentAccountId, codes, id, createdBy, dtCreated, lastModifiedBy, ids.\n-  Query example: \n\t-  searchQuery=name~Premium On$currency:USD.\n\t-  This query is translated into: find accounts whose name contains the phrase/prefix 'Premium On' AND the account currency is USD.\n\n**Note:** Using the ~ match phrase/prefix comparator. For best results, we recommend treating this as a \"starts with\" comparator for your search query."
+              },
+              {
+                "name": "fromDocument",
+                "value": "",
+                "type": "query",
+                "description": "`fromDocument` for multi page retrievals."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of Accounts to retrieve per page.\n\n**NOTE:** If not defined, default is 10."
+              },
+              {
+                "name": "operator",
+                "value": "",
+                "type": "query",
+                "description": "Search Operator to be used while querying search."
+              },
+              {
+                "name": "sortBy",
+                "value": "",
+                "type": "query",
+                "description": "Name of the parameter on which sorting is performed. Use any field available on the Account entity to sort by, such as `name`, `code`, and so on."
+              },
+              {
+                "name": "sortOrder",
+                "value": "",
+                "type": "query",
+                "description": "Sorting order."
+              }
+            ]
+          },
+          "docs": "Search for Account entities.\n\nThis endpoint executes a search query for Accounts based on the user specified search criteria. The search query is customizable, allowing for complex nested conditions and sorting. The returned list of Accounts can be paginated for easier management."
+        },
+        {
+          "info": {
+            "name": "End-date Account billing entities",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/accounts/:id/enddatebillingentities",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Account."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Apply the specified end-date to billing entities associated with an Account.\n\n**NOTE:**\n- When you successfully end-date billing entities, the version number of each entity is incremented."
+        },
+        {
+          "info": {
+            "name": "List Account Children",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/accounts/:id/children",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization.\nThe Organization represents your company as a direct customer of the m3ter service. "
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Account to list children for."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of Accounts that are children of the specified Account."
+        },
+        {
+          "info": {
+            "name": "Retrieve Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/accounts/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization.\nThe Organization represents your company as a direct customer of the m3ter service. "
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Account to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve the Account with the given Account UUID."
+        },
+        {
+          "info": {
+            "name": "Update Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/accounts/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service. "
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Account to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the Account with the given Account UUID.\n\n**Note:** If you have created Custom Fields for an Account, when you use this endpoint to update the Account, use the `customFields` parameter to preserve those Custom Fields. If you omit them from the update request, they will be lost."
+        },
+        {
+          "info": {
+            "name": "Delete Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/accounts/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization.\nThe Organization represents your company as a direct customer of the m3ter service. "
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Account to delete."
+              }
+            ]
+          },
+          "docs": "Delete the Account with the given UUID. This may fail if there are any AccountPlans that reference the Account being deleted."
+        },
+        {
+          "info": {
+            "name": "List Accounts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/accounts",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization.\nThe Organization represents your company as a direct customer of the m3ter service. "
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of accounts to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "`nextToken` for multi-page retrievals."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "List of Account IDs to retrieve."
+              },
+              {
+                "name": "codes",
+                "value": "",
+                "type": "query",
+                "description": "List of Account Codes to retrieve. \nThese are unique short codes for each Account."
+              }
+            ]
+          },
+          "docs": "Retrieve a list of Accounts that can be filtered by Account ID or Account Code."
+        },
+        {
+          "info": {
+            "name": "Create Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/accounts",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization.\nThe Organization represents your company as a direct customer of the m3ter service. "
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new Account within the Organization."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

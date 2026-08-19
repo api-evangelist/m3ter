@@ -1,0 +1,198 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account Charge API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Charge",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Charges",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/charges",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of Charges to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              },
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "query",
+                "description": "List Charge items for the Account UUID"
+              },
+              {
+                "name": "entityType",
+                "value": "",
+                "type": "query",
+                "description": "List Charge items for the EntityType"
+              },
+              {
+                "name": "entityId",
+                "value": "",
+                "type": "query",
+                "description": "List Charge items for the Entity UUID"
+              },
+              {
+                "name": "billDate",
+                "value": "",
+                "type": "query",
+                "description": "List Charge items for the Bill Date"
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "List of Charge UUIDs to retrieve"
+              },
+              {
+                "name": "scheduleId",
+                "value": "",
+                "type": "query",
+                "description": "List Charge items for the Schedule UUID"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of Charge entities"
+        },
+        {
+          "info": {
+            "name": "Create Charge",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/charges",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new Charge.\n\n**NOTES:**\n* To create an ad-hoc Charge on an Account, use the `accountId` request parameter.\n* To create a balance fee Charge for a Balance, use the `entityId` request parameter to specify which Balance on an Account the Charge is for.\n* To define the value of the Charge amount that is billed, you can simply specify an `amount` or use a number of `units` together with a `unitPrice` for a calculated value = units x unit price. But you cannot specify *both an amount and unit"
+        },
+        {
+          "info": {
+            "name": "Retrieve Charge",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/charges/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Charge to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a Charge for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Update Charge",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/charges/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Charge to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Charge for the given UUID.\n\n**NOTE:** When you update a Charge on an Account, you can provide either a Charge `amount` or Charge `units` together with a `unitPrice`, but *not both*."
+        },
+        {
+          "info": {
+            "name": "Delete Charge",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/charges/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Charge to update."
+              }
+            ]
+          },
+          "docs": "Delete the Charge for the given UUID."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

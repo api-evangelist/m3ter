@@ -1,0 +1,258 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account Commitments API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Commitments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve Commitment",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/commitments/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Commitment to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a specific Commitment.\n\nRetrieve the details of the Commitment with the given UUID. It provides comprehensive information about the Commitment, such as the agreed amount, overage surcharge percentage, and other related details."
+        },
+        {
+          "info": {
+            "name": "Update Commitment",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/commitments/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for the Commitment to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Modify a specific Commitment.\n\nUpdate the details of the Commitment with the given UUID. Use this endpoint to adjust Commitment parameters such as the fixed amount, overage surcharge percentage, or associated contract details."
+        },
+        {
+          "info": {
+            "name": "Delete Commitment",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/commitments/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your organization. The Organization represents your company as a direct customer our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for the Commitment to delete."
+              }
+            ]
+          },
+          "docs": "Remove a specific Commitment.\n\nDeletes the Commitment with the given UUID. Use this endpoint when a Commitment is no longer valid or needs to be removed from the system."
+        },
+        {
+          "info": {
+            "name": "List Commitments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/commitments",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of Commitments to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of Commitments in a paginated list."
+              },
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier (UUID) for the Account. This parameter helps filter the Commitments related to a specific end-customer Account."
+              },
+              {
+                "name": "productId",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier (UUID) for the Product. This parameter helps filter the Commitments related to a specific Product."
+              },
+              {
+                "name": "date",
+                "value": "",
+                "type": "query",
+                "description": "A date *(in ISO-8601 format)* to filter Commitments which are active on this specific date."
+              },
+              {
+                "name": "endDateStart",
+                "value": "",
+                "type": "query",
+                "description": "A date *(in ISO-8601 format)* used to filter Commitments. Only Commitments with end dates on or after this date will be included."
+              },
+              {
+                "name": "endDateEnd",
+                "value": "",
+                "type": "query",
+                "description": "A date *(in ISO-8601 format)* used to filter Commitments. Only Commitments with end dates before this date will be included."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "A list of unique identifiers (UUIDs) for the Commitments to retrieve. Use this to fetch specific Commitments in a single request."
+              },
+              {
+                "name": "contractId",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of Commitments.\n\nRetrieves a list of all Commitments associated with an Organization. This endpoint supports pagination and includes various query parameters to filter the Commitments based on Account, Product, date, and end dates."
+        },
+        {
+          "info": {
+            "name": "Create Commitment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/commitments",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. This represents your company as a direct customer of our service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new Commitment.\n\nCreates a new Commitment for an Organization. The request body must include all the necessary details such as the agreed amount, overage surcharge percentage, and the associated account and product details.\n\n**Note:** If some of the agreed Commitment amount remains unpaid at the start of an end-customer contract period, when you create a Commitment for an Account you can set up billing for the outstanding amount in one of two ways:\n- Select a Product *Plan to bill with*"
+        },
+        {
+          "info": {
+            "name": "Search Commitments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/commitments/search",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "searchQuery",
+                "value": "",
+                "type": "query",
+                "description": "Query for data using special syntax:\n* Query parameters should be delimited using $ (dollar sign).\n* Allowed comparators are:\n\t* (greater than) >\n\t* (greater than or equal to) >=\n\t* (equal to) :\n\t* (less than) <\n\t* (less than or equal to) <=\n\t* (match phrase/prefix) ~\n*  Allowed parameters: startDate, endDate, contractId, accountId, productId, productIds, id, createdBy, dtCreated, lastModifiedBy, ids.\n*  Query example:\n\t*  searchQuery=startDate>2023-01-01$accountId:062085ab-a301-4f21-a081-411020864452.\n\t*  This query is translated into: find commitments where the startDate is older than 2023-01-01 AND the accountId is equal to 062085ab-a301-4f21-a081-411020864452.\n\n**Note:** Using the ~ match phrase/prefix comparator. For best results, we recommend treating this as a \"starts with\" comparator for your search query."
+              },
+              {
+                "name": "fromDocument",
+                "value": "",
+                "type": "query",
+                "description": "`fromDocument` for multi page retrievals."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of Commitments to retrieve per page.\n\n**NOTE:** If not defined, default is 10."
+              },
+              {
+                "name": "operator",
+                "value": "",
+                "type": "query",
+                "description": "Search Operator to be used while querying search."
+              },
+              {
+                "name": "sortBy",
+                "value": "",
+                "type": "query",
+                "description": "Name of the parameter on which sorting is performed. Use any field available on the Commitment entity to sort by, such as `accountId`, `endDate`, and so on."
+              },
+              {
+                "name": "sortOrder",
+                "value": "",
+                "type": "query",
+                "description": "Sorting order."
+              }
+            ]
+          },
+          "docs": "Search for commitment entities.\n\nThis endpoint executes a search query for Commitments based on the user specified search criteria. The search query is customizable, allowing for complex nested conditions and sorting. The returned list of Commitments can be paginated for easier management."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

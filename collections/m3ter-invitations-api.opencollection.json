@@ -1,0 +1,108 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account Invitations API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Invitations",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve Invitation",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/invitations/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the specific invitation to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve the specified invitation with the given UUID. "
+        },
+        {
+          "info": {
+            "name": "Retrieve Invitations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/invitations",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of invitations to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "`nextToken` for multi page retrievals."
+              }
+            ]
+          },
+          "docs": "Retrieve a list of all invitations in the Organization. "
+        },
+        {
+          "info": {
+            "name": "Invite User to Organization",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/invitations",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Invite a new user to your Organization.\n\nThis sends an email to someone inviting them to join your m3ter Organization."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

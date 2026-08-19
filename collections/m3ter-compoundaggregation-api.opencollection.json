@@ -1,0 +1,180 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account CompoundAggregation API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "CompoundAggregation",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve CompoundAggregation",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/compoundaggregations/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the CompoundAggregation to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a CompoundAggregation using the given UUID.\n\nThis endpoint returns a specific CompoundAggregation associated with an Organization. It provides detailed information about the CompoundAggregation. "
+        },
+        {
+          "info": {
+            "name": "Update CompoundAggregation",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/compoundaggregations/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the CompoundAggregation to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the CompoundAggregation with the given UUID.\n\nThis endpoint allows you to update the details of a specific CompoundAggregation associated with an Organization. Use it to modify details of an existing CompoundAggregation such as the Calculation formula.\n\n**Note:** If you have created Custom Fields for a Compound Aggregation, when you use this endpoint to update the Compound Aggregation use the `customFields` parameter to preserve those Custom Fields. If you omit them from the update reques"
+        },
+        {
+          "info": {
+            "name": "Delete CompoundAggregation",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/compoundaggregations/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the CompoundAggregation to delete."
+              }
+            ]
+          },
+          "docs": "Delete a CompoundAggregation with the given UUID.\n\nThis endpoint enables deletion of a specific CompoundAggregation associated with a specific Organization. Useful when you need to remove an existing CompoundAggregation that is no longer required, such as when changing pricing or planning models."
+        },
+        {
+          "info": {
+            "name": "List CompoundAggregations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/compoundaggregations",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of CompoundAggregations to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of CompoundAggregations in a paginated list."
+              },
+              {
+                "name": "productId",
+                "value": "",
+                "type": "query",
+                "description": "An optional parameter to filter the CompoundAggregations based on specific Product unique identifiers (UUIDs)."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "An optional parameter to retrieve specific CompoundAggregations based on their unique identifiers (UUIDs)."
+              },
+              {
+                "name": "codes",
+                "value": "",
+                "type": "query",
+                "description": "An optional parameter to retrieve specific CompoundAggregations based on their short codes."
+              }
+            ]
+          },
+          "docs": "Retrieve a list of all CompoundAggregations. \n\nThis endpoint retrieves a list of CompoundAggregations associated with a specific organization. CompoundAggregations enable you to define numerical measures based on simple Aggregations of usage data. It supports pagination, and includes various query parameters to filter the CompoundAggregations based on Product, CompoundAggregation IDs or short codes."
+        },
+        {
+          "info": {
+            "name": "Create CompoundAggregation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/compoundaggregations",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new CompoundAggregation.\n\nThis endpoint allows you to create a new CompoundAggregation for a specific Organization. The request body must include all the necessary details such as the Calculation formula."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

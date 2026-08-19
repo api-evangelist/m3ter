@@ -1,0 +1,180 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account Plan API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Plan",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Plans",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/plans",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of Plans to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "`nextToken` for multi-page retrievals."
+              },
+              {
+                "name": "productId",
+                "value": "",
+                "type": "query",
+                "description": "UUID of the Product to retrieve Plans for."
+              },
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "query",
+                "description": "List of Account IDs the Plan belongs to."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "List of Plan IDs to retrieve. "
+              }
+            ]
+          },
+          "docs": "Retrieve a list of Plans that can be filtered by Product, Account, or Plan ID.  "
+        },
+        {
+          "info": {
+            "name": "Create Plan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/plans",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new Plan."
+        },
+        {
+          "info": {
+            "name": "Retrieve Plan",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/plans/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Plan to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve the Plan with the given UUID."
+        },
+        {
+          "info": {
+            "name": "Update Plan",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/plans/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Plan to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the Plan with the given UUID.\n\n**Note:** If you have created Custom Fields for a Plan, when you use this endpoint to update the Plan use the `customFields` parameter to preserve those Custom Fields. If you omit them from the update request, they will be lost."
+        },
+        {
+          "info": {
+            "name": "Delete Plan",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/plans/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Plan to delete."
+              }
+            ]
+          },
+          "docs": "Delete the Plan with the given UUID."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

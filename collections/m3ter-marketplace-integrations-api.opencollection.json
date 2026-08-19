@@ -1,0 +1,83 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account Marketplace Integrations API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Marketplace Integrations",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve reported usage",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/integrationdestinations/marketplace/usageReport",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "billStartDate",
+                "value": "",
+                "type": "query",
+                "description": "Only include usage with bill start dates equal to this date"
+              },
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "query",
+                "description": "List usage for the customer UUID"
+              },
+              {
+                "name": "externalSystem",
+                "value": "",
+                "type": "query",
+                "description": "Filter usage for the provided marketplace"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of usage records to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              },
+              {
+                "name": "billId",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of reported usage records that match the provided filters.\n\nWhen Bill integration runs are performed, all interactions between m3ter and a Marketplace system are persisted as logs. Use this endpoint to retrieve these logs, which you can use to track all amounts sent over to the Marketplace system together with the date and time the Bill data was sent. This provides a report on usage data sent to the Marketplace for each Bill integration run"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,180 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account LookupTable API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "LookupTable",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List LookupTable",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of Lookup Tables to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "Token to supply for multi page retrievals."
+              },
+              {
+                "name": "codes",
+                "value": "",
+                "type": "query",
+                "description": "List of Lookup Table codes to retrieve."
+              },
+              {
+                "name": "additional",
+                "value": "",
+                "type": "query",
+                "description": "Comma separated list of additional non-default fields to be included in the response. For example,if you want to include the active Revision for each of the Lookup Tables returned, set `additional=activeRevision` in the query."
+              }
+            ]
+          },
+          "docs": "Retrieve a list Lookup Tables created for the Organization:\n* Returned list can be filtered by Lookup Table `code` query parameter.\n* If you want to include any non-default fields for the returned Lookup Tables, use the additional query parameter to specify which you want to include in the response."
+        },
+        {
+          "info": {
+            "name": "Create LookupTable",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new Lookup Table."
+        },
+        {
+          "info": {
+            "name": "Get LookupTable",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Lookup Table to retrieve."
+              },
+              {
+                "name": "additional",
+                "value": "",
+                "type": "query",
+                "description": "Comma separated list of additional non-default fields to be included in the response. For example,if you want to include the active Revision for the Lookup Tables returned, set `additional=activeRevision` in the query."
+              }
+            ]
+          },
+          "docs": "Retrieve a Lookup Table by UUID."
+        },
+        {
+          "info": {
+            "name": "Update LookupTable",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Lookup Table to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the Lookup Table with the given UUID."
+        },
+        {
+          "info": {
+            "name": "Delete LookupTable",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/lookuptables/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Lookup Table to delete."
+              }
+            ]
+          },
+          "docs": "Delete the Lookup Table with the given UUID."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

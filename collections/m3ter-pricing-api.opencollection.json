@@ -1,0 +1,192 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account Pricing API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Pricing",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve Pricing",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/pricings/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Pricing to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve the Pricing with the given UUID."
+        },
+        {
+          "info": {
+            "name": "Update Pricing",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/pricings/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Pricing to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update Pricing for the given UUID.\n\n**Notes:**\n* Exactly one of `planId` or `planTemplateId` request parameters are required for this call to be valid. If you omit both, then you will receive a validation error.\n* Exactly one of `aggregationId` or `compoundAggregationId` request parameters are required for this call to be valid. If you omit both, then you will receive a validation error."
+        },
+        {
+          "info": {
+            "name": "Delete Pricing",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/pricings/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Pricing to delete."
+              }
+            ]
+          },
+          "docs": "Delete the Pricing with the given UUID."
+        },
+        {
+          "info": {
+            "name": "List Pricings",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/pricings",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of Pricings to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "`nextToken` for multi-page retrievals."
+              },
+              {
+                "name": "date",
+                "value": "",
+                "type": "query",
+                "description": "Date on which to retrieve active Pricings."
+              },
+              {
+                "name": "planId",
+                "value": "",
+                "type": "query",
+                "description": "UUID of the Plan to retrieve Pricings for."
+              },
+              {
+                "name": "planTemplateId",
+                "value": "",
+                "type": "query",
+                "description": "UUID of the PlanTemplate to retrieve Pricings for."
+              },
+              {
+                "name": "aggregationId",
+                "value": "",
+                "type": "query",
+                "description": "UUID of the Aggregation to retrieve pricings for"
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "List of Pricing IDs to retrieve. "
+              }
+            ]
+          },
+          "docs": "Retrieve a list of Pricings filtered by date, Plan ID, PlanTemplate ID, or Pricing ID. "
+        },
+        {
+          "info": {
+            "name": "Create Pricing",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/pricings",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new Pricing.\n\n**Notes:**\n* Exactly one of `planId` or `planTemplateId` request parameters are required for this call to be valid. If you omit both, then you will receive a validation error.\n* Exactly one of `aggregationId` or `compoundAggregationId` request parameters are required for this call to be valid. If you omit both, then you will receive a validation error."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

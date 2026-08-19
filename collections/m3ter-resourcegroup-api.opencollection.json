@@ -1,0 +1,348 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account ResourceGroup API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "ResourceGroup",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List ResourceGroup permission policies",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/resourcegroups/:type/:resourceGroupId/permissions",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "The type of resource"
+              },
+              {
+                "name": "resourceGroupId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the ResourceGroup"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of PermissionPolicy entities to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of permission policies for a ResourceGroup"
+        },
+        {
+          "info": {
+            "name": "Remove item",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/resourcegroups/:type/:resourceGroupId/removeresource",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "resourceGroupId",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the ResourceGroup to remove the item from."
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "The type of resource"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Remove an item from a ResourceGroup."
+        },
+        {
+          "info": {
+            "name": "List ResourceGroups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/resourcegroups/:type",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "The type of resource"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of ResourceGroups to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of ResourceGroup entities"
+        },
+        {
+          "info": {
+            "name": "Create ResourceGroup",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/resourcegroups/:type",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "The type of resource"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a ResourceGroup for the UUID"
+        },
+        {
+          "info": {
+            "name": "Retrieve ResourceGroup",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/resourcegroups/:type/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the ResourceGroup to retrieve."
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "The type of resource"
+              }
+            ]
+          },
+          "docs": "Retrieve the ResourceGroup for the UUID"
+        },
+        {
+          "info": {
+            "name": "Update ResourceGroup",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/resourcegroups/:type/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the ResourceGroup to update."
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "The type of resource"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the ResourceGroup for the UUID"
+        },
+        {
+          "info": {
+            "name": "Delete ResourceGroup",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/resourcegroups/:type/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the ResourceGroup to delete."
+              },
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "The type of resource"
+              }
+            ]
+          },
+          "docs": "Delete a ResourceGroup for the UUID"
+        },
+        {
+          "info": {
+            "name": "Add item",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/resourcegroups/:type/:resourceGroupId/addresource",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "resourceGroupId",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the ResourceGroup to add the item to."
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "The type of resource the Resource Group is for, such as a Meter Resource Group."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add an item to a ResourceGroup."
+        },
+        {
+          "info": {
+            "name": "List ResourceGroup items",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/resourcegroups/:type/:resourceGroupId/contents",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "The type of resource"
+              },
+              {
+                "name": "resourceGroupId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the ResourceGroup"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of ResourceGroupItems to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of items for a ResourceGroup"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

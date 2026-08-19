@@ -1,0 +1,175 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account Events API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Events",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve EventResponse",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/events/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Event to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a specific Event.\n\nRetrieves detailed information about the specific Event with the given UUID. An Event corresponds to a unique instance of a state change within the system, classified under a specific Event Type.\n"
+        },
+        {
+          "info": {
+            "name": "List Events",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/events/fields",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "eventName",
+                "value": "",
+                "type": "query",
+                "description": "The name of the specific Event Type to use as a list filter, for example `configuration.commitment.created`."
+              }
+            ]
+          },
+          "docs": "List Event Fields. \n\nRetrieves a list of Fields for a specific Event Type. These Fields are dynamic and forward compatibile, enabling calculation operations on the Event schema.\n\n**Notes:**\n- In many of the Response schema for this call, such as when you retrieve the Fields for a `configuration.commitment.created` Event Type, `new` represents the attributes the newly created object has. The Response to a call to retrieve the Fields for a `configuration.commitment.updated` Event Type will contain"
+        },
+        {
+          "info": {
+            "name": "List EventResponse",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/events",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "The maximum number of Events to retrieve per page."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "List of Event UUIDs to filter the results. \n\n**NOTE:** cannot be used with other filters."
+              },
+              {
+                "name": "notificationId",
+                "value": "",
+                "type": "query",
+                "description": "Notification UUID to filter the results. Returns the Events that have triggered the Notification."
+              },
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "query",
+                "description": "The Account ID associated with the Event to filter the results. Returns the Events that have been generated for the Account."
+              },
+              {
+                "name": "eventType",
+                "value": "",
+                "type": "query",
+                "description": "The category of Events to filter the results by. Options:\n* Notification\n* IntegrationEvent\n* IngestValidationFailure\n* DataExportJobFailure"
+              },
+              {
+                "name": "notificationCode",
+                "value": "",
+                "type": "query",
+                "description": "Short code of the Notification to filter the results. Returns the Events that have triggered the Notification."
+              },
+              {
+                "name": "includeActioned",
+                "value": "",
+                "type": "query",
+                "description": "A Boolean flag indicating whether to return Events that have been actioned.\n\n* **TRUE** - include actioned Events.\n* **FALSE** - exclude actioned Events. "
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of Events in a paginated list."
+              },
+              {
+                "name": "eventName",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "resourceId",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List all Events.\n\nRetrieve a list of all Events, with options to filter the returned list based on various criteria. Each Event represents a unique instance of a state change within the system, classified under a specific kind of Event.\n\n**NOTES:** You can:\n* Use `eventName` as a valid Query parameter to filter the list of Events returned. For example:\n`.../organizations/{orgId}/events?eventName=configuration.commitment.created`\n* Use the [List Notification Events](https://www.m3ter.com/docs/api"
+        },
+        {
+          "info": {
+            "name": "List Notification Events",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/events/types",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifer (UUID) of the Organization. The Organization represents your company as a direct customer of our service."
+              }
+            ]
+          },
+          "docs": "Retrieve a list of Notification Event Types.\n\nThis endpoint retrieves a list of Event Types that can have Notification rules configured."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

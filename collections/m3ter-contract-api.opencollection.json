@@ -1,0 +1,208 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account Contract API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Contract",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Contracts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/contracts",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of Contracts to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of Contracts in a paginated list."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "An optional parameter to filter the list based on specific Contract unique identifiers (UUIDs)."
+              },
+              {
+                "name": "codes",
+                "value": "",
+                "type": "query",
+                "description": "An optional parameter to retrieve specific Contracts based on their short codes."
+              },
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Retrieves a list of Contracts by Organization ID. Supports pagination and includes various query parameters to filter the Contracts returned based on Contract IDs or short codes."
+        },
+        {
+          "info": {
+            "name": "Create Contract",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/contracts",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new Contract for the specified Account. The Contract includes information such as the associated Account along with start and end dates.\n\nIf you intend to bill an Account on a Contract basis, you can use the `billGroupingKeyId`, `applyContractPeriodLimits`, and `usageFilters` request parameters to control Contract billing."
+        },
+        {
+          "info": {
+            "name": "End-date Contract Account billing entities",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/contracts/:id/enddatebillingentities",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Unique identifier (UUID) of the Contract - the specified billing entities associated with the Account the Contract has been added to will be end-dated."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Apply the specified end-date to billing entities associated with Accounts the Contract has been added to, and apply the end-date to the Contract itself.\n\n**NOTES:**\n- If you want to apply the end-date to the Contract *itself* - the Contract `id` you use as the required PATH PARAMETER - you must also specify `CONTRACT` as a  `billingEntities` option in the request body schema.\n- Only the Contract whose id you specify for the PATH PARAMETER will be end-dated. If there are other Contracts associate"
+        },
+        {
+          "info": {
+            "name": "Retrieve Contract",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/contracts/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Contract to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieves the Contract with the given UUID. Used to obtain the details of a Contract."
+        },
+        {
+          "info": {
+            "name": "Update Contract",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/contracts/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Contract to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the Contract with the given UUID.\n\nThis endpoint updates the details of the Contract with the specified ID. Used to modify details of an existing Contract such as the start or end dates.\n\n**Note:** If you have created Custom Fields for a Contract, when you use this endpoint to update the Contract use the `customFields` parameter to preserve those Custom Fields. If you omit them from the update request, they will be lost."
+        },
+        {
+          "info": {
+            "name": "Delete Contract",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/contracts/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the Contract to delete."
+              }
+            ]
+          },
+          "docs": "Deletes the Contract with the specified UUID. Used to remove an existing Contract from an Account.\n\n**Note:** This call will fail if there are any other billing entities associated with the Account and that have been added to the Contract, such as AccountPlans, Balance, or Commitments.\n\n  "
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

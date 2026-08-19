@@ -1,0 +1,238 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account BalanceChargeSchedule API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "BalanceChargeSchedule",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve BalanceChargeSchedule",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/balances/:balanceId/balancechargeschedules/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "balanceId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the balance"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the BalanceChargeSchedule to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve a BalanceChargeSchedule for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Update BalanceChargeSchedule",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/balances/:balanceId/balancechargeschedules/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "balanceId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the balance"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the BalanceChargeSchedule to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a BalanceChargeSchedule for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Delete BalanceChargeSchedule",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/balances/:balanceId/balancechargeschedules/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "balanceId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the balance"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the BalanceChargeSchedule to update."
+              }
+            ]
+          },
+          "docs": "Delete the BalanceChargeSchedule for the given UUID."
+        },
+        {
+          "info": {
+            "name": "Preview ScheduledBalanceCharges",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/balances/:balanceId/balancechargeschedules/preview",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "balanceId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the balance"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of Charges to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Previews the Charges this Schedule would create, without persisting them. You can use this call to obtain a preview of the Charges a Schedule you plan to create for a Balance would generate."
+        },
+        {
+          "info": {
+            "name": "List BalanceChargeSchedule",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/balances/:balanceId/balancechargeschedules",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "balanceId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the balance"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of BalanceChargeSchedules to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of BalanceChargeSchedule entities"
+        },
+        {
+          "info": {
+            "name": "Create BalanceChargeSchedule",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/balances/:balanceId/balancechargeschedules",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "balanceId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the balance"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new BalanceChargeSchedule."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

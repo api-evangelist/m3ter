@@ -1,0 +1,180 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account Meter API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Meter",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve Meter",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/meters/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Meter to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve the Meter with the given UUID."
+        },
+        {
+          "info": {
+            "name": "Update Meter",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/meters/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Meter to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the Meter with the given UUID.\n\n**Note:** If you have created Custom Fields for a Meter, when you use this endpoint to update the Meter use the `customFields` parameter to preserve those Custom Fields. If you omit them from the update request, they will be lost."
+        },
+        {
+          "info": {
+            "name": "Delete Meter",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/meters/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the Meter to delete."
+              }
+            ]
+          },
+          "docs": "Delete the Meter with the given UUID."
+        },
+        {
+          "info": {
+            "name": "List Meters",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/meters",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of Meters to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "`nextToken` for multi page retrievals."
+              },
+              {
+                "name": "productId",
+                "value": "",
+                "type": "query",
+                "description": "The UUIDs of the Products to retrieve Meters for."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "List of Meter IDs to retrieve."
+              },
+              {
+                "name": "codes",
+                "value": "",
+                "type": "query",
+                "description": "List of Meter codes to retrieve. These are the unique short codes that identify each Meter."
+              }
+            ]
+          },
+          "docs": "Retrieve a list of Meters that can be filtered by Product, Meter ID, or Meter short code. "
+        },
+        {
+          "info": {
+            "name": "Create Meter",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/meters",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new Meter.\n\nWhen you create a Meter, you can define two types of field for usage data collection and ingest into the platform:\n- `dataFields` to collect raw usage data measures - numeric quantitative data values or non-numeric point data values.\n- `derivedFields` to derive usage data measures that are the result of applying a calculation to `dataFields`, `customFields`, or system `Timestamp` fields.\n\nYou can also:\n- Create `customFields` for a Meter, which allows you to attach custom da"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,1279 @@
+{
+  "item": [
+    {
+      "id": "ac507784-7298-4979-bdf3-7728fe9e1d4a",
+      "name": "StatementDefinition",
+      "description": {
+        "content": "Endpoints for listing, creating, updating, retrieving, or deleting Statement Definitions.\n\nBill statements are informative backing sheets to invoices. They provide a breakdown of the usage charges that appear on the bill, helping your end customers better understand those charges, and gain a clearer picture of their usage over the billing period.\n\nStatement Definitions specify the way billed usage will be aggregated and compiled in the Statement. For example, if you are billing customers monthly, you might want to breakdown the usage responsible for the monthly charge on a Bill into weekly portions in Bill statements.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "fc2e056b-406d-4c8e-afd9-ff3cd15970f2",
+          "name": "Retrieve StatementDefinition",
+          "request": {
+            "name": "Retrieve StatementDefinition",
+            "description": {
+              "content": "Retrieve a StatementDefinition with the given UUID.\n\nRetrieves the details of a specific StatementDefinition for the specified Organization, using its unique identifier (UUID). This endpoint is useful when you want to retrieve the complete details of a single StatementDefinition.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "statementdefinitions",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) The unique identifier (UUID) of the StatementDefinition to retrieve."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "54237605-7ab1-45e9-b513-bfc154063c53",
+              "name": "Returns the StatementDefinition",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the StatementDefinition to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 9994,\n  \"name\": \"string\",\n  \"aggregationFrequency\": \"WEEK\",\n  \"includePricePerUnit\": true,\n  \"dimensions\": [\n    {\n      \"filter\": [\n        \"string\"\n      ],\n      \"name\": \"string\",\n      \"meterId\": \"string\",\n      \"attributes\": [\n        \"string\",\n        \"string\"\n      ]\n    },\n    {\n      \"filter\": [\n        \"string\"\n      ],\n      \"name\": \"string\",\n      \"meterId\": \"string\",\n      \"attributes\": [\n        \"string\",\n        \"string\"\n      ]\n    }\n  ],\n  \"measures\": [\n    {\n      \"meterId\": \"string\",\n      \"name\": \"string\",\n      \"aggregations\": [\n        \"SUM\",\n        \"MEAN\"\n      ]\n    },\n    {\n      \"meterId\": \"string\",\n      \"name\": \"string\",\n      \"aggregations\": [\n        \"UNIQUE\",\n        \"MAX\"\n      ]\n    }\n  ],\n  \"generateSlimStatements\": false,\n  \"dtCreated\": \"1966-10-14T20:05:06.057Z\",\n  \"dtLastModified\": \"1953-12-22T21:07:22.101Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "fcc3c744-2f9e-4941-b735-2ba18bbd0654",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the StatementDefinition to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "7059eca2-b767-4e0a-bd10-54b8c1d421e4",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the StatementDefinition to retrieve."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "db2a986e-ac6f-48ff-9a08-d7f9043a3af7",
+          "name": "Update StatementDefinition",
+          "request": {
+            "name": "Update StatementDefinition",
+            "description": {
+              "content": "Update StatementDefinition for the given UUID.\n\nUpdate the details of a specific StatementDefinition for the specified Organization, using its unique identifier (UUID). The updated details for the StatementDefinition should be sent in the request body. ",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "statementdefinitions",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<object>",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "201a6fff-d11c-4b98-8e2c-3d9dc348a6b5",
+              "name": "Returns the updated StatementDefinition",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"aggregationFrequency\": \"<string>\",\n  \"version\": \"<long>\",\n  \"name\": \"<string>\",\n  \"includePricePerUnit\": \"<boolean>\",\n  \"dimensions\": [\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"measures\": [\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"generateSlimStatements\": \"<boolean>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 5910,\n  \"name\": \"string\",\n  \"aggregationFrequency\": \"<string>\",\n  \"includePricePerUnit\": false,\n  \"dimensions\": [\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"measures\": [\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"generateSlimStatements\": false,\n  \"dtCreated\": \"1979-06-24T09:35:44.189Z\",\n  \"dtLastModified\": \"2004-02-28T19:02:56.804Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "980fd3d9-97e8-47e5-afd5-554d288495a9",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"aggregationFrequency\": \"<string>\",\n  \"version\": \"<long>\",\n  \"name\": \"<string>\",\n  \"includePricePerUnit\": \"<boolean>\",\n  \"dimensions\": [\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"measures\": [\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"generateSlimStatements\": \"<boolean>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "55f44140-ba78-4ef6-b5fa-28188c25096b",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"aggregationFrequency\": \"<string>\",\n  \"version\": \"<long>\",\n  \"name\": \"<string>\",\n  \"includePricePerUnit\": \"<boolean>\",\n  \"dimensions\": [\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"measures\": [\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"generateSlimStatements\": \"<boolean>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "82132df0-da7a-488e-b4b9-ca9ef2f7eefe",
+          "name": "Delete StatementDefinition",
+          "request": {
+            "name": "Delete StatementDefinition",
+            "description": {
+              "content": "Delete a StatementDefinition with the given UUID.\n\nThis endpoint deletes a specific StatementDefinition within a specified Organization, using the StatementDefinition UUID.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "statementdefinitions",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) The unique identifier (UUID) of the StatementDefinition to delete."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "c2055496-1aab-44d5-926c-a404f082082c",
+              "name": "Returns the deleted StatementDefinition",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the StatementDefinition to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 5910,\n  \"name\": \"string\",\n  \"aggregationFrequency\": \"<string>\",\n  \"includePricePerUnit\": false,\n  \"dimensions\": [\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"measures\": [\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"generateSlimStatements\": false,\n  \"dtCreated\": \"1979-06-24T09:35:44.189Z\",\n  \"dtLastModified\": \"2004-02-28T19:02:56.804Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a6db8ee4-cdff-484d-94dc-f2f0bf449b6a",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the StatementDefinition to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f2572155-c481-4989-81b9-ea1219119489",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) The unique identifier (UUID) of the StatementDefinition to delete."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "c381a122-6d59-44b6-9612-0190035e3c5c",
+          "name": "List StatementDefinitions",
+          "request": {
+            "name": "List StatementDefinitions",
+            "description": {
+              "content": "Retrieve a list of StatementDefinitions.\n\nThis endpoint retrieves a list of all the StatementDefinitions within a specified Organization. The list can be paginated for easier management.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "statementdefinitions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "<integer>",
+                  "description": "Specifies the maximum number of StatementDefinitions to retrieve per page."
+                },
+                {
+                  "disabled": false,
+                  "key": "nextToken",
+                  "value": "<string>",
+                  "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of StatementDefinitions in a paginated list."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "8b4f2503-0e85-41d4-9ea9-8cdc9a1ba899",
+              "name": "Returns the list of requested StatementDefinitions",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"string\",\n      \"version\": 8651,\n      \"name\": \"string\",\n      \"aggregationFrequency\": \"<string>\",\n      \"includePricePerUnit\": false,\n      \"dimensions\": [\n        {\n          \"filter\": [\n            \"<string>\"\n          ],\n          \"name\": \"<string>\",\n          \"meterId\": \"<string>\",\n          \"attributes\": [\n            \"<string>\",\n            \"<string>\"\n          ]\n        },\n        {\n          \"filter\": [\n            \"<string>\"\n          ],\n          \"name\": \"<string>\",\n          \"meterId\": \"<string>\",\n          \"attributes\": [\n            \"<string>\",\n            \"<string>\"\n          ]\n        }\n      ],\n      \"measures\": [\n        {\n          \"meterId\": \"<string>\",\n          \"name\": \"<string>\",\n          \"aggregations\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        {\n          \"meterId\": \"<string>\",\n          \"name\": \"<string>\",\n          \"aggregations\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      ],\n      \"generateSlimStatements\": false,\n      \"dtCreated\": \"1993-11-16T22:46:00.887Z\",\n      \"dtLastModified\": \"1968-08-27T23:06:41.167Z\",\n      \"createdBy\": \"string\",\n      \"lastModifiedBy\": \"string\"\n    },\n    {\n      \"id\": \"string\",\n      \"version\": 1745,\n      \"name\": \"string\",\n      \"aggregationFrequency\": \"<string>\",\n      \"includePricePerUnit\": false,\n      \"dimensions\": [\n        {\n          \"filter\": [\n            \"<string>\"\n          ],\n          \"name\": \"<string>\",\n          \"meterId\": \"<string>\",\n          \"attributes\": [\n            \"<string>\",\n            \"<string>\"\n          ]\n        },\n        {\n          \"filter\": [\n            \"<string>\"\n          ],\n          \"name\": \"<string>\",\n          \"meterId\": \"<string>\",\n          \"attributes\": [\n            \"<string>\",\n            \"<string>\"\n          ]\n        }\n      ],\n      \"measures\": [\n        {\n          \"meterId\": \"<string>\",\n          \"name\": \"<string>\",\n          \"aggregations\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        {\n          \"meterId\": \"<string>\",\n          \"name\": \"<string>\",\n          \"aggregations\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      ],\n      \"generateSlimStatements\": true,\n      \"dtCreated\": \"1992-07-23T19:43:02.313Z\",\n      \"dtLastModified\": \"2023-07-25T16:47:28.958Z\",\n      \"createdBy\": \"string\",\n      \"lastModifiedBy\": \"string\"\n    }\n  ],\n  \"nextToken\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0677f034-bcd4-45fc-a598-267de66e7cac",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "633a2794-9477-4229-bf61-3e313c7cbb8d",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "7e3b17d7-2de4-4749-994c-d61eafc1566e",
+          "name": "Create StatementDefinition",
+          "request": {
+            "name": "Create StatementDefinition",
+            "description": {
+              "content": "Create a new StatementDefinition.\n\nThis endpoint creates a new StatementDefinition within the specified Organization. The details of the StatementDefinition are provided in the request body.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "statementdefinitions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<object>",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "0d88c787-fa9d-4bda-8763-87e82ce9ecef",
+              "name": "Returns the created StatementDefinition",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"aggregationFrequency\": \"<string>\",\n  \"version\": \"<long>\",\n  \"name\": \"<string>\",\n  \"includePricePerUnit\": \"<boolean>\",\n  \"dimensions\": [\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"measures\": [\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"generateSlimStatements\": \"<boolean>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"version\": 5910,\n  \"name\": \"string\",\n  \"aggregationFrequency\": \"<string>\",\n  \"includePricePerUnit\": false,\n  \"dimensions\": [\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"measures\": [\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"generateSlimStatements\": false,\n  \"dtCreated\": \"1979-06-24T09:35:44.189Z\",\n  \"dtLastModified\": \"2004-02-28T19:02:56.804Z\",\n  \"createdBy\": \"string\",\n  \"lastModifiedBy\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e89b72ba-b25b-462c-ab17-f23f9b5633f1",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"aggregationFrequency\": \"<string>\",\n  \"version\": \"<long>\",\n  \"name\": \"<string>\",\n  \"includePricePerUnit\": \"<boolean>\",\n  \"dimensions\": [\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"measures\": [\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"generateSlimStatements\": \"<boolean>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "726132ea-8f6c-4920-baf6-0bf283c54884",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "statementdefinitions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"aggregationFrequency\": \"<string>\",\n  \"version\": \"<long>\",\n  \"name\": \"<string>\",\n  \"includePricePerUnit\": \"<boolean>\",\n  \"dimensions\": [\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"filter\": [\n        \"<string>\"\n      ],\n      \"name\": \"<string>\",\n      \"meterId\": \"<string>\",\n      \"attributes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"measures\": [\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"meterId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"aggregations\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"generateSlimStatements\": \"<boolean>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.m3ter.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "scope",
+        "value": "m3ter-resources/m3ter-scope measurements:upload measurements:fileUpload measurements:retrieve"
+      },
+      {
+        "key": "accessTokenUrl",
+        "value": "/oauth/token"
+      },
+      {
+        "key": "grant_type",
+        "value": "client_credentials"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "086e3222-3d7f-4d0b-b86d-22bd44841058",
+    "name": "m3ter Account StatementDefinition API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->",
+      "type": "text/plain"
+    }
+  }
+}

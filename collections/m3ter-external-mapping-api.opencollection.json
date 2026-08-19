@@ -1,0 +1,371 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account External Mapping API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "External Mapping",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List External Mappings",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/externalmappings",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of External Mappings to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of External Mappings in a paginated list."
+              },
+              {
+                "name": "externalSystemId",
+                "value": "",
+                "type": "query",
+                "description": "The name of the external system to use as a filter.\n\nFor example, if you want to list only those external mappings created for your Organization for the Salesforce external system, use:\n\n`?externalSystemId=Salesforce`"
+              },
+              {
+                "name": "m3terIds",
+                "value": "",
+                "type": "query",
+                "description": "IDs for m3ter entities"
+              },
+              {
+                "name": "integrationConfigId",
+                "value": "",
+                "type": "query",
+                "description": "ID of the integration config"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of all External Mapping entities.\n\nThis endpoint retrieves a list of all External Mapping entities for a specific Organization. The list can be paginated for better management, and supports filtering using the external system.  "
+        },
+        {
+          "info": {
+            "name": "Create an External Mapping",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/externalmappings",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new External Mapping.\n\nThis endpoint enables you to create a new External Mapping for the specified Organization. You need to supply a request body with the details of the new External Mapping.  "
+        },
+        {
+          "info": {
+            "name": "Retrieve a list of external entities from the destination system for a particular credential",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/externalmappingconfiguration/values/:destination/:entityType/:integrationCredentialsId",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "destination",
+                "value": "",
+                "type": "path",
+                "description": "Name of the destination system"
+              },
+              {
+                "name": "entityType",
+                "value": "",
+                "type": "path",
+                "description": "The m3ter entity type."
+              },
+              {
+                "name": "integrationCredentialsId",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the credentials to use."
+              },
+              {
+                "name": "externalTable",
+                "value": "",
+                "type": "query",
+                "description": "Name of the target externalTable"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of possible values to create an external mapping using a particular credential. These options are retrieved from the destination system if the system has been successfully authenticated and provides the mechanism to do so. Otherwise an empty response is returned."
+        },
+        {
+          "info": {
+            "name": "Retrieve External Entities from Destination",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/externalmappingconfiguration/values/:destination/:entityType",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "destination",
+                "value": "",
+                "type": "path",
+                "description": "The name of the destination system from where the external entities are to be retrieved."
+              },
+              {
+                "name": "entityType",
+                "value": "",
+                "type": "path",
+                "description": "The m3ter entity type."
+              },
+              {
+                "name": "externalTable",
+                "value": "",
+                "type": "query",
+                "description": "Name of the target externalTable"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of external entities from the specified destination system.\n\nThis endpoint enables you to retrieve a list of potential values for creating an External Mapping from a specified destination system. The list is only returned if the destination system has been authenticated successfully and it supports such functionality, otherwise, you will receive an empty response.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve External Mapping Configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/externalmappingconfiguration",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              }
+            ]
+          },
+          "docs": "Retrieve the global External Mapping configuration.\n\nThis endpoint retrieves the global External Mapping configuration for the specified Organization."
+        },
+        {
+          "info": {
+            "name": "List External Mappings for External Entity",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/externalmappings/externalid/:system/:externalTable/:externalId",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "system",
+                "value": "",
+                "type": "path",
+                "description": "The identifier for the external system."
+              },
+              {
+                "name": "externalTable",
+                "value": "",
+                "type": "path",
+                "description": "The identifier for the external table. "
+              },
+              {
+                "name": "externalId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) for the external entity."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of External Mappings to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of External Mappings in a paginated list."
+              }
+            ]
+          },
+          "docs": "Retrieve a list of External Mapping entities for a specified external system entity.\n\nUse this endpoint to retrieve a list of External Mapping entities associated with a specific external system entity. The list can be paginated for easier management."
+        },
+        {
+          "info": {
+            "name": "List External Mappings for a m3ter Entity",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/externalmappings/external/:entity/:m3terId",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "entity",
+                "value": "",
+                "type": "path",
+                "description": "The entity type."
+              },
+              {
+                "name": "m3terId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifer (UUID) of the m3ter entity."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the maximum number of External Mappings to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "The `nextToken` for multi-page retrievals. It is used to fetch the next page of External Mappings in a paginated list."
+              }
+            ]
+          },
+          "docs": "Retrieve a list of External Mapping entities for a specified m3ter entity.\n\nUse this endpoint to retrieve a list of External Mapping entities associated with a specific m3ter entity. The list can be paginated for easier management. "
+        },
+        {
+          "info": {
+            "name": "Retrieve External Mapping",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/externalmappings/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the External Mapping to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve an External Mapping with the given UUID.\n\nThis endpoint enables you to retrieve the External Mapping with the specified UUID for a specific Organization."
+        },
+        {
+          "info": {
+            "name": "Update External Mapping",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/externalmappings/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the External Mapping to retrieve."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates an External Mapping with the given UUID.\n\nThis endpoint enables you to update an existing External Mapping entity, identified by its UUID. You must supply a request body with the new details for the External Mapping."
+        },
+        {
+          "info": {
+            "name": "Delete an External Mapping",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/externalmappings/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier (UUID) of the External Mapping to retrieve."
+              }
+            ]
+          },
+          "docs": "Delete an External Mapping with the given UUID."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

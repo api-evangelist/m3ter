@@ -1,0 +1,383 @@
+{
+  "item": [
+    {
+      "id": "83b9dcff-a377-43b0-92d9-03c77f4679d5",
+      "name": "Line Item",
+      "description": {
+        "content": "Endpoint for retrieving a list of line items for Bills in an Organization.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "83b10621-8ae6-4c75-ba0e-05554c9a3143",
+          "name": "List Line Items",
+          "request": {
+            "name": "List Line Items",
+            "description": {
+              "content": "List the billing line items for the given Organization, which can be filtered by the type of line item, Bill ID, or Commitment *(prepayment)* ID.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "organizations",
+                ":orgId",
+                "lineitems"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "commitmentId",
+                  "value": "<string>",
+                  "description": "Filter the line items list using the given Commitment ID. \n"
+                },
+                {
+                  "disabled": false,
+                  "key": "lineItemType",
+                  "value": "<string>",
+                  "description": "Filter the line items list using the given line item type. \nSee [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information on each line item type. "
+                },
+                {
+                  "disabled": false,
+                  "key": "billId",
+                  "value": "<string>",
+                  "description": "Filter the line items list using the given Bill ID."
+                },
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "<integer>",
+                  "description": "Number of Line Items to retrieve per page."
+                },
+                {
+                  "disabled": false,
+                  "key": "nextToken",
+                  "value": "<string>",
+                  "description": "`nextToken` for multi page retrievals."
+                },
+                {
+                  "disabled": false,
+                  "key": "additional",
+                  "value": "<string>",
+                  "description": "Comma separated list of additional fields."
+                },
+                {
+                  "disabled": false,
+                  "key": "additional",
+                  "value": "<string>",
+                  "description": "Comma separated list of additional fields."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "orgId",
+                  "description": "(Required) UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "088d5af6-2809-4131-b32f-d2c43cf9191b",
+              "name": "Returns list of billing line items",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "lineitems"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "commitmentId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "lineItemType",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "billId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "additional",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "additional",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"string\",\n      \"version\": 6754,\n      \"lineItemType\": \"<string>\",\n      \"productId\": \"string\",\n      \"description\": \"string\",\n      \"servicePeriodStartDate\": \"1949-05-09T12:10:32.445Z\",\n      \"servicePeriodEndDate\": \"1964-03-04T10:12:59.392Z\",\n      \"referencedBillId\": \"string\",\n      \"referencedLineItemId\": \"string\",\n      \"dtCreated\": \"1952-03-08T12:01:00.292Z\",\n      \"dtLastModified\": \"1999-06-13T15:53:41.393Z\",\n      \"createdBy\": \"string\",\n      \"lastModifiedBy\": \"string\",\n      \"productName\": \"string\",\n      \"productCode\": \"string\",\n      \"accountingProductId\": \"string\",\n      \"accountingProductName\": \"string\",\n      \"accountingProductCode\": \"string\",\n      \"aggregationId\": \"string\",\n      \"compoundAggregationId\": \"string\",\n      \"counterId\": \"string\",\n      \"chargeId\": \"string\",\n      \"segment\": {\n        \"key_0\": \"string\"\n      },\n      \"group\": {\n        \"key_0\": \"string\",\n        \"key_1\": \"string\",\n        \"key_2\": \"string\",\n        \"key_3\": \"string\"\n      },\n      \"meterId\": \"string\",\n      \"planId\": \"string\",\n      \"planGroupId\": \"string\",\n      \"commitmentId\": \"string\",\n      \"balanceId\": \"string\",\n      \"billId\": \"string\",\n      \"quantity\": 5737.695242267226,\n      \"units\": 8378.526107083888,\n      \"unit\": \"string\",\n      \"subtotal\": 6142.898798553917,\n      \"currency\": \"string\",\n      \"conversionRate\": 3865.3620264538345,\n      \"convertedSubtotal\": 6576.561603381474,\n      \"creditTypeId\": \"string\",\n      \"pricingId\": \"string\",\n      \"bandUsage\": [\n        {\n          \"pricingBandId\": \"string\",\n          \"lowerLimit\": 9064.682701846888,\n          \"fixedPrice\": 7775.484397388993,\n          \"unitSubtotal\": 2294.2771102803517,\n          \"unitPrice\": 9390.9735742991,\n          \"bandUnits\": 3341.9860093448883,\n          \"bandQuantity\": 9163.060710321808,\n          \"bandSubtotal\": 4688.191493030005,\n          \"creditTypeId\": \"string\",\n          \"convertedBandSubtotal\": 2086.354814661091\n        },\n        {\n          \"pricingBandId\": \"string\",\n          \"lowerLimit\": 9780.698769336897,\n          \"fixedPrice\": 1720.7737228514475,\n          \"unitSubtotal\": 1609.6307979205692,\n          \"unitPrice\": 3410.758670411883,\n          \"bandUnits\": 6621.877209313571,\n          \"bandQuantity\": 780.2397823507046,\n          \"bandSubtotal\": 1334.4565219116878,\n          \"creditTypeId\": \"string\",\n          \"convertedBandSubtotal\": 7999.352684572964\n        }\n      ],\n      \"reasonId\": \"string\",\n      \"contractId\": \"string\",\n      \"jsonUsageGenerated\": false,\n      \"averageUnitPrice\": 9638.57774867928,\n      \"sequenceNumber\": 2633,\n      \"additional\": {\n        \"key_0\": 6659.092934243868,\n        \"key_1\": 4089.328875306244,\n        \"key_2\": \"string\"\n      }\n    },\n    {\n      \"id\": \"string\",\n      \"version\": 9544,\n      \"lineItemType\": \"<string>\",\n      \"productId\": \"string\",\n      \"description\": \"string\",\n      \"servicePeriodStartDate\": \"2016-08-26T21:30:01.679Z\",\n      \"servicePeriodEndDate\": \"1959-08-03T00:19:25.850Z\",\n      \"referencedBillId\": \"string\",\n      \"referencedLineItemId\": \"string\",\n      \"dtCreated\": \"2002-06-02T08:20:22.277Z\",\n      \"dtLastModified\": \"1968-05-01T04:24:05.480Z\",\n      \"createdBy\": \"string\",\n      \"lastModifiedBy\": \"string\",\n      \"productName\": \"string\",\n      \"productCode\": \"string\",\n      \"accountingProductId\": \"string\",\n      \"accountingProductName\": \"string\",\n      \"accountingProductCode\": \"string\",\n      \"aggregationId\": \"string\",\n      \"compoundAggregationId\": \"string\",\n      \"counterId\": \"string\",\n      \"chargeId\": \"string\",\n      \"segment\": {\n        \"key_0\": \"string\",\n        \"key_1\": \"string\"\n      },\n      \"group\": {\n        \"key_0\": \"string\",\n        \"key_1\": \"string\",\n        \"key_2\": \"string\",\n        \"key_3\": \"string\"\n      },\n      \"meterId\": \"string\",\n      \"planId\": \"string\",\n      \"planGroupId\": \"string\",\n      \"commitmentId\": \"string\",\n      \"balanceId\": \"string\",\n      \"billId\": \"string\",\n      \"quantity\": 7976.3588176361,\n      \"units\": 1697.5496445104898,\n      \"unit\": \"string\",\n      \"subtotal\": 9220.497931665526,\n      \"currency\": \"string\",\n      \"conversionRate\": 5396.023227844895,\n      \"convertedSubtotal\": 5997.341335529439,\n      \"creditTypeId\": \"string\",\n      \"pricingId\": \"string\",\n      \"bandUsage\": [\n        {\n          \"pricingBandId\": \"string\",\n          \"lowerLimit\": 2358.8436242001067,\n          \"fixedPrice\": 3817.6214023520947,\n          \"unitSubtotal\": 7403.108491899716,\n          \"unitPrice\": 7650.417316300604,\n          \"bandUnits\": 278.05590732206673,\n          \"bandQuantity\": 8450.144093409423,\n          \"bandSubtotal\": 9200.888446212175,\n          \"creditTypeId\": \"string\",\n          \"convertedBandSubtotal\": 2771.9694799069707\n        },\n        {\n          \"pricingBandId\": \"string\",\n          \"lowerLimit\": 3386.687282062786,\n          \"fixedPrice\": 5775.585653460998,\n          \"unitSubtotal\": 9758.472881103553,\n          \"unitPrice\": 6218.950752265471,\n          \"bandUnits\": 1548.6412091801183,\n          \"bandQuantity\": 9498.542864236098,\n          \"bandSubtotal\": 3026.8049420675648,\n          \"creditTypeId\": \"string\",\n          \"convertedBandSubtotal\": 4287.181952851206\n        }\n      ],\n      \"reasonId\": \"string\",\n      \"contractId\": \"string\",\n      \"jsonUsageGenerated\": true,\n      \"averageUnitPrice\": 8554.679956154412,\n      \"sequenceNumber\": 479,\n      \"additional\": {\n        \"key_0\": \"string\"\n      }\n    }\n  ],\n  \"nextToken\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f8608d83-bcbb-45d7-8ab9-af185083f443",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "lineitems"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "commitmentId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "lineItemType",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "billId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "additional",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "additional",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "79409336-58fe-4d04-a387-21ab16607cc5",
+              "name": "Error message",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "organizations",
+                    ":orgId",
+                    "lineitems"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "commitmentId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "lineItemType",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "billId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "nextToken",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "additional",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "additional",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "orgId",
+                      "description": "(Required) UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.m3ter.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "scope",
+        "value": "m3ter-resources/m3ter-scope measurements:upload measurements:fileUpload measurements:retrieve"
+      },
+      {
+        "key": "accessTokenUrl",
+        "value": "/oauth/token"
+      },
+      {
+        "key": "grant_type",
+        "value": "client_credentials"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "6a1f9b80-4822-4423-b43b-d2d914bc3067",
+    "name": "m3ter Account Line Item API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->",
+      "type": "text/plain"
+    }
+  }
+}

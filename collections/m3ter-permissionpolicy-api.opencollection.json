@@ -1,0 +1,390 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account PermissionPolicy API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "PermissionPolicy",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Add a PermissionPolicy to a user group",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/permissionpolicies/:permissionPolicyId/addtousergroup",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "permissionPolicyId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the permission policy"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add a permission Policy to a user group"
+        },
+        {
+          "info": {
+            "name": "Remove a PermissionPolicy from a user",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/permissionpolicies/:permissionPolicyId/removefromuser",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "permissionPolicyId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the permission policy"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Remove a permission policy from a user."
+        },
+        {
+          "info": {
+            "name": "Add a PermissionPolicy to a user",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/permissionpolicies/:permissionPolicyId/addtouser",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "permissionPolicyId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the permission policy"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add a permission policy to a user."
+        },
+        {
+          "info": {
+            "name": "Add a PermissionPolicy to support users for an organization",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/permissionpolicies/:permissionPolicyId/addtosupportusers",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "permissionPolicyId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the permission policy"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add a permission policy  to support users for an organization."
+        },
+        {
+          "info": {
+            "name": "Add a PermissionPolicy to a service user",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/permissionpolicies/:permissionPolicyId/addtoserviceuser",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "permissionPolicyId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the permission policy"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add a permission policy to a service user."
+        },
+        {
+          "info": {
+            "name": "Remove a PermissionPolicy from a service user",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/permissionpolicies/:permissionPolicyId/removefromserviceuser",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "permissionPolicyId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the permission policy"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Remove a permission policy from a service user."
+        },
+        {
+          "info": {
+            "name": "List PermissionPolicies",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/permissionpolicies",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of permission polices to retrieve per page"
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "nextToken for multi page retrievals"
+              }
+            ]
+          },
+          "docs": "Retrieve a list of PermissionPolicy entities"
+        },
+        {
+          "info": {
+            "name": "Create Permission Policy",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/permissionpolicies",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new Permission Policy\n\n**NOTE:** When you set up a policy statement for this call using the `permissionPolicy` request parameter to specify the `effect`, `action`, and `resource`, you must use all lower case and the format as shown in this example for a Permission Policy statement that grants full CRUD access to all meters:\n```\n\"permissionPolicy\" : [\n\t{\n\t\t\"effect\" : \"allow\",\n\t\t\"action\" : [\n\t\t\"config:create\",\n\t\t\"config:delete\",\n\t\t\"config:retrieve\",\n\t\t\"config:update\"\n\t\t]\n\t\t\"resource\" : [\n"
+        },
+        {
+          "info": {
+            "name": "Remove a PermissionPolicy from support users for an organization",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/permissionpolicies/:permissionPolicyId/removefromsupportusers",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "permissionPolicyId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the permission policy"
+              }
+            ]
+          },
+          "docs": "Remove a permission policy from support users for an organization."
+        },
+        {
+          "info": {
+            "name": "Remove a PermissionPolicy from a user group",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/permissionpolicies/:permissionPolicyId/removefromusergroup",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "permissionPolicyId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the permission policy"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Remove a permission policy from a user group."
+        },
+        {
+          "info": {
+            "name": "Retrieve Permission Policy",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/permissionpolicies/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the PermissionPolicy to retrieve."
+              }
+            ]
+          },
+          "docs": "Retrieve the permission policy for the UUID"
+        },
+        {
+          "info": {
+            "name": "Update Permission Policy",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.m3ter.com/organizations/:orgId/permissionpolicies/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the PermissionPolicy to update."
+              },
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Permission Policy for the UUID\n\n**NOTE:** When you set up a policy statement for this call to specify the `effect`, `action`, and `resource`, you must use all lower case and the format as shown in this example - a Permission Policy statement that grants full CRUD access to all meters:\n```\n\"permissionPolicy\" : [\n\t{\n\t\t\"effect\" : \"allow\",\n\t\t\"action\" : [\n\t\t\"config:create\",\n\t\t\"config:delete\",\n\t\t\"config:retrieve\",\n\t\t\"config:update\"\n\t\t]\n\t\t\"resource\" : [\n\t\t\"config:meter/*\"\n\t\t]\n\t}\n]\n```\n\nFor mor"
+        },
+        {
+          "info": {
+            "name": "Delete Permission Policy",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.m3ter.com/organizations/:orgId/permissionpolicies/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The UUID of the PermissionPolicy to delete."
+              },
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              }
+            ]
+          },
+          "docs": "Delete the PermissionPolicy for the UUID"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

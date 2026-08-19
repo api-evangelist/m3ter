@@ -1,0 +1,253 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "m3ter Account Measurements API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Measurements",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Submit Measurements",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/measurements",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization. The Organization represents your company as a direct customer of the m3ter service."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "client_credentials",
+              "accessTokenUrl": "/oauth/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Submit a measurement or multiple measurements to the m3ter platform. The maximum size of the payload needs to be less than 512,000 bytes.\n\n**NOTES:**\n* **Non-existent Accounts.** The `account` request parameter is required. However, if you want to submit a usage data measurement for an Account which does not yet exist in your Organization, you can use an `account` code for a non-existent Account. A new skeleton Account will be automatically created. The usage data measurement is accepted and ing"
+        },
+        {
+          "info": {
+            "name": "Get Failed Ingest File Download URL",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/measurements/failedIngest/getDownloadUrl",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization"
+              },
+              {
+                "name": "file",
+                "value": "",
+                "type": "query",
+                "description": "The file path"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "client_credentials",
+              "accessTokenUrl": "/oauth/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Returns a presigned download URL for failed ingest file download based on the file path provided.\n\nIf a usage data ingest measurement you submit to the m3ter platform fails, an `ingest.validation.failure` Event is generated. Use this call to obtain a download URL which you can then use to download a file containing details of what went wrong with the attempted usage data measurement ingest, and allowing you to follow-up and resolve the issue.\n\nTo obtain the `file` query parameter:\n- Use the [Lis"
+        },
+        {
+          "info": {
+            "name": "Get Original File Download URL",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/fileuploads/measurements/jobs/:id/original",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the file service job for the original measurements file upload."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "client_credentials",
+              "accessTokenUrl": "/oauth/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Use the original file upload job id to obtain a download URL, which you can then use to retrieve the file you originally uploaded to the file upload service:\n- A download URL is returned together with a download job id.\n- You can then use a `GET` using the returned download URL as the endpoint to retrieve the file you originally uploaded.\n\nPart of the file upload service for submitting measurements data files."
+        },
+        {
+          "info": {
+            "name": "Generate Upload URL",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.m3ter.com/organizations/:orgId/fileuploads/measurements/generateUploadUrl",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the Organization. The Organization represents your company as a direct customer of the m3ter platform."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "client_credentials",
+              "accessTokenUrl": "/oauth/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Generate a URL for uploading a file containing measurements to the platform in preparation for the measurements it contains to be ingested:\n- An upload URL is returned together with an upload job id:\n- You can then upload your data measurements file using a `PUT` request using the returned upload URL as the endpoint.\n- You can use the returned upload job id with other calls to the File Upload Service for any follow-up or troubleshooting.\n\n**Important:**\n* The `contentLength` request parameter is"
+        },
+        {
+          "info": {
+            "name": "List File Upload Jobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/fileuploads/measurements/jobs",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Number of File Upload jobs to retrieve per page."
+              },
+              {
+                "name": "nextToken",
+                "value": "",
+                "type": "query",
+                "description": "`nextToken` for multi page retrievals."
+              },
+              {
+                "name": "dateCreatedStart",
+                "value": "",
+                "type": "query",
+                "description": "Include only File Upload jobs created on or after this date. Required format is ISO-8601: yyyy-MM-dd'T'HH:mm:ss'Z'"
+              },
+              {
+                "name": "dateCreatedEnd",
+                "value": "",
+                "type": "query",
+                "description": "Include only File Upload jobs created before this date. Required format is ISO-8601: yyyy-MM-dd'T'HH:mm:ss'Z'"
+              },
+              {
+                "name": "fileKey",
+                "value": "",
+                "type": "query",
+                "description": "<<deprecated>>"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "client_credentials",
+              "accessTokenUrl": "/oauth/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Lists the File Upload jobs. Part of the File Upload service for measurements ingest:\n* You can use the `dateCreatedStart` and `dateCreatedEnd` optional Query parameters to define a date range to filter the File Uploads jobs returned for this call.\n* If `dateCreatedStart` and `dateCreatedEnd` Query parameters are not used, then all File Upload jobs are returned."
+        },
+        {
+          "info": {
+            "name": "Get File Upload Job Response",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.m3ter.com/organizations/:orgId/fileuploads/measurements/jobs/:id",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the organization"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the file upload job."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "client_credentials",
+              "accessTokenUrl": "/oauth/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Get the file upload job response using the UUID of the file upload job.\n\nPart of the file upload service for measurements ingest."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
