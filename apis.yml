@@ -27,6 +27,13 @@ tags:
   - Metering
   - Billing
   - Pricing
+  - Software-as-a-Service
+tags_raw:
+  - FinOps
+  - Usage-Based Billing
+  - Metering
+  - Billing
+  - Pricing
   - SaaS
 url: https://raw.githubusercontent.com/api-evangelist/m3ter/refs/heads/main/apis.yml
 created: '2026-03-27'
@@ -193,6 +200,8 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
+  - Authentication
+  tags_raw:
   - Auth
   properties:
   - type: OpenAPI
@@ -721,6 +730,8 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
+  - COUNTER
+  tags_raw:
   - Counter
   properties:
   - type: OpenAPI
@@ -970,6 +981,8 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
+  - Custom Field
+  tags_raw:
   - CustomField
   properties:
   - type: OpenAPI
@@ -1019,6 +1032,8 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
+  - Data Explorer
+  tags_raw:
   - DataExplorer
   properties:
   - type: OpenAPI
@@ -1190,6 +1205,8 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
+  - Event
+  tags_raw:
   - Events
   properties:
   - type: OpenAPI
@@ -1471,6 +1488,8 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
+  - Integration
+  tags_raw:
   - Integrations
   properties:
   - type: OpenAPI
@@ -1556,7 +1575,8 @@ apis:
   description: Endpoint for retrieving a list of line items for Bills in an Organization.
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
-  tags:
+  tags: []
+  tags_raw:
   - Line Item
   properties:
   - type: OpenAPI
@@ -1600,6 +1620,8 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
+  - Lookup Table
+  tags_raw:
   - LookupTable
   properties:
   - type: OpenAPI
@@ -1930,6 +1952,8 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
+  - Notification
+  tags_raw:
   - Notifications
   properties:
   - type: OpenAPI
