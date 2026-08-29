@@ -7,6 +7,17 @@ description: >-
   management. Authentication uses OAuth 2.0 Client Credentials with a Service User Access Key id and Api Secret
   exchanged for a Bearer Token at https://api.m3ter.com/oauth/token.
 type: Index
+deliveryModel:
+  model: unknown
+  open_source: false
+  commercial: false
+  callable_host: true
+  label: Delivery model not determined — needs a product licence on record
+  confidence: low
+  source:
+  - openapi
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: freemium
   onboarding: self-serve
@@ -2596,6 +2607,9 @@ apis:
   - type: TerraformProvider
     url: https://github.com/m3ter-com/terraform-provider-m3ter
 common:
+  - type: CapabilityMap
+    url: capabilities/m3ter-capability-edges.yml
+    name: M3ter Business Capability Map
   - type: AgenticAccess
     url: agentic-access/m3ter-agentic-access.yml
   - type: TrustCenter
