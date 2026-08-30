@@ -741,7 +741,7 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
-  - COUNTER
+  - Counter
   tags_raw:
   - Counter
   properties:
@@ -1043,7 +1043,7 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
-  - Data Explorer
+  - DataExplorer
   tags_raw:
   - DataExplorer
   properties:
@@ -1586,7 +1586,8 @@ apis:
   description: Endpoint for retrieving a list of line items for Bills in an Organization.
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
-  tags: []
+  tags:
+  - Line Item
   tags_raw:
   - Line Item
   properties:
@@ -1631,7 +1632,7 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
-  - Lookup Table
+  - LookupTable
   tags_raw:
   - LookupTable
   properties:
