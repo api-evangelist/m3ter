@@ -741,7 +741,7 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
-  - Counter
+  - COUNTER
   tags_raw:
   - Counter
   properties:
@@ -1043,7 +1043,7 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
-  - DataExplorer
+  - Data Explorer
   tags_raw:
   - DataExplorer
   properties:
@@ -1632,7 +1632,7 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
-  - LookupTable
+  - Lookup Table
   tags_raw:
   - LookupTable
   properties:
