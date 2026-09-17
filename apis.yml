@@ -954,121 +954,6 @@ apis:
     url: https://github.com/m3ter-com/m3ter-sdk-typescript
   - type: TerraformProvider
     url: https://github.com/m3ter-com/terraform-provider-m3ter
-- aid: m3ter:m3ter-customfield-api
-  name: M3ter CustomField API
-  description: "Endpoints for retrieving and updating Custom Fields at the Organization level for all\
-    \ entities that support them.\n\nCustom Fields in m3ter allow you to store custom data in the form\
-    \ of number or string values against m3ter entities in a way that does not directly affect the normal\
-    \ working operation of the m3ter platform. Having this capability to store data in a free-hand fashion\
-    \ can prove very useful in helping you to meet specific usage-based pricing and other operational\
-    \ business use cases.\n\nHowever, you can exploit the values stored on Custom Fields in a more direct\
-    \ way by referencing them in Derived Field and Compound Aggregation calculations. Given the key role\
-    \ these calculations can play when implementing usage-based pricing schema, any Custom Fields you\
-    \ reference will then affect how the platform behaves. Referencing Custom Field values in your calculations\
-    \ offers a much wider scope of options when it comes to resolving complex usage-based pricing use\
-    \ cases.\n\nCustom Fields can be added to the following entities at Organizational level:\n* Organization\n\
-    * Account\n* AccountPlan\n* Aggregation\n* Compound Aggregation\n* Meter\n* Product\n* Plan\n* PlanTemplate\n\
-    * Contract\n\nThese all follow the same pattern - a new *(optional)* field is available on the entity\
-    \ request and response bodies called \"customFields\" which is a object in this format:\n```\n\"customFields\"\
-    : {\n\t\t\"exampleCustomField1\": 7.1,\n\t\t\"exampleCustomField2\": \"stringValue\"\n}\n```\nThe\
-    \ value for a Custom Field can be a string or a number.\n\n**Using Custom Field values in calculations:**\n\
-    - You can add Custom Fields at two levels - the Organization level and the individual entity level.\n\
-    - The Organizational level field provides a default value and *must be added* if you want to also\
-    \ add a Custom Field of the same name at the corresponding individual entity level. If you reference\
-    \ the Custom Field in a calculation, the value for the individual entity level field is used. If no\
-    \ field is defined at individual entity level, then the Organization level field value is used.\n\n\
-    **Important: Constraints and Exceptions!**\n\n**Custom Fields at Organization Level**. Currently,\
-    \ you cannot create Custom Fields at the Organization-level for the following enitites:\n* Plan Group\n\
-    * Balance\n* Balance Transaction Schedule\n* Balance Charge Schedule\n\nTherefore you cannot reference\
-    \ the Custom Fields values created at the individual entity level for these entities in your Derived\
-    \ Field or Compound Aggregation calculations.\n\n\n**Derived Field Calculations**. You can *only reference\
-    \ Custom Fields* for the following entities:\n* Organization\n* Meter\n* Account\n\nHowever, if you\
-    \ are using Meters belonging to *a specific Product*, that is, not *Global Meters*, you can also reference\
-    \ Custom Fields added to a Product in Derived Field calculations.\n\n**Compound Aggregation Calculations\
-    \ - Meter Custom Fields**. The value of the *Organization level Meter Custom Field will always be\
-    \ used*, even if you have defined a corresponding field at the individual Meter level.\n\nSee [Working\
-    \ with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields)\
-    \ in the m3ter documentation for more information."
-  humanURL: https://www.m3ter.com/
-  baseURL: https://api.m3ter.com
-  tags:
-  - Custom Field
-  tags_raw:
-  - CustomField
-  properties:
-  - type: OpenAPI
-    url: openapi/m3ter-customfield-api-openapi.yml
-  - type: Documentation
-    url: https://docs.m3ter.com/
-  - type: APIReference
-    url: https://docs.m3ter.com/api
-  - type: Authentication
-    url: https://docs.m3ter.com/api/authentication
-  - type: GettingStarted
-    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-python
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-node
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-java
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-go
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-typescript
-  - type: TerraformProvider
-    url: https://github.com/m3ter-com/terraform-provider-m3ter
-- aid: m3ter:m3ter-dataexplorer-api
-  name: M3ter DataExplorer API
-  description: >-
-    Endpoints for querying the Data Explorer and saving query selections.
-
-
-    The Data Explorer is a m3ter analytics tool, enabling you to query the Usage, Billing, and Prepayments
-    data collected for your Organization in m3ter.
-
-
-    **IMPORTANT: Request Rate Limits for Data Explorer!** As part of the Config API, requests made to
-    the Data Explorer are subject to tighter request rate limits:
-
-    - **Generally** 1 request per second.
-
-
-    - **Burst** 10 requests per second.
-
-
-    If you exceed either of these rate limits, requests are throttled and an HTTP 429 (Too Many Requests)
-    error response is returned. See the [Rate and Payload Limts section](https://www.m3ter.com/docs/api#section/Introduction/Rate-and-Payload-Limits)
-    above for more details.
-  humanURL: https://www.m3ter.com/
-  baseURL: https://api.m3ter.com
-  tags:
-  - Data Explorer
-  tags_raw:
-  - DataExplorer
-  properties:
-  - type: OpenAPI
-    url: openapi/m3ter-dataexplorer-api-openapi.yml
-  - type: Documentation
-    url: https://docs.m3ter.com/
-  - type: APIReference
-    url: https://docs.m3ter.com/api
-  - type: Authentication
-    url: https://docs.m3ter.com/api/authentication
-  - type: GettingStarted
-    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-python
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-node
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-java
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-go
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-typescript
-  - type: TerraformProvider
-    url: https://github.com/m3ter-com/terraform-provider-m3ter
 - aid: m3ter:m3ter-dataexplorerv2-api
   name: M3ter DataExplorerV2 API
   description: >-
@@ -1353,45 +1238,6 @@ apis:
     url: https://github.com/m3ter-com/m3ter-sdk-typescript
   - type: TerraformProvider
     url: https://github.com/m3ter-com/terraform-provider-m3ter
-- aid: m3ter:m3ter-exportjob-api
-  name: M3ter ExportJob API
-  description: >-
-    Endpoints for retrieving/querying Data Export jobs.
-
-
-    **Preview Version!** The Data Export feature is currently available only in Preview release version.
-    See [Feature Release Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages)
-    for Preview release definition. ExportJob endpoints will only be available if Data Export has been
-    enabled for your Organization. For more details see [Data Export(Preview)](https://www.m3ter.com/docs/guides/data-exports)
-    in our main User documentation. If you're interested in previewing the Data Export feature, please
-    get in touch with m3ter Support or your m3ter contact.
-  humanURL: https://www.m3ter.com/
-  baseURL: https://api.m3ter.com
-  tags:
-  - ExportJob
-  properties:
-  - type: OpenAPI
-    url: openapi/m3ter-exportjob-api-openapi.yml
-  - type: Documentation
-    url: https://docs.m3ter.com/
-  - type: APIReference
-    url: https://docs.m3ter.com/api
-  - type: Authentication
-    url: https://docs.m3ter.com/api/authentication
-  - type: GettingStarted
-    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-python
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-node
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-java
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-go
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-typescript
-  - type: TerraformProvider
-    url: https://github.com/m3ter-com/terraform-provider-m3ter
 - aid: m3ter:m3ter-exportschedule-api
   name: M3ter ExportSchedule API
   description: >-
@@ -1593,51 +1439,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/m3ter-line-item-api-openapi.yml
-  - type: Documentation
-    url: https://docs.m3ter.com/
-  - type: APIReference
-    url: https://docs.m3ter.com/api
-  - type: Authentication
-    url: https://docs.m3ter.com/api/authentication
-  - type: GettingStarted
-    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-python
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-node
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-java
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-go
-  - type: SDKs
-    url: https://github.com/m3ter-com/m3ter-sdk-typescript
-  - type: TerraformProvider
-    url: https://github.com/m3ter-com/terraform-provider-m3ter
-- aid: m3ter:m3ter-lookuptable-api
-  name: M3ter LookupTable API
-  description: >-
-    Endpoints for creating/updating/deleting Lookup Tables.
-
-
-    Lookup Tables enable you to manage dynamic data mappings that your calculations reference. Use them
-    for currency conversion, pricing tiers, discount rates, and similar scenarios where you require values
-    to change operationally but for calculation logic to remain constant.
-
-
-    **Beta Version!** The Lookup Table feature is currently available in Beta release version. See [Feature
-    Release Stages](https://www.m3ter.com/docs/guides/getting-started/feature-release-stages) for Beta
-    release definition. Lookup Table endpoints will only be available if Lookup Tables have been enabled
-    for your Organization. For more details see [Lookup Tables (Beta)](https://www.m3ter.com/docs/guides/lookup-tables)
-    in our main User documentation.
-  humanURL: https://www.m3ter.com/
-  baseURL: https://api.m3ter.com
-  tags:
-  - Lookup Table
-  tags_raw:
-  - LookupTable
-  properties:
-  - type: OpenAPI
-    url: openapi/m3ter-lookuptable-api-openapi.yml
   - type: Documentation
     url: https://docs.m3ter.com/
   - type: APIReference
@@ -2587,6 +2388,128 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/m3ter-user-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-custom-field-api
+  name: M3ter Custom Field API
+  description: >-
+    Endpoints for retrieving and updating Custom Fields at the Organization level for all entities that
+    support them.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Custom Field
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-custom-field-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-data-explorer-api
+  name: M3ter Data Explorer API
+  description: Endpoints for querying the Data Explorer and saving query selections.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Data Explorer
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-data-explorer-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-export-job-api
+  name: M3ter Export Job API
+  description: Endpoints for retrieving/querying Data Export jobs.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Export Job
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-export-job-api-openapi.yml
+  - type: Documentation
+    url: https://docs.m3ter.com/
+  - type: APIReference
+    url: https://docs.m3ter.com/api
+  - type: Authentication
+    url: https://docs.m3ter.com/api/authentication
+  - type: GettingStarted
+    url: https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-python
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-node
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-java
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-go
+  - type: SDKs
+    url: https://github.com/m3ter-com/m3ter-sdk-typescript
+  - type: TerraformProvider
+    url: https://github.com/m3ter-com/terraform-provider-m3ter
+- aid: m3ter:m3ter-lookup-table-api
+  name: M3ter Lookup Table API
+  description: Endpoints for creating/updating/deleting Lookup Tables.
+  humanURL: https://www.m3ter.com/
+  baseURL: https://api.m3ter.com
+  tags:
+  - Lookup Table
+  properties:
+  - type: OpenAPI
+    url: openapi/m3ter-lookup-table-api-openapi.yml
   - type: Documentation
     url: https://docs.m3ter.com/
   - type: APIReference
