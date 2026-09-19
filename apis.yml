@@ -382,6 +382,8 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
+  - Bills
+  tags_raw:
   - Bill
   properties:
   - type: OpenAPI
@@ -891,6 +893,8 @@ apis:
   humanURL: https://www.m3ter.com/
   baseURL: https://api.m3ter.com
   tags:
+  - Credit
+  tags_raw:
   - Credits
   properties:
   - type: OpenAPI
