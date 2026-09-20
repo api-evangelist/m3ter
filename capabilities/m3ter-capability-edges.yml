@@ -1,0 +1,238 @@
+slug: m3ter
+provider: M3ter
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 22
+edges:
+- tag: Bill
+  spec_file: m3ter-bill-api-openapi.yml
+  capability_id: BC-4250.30
+  capability_id_l1: BC-4250
+  capability_name: Invoicing & Statement Management
+  confidence: 0.9
+  evidence: GET /organizations/{orgId}/bills/{id}/statement/json  GetBillJsonStatement  Retrieve Bill
+    Statement in JSON Format; ListBillLineItems; ApproveAllBillsInBillingPeriod
+  reason: Operations generate, retrieve, approve and lock bills and their line items and statements —
+    invoicing and statement management for subscription/usage billing.
+- tag: Measurements
+  spec_file: m3ter-measurements-api-openapi.yml
+  capability_id: BC-4250.10
+  capability_id_l1: BC-4250
+  capability_name: Usage Metering
+  confidence: 0.9
+  evidence: POST /organizations/{orgId}/measurements  SubmitMeasurements  Submit Measurements; 'List File
+    Upload Jobs' with SubmitMeasurementsRequest
+  reason: This is the Ingest API surface for 'submitting raw usage measurements' — ingestion of usage
+    events that feed rating and billing, which is precisely usage metering.
+- tag: PermissionPolicy
+  spec_file: m3ter-permissionpolicy-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.9
+  evidence: '"Add a PermissionPolicy to a user group", "Remove a PermissionPolicy from a service user",
+    schemas PermissionStatement, PermissionEffect, PrincipalType'
+  reason: Authoring permission policies and binding them to users, service users and groups is squarely
+    identity and access management.
+- tag: BillJob
+  spec_file: m3ter-billjob-api-openapi.yml
+  capability_id: BC-4250.30
+  capability_id_l1: BC-4250
+  capability_name: Invoicing & Statement Management
+  confidence: 0.8
+  evidence: POST /organizations/{orgId}/billjobs  CreateBillJob; POST /organizations/{orgId}/billjobs/recalculate  Create
+    Recalculation BillJob; BillJobBillingFrequency
+  reason: Jobs that run and recalculate bill generation for billing periods — the execution mechanism
+    of invoice/bill production, not generic batch plumbing since the payload is billing-specific.
+- tag: Credits
+  spec_file: m3ter-credits-api-openapi.yml
+  capability_id: BC-4250.30
+  capability_id_l1: BC-4250
+  capability_name: Invoicing & Statement Management
+  confidence: 0.8
+  evidence: POST /organizations/{orgId}/bills/{billId}/creditlineitems  Create Credit Line Item
+  reason: Operations create, update and delete credit line items on bills — i.e. adjustments to customer
+    invoices, which is Invoicing & Statement Management.
+- tag: Debits
+  spec_file: m3ter-debits-api-openapi.yml
+  capability_id: BC-4250.30
+  capability_id_l1: BC-4250
+  capability_name: Invoicing & Statement Management
+  confidence: 0.8
+  evidence: POST /organizations/{orgId}/bills/{billId}/debitlineitems  Create Debit Line Item
+  reason: CRUD over debit line items attached to bills — adjustments to customer invoices, i.e. Invoicing
+    & Statement Management.
+- tag: Meter
+  spec_file: m3ter-meter-api-openapi.yml
+  capability_id: BC-4250.10
+  capability_id_l1: BC-4250
+  capability_name: Usage Metering
+  confidence: 0.8
+  evidence: POST /organizations/{orgId}/meters  PostMeter  Create Meter — schemas MeterRequest, DataField,
+    DerivedField, DataFieldCategory
+  reason: Meters define the data fields and derived fields against which usage measurements are captured
+    in this usage-based billing engine, so the tag configures the usage metering capability. Slight ambiguity
+    vs rating configuration.
+- tag: AccountPlan
+  spec_file: m3ter-accountplan-api-openapi.yml
+  capability_id: BC-4240
+  capability_id_l1: BC-4240
+  capability_name: Subscription Lifecycle Management
+  confidence: 0.75
+  evidence: POST /organizations/{orgId}/accountplans PostAccountPlan Create AccountPlan; POST .../{id}/replace
+    ReplaceAccountPlan; ChildBillingMode
+  reason: AccountPlan attaches a pricing plan to a customer account and supports replacement/update —
+    i.e. the subscription record and its in-life changes in a usage-based billing platform. Sub-capability
+    split between plan design, provisioning and modification, so L1 only.
+- tag: Aggregation
+  spec_file: m3ter-aggregation-api-openapi.yml
+  capability_id: BC-4250.10
+  capability_id_l1: BC-4250
+  capability_name: Usage Metering
+  confidence: 0.75
+  evidence: POST /organizations/{orgId}/aggregations PostAggregation Create Aggregation; schemas AggregationRequest,
+    Rounding
+  reason: Aggregations define how raw usage measurements ingested by the metering engine are summed/rounded
+    for billing — configuration of usage metering and aggregation, per the vendor's 'real-time usage data
+    ingestion' description.
+- tag: Balances
+  spec_file: m3ter-balances-api-openapi.yml
+  capability_id: BC-4250
+  capability_id_l1: BC-4250
+  capability_name: Subscription Billing & Revenue Management
+  confidence: 0.75
+  evidence: POST /organizations/{orgId}/balances/{balanceId}/transactions  PostBalanceTransaction  Create
+    Balance Transaction; BalanceTransactionsSummary, BalanceLineItemType
+  reason: Customer prepaid/credit balances and their transactions consumed by billing line items in m3ter's
+    billing engine; clearly subscription billing & revenue management, L2 ambiguous.
+- tag: CompoundAggregation
+  spec_file: m3ter-compoundaggregation-api-openapi.yml
+  capability_id: BC-4250.10
+  capability_id_l1: BC-4250
+  capability_name: Usage Metering
+  confidence: 0.75
+  evidence: POST /organizations/{orgId}/compoundaggregations  PostCompoundAggregation; schemas AbstractAggregationRequest,
+    Aggregation, Rounding
+  reason: Defines calculations that aggregate metered usage values feeding pricing/billing — usage metering
+    aggregation in a usage-based billing engine.
+- tag: CounterPricing
+  spec_file: m3ter-counterpricing-api-openapi.yml
+  capability_id: BC-4250.20
+  capability_id_l1: BC-4250
+  capability_name: Rating & Charging
+  confidence: 0.75
+  evidence: POST /organizations/{orgId}/counterpricings  Create CounterPricing; schemas BasePricingResponseWithPricingBands,
+    PricingBand
+  reason: Operations create and maintain pricing definitions with pricing bands used to compute charges
+    in a usage-based billing engine, matching Rating & Charging (application of subscription/usage tariffs
+    and discounts). Some ambiguity with plan/price-list design, hence moderate confidence.
+- tag: OrgUsers
+  spec_file: m3ter-orgusers-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.75
+  evidence: '"Retrieve OrgUser Permissions", "Resend temporary password for user", "Retrieve OrgUser Groups";
+    schemas PermissionPolicyResponse, PermissionStatement'
+  reason: Administration of platform user accounts, their groups, credentials and effective permissions
+    — identity and access management rather than any billing capability.
+- tag: StatementDefinition
+  spec_file: m3ter-statementdefinition-api-openapi.yml
+  capability_id: BC-4250.30
+  capability_id_l1: BC-4250
+  capability_name: Invoicing & Statement Management
+  confidence: 0.75
+  evidence: POST /organizations/{orgId}/statementdefinitions  PostStatementDefinition  Create StatementDefinition;
+    schemas Measure, Aggregation, AggregationFrequency
+  reason: m3ter is a usage-based billing engine; statement definitions configure the content (measures,
+    aggregations, dimensions) of billing statements issued to customers, which sits under invoicing &
+    statement management within subscription billing.
+- tag: StatementJob
+  spec_file: m3ter-statementjob-api-openapi.yml
+  capability_id: BC-4250.30
+  capability_id_l1: BC-4250
+  capability_name: Invoicing & Statement Management
+  confidence: 0.75
+  evidence: POST /organizations/{orgId}/statementjobs  CreateStatementJob  Create a StatementJob; StatementJobStatus,
+    StatementsBatchJobRequest
+  reason: Runs generation of billing statements for accounts in a usage-based billing platform; despite
+    being a job-execution surface, the artefact produced is the customer billing statement, so statement
+    generation/delivery is the capability realised.
+- tag: BalanceTransactionSchedule
+  spec_file: m3ter-balancetransactionschedule-api-openapi.yml
+  capability_id: BC-4250
+  capability_id_l1: BC-4250
+  capability_name: Subscription Billing & Revenue Management
+  confidence: 0.7
+  evidence: POST /organizations/{orgId}/balances/{balanceId}/balancetransactionschedules  CreateBalanceTransactionSchedule;
+    Preview ScheduledBalanceTransactions
+  reason: Schedules recurring credit/debit transactions against a customer prepaid balance within a usage-based
+    billing engine — part of subscription billing/revenue management, but the evidence does not pin a
+    single L2 (rating vs invoicing).
+- tag: Charge
+  spec_file: m3ter-charge-api-openapi.yml
+  capability_id: BC-4250.20
+  capability_id_l1: BC-4250
+  capability_name: Rating & Charging
+  confidence: 0.7
+  evidence: POST /organizations/{orgId}/charges  CreateCharge; ChargeLineItemType, ChargeEntityType
+  reason: Creation and maintenance of charges that become billed line items — application of charges within
+    the rating/charging step of the billing engine.
+- tag: Commitments
+  spec_file: m3ter-commitments-api-openapi.yml
+  capability_id: BC-4250
+  capability_id_l1: BC-4250
+  capability_name: Subscription Billing & Revenue Management
+  confidence: 0.7
+  evidence: POST /organizations/{orgId}/commitments  PostCommitment  Create Commitment; CommitmentFee,
+    CommitmentLineItemType, ChildBillingMode
+  reason: Spend commitments with fees and line-item types drawn down during billing; sits in subscription
+    billing & revenue management, but could be read as contracting or as rating, so no L2.
+- tag: Counter
+  spec_file: m3ter-counter-api-openapi.yml
+  capability_id: BC-4250.10
+  capability_id_l1: BC-4250
+  capability_name: Usage Metering
+  confidence: 0.7
+  evidence: POST /organizations/{orgId}/counters  PostCounter  Create Counter
+  reason: Counters define countable/billable quantities tracked per account in the metering engine, feeding
+    rating; usage metering is the best fit though the surface is bare CRUD.
+- tag: CounterAdjustments
+  spec_file: m3ter-counteradjustments-api-openapi.yml
+  capability_id: BC-4250.10
+  capability_id_l1: BC-4250
+  capability_name: Usage Metering
+  confidence: 0.7
+  evidence: POST /organizations/{orgId}/counteradjustments  PostCounterAdjustment  Create CounterAdjustment
+  reason: Adjustments to counter values used for billable quantity tracking — correction of metered/counted
+    usage prior to rating.
+- tag: Line Item
+  spec_file: m3ter-line-item-api-openapi.yml
+  capability_id: BC-4250.30
+  capability_id_l1: BC-4250
+  capability_name: Invoicing & Statement Management
+  confidence: 0.7
+  evidence: GET /organizations/{orgId}/lineitems  ListLineItems  List Line Items — schemas BillLineItemResponse,
+    BillLineItemPricingBandUsage
+  reason: The tag exposes bill line items with pricing-band usage, i.e. the composition of a customer's
+    subscription/usage bill. Fits subscription invoicing/statement management, though it could arguably
+    sit under rating.
+- tag: ResourceGroup
+  spec_file: m3ter-resourcegroup-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.7
+  evidence: '"List ResourceGroup permission policies", schemas PermissionStatement, PermissionEffect,
+    PaginatedPermissionPolicyResponseData'
+  reason: Resource groups here exist to scope permission policies over resources — an access-control construct,
+    i.e. identity and access management.
