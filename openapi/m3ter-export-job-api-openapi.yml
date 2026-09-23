@@ -1,0 +1,267 @@
+openapi: 3.2.0
+info:
+  title: m3ter Export Job API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Export Job
+  description: Endpoints for retrieving/querying Data Export jobs.
+paths:
+  /organizations/{orgId}/dataexports/jobs/{id}:
+    get:
+      tags:
+      - Export Job
+      summary: Retrieve Job
+      description: 'Retrieve an Export Job for the given UUID.
+
+
+        The response returns:
+
+        * The source type for the data exported by the Export Job: one of USAGE or OPERATIONAL.
+
+        * The status of the Export Job.'
+      operationId: GetJob
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Job to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the requested Export Job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexports/jobs:
+    get:
+      tags:
+      - Export Job
+      summary: List Jobs
+      description: Retrieve a list of Export Job entities.
+      operationId: listJobStatuses
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: ids
+        in: query
+        description: List Job entities for the given UUIDs
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: scheduleId
+        in: query
+        description: List Job entities for the schedule UUID
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: status
+        in: query
+        description: List Job entities for the status
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Status'
+      - name: dateCreatedStart
+        in: query
+        description: 'Include only Job entities created on or after this date. Format: yyyy-MM-dd''T''HH:mm:ss''Z'''
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: dateCreatedEnd
+        in: query
+        description: 'Include only Job entities created before this date. Format: yyyy-MM-dd''T''HH:mm:ss''Z'''
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of Jobs to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns a list Export Job entities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedJobResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    PaginatedJobResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/JobResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    SourceType:
+      type: string
+      description: ''
+      enum:
+      - USAGE
+      - OPERATIONAL
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    JobResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the Export Job.
+        scheduleId:
+          type: string
+          description: The id of the data Export Schedule.
+        startedAt:
+          type: string
+          description: When the data Export Job started running
+          format: date-time
+        dateCreated:
+          type: string
+          description: When the data Export Job was created.
+          format: date-time
+        sourceType:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/SourceType'
+          - description: 'Defines the type of data to export. Possible values: OPERATIONAL or USAGE.'
+        status:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/Status'
+          - description: The status of the export.
+      description: Base Response containing data export job
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+    Status:
+      type: string
+      description: ''
+      enum:
+      - PENDING
+      - RUNNING
+      - SUCCEEDED
+      - FAILED
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

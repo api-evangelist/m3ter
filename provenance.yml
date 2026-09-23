@@ -369,70 +369,7 @@ artifacts:
   finops/m3ter-finops.yml:
     method: generated
     evidence: declared in the artifact
-  kin/checks-2026-08-28T221322.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-23T094130.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-23T182523.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-26T223651.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-27T083119.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-27T190208.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T115055.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T170848.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T172558.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T192327.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T200725.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-31T133250.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-31T151044.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-31T162206.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-31T202106.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-01T163141.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-01T163302.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-01T171935.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-03T113057.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-03T161012.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-04T083143.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-05T153418.yml:
+  kin/checks-2026-09-05T072335.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
   kin/score-2026-08-06T210741.yml:
@@ -516,183 +453,237 @@ artifacts:
   kin/score-2026-08-28T221322.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-29T213958.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-29T230545.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-30T203505.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-30T220315.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-31T223420.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-01T063623.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-01T210448.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-01T222808.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-02T211804.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-02T224043.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-03T161828.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-03T174231.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-04T062714.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-04T212454.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-04T224856.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-05T055819.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-05T072335.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
   llms/m3ter-llms.txt:
     method: searched
     evidence: 'derive-llms-provenance.py: harvested'
+  openapi/_original/m3ter-openapi.yml:
+    method: harvested
+    evidence: fetched from the provider as-is; byte-identical to the source
   openapi/m3ter-account-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-accountplan-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-aggregation-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-auth-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-balancechargeschedule-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-balances-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-balancetransactionschedule-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-bill-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-billconfig-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-billgroupingkey-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-billjob-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-charge-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-commitments-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-compoundaggregation-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-contract-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-counter-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-counteradjustments-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-counterpricing-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-creditreason-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-credits-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-currency-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-customfield-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-dataexplorer-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-dataexplorerv2-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-debitreason-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-debits-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-events-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-exportadhoc-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-exportdestination-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-exportjob-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-exportschedule-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-external-mapping-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-integrations-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-invitations-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-line-item-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-lookuptable-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-lookuptablerevision-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-lookuptablerevisiondata-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-marketplace-integrations-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-measurements-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-meter-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-notifications-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-organizationconfig-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-orgusers-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-permissionpolicy-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-plan-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-plangroup-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-plangrouplink-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-plantemplate-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-pricing-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-product-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-resourcegroup-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-scheduledeventconfigurations-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-statementdefinition-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-statementjob-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-support-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-transactiontype-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/m3ter-user-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   plans/m3ter-plans-pricing.yml:
     method: generated
     evidence: declared in the artifact

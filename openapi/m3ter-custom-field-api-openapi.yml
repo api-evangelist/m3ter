@@ -1,0 +1,443 @@
+openapi: 3.2.0
+info:
+  title: m3ter Custom Field API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Custom Field
+  description: Endpoints for retrieving and updating Custom Fields at the Organization level for all entities that support them.
+paths:
+  /organizations/{orgId}/customfields:
+    get:
+      tags:
+      - Custom Field
+      summary: Retrieve CustomField
+      description: Retrieve all Custom Fields added at Organizational level for the entities that support them.
+      operationId: GetCustomField
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      responses:
+        '200':
+          description: Return the CustomFields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - Custom Field
+      summary: Update CustomFields
+      description: Update Custom Fields added at Organization level to entities that support them.
+      operationId: UpdateCustomFields
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomFieldRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the updated CustomFields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    CustomFieldRequest:
+      type: object
+      description: ''
+      example:
+        version: 6
+        organization:
+          Org Example 2: Sample text 2.
+          Org Example 1: Sample text 1.
+        account: {}
+        accountPlan:
+          New CF Test: Test Value
+        meter: {}
+        product:
+          Product CF Example: 42
+        planTemplate: {}
+        plan: {}
+        aggregation: {}
+        compoundAggregation: {}
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          organization:
+            maxItems: 25
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+            description: 'Updates to Organization CustomFields. '
+          account:
+            maxItems: 25
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+            description: 'Updates to Account entity CustomFields. '
+          accountPlan:
+            maxItems: 25
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+            description: 'Updates to AccountPlan entity CustomFields. '
+          meter:
+            maxItems: 25
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+            description: 'Updates to Meter entity CustomFields. '
+          product:
+            maxItems: 25
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+            description: 'Updates to Product entity CustomFields. '
+          planTemplate:
+            maxItems: 25
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+            description: 'Updates to planTemplate entity CustomFields. '
+          plan:
+            maxItems: 25
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+            description: 'Updates to Plan entity CustomFields. '
+          aggregation:
+            maxItems: 25
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+            description: 'Updates to simple Aggregation entity CustomFields. '
+          compoundAggregation:
+            maxItems: 25
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+            description: 'Updates to Compound Aggregation entity CustomFields. '
+          contract:
+            maxItems: 25
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+            description: Updates to Contract entity CustomFields.
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    CustomFieldResponse:
+      type: object
+      description: ''
+      example:
+        id: 81c49a54-dfcd-4da5-bbf3-d2885ec025dd
+        version: 4
+        organization:
+          Org Example 2: Sample text 2.
+          Org Example 1: 'Sample text. '
+        product:
+          Product CF Example: 42
+        account: {}
+        accountPlan:
+          New CF Test: Test Value
+        meter: {}
+        planTemplate: {}
+        plan: {}
+        aggregation: {}
+        compoundAggregation: {}
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          organization:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to the Organization. '
+          account:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to Account entities. '
+          accountPlan:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to accountPlan entities. '
+          meter:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to Meter entities. '
+          product:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to Product entities. '
+          planTemplate:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to planTemplate entities. '
+          plan:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to Plan entities. '
+          aggregation:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to simple Aggregation entities. '
+          compoundAggregation:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to Compound Aggregation entities. '
+          contract:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: CustomFields added to Contract entities.
+          dtCreated:
+            type: string
+            description: The DateTime when the Organization was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when a custom field was last modified - created, modified, or deleted - for the Organization *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this custom field.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this custom field.
+            x-stainless-skip:
+            - terraform
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

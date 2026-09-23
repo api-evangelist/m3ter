@@ -1,0 +1,347 @@
+openapi: 3.2.0
+info:
+  title: m3ter Data Explorer API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Data Explorer
+  description: Endpoints for querying the Data Explorer and saving query selections.
+paths:
+  /organizations/{orgId}/dataexplorer/bills:
+    post:
+      tags:
+      - Data Explorer
+      summary: Query and filter for bill line items
+      description: Query and filter for bill line items.
+      operationId: PostQueryBillData
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryBillDataRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns a list of bill line items.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillDataResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    LineItemMeasures:
+      type: object
+      properties:
+        convertedSubtotal:
+          type: number
+          description: ''
+          format: double
+        subtotal:
+          type: number
+          description: ''
+          format: double
+        version:
+          type: number
+          description: ''
+          format: double
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        conversionRate:
+          type: number
+          description: ''
+          format: double
+        quantity:
+          type: number
+          description: ''
+          format: double
+        units:
+          type: number
+          description: ''
+          format: double
+      description: ''
+    BillDataResponse:
+      type: object
+      properties:
+        values:
+          type: array
+          description: A list of bill line items.
+          items:
+            $ref: '#/components/schemas/BillData'
+      description: Response containing bill line items.
+    QueryBillDataRequest:
+      required:
+      - endDate
+      - lineItemTypes
+      - startDate
+      type: object
+      properties:
+        startDate:
+          type: string
+          description: ISO 8601 formatted start date for the aggregation.
+          format: date-time
+        endDate:
+          type: string
+          description: ISO 8601 formatted end date for the aggregation.
+          format: date-time
+        dimensions:
+          maxItems: 100
+          type: array
+          description: Dimensions to filter by. Valid dimensions include 'account' and 'product name'
+          items:
+            $ref: '#/components/schemas/DimensionQuery'
+        lineItemTypes:
+          minItems: 1
+          type: array
+          description: Line item types to query for.
+          items:
+            $ref: '#/components/schemas/LineItemType'
+        limit:
+          maximum: 2000
+          minimum: 1
+          type: integer
+          description: Limit the number of data points returned
+          format: int32
+      description: Data Explorer Bill data query.
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    DimensionQuery:
+      required:
+      - filter
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The Dimension name to target.
+        attributes:
+          type: array
+          description: The dimension attribute to target
+          items:
+            type: string
+        filter:
+          minItems: 1
+          type: array
+          description: The value of a dimension to filter by. Use "*" to filter on all dimension values.
+          items:
+            type: string
+      description: Dimension of a Meter used as a filter.
+    LineItemType:
+      type: string
+      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
+      enum:
+      - STANDING_CHARGE
+      - USAGE
+      - COUNTER_RUNNING_TOTAL_CHARGE
+      - COUNTER_ADJUSTMENT_DEBIT
+      - COUNTER_ADJUSTMENT_CREDIT
+      - USAGE_CREDIT
+      - MINIMUM_SPEND
+      - MINIMUM_SPEND_REFUND
+      - CREDIT_DEDUCTION
+      - MANUAL_ADJUSTMENT
+      - CREDIT_MEMO
+      - DEBIT_MEMO
+      - COMMITMENT_CONSUMED
+      - COMMITMENT_FEE
+      - OVERAGE_SURCHARGE
+      - OVERAGE_USAGE
+      - BALANCE_CONSUMED
+      - BALANCE_FEE
+      - AD_HOC
+    LineItemDimensions:
+      type: object
+      properties:
+        account:
+          type: string
+          description: ''
+        accountName:
+          type: string
+          description: ''
+        accountId:
+          type: string
+          description: ''
+        parentAccountCode:
+          type: string
+          description: ''
+        parentAccountName:
+          type: string
+          description: ''
+        parentAccountId:
+          type: string
+          description: ''
+        childAccountId:
+          type: string
+          description: ''
+        description:
+          type: string
+          description: ''
+        lineItemType:
+          description: ''
+          $ref: '#/components/schemas/LineItemType'
+        productName:
+          type: string
+          description: ''
+        quantityUnit:
+          type: string
+          description: ''
+        subtotalUnit:
+          type: string
+          description: ''
+        convertedSubtotalUnit:
+          type: string
+          description: ''
+        billId:
+          type: string
+          description: ''
+        externalInvoiceReference:
+          type: string
+          description: ''
+        commitmentId:
+          type: string
+          description: ''
+        billLineItemId:
+          type: string
+          description: ''
+      description: ''
+    BillDetails:
+      type: object
+      properties:
+        day:
+          type: integer
+          description: ''
+          format: int32
+        week:
+          type: string
+          description: ''
+        year:
+          type: integer
+          description: ''
+          format: int32
+        month:
+          type: string
+          description: ''
+        locked:
+          type: string
+          description: ''
+        status:
+          type: string
+          description: ''
+        dueDate:
+          type: string
+          description: ''
+        startDate:
+          type: string
+          description: ''
+        endDate:
+          type: string
+          description: ''
+        servicePeriodStartDate:
+          type: string
+          description: ''
+        servicePeriodEndDate:
+          type: string
+          description: ''
+        billDate:
+          type: string
+          description: ''
+        timezone:
+          type: string
+          description: ''
+        yearMonth:
+          type: string
+          description: ''
+        billCurrency:
+          type: string
+          description: ''
+        billingFrequency:
+          type: string
+          description: ''
+      description: ''
+    BillData:
+      type: object
+      properties:
+        updatedDate:
+          type: string
+          description: ''
+          format: date-time
+        dimensions:
+          description: ''
+          $ref: '#/components/schemas/LineItemDimensions'
+        measures:
+          description: ''
+          $ref: '#/components/schemas/LineItemMeasures'
+        billDetails:
+          description: ''
+          $ref: '#/components/schemas/BillDetails'
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

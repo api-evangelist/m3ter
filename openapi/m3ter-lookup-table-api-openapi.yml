@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: m3ter Lookup Table Revision API
+  title: m3ter Lookup Table API
   description: 'If you are using Postman, you can:
 
     - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
@@ -12,115 +12,20 @@ servers:
 security:
 - OAuth2: []
 tags:
-- name: LookupTableRevision
-  description: Endpoints for creating/updating/deleting Lookup Table Revisions.
+- name: Lookup Table
+  description: Endpoints for creating/updating/deleting Lookup Tables.
 paths:
-  /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{id}/status:
-    put:
-      tags:
-      - LookupTableRevision
-      summary: Update LookupTableRevision Status
-      description: Update the status of a Lookup Table Revision for the given UUID.
-      operationId: UpdateLookupTableRevisionStatus
-      parameters:
-      - name: orgId
-        in: path
-        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
-      - name: id
-        in: path
-        description: The UUID of the Lookup Table Revision to update the status for.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      - name: lookupTableId
-        in: path
-        description: UUID of the Lookup Table the Revision belongs to.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      requestBody:
-        description: ''
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LookupTableRevisionStatusRequest'
-        required: true
-      responses:
-        '200':
-          description: Returns the updated LookupTableRevision
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LookupTableRevisionResponse'
-        4XX:
-          $ref: '#/components/responses/Error'
-        5XX:
-          $ref: '#/components/responses/Error'
-  /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{id}:
+  /organizations/{orgId}/lookuptables:
     get:
       tags:
-      - LookupTableRevision
-      summary: Retrieve LookupTableRevision
-      description: Retrieve a Lookup Table Revision for the given UUID.
-      operationId: GetLookupTableRevision
-      parameters:
-      - name: orgId
-        in: path
-        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
-      - name: id
-        in: path
-        description: The UUID of the Lookup Table Revision to retrieve.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      - name: lookupTableId
-        in: path
-        description: The UUID of the Lookup Table the Revision belongs to.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Returns the LookupTableRevision
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LookupTableRevisionResponse'
-        4XX:
-          $ref: '#/components/responses/Error'
-        5XX:
-          $ref: '#/components/responses/Error'
-    put:
-      tags:
-      - LookupTableRevision
-      summary: Update LookupTableRevision
-      description: 'Update a Lookup Table Revision for the given UUID.
+      - Lookup Table
+      summary: List LookupTable
+      description: 'Retrieve a list Lookup Tables created for the Organization:
 
+        * Returned list can be filtered by Lookup Table `code` query parameter.
 
-        **NOTE:** If you''ve already added data to a Lookup Table Revision - see the following Lookup Table Revision Data section - then you won''t be able to change the Revision''s field schema and you''ll receive an error if you try do this. Create a new Revision instead, or delete the data items first.'
-      operationId: UpdateLookupTableRevision
+        * If you want to include any non-default fields for the returned Lookup Tables, use the additional query parameter to specify which you want to include in the response.'
+      operationId: ListLookupTable
       parameters:
       - name: orgId
         in: path
@@ -132,113 +37,9 @@ paths:
           type: string
           deprecated: true
           x-stainless-deprecation-message: the org id should be set at the client level instead
-      - name: id
-        in: path
-        description: The UUID of the Lookup Table Revision to update.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      - name: lookupTableId
-        in: path
-        description: The UUID of the Lookup Table the Revision belongs to.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      requestBody:
-        description: ''
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LookupTableRevisionRequest'
-        required: true
-      responses:
-        '200':
-          description: Returns the updated LookupTableRevision
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LookupTableRevisionResponse'
-        4XX:
-          $ref: '#/components/responses/Error'
-        5XX:
-          $ref: '#/components/responses/Error'
-    delete:
-      tags:
-      - LookupTableRevision
-      summary: Delete LookupTableRevision
-      description: Delete the Lookup Table Revision for the given UUID.
-      operationId: DeleteLookupTableRevision
-      parameters:
-      - name: orgId
-        in: path
-        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
-      - name: id
-        in: path
-        description: The UUID of the Lookup Table Revision to update.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      - name: lookupTableId
-        in: path
-        description: The UUID of the Lookup Table the Revision belongs to.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Returns the deleted LookupTableRevision
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LookupTableRevisionResponse'
-        4XX:
-          $ref: '#/components/responses/Error'
-        5XX:
-          $ref: '#/components/responses/Error'
-  /organizations/{orgId}/lookuptables/{lookupTableId}/revisions:
-    get:
-      tags:
-      - LookupTableRevision
-      summary: List LookupTableRevision
-      description: List LookupTableRevision entities
-      operationId: ListLookupTableRevision
-      parameters:
-      - name: orgId
-        in: path
-        description: UUID of the Organization
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
-      - name: lookupTableId
-        in: path
-        description: The lookup table Id
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
       - name: pageSize
         in: query
-        description: Number of LookupTable to retrieve per page
+        description: Number of Lookup Tables to retrieve per page.
         required: false
         allowEmptyValue: true
         style: form
@@ -250,16 +51,27 @@ paths:
           format: int32
       - name: nextToken
         in: query
-        description: Token to supply for multi page retrievals
+        description: Token to supply for multi page retrievals.
         required: false
         allowEmptyValue: true
         style: form
         explode: true
         schema:
           type: string
-      - name: ids
+      - name: codes
         in: query
-        description: List of Lookup Table Revision IDs to retrieve
+        description: List of Lookup Table codes to retrieve.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: additional
+        in: query
+        description: Comma separated list of additional non-default fields to be included in the response. For example,if you want to include the active Revision for each of the Lookup Tables returned, set `additional=activeRevision` in the query.
         required: false
         allowEmptyValue: true
         style: form
@@ -270,33 +82,21 @@ paths:
             type: string
       responses:
         '200':
-          description: List of LookupTableRevision entities
+          description: List of Lookup Tables
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedLookupTableRevisionResponseData'
+                $ref: '#/components/schemas/PaginatedLookupTableResponseData'
         4XX:
           $ref: '#/components/responses/Error'
         5XX:
           $ref: '#/components/responses/Error'
     post:
       tags:
-      - LookupTableRevision
-      summary: Create LookupTableRevision
-      description: 'Create a new Revision for a Lookup Table.
-
-
-        Fields and Keys for Revision schema: Use the `fields` parameter to define a Revision schema containing up to 10 number or string fields. Use the `keys` parameter to specify which are the key fields:
-
-        * At least one field must be a non-key field and at least one a key field.
-
-        * Up to 5 key fields can be defined.
-
-        * Using multiple key fields: ensure that the order in which they are defined matches the order in which you want to use them in any Lookup functions that reference the Revision''s Lookup Table, because this is the order in which they will be passed into the function. The order of non-key fields is not constrained in this way.
-
-
-        Revision status: when you first create a Lookup Table Revision it has DRAFT status. Use the Update LookupTableRevision Status call to change a Revision''s status.'
-      operationId: CreateLookupTableRevision
+      - Lookup Table
+      summary: Create LookupTable
+      description: Create a new Lookup Table.
+      operationId: PostLookupTable
       parameters:
       - name: orgId
         in: path
@@ -308,9 +108,92 @@ paths:
           type: string
           deprecated: true
           x-stainless-deprecation-message: the org id should be set at the client level instead
-      - name: lookupTableId
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookupTableRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the created Lookup Table
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/lookuptables/{id}:
+    get:
+      tags:
+      - Lookup Table
+      summary: Get LookupTable
+      description: Retrieve a Lookup Table by UUID.
+      operationId: GetLookupTable
+      parameters:
+      - name: orgId
         in: path
-        description: UUID of the Lookup Table the Revision will be created for.
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Lookup Table to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: additional
+        in: query
+        description: Comma separated list of additional non-default fields to be included in the response. For example,if you want to include the active Revision for the Lookup Tables returned, set `additional=activeRevision` in the query.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Return the requested Lookup Table
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - Lookup Table
+      summary: Update LookupTable
+      description: Update the Lookup Table with the given UUID.
+      operationId: PutLookupTable
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Lookup Table to update.
         required: true
         style: simple
         explode: false
@@ -321,15 +204,51 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LookupTableRevisionRequest'
+              $ref: '#/components/schemas/LookupTableRequest'
         required: true
       responses:
         '200':
-          description: Returns the created Lookup Table Revision
+          description: Return the updated Lookup Table.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LookupTableRevisionResponse'
+                $ref: '#/components/schemas/LookupTableResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - Lookup Table
+      summary: Delete LookupTable
+      description: Delete the Lookup Table with the given UUID.
+      operationId: DeleteLookupTable
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Lookup Table to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the deleted Lookup Table
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTableResponse'
         4XX:
           $ref: '#/components/responses/Error'
         5XX:
@@ -349,18 +268,6 @@ components:
           format: int64
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
-      description: ''
-    PaginatedLookupTableRevisionResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/LookupTableRevisionResponse'
-        nextToken:
-          type: string
-          description: ''
       description: ''
     AbstractResponseWithCustomFields:
       type: object
@@ -409,47 +316,76 @@ components:
                 type: integer
               - title: NumberCustomFieldReq
                 type: number
+    LookupTableResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the Lookup Table
+          code:
+            type: string
+            description: The code of the Lookup Table
+          dtCreated:
+            type: string
+            description: The DateTime when the Lookup Table was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the Lookup Table was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this Lookup Table.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this Lookup Table.
+            x-stainless-skip:
+            - terraform
+          activeRevision:
+            description: ''
+            allOf:
+            - $ref: '#/components/schemas/LookupTableRevisionResponse'
+            - description: The active Lookup Table Revision
     LookupTableRevisionFieldType:
       type: string
       description: Type of a Lookup Table Revision Field
       enum:
       - STRING
       - NUMBER
-    LookupTableRevisionRequest:
-      required:
-      - fields
-      - keys
-      - name
+    LookupTableRequest:
       type: object
-      properties:
-        name:
-          maxLength: 200
-          minLength: 1
-          type: string
-          description: Descriptive name for the Lookup Table Revision.
-        startDate:
-          type: string
-          description: The start date of the Lookup Table Revision.
-          format: date-time
-        fields:
-          maxItems: 10
-          minItems: 2
-          type: array
-          description: The list of fields of the Lookup Table Revision.
-          items:
-            $ref: '#/components/schemas/LookupTableRevisionField'
-        keys:
-          maxItems: 5
-          minItems: 1
-          type: array
-          description: The ordered keys of the Lookup Table Revision.
-          example: '["foo", "bar"]'
-          items:
-            type: string
-      description: Request containing a LookupTableRevision entity
+      description: ''
       allOf:
       - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
       - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - code
+        - name
+        properties:
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: Descriptive name for the Lookup Table.
+          code:
+            maxLength: 80
+            minLength: 1
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: 'Code of the Lookup Table - unique short code used to identify the Lookup Table.
+
+
+              **NOTE:** Code has a maximum length of 80 characters and must not contain non-printable or whitespace characters (except space), and cannot start/end with whitespace.'
     AbstractResponse:
       required:
       - id
@@ -469,6 +405,13 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    LookupTableRevisionStatus:
+      type: string
+      description: Status of a Lookup Table Revision
+      enum:
+      - DRAFT
+      - PUBLISHED
+      - ARCHIVED
     LookupTableRevisionResponse:
       type: object
       properties:
@@ -524,28 +467,6 @@ components:
       allOf:
       - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
       - $ref: '#/components/schemas/AbstractResponse'
-    LookupTableRevisionStatusRequest:
-      type: object
-      properties:
-        status:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/LookupTableRevisionStatus'
-          - description: The status of the Lookup Table Revision
-        version:
-          type: integer
-          description: The version of the LookupTableRevision.
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: Request containing the status details for a LookupTableRevision entity
-    LookupTableRevisionStatus:
-      type: string
-      description: Status of a Lookup Table Revision
-      enum:
-      - DRAFT
-      - PUBLISHED
-      - ARCHIVED
     LookupTableRevisionField:
       required:
       - type
@@ -563,6 +484,18 @@ components:
           - $ref: '#/components/schemas/LookupTableRevisionFieldType'
           - description: The type of the field
       description: Field of a Lookup Table Revision
+    PaginatedLookupTableResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/LookupTableResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
   responses:
     Error:
       description: Error message

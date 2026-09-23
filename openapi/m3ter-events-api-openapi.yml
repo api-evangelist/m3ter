@@ -1,7 +1,9 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: m3ter Account Events API
-  description: "If you are using Postman, you can:\n- Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See [Importing the m3ter Open API](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-open-api) in our main user Documentation for details.\n- Copy this link: [m3ter-Template API Collection](https://www.datocms-assets.com/78893/1672846767-m3ter-template-api-collection-postman_collection.json) and use it to import the **m3ter-Template API Collection** into your Workspace. See [Importing the m3ter Template API Collection](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls#importing-the-m3ter-template-api-collection) in our main user Documentation for details.\n\n---\n\n# Introduction\nThe m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:\n- The **Ingest API**, which you can use for submitting raw data measurements. *(See the [Submit Measurements](https://www.m3ter.com/docs/api#tag/Measurements/operation/SubmitMeasurements) endpoint in this API Reference.)*\n- The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)* \n\n## Authentication and Authorization\nOur APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification.\n\nOAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:\n  - **Authorization Code**: Used for human login access via the m3ter Console.\n  - **Client Credentials**: Used for machine-to-machine communication and API access.\n\nComplete the following flow for API access:\n\n1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. \n    \n2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. \n\nSee [Service Authentication](https://www.m3ter.com/docs/guides/authenticating-with-the-platform/service-authentication) for detailed instructions and an example.\n\n3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.* \n \n4. **Bearer Token Usage**: Use the HTTP 'Authorization' header with the bearer token to authorise all subsequent API requests.  \n\n> Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one.\n\nBelow are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. \n\n### cURL Example\n1. Open your terminal or command prompt.    \n2. Use the following `cURL` command to obtain a Bearer Token:\n\n```bash\ncurl -X POST https://api.m3ter.com/oauth/token \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -u your_access_key_id:your_api_secret \\\n  -d 'grant_type=client_credentials'\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**.\n\n3.  Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:\n\n```json\n{\n  \"access_token\": \"your_bearer_token\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 18000\n}\n```\n\nYou can then use the Bearer Token *(the value of `\"access_token\"`)* for subsequent API calls to m3ter.\n\n### Python Example\n1. Install the `requests` library if you haven't already:\n\n```bash\npip install requests\n```\n\n2. Use the following Python script to obtain a Bearer Token:\n\n```python\nimport requests\nimport base64\n\n# Replace these with your Access Key id and Api Secret\naccess_key_id = 'your_access_key_id'\napi_secret = 'your_api_secret'\n\n# Encode the Access Key id and Api Secret in base64 format\ncredentials = base64.b64encode(f'{access_key_id}:{api_secret}'.encode('utf-8')).decode('utf-8')\n\n# Set the m3ter token endpoint URL\ntoken_url = 'https://api.m3ter.com/oauth/token'\n\n# Set the headers for the request\nheaders = {\n    'Authorization': f'Basic {credentials}',\n    'Content-Type': 'application/x-www-form-urlencoded'\n}\n\n# Set the payload for the request\npayload = {\n    'grant_type': 'client_credentials'\n}\n\n# Send the request to obtain the Bearer Token\nresponse = requests.post(token_url, headers=headers, data=payload)\n\n# Check if the request was successful\nif response.status_code == 200:\n    # Extract the Bearer Token from the response\n    bearer_token = response.json()['access_token']\n    print(f'Bearer Token: {bearer_token}')\nelse:\n    print(f'Error: {response.status_code} - {response.text}')\n```\n\nReplace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. \n\n3. Run the script, and if successful, it will print the Bearer Token. You can then use this Bearer Token for subsequent API calls to m3ter.\n\n## Submitting Personally Identifiable Information (PII)\n**IMPORTANT!** Under the [Data Processing Agreement](https://www.m3ter.com/docs/legal/dpa), the only fields permissible for use in submitting any of your end-customer PII data in m3ter are the ``name``, ``address``, and ``emailAddress`` fields on the **Account** entity - see the details for [Create Account](https://www.m3ter.com/docs/api#operation/PostAccount). See also section 4.2 of the [Terms of Service](https://www.m3ter.com/docs/legal/terms-of-service).\n\n## Rate and Payload Limits\n### Config API Request Rate Limits\nSee [Config API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits).\n\n### Data Explorer API Request Rate Limits\nSee [Data Explorer Request Rate Limits](https://www.m3ter.com/docs/guides/m3ter-apis/config-api-limits#date-explorer-request-rate-limits).\n\n### Ingest API Request Rate and Payload Limits\nSee [Ingest API Limits](https://www.m3ter.com/docs/guides/m3ter-apis/ingest-api-limits) for more information.\n\n## Pagination\n**List Endpoints**\nAPI endpoints that have a List resources request support cursor-based pagination - for example, the `List Accounts` request. These List calls support pagination by taking the two parameters `pageSize` and `nextToken`. \n\nThe response of a List API call is a single page list. If the `nextToken` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `nextToken` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page.\n\n**Search Endpoints**\nAPI endpoints that have a Search resources request support cursor-based pagination - for example, the `Search Accounts` request. These Search calls support pagination by taking the two parameters `pageSize` and `fromDocument`.\n\nThe response of a Search API call is a single page list. If the `fromDocument` parameter is not supplied, the first page returned contains the newest objects chronologically. Specify a `fromDocument` to retrieve the page of older objects that occur immediately after the last object on the previous page.\n\nUse `pageSize` to limit the list results per page, typically this allows up to a maximum of 100 or 200 per page. Default is 10.\n\n## API Quick Start\nSee [Getting Started with API Calls](https://www.m3ter.com/docs/guides/m3ter-apis/getting-started-with-api-calls) for detailed guidance on how to use our API to:\n* Create a Service User and add permissions.\n* Generate access keys for the Service User.\n* Use basic authentication to obtain a Bearer Token.\n\nFor further guidance, also see [Creating and Configuring Service Users](https://www.m3ter.com/docs/guides/organization-and-access-management/managing-users/creating-and-configuring-service-users).\n\n## Other Languages\nIf you want to work with the m3ter REST APIs using other languages such as:\n* Python\n* JavaScript\n* C++\n\nPlease see the [Developer Tools](https://www.m3ter.com/docs/guides/developer-tools) topic in our main documentation for information about available SDKs.\n\n\n# Authentication\n<!-- ReDoc-Inject: <security-definitions> -->"
+  title: m3ter Events API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
   version: '1.0'
   x-logo:
     url: https://console.m3ter.com/m3ter-logo-black.svg
@@ -11,7 +13,7 @@ security:
 - OAuth2: []
 tags:
 - name: Events
-  description: "This section provides Endpoints for operations that allow you to retrieve detailed information about individual Events, list all Events or specific Event Types, and explore dynamic fields available for each Event Type.\n\nEvents encompass specific instances of state changes within the system, such as the creation of a new Prepayment/Commitment for an Account. Each Event is classified under an Event Type framework, providing context about what kind of change occurred to generate the Event.\n\n**Events for Configuration and Billing Entities**\n\nMany Event Types cover common configuration and billing objects, where the Event is generated for a state change of one of these objects - for when the configuration or billing object is **created**, **deleted**, or **updated**. \n\nFor example:\n* configuration.commitment.created\n* configuration.commitment.deleted\n* configuration.commitment.updated\n* configuration.account.created\n* configuration.account.deleted\n* configuration.account.updated\n* billing.bill.created\n* billing.bill.deleted\n* billing.bill.created\n\n**Events for Errors or Failures** \n\nThere are also Event Types for certain kinds of error that can occur:\n\n* For an Integration:\n  * validation\n  * authentication\n  * perform\n  * missing account mapping\n  * disabled\n\n* For a Usage Data Ingest Submission:\n  * validation failure\n\n* For Data Export Jobs:\n  * data export job failure\n\n**Scheduled Events**\n\nIn addition to system-generated Events that occur when a configuration entity undergoes a state change at creation, update, or deletion of the entity, you can use API calls to create and configure *Scheduled Event Configurations*. Scheduled Events are custom Event types, which you can set up by referencing Date/Time fields on configuration and billing entities. See the [ScheduledEventConfigurations](https://www.m3ter.com/docs/api#tag/ScheduledEventConfigurations) section of this API Reference for more details.\n\n**Notifications for Events**\n\nYou can create Notification rules based on Events and these rules can reference and apply calculations to the Event's fields. This allows you to set up customized alerts to be sent out via webhooks when the Event occurs and any conditions you've built into the Notification rule's calculation are satisfied.\n\nSee the [Notifications](https://www.m3ter.com/docs/api#tag/Notifications) section for more details.\n\n**Other Events**\n\nWhen Events occur, they can cause other Events, such as when a Notification is triggered by the Event it is based on. For these Events there are currently two categories:\n* Notification\n* IntegrationEvent\n\nAlso see [Utilizing Events and Notifications](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications) and [Object Definitions and API Calls](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications/object-definitions-and-api-calls) in the m3ter documentation for more guidance.\n"
+  description: This section provides Endpoints for operations that allow you to retrieve detailed information about individual Events, list all Events or specific Event Types, and explore dynamic fields available for each Event Type.
 paths:
   /organizations/{orgId}/events/{id}:
     get:
@@ -21,9 +23,7 @@ paths:
       description: 'Retrieve a specific Event.
 
 
-        Retrieves detailed information about the specific Event with the given UUID. An Event corresponds to a unique instance of a state change within the system, classified under a specific Event Type.
-
-        '
+        Retrieves detailed information about the specific Event with the given UUID. An Event corresponds to a unique instance of a state change within the system, classified under a specific Event Type.'
       operationId: GetEvent
       parameters:
       - name: orgId
@@ -60,7 +60,17 @@ paths:
       tags:
       - Events
       summary: List Events
-      description: "List Event Fields. \n\nRetrieves a list of Fields for a specific Event Type. These Fields are dynamic and forward compatibile, enabling calculation operations on the Event schema.\n\n**Notes:**\n- In many of the Response schema for this call, such as when you retrieve the Fields for a `configuration.commitment.created` Event Type, `new` represents the attributes the newly created object has. The Response to a call to retrieve the Fields for a `configuration.commitment.updated` Event Type will contain Field values for both the `old` and `new` objects. The Response to a call to retrieve the Fields for a `configuration.commitment.deleted` Event Type will only contain `old` Fields, for values at point of deletion. Having access to reference both `new` and `old` Field values for an object can be very useful if you want to base a Notification rule on an Event and include a calculation in the rule that, for example, compares `new` values with `old` - for example, trigger a Notification only when a Commitment has been updated and the `new` value for the `amount` is at least $1,000 greater than the `old` value.\n- Some Event types will show `customFields` even though the specific billing or configuration object the Event is for does not yet have the custom fields functionality implemented. For these Events, their `customFields` values will not be populated until such time as the custom fields functionality is implemented for them"
+      description: 'List Event Fields.
+
+
+        Retrieves a list of Fields for a specific Event Type. These Fields are dynamic and forward compatibile, enabling calculation operations on the Event schema.
+
+
+        **Notes:**
+
+        - In many of the Response schema for this call, such as when you retrieve the Fields for a `configuration.commitment.created` Event Type, `new` represents the attributes the newly created object has. The Response to a call to retrieve the Fields for a `configuration.commitment.updated` Event Type will contain Field values for both the `old` and `new` objects. The Response to a call to retrieve the Fields for a `configuration.commitment.deleted` Event Type will only contain `old` Fields, for values at point of deletion. Having access to reference both `new` and `old` Field values for an object can be very useful if you want to base a Notification rule on an Event and include a calculation in the rule that, for example, compares `new` values with `old` - for example, trigger a Notification only when a Commitment has been updated and the `new` value for the `amount` is at least $1,000 greater than the `old` value.
+
+        - Some Event types will show `customFields` even though the specific billing or configuration object the Event is for does not yet have the custom fields functionality implemented. For these Events, their `customFields` values will not be populated until such time as the custom fields functionality is implemented for them'
       operationId: ListEventFields
       parameters:
       - name: orgId
@@ -110,7 +120,7 @@ paths:
 
         `.../organizations/{orgId}/events?eventName=configuration.commitment.created`
 
-        * Use the [List Notification Events](https://www.m3ter.com/docs/api#tag/Events/operation/ListEventTypes) endpoint in this section. The response lists the valid Query parameters.'
+        * Use the List Notification Events endpoint in this section. The response lists the valid Query parameters.'
       operationId: ListEvents
       parameters:
       - name: orgId
@@ -220,8 +230,9 @@ paths:
         style: form
         explode: true
         schema:
-          type: string
-          nullable: true
+          type:
+          - string
+          - 'null'
       - name: resourceId
         in: query
         description: ''
@@ -229,8 +240,9 @@ paths:
         style: form
         explode: true
         schema:
-          type: string
-          nullable: true
+          type:
+          - string
+          - 'null'
       responses:
         '200':
           description: Returns list of Events
@@ -393,6 +405,18 @@ components:
         - integration.missingaccountmapping.error
         - integration.perform.error
         - integration.validation.error
+    PaginatedEventResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/EventResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     EventResponse:
       required:
       - dtActioned
@@ -493,18 +517,6 @@ components:
             new.overageSurchargePercent: double
             new.productIds: array
             new.startDate: string
-    PaginatedEventResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/EventResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
   responses:
     Error:
       description: Error message
