@@ -360,6 +360,184 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    GenerateExportDownloadUrlResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The presigned download URL
+        expirationTime:
+          type: string
+          description: The expiration time of the URL
+          format: date-time
+      description: It contains details for downloading an export file
+    ExportDestinationS3Request:
+      title: ExportDestinationS3Request
+      required:
+      - bucketName
+      - iamRoleArn
+      type: object
+      properties:
+        bucketName:
+          maxLength: 63
+          minLength: 3
+          type: string
+          description: Name of the S3 bucket for the Export Destination.
+        prefix:
+          type: string
+          description: Location in specified S3 bucket for the Export Destination. If you omit a `prefix`, then the root of the bucket will be used.
+        iamRoleArn:
+          minLength: 1
+          pattern: ^arn:aws:iam::\d+:role/.*$
+          type: string
+          description: 'To enable m3ter to upload a Data Exports to your S3 bucket, the service has to assume an IAM role with PutObject permission for the specified `bucketName`. Create a suitable IAM role in your AWS account and enter ARN:
+
+
+            **Formatting Constraints:**
+
+            * The IAM role ARN must begin with "arn:aws:iam".
+
+            * The general format required is: "arn:aws:iam::<aws account id>:role/<role name>". For example: "arn:aws:iam::922609978421:role/IAMRole636".
+
+            * If the `iamRoleArn` used doesn''t comply with this format, then an error message will be returned.
+
+
+            **More Details:** For more details and examples of the Permission and Trust Policies you can use to create the required IAM Role ARN, see [Creating Data Export Destinations](https://www.m3ter.com/docs/guides/data-exports/creating-data-export-destinations) in our main User documentation.'
+        partitionOrder:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/PartitionOrder'
+          - description: Output partitioning
+        destinationType:
+          allOf:
+          - type: string
+            enum:
+            - S3
+          - description: 'The type of destination to create. Possible values are: S3'
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/ExportDestinationBaseRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+    PaginatedExportDestinationBaseResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ExportDestinationBaseResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    ExportDestinationGoogleCloudStorageRequest:
+      title: ExportDestinationGoogleCloudStorageRequest
+      required:
+      - bucketName
+      - poolId
+      - projectNumber
+      - providerId
+      type: object
+      properties:
+        bucketName:
+          maxLength: 63
+          minLength: 3
+          type: string
+          description: The export destination bucket name.
+        prefix:
+          type: string
+          description: The export destination prefix.
+        projectNumber:
+          minLength: 1
+          type: string
+          description: The export destination GCP projectNumber.
+        poolId:
+          minLength: 1
+          type: string
+          description: The export destination Web Identity Federation poolId.
+        providerId:
+          minLength: 1
+          type: string
+          description: The export destination Web Identity Federation identity providerId.
+        serviceAccountEmail:
+          type: string
+          description: The export destination service account email.
+        partitionOrder:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/PartitionOrder'
+          - description: Output partitioning
+        destinationType:
+          allOf:
+          - type: string
+            enum:
+            - GCS
+          - description: 'The type of destination to create. Possible values are: GCS'
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/ExportDestinationBaseRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+    DataExportDestinationType:
+      type: string
+      description: The type of destination
+      enum:
+      - S3
+      - GCS
+    ExportDestinationS3Response:
+      title: ExportDestinationS3Response
+      type: object
+      properties:
+        bucketName:
+          type: string
+          description: Name of the S3 bucket for the Export Destination.
+        prefix:
+          type: string
+          description: Location in specified S3 bucket for the Export Destination. If no `prefix` is specified, then the root of the bucket is used.
+        iamRoleArn:
+          type: string
+          description: The specified IAM role ARN with PutObject permission for the specified `bucketName`, which allows the service to upload Data Exports to your S3 bucket.
+        partitionOrder:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/PartitionOrder'
+          - description: Output partitioning
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/ExportDestinationBaseResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
     ExportDestinationBaseRequest:
       required:
       - code
@@ -383,20 +561,6 @@ components:
       description: Base mode request containing available destination types
       allOf:
       - $ref: '#/components/schemas/AbstractRequest'
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
     ExportDestinationBaseResponse:
       type: object
       properties:
@@ -465,111 +629,6 @@ components:
       allOf:
       - $ref: '#/components/schemas/ExportDestinationBaseResponse'
       - $ref: '#/components/schemas/AbstractResponse'
-    DataExportDestinationType:
-      type: string
-      description: The type of destination
-      enum:
-      - S3
-      - GCS
-    ExportDestinationS3Response:
-      title: ExportDestinationS3Response
-      type: object
-      properties:
-        bucketName:
-          type: string
-          description: Name of the S3 bucket for the Export Destination.
-        prefix:
-          type: string
-          description: Location in specified S3 bucket for the Export Destination. If no `prefix` is specified, then the root of the bucket is used.
-        iamRoleArn:
-          type: string
-          description: The specified IAM role ARN with PutObject permission for the specified `bucketName`, which allows the service to upload Data Exports to your S3 bucket.
-        partitionOrder:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/PartitionOrder'
-          - description: Output partitioning
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/ExportDestinationBaseResponse'
-      - $ref: '#/components/schemas/AbstractResponse'
-    ExportDestinationGoogleCloudStorageRequest:
-      title: ExportDestinationGoogleCloudStorageRequest
-      required:
-      - bucketName
-      - poolId
-      - projectNumber
-      - providerId
-      type: object
-      properties:
-        bucketName:
-          maxLength: 63
-          minLength: 3
-          type: string
-          description: The export destination bucket name.
-        prefix:
-          type: string
-          description: The export destination prefix.
-        projectNumber:
-          minLength: 1
-          type: string
-          description: The export destination GCP projectNumber.
-        poolId:
-          minLength: 1
-          type: string
-          description: The export destination Web Identity Federation poolId.
-        providerId:
-          minLength: 1
-          type: string
-          description: The export destination Web Identity Federation identity providerId.
-        serviceAccountEmail:
-          type: string
-          description: The export destination service account email.
-        partitionOrder:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/PartitionOrder'
-          - description: Output partitioning
-        destinationType:
-          allOf:
-          - type: string
-            enum:
-            - GCS
-          - description: 'The type of destination to create. Possible values are: GCS'
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/ExportDestinationBaseRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
-    GenerateExportDownloadUrlResponse:
-      type: object
-      properties:
-        url:
-          type: string
-          description: The presigned download URL
-        expirationTime:
-          type: string
-          description: The expiration time of the URL
-          format: date-time
-      description: It contains details for downloading an export file
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
     PartitionOrder:
       type: string
       description: 'Specify how you want the file path to be structured in your bucket destination - by Time first (Default) or Type first.
@@ -594,65 +653,6 @@ components:
       enum:
       - TYPE_FIRST
       - TIME_FIRST
-    PaginatedExportDestinationBaseResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/ExportDestinationBaseResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    ExportDestinationS3Request:
-      title: ExportDestinationS3Request
-      required:
-      - bucketName
-      - iamRoleArn
-      type: object
-      properties:
-        bucketName:
-          maxLength: 63
-          minLength: 3
-          type: string
-          description: Name of the S3 bucket for the Export Destination.
-        prefix:
-          type: string
-          description: Location in specified S3 bucket for the Export Destination. If you omit a `prefix`, then the root of the bucket will be used.
-        iamRoleArn:
-          minLength: 1
-          pattern: ^arn:aws:iam::\d+:role/.*$
-          type: string
-          description: 'To enable m3ter to upload a Data Exports to your S3 bucket, the service has to assume an IAM role with PutObject permission for the specified `bucketName`. Create a suitable IAM role in your AWS account and enter ARN:
-
-
-            **Formatting Constraints:**
-
-            * The IAM role ARN must begin with "arn:aws:iam".
-
-            * The general format required is: "arn:aws:iam::<aws account id>:role/<role name>". For example: "arn:aws:iam::922609978421:role/IAMRole636".
-
-            * If the `iamRoleArn` used doesn''t comply with this format, then an error message will be returned.
-
-
-            **More Details:** For more details and examples of the Permission and Trust Policies you can use to create the required IAM Role ARN, see [Creating Data Export Destinations](https://www.m3ter.com/docs/guides/data-exports/creating-data-export-destinations) in our main User documentation.'
-        partitionOrder:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/PartitionOrder'
-          - description: Output partitioning
-        destinationType:
-          allOf:
-          - type: string
-            enum:
-            - S3
-          - description: 'The type of destination to create. Possible values are: S3'
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/ExportDestinationBaseRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
   responses:
     Error:
       description: Error message

@@ -257,35 +257,11 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    CreditReasonResponse:
+    CreditReasonRequest:
       type: object
-      description: ''
       allOf:
-      - $ref: '#/components/schemas/AbstractPickListResponse'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          dtCreated:
-            type: string
-            description: The DateTime when the credit reason was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the credit reason was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The id of the user who created this credit reason.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The id of the user who last modified this credit reason.
-            x-stainless-skip:
-            - terraform
+      - $ref: '#/components/schemas/AbstractPickListRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
     AbstractRequest:
       type: object
       properties:
@@ -300,33 +276,6 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    AbstractPickListRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - name
-        properties:
-          code:
-            maxLength: 80
-            pattern: ^[\p{L}_$][\p{L}_$0-9]*$
-            type: string
-            description: The short code for the entity.
-            example: code
-          name:
-            maxLength: 200
-            minLength: 1
-            type: string
-            description: The name of the entity.
-          archived:
-            type: boolean
-            description: 'A Boolean TRUE / FALSE flag indicating whether the entity is archived. An entity can be archived if it is obsolete.
-
-
-              * TRUE - the entity is in the archived state.
-
-              * FALSE - the entity is not in the archived state.'
     AbstractPickListResponse:
       type: object
       description: ''
@@ -342,11 +291,6 @@ components:
           archived:
             type: boolean
             description: TRUE / FALSE flag indicating whether the data entity is archived. An entity can be archived if it is obsolete.
-    CreditReasonRequest:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/AbstractPickListRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
     AbstractResponse:
       required:
       - id
@@ -378,6 +322,62 @@ components:
           type: string
           description: ''
       description: ''
+    CreditReasonResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractPickListResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when the credit reason was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the credit reason was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this credit reason.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this credit reason.
+            x-stainless-skip:
+            - terraform
+    AbstractPickListRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - name
+        properties:
+          code:
+            maxLength: 80
+            pattern: ^[\p{L}_$][\p{L}_$0-9]*$
+            type: string
+            description: The short code for the entity.
+            example: code
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: The name of the entity.
+          archived:
+            type: boolean
+            description: 'A Boolean TRUE / FALSE flag indicating whether the entity is archived. An entity can be archived if it is obsolete.
+
+
+              * TRUE - the entity is in the archived state.
+
+              * FALSE - the entity is not in the archived state.'
   responses:
     Error:
       description: Error message

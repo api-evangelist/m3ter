@@ -461,26 +461,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    EndDateBillingEntitiesRequest:
-      required:
-      - billingEntities
-      - endDate
-      type: object
-      properties:
-        endDate:
-          type: string
-          description: The end date and time applied to the specified billing entities *(in ISO 8601 format)*.
-          format: date-time
-        applyToChildren:
-          type: boolean
-          description: A Boolean TRUE/FALSE flag. For Parent Accounts, set to TRUE if you want the specified end-date to be applied to any billing entities associated with Child Accounts. *(Optional)*
-        billingEntities:
-          minItems: 1
-          type: array
-          description: Defines which billing entities associated with the Account will have the specified end-date applied. For example, if you want the specified end-date to be applied to all Prepayments/Commitments created for the Account use `"PREPAYMENT"`.
-          items:
-            $ref: '#/components/schemas/BillingEntity'
-      description: ''
     AbstractRequest:
       type: object
       properties:
@@ -495,73 +475,6 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    EndDateBillingEntitiesResponse:
-      type: object
-      properties:
-        statusMessage:
-          type: string
-          description: A message indicating the status of the operation.
-        updatedEntities:
-          properties:
-            CONTRACT:
-              $ref: '#/components/schemas/Set_String_'
-            ACCOUNTPLAN:
-              $ref: '#/components/schemas/Set_String_'
-            PREPAYMENT:
-              $ref: '#/components/schemas/Set_String_'
-            PRICINGS:
-              $ref: '#/components/schemas/Set_String_'
-            COUNTER_PRICINGS:
-              $ref: '#/components/schemas/Set_String_'
-          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the updated entities.
-        failedEntities:
-          properties:
-            CONTRACT:
-              $ref: '#/components/schemas/Set_String_'
-            ACCOUNTPLAN:
-              $ref: '#/components/schemas/Set_String_'
-            PREPAYMENT:
-              $ref: '#/components/schemas/Set_String_'
-            PRICINGS:
-              $ref: '#/components/schemas/Set_String_'
-            COUNTER_PRICINGS:
-              $ref: '#/components/schemas/Set_String_'
-          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the entities for which the update failed.
-      description: ''
-    Address:
-      type: object
-      properties:
-        addressLine1:
-          maxLength: 50
-          type: string
-          description: ''
-        addressLine2:
-          maxLength: 50
-          type: string
-          description: ''
-        addressLine3:
-          type: string
-          description: ''
-        addressLine4:
-          type: string
-          description: ''
-        locality:
-          maxLength: 100
-          type: string
-          description: ''
-        region:
-          maxLength: 50
-          type: string
-          description: ''
-        postCode:
-          maxLength: 20
-          type: string
-          description: ''
-        country:
-          maxLength: 100
-          type: string
-          description: ''
-      description: Contact address.
     AbstractRequestWithCustomFields:
       type: object
       description: ''
@@ -595,13 +508,12 @@ components:
           empty:
             type: boolean
             description: ''
-    StatementAutoGenerateMode:
+    BillCreditType:
       type: string
-      description: "Specify whether to auto-generate statements once Bills are *approved* or *locked*. It will not auto-generate if a bill is in *pending* state. \n\nThe default value is **None**.\n\n- **None**. Statements will not be auto-generated.\n- **JSON**. Statements are auto-generated in JSON format.\n- **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats."
+      description: ''
       enum:
-      - NONE
-      - JSON
-      - JSON_AND_CSV
+      - PREPAYMENT
+      - BALANCE
     AccountRequest:
       type: object
       description: Account request for operations such as Create or Update Account.
@@ -713,22 +625,29 @@ components:
               **Note:** If you define `daysBeforeBillDue` at individual Account level, this will take precedence over any `daysBeforeBillDue` setting defined at Organization level.'
             format: int32
             exclusiveMinimum: 0
-    BillingEntity:
-      type: string
-      description: ''
-      enum:
-      - CONTRACT
-      - ACCOUNTPLAN
-      - PREPAYMENT
-      - PRICINGS
-      - COUNTER_PRICINGS
-    Collection_String_:
+    AbstractResponseWithCustomFields:
       type: object
-      properties:
-        empty:
-          type: boolean
-          description: ''
       description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
     AbstractResponse:
       required:
       - id
@@ -748,6 +667,108 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    PaginatedAccountResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AccountResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    EndDateBillingEntitiesResponse:
+      type: object
+      properties:
+        statusMessage:
+          type: string
+          description: A message indicating the status of the operation.
+        updatedEntities:
+          properties:
+            CONTRACT:
+              $ref: '#/components/schemas/Set_String_'
+            ACCOUNTPLAN:
+              $ref: '#/components/schemas/Set_String_'
+            PREPAYMENT:
+              $ref: '#/components/schemas/Set_String_'
+            PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+            COUNTER_PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the updated entities.
+        failedEntities:
+          properties:
+            CONTRACT:
+              $ref: '#/components/schemas/Set_String_'
+            ACCOUNTPLAN:
+              $ref: '#/components/schemas/Set_String_'
+            PREPAYMENT:
+              $ref: '#/components/schemas/Set_String_'
+            PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+            COUNTER_PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the entities for which the update failed.
+      description: ''
+    BillingEntity:
+      type: string
+      description: ''
+      enum:
+      - CONTRACT
+      - ACCOUNTPLAN
+      - PREPAYMENT
+      - PRICINGS
+      - COUNTER_PRICINGS
+    Address:
+      type: object
+      properties:
+        addressLine1:
+          maxLength: 50
+          type: string
+          description: ''
+        addressLine2:
+          maxLength: 50
+          type: string
+          description: ''
+        addressLine3:
+          type: string
+          description: ''
+        addressLine4:
+          type: string
+          description: ''
+        locality:
+          maxLength: 100
+          type: string
+          description: ''
+        region:
+          maxLength: 50
+          type: string
+          description: ''
+        postCode:
+          maxLength: 20
+          type: string
+          description: ''
+        country:
+          maxLength: 100
+          type: string
+          description: ''
+      description: Contact address.
+    Collection_String_:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          description: ''
+      description: ''
+    StatementAutoGenerateMode:
+      type: string
+      description: "Specify whether to auto-generate statements once Bills are *approved* or *locked*. It will not auto-generate if a bill is in *pending* state. \n\nThe default value is **None**.\n\n- **None**. Statements will not be auto-generated.\n- **JSON**. Statements are auto-generated in JSON format.\n- **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats."
+      enum:
+      - NONE
+      - JSON
+      - JSON_AND_CSV
     AccountResponse:
       type: object
       description: Response containing an AccountResponse entity.
@@ -856,47 +877,26 @@ components:
             type: integer
             description: The number of days after the Bill generation date shown on Bills as the due date.
             format: int32
-    AbstractResponseWithCustomFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-    PaginatedAccountResponseData:
+    EndDateBillingEntitiesRequest:
+      required:
+      - billingEntities
+      - endDate
       type: object
       properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/AccountResponse'
-        nextToken:
+        endDate:
           type: string
-          description: ''
+          description: The end date and time applied to the specified billing entities *(in ISO 8601 format)*.
+          format: date-time
+        applyToChildren:
+          type: boolean
+          description: A Boolean TRUE/FALSE flag. For Parent Accounts, set to TRUE if you want the specified end-date to be applied to any billing entities associated with Child Accounts. *(Optional)*
+        billingEntities:
+          minItems: 1
+          type: array
+          description: Defines which billing entities associated with the Account will have the specified end-date applied. For example, if you want the specified end-date to be applied to all Prepayments/Commitments created for the Account use `"PREPAYMENT"`.
+          items:
+            $ref: '#/components/schemas/BillingEntity'
       description: ''
-    BillCreditType:
-      type: string
-      description: ''
-      enum:
-      - PREPAYMENT
-      - BALANCE
   responses:
     Error:
       description: Error message

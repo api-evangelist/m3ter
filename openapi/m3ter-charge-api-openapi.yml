@@ -287,6 +287,18 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    PaginatedChargeResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ChargeResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     AbstractRequest:
       type: object
       properties:
@@ -301,6 +313,12 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    ChargeEntityType:
+      type: string
+      description: The entity type the Charge has been created for.
+      enum:
+      - AD_HOC
+      - BALANCE
     ChargeResponse:
       type: object
       properties:
@@ -396,6 +414,31 @@ components:
       description: Response containing a Charge entity
       allOf:
       - $ref: '#/components/schemas/AbstractResponse'
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    ChargeLineItemType:
+      type: string
+      description: Available line item types that can be used for billing a Charge.
+      enum:
+      - BALANCE_FEE
+      - AD_HOC
     ChargeRequest:
       type: object
       description: Request containing a Charge entity
@@ -489,49 +532,6 @@ components:
             type: string
             description: The ID of a Contract on the Account that the Charge will be added to.
         description: Request containing a Charge entity
-    ChargeEntityType:
-      type: string
-      description: The entity type the Charge has been created for.
-      enum:
-      - AD_HOC
-      - BALANCE
-    PaginatedChargeResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/ChargeResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    ChargeLineItemType:
-      type: string
-      description: Available line item types that can be used for billing a Charge.
-      enum:
-      - BALANCE_FEE
-      - AD_HOC
   responses:
     Error:
       description: Error message

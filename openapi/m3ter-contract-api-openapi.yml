@@ -324,38 +324,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    EndDateBillingEntitiesRequest:
-      required:
-      - billingEntities
-      - endDate
-      type: object
-      properties:
-        endDate:
-          type: string
-          description: The end date and time applied to the specified billing entities *(in ISO 8601 format)*.
-          format: date-time
-        applyToChildren:
-          type: boolean
-          description: A Boolean TRUE/FALSE flag. For Parent Accounts, set to TRUE if you want the specified end-date to be applied to any billing entities associated with Child Accounts. *(Optional)*
-        billingEntities:
-          minItems: 1
-          type: array
-          description: Defines which billing entities associated with the Account will have the specified end-date applied. For example, if you want the specified end-date to be applied to all Prepayments/Commitments created for the Account use `"PREPAYMENT"`.
-          items:
-            $ref: '#/components/schemas/BillingEntity'
-      description: ''
-    PaginatedContractResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/ContractResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
     AbstractRequest:
       type: object
       properties:
@@ -369,39 +337,6 @@ components:
           format: int64
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
-      description: ''
-    EndDateBillingEntitiesResponse:
-      type: object
-      properties:
-        statusMessage:
-          type: string
-          description: A message indicating the status of the operation.
-        updatedEntities:
-          properties:
-            CONTRACT:
-              $ref: '#/components/schemas/Set_String_'
-            ACCOUNTPLAN:
-              $ref: '#/components/schemas/Set_String_'
-            PREPAYMENT:
-              $ref: '#/components/schemas/Set_String_'
-            PRICINGS:
-              $ref: '#/components/schemas/Set_String_'
-            COUNTER_PRICINGS:
-              $ref: '#/components/schemas/Set_String_'
-          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the updated entities.
-        failedEntities:
-          properties:
-            CONTRACT:
-              $ref: '#/components/schemas/Set_String_'
-            ACCOUNTPLAN:
-              $ref: '#/components/schemas/Set_String_'
-            PREPAYMENT:
-              $ref: '#/components/schemas/Set_String_'
-            PRICINGS:
-              $ref: '#/components/schemas/Set_String_'
-            COUNTER_PRICINGS:
-              $ref: '#/components/schemas/Set_String_'
-          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the entities for which the update failed.
       description: ''
     AbstractRequestWithCustomFields:
       type: object
@@ -436,6 +371,174 @@ components:
           empty:
             type: boolean
             description: ''
+    EndDateBillingEntitiesResponse:
+      type: object
+      properties:
+        statusMessage:
+          type: string
+          description: A message indicating the status of the operation.
+        updatedEntities:
+          properties:
+            CONTRACT:
+              $ref: '#/components/schemas/Set_String_'
+            ACCOUNTPLAN:
+              $ref: '#/components/schemas/Set_String_'
+            PREPAYMENT:
+              $ref: '#/components/schemas/Set_String_'
+            PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+            COUNTER_PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the updated entities.
+        failedEntities:
+          properties:
+            CONTRACT:
+              $ref: '#/components/schemas/Set_String_'
+            ACCOUNTPLAN:
+              $ref: '#/components/schemas/Set_String_'
+            PREPAYMENT:
+              $ref: '#/components/schemas/Set_String_'
+            PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+            COUNTER_PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the entities for which the update failed.
+      description: ''
+    ContractRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - accountId
+        - endDate
+        - name
+        - startDate
+        properties:
+          accountId:
+            minLength: 1
+            type: string
+            description: The unique identifier (UUID) of the Account associated with this Contract.
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: The name of the Contract.
+          code:
+            maxLength: 80
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: The short code of the Contract.
+          description:
+            maxLength: 500
+            type: string
+            description: The description of the Contract, which provides context and information.
+          purchaseOrderNumber:
+            maxLength: 100
+            type: string
+            description: The Purchase Order Number associated with the Contract.
+          applyContractPeriodLimits:
+            type: boolean
+            description: 'For Contract billing, a boolean setting for restricting the charges billed to the period defined for the Contract:
+
+              * **TRUE** - Contract billing for the Account will be restricted to charge amounts that fall within the defined Contract period.
+
+              * **FALSE** - The period for amounts billed under the Contract will be determined by the Account Plan attached to the Account and linked to the Contract.(*Default*)'
+          usageFilters:
+            type: array
+            description: 'Use `usageFilters` to control Contract billing and charge at billing only for usage where Product Meter dimensions equal specific defined values:
+
+              * Define Usage filters to either *include* or *exclude* charges for usage associated with specific Meter dimensions.
+
+              * The Meter dimensions must be present in the data field schema of the Meter used to submit usage data measurements.'
+            items:
+              $ref: '#/components/schemas/UsageFilter'
+          billGroupingKeyId:
+            type: string
+            description: 'The ID of the Bill Grouping Key assigned to the Contract.
+
+
+              If you are implementing Contract Billing for an Account, use `billGroupingKey` to control how charges linked to Contracts on the Account will be billed:
+
+              * **Independent Contract billing**. Assign an *exclusive* Bill Grouping Key to the Contract - only charges due against the Account and linked to the single Contract will appear on a separate Bill.
+
+              * **Collective Contract billing**. Assign the same *non-exclusive* Bill Grouping Key to multiple Contracts - all charges due against the Account and linked to the multiple Contracts will appear together on a single Bill. '
+          startDate:
+            type: string
+            description: The start date for the Contract *(in ISO-8601 format)*. This date is inclusive, meaning the Contract is active from this date onward.
+            format: date
+          endDate:
+            type: string
+            description: The exclusive end date of the Contract *(in ISO-8601 format)*. This means the Contract is active until midnight on the day ***before*** this date.
+            format: date
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PaginatedContractResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ContractResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    Collection_String_:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          description: ''
+      description: ''
+    UsageFilterMode:
+      type: string
+      description: ''
+      enum:
+      - INCLUDE
+      - EXCLUDE
     ContractResponse:
       type: object
       description: ''
@@ -507,6 +610,15 @@ components:
             description: The unique identifier (UUID) of the user who last modified this Contract.
             x-stainless-skip:
             - terraform
+    BillingEntity:
+      type: string
+      description: ''
+      enum:
+      - CONTRACT
+      - ACCOUNTPLAN
+      - PREPAYMENT
+      - PRICINGS
+      - COUNTER_PRICINGS
     UsageFilter:
       required:
       - dimensionCode
@@ -526,138 +638,26 @@ components:
           description: ''
           $ref: '#/components/schemas/UsageFilterMode'
       description: Filters that determine which usage records are included in contract billing
-    BillingEntity:
-      type: string
-      description: ''
-      enum:
-      - CONTRACT
-      - ACCOUNTPLAN
-      - PREPAYMENT
-      - PRICINGS
-      - COUNTER_PRICINGS
-    ContractRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - accountId
-        - endDate
-        - name
-        - startDate
-        properties:
-          accountId:
-            minLength: 1
-            type: string
-            description: The unique identifier (UUID) of the Account associated with this Contract.
-          name:
-            maxLength: 200
-            minLength: 1
-            type: string
-            description: The name of the Contract.
-          code:
-            maxLength: 80
-            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
-            type: string
-            description: The short code of the Contract.
-          description:
-            maxLength: 500
-            type: string
-            description: The description of the Contract, which provides context and information.
-          purchaseOrderNumber:
-            maxLength: 100
-            type: string
-            description: The Purchase Order Number associated with the Contract.
-          applyContractPeriodLimits:
-            type: boolean
-            description: 'For Contract billing, a boolean setting for restricting the charges billed to the period defined for the Contract:
-
-              * **TRUE** - Contract billing for the Account will be restricted to charge amounts that fall within the defined Contract period.
-
-              * **FALSE** - The period for amounts billed under the Contract will be determined by the Account Plan attached to the Account and linked to the Contract.(*Default*)'
-          usageFilters:
-            type: array
-            description: 'Use `usageFilters` to control Contract billing and charge at billing only for usage where Product Meter dimensions equal specific defined values:
-
-              * Define Usage filters to either *include* or *exclude* charges for usage associated with specific Meter dimensions.
-
-              * The Meter dimensions must be present in the data field schema of the Meter used to submit usage data measurements.'
-            items:
-              $ref: '#/components/schemas/UsageFilter'
-          billGroupingKeyId:
-            type: string
-            description: 'The ID of the Bill Grouping Key assigned to the Contract.
-
-
-              If you are implementing Contract Billing for an Account, use `billGroupingKey` to control how charges linked to Contracts on the Account will be billed:
-
-              * **Independent Contract billing**. Assign an *exclusive* Bill Grouping Key to the Contract - only charges due against the Account and linked to the single Contract will appear on a separate Bill.
-
-              * **Collective Contract billing**. Assign the same *non-exclusive* Bill Grouping Key to multiple Contracts - all charges due against the Account and linked to the multiple Contracts will appear together on a single Bill. '
-          startDate:
-            type: string
-            description: The start date for the Contract *(in ISO-8601 format)*. This date is inclusive, meaning the Contract is active from this date onward.
-            format: date
-          endDate:
-            type: string
-            description: The exclusive end date of the Contract *(in ISO-8601 format)*. This means the Contract is active until midnight on the day ***before*** this date.
-            format: date
-    Collection_String_:
-      type: object
-      properties:
-        empty:
-          type: boolean
-          description: ''
-      description: ''
-    AbstractResponse:
+    EndDateBillingEntitiesRequest:
       required:
-      - id
+      - billingEntities
+      - endDate
       type: object
       properties:
-        id:
+        endDate:
           type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
+          description: The end date and time applied to the specified billing entities *(in ISO 8601 format)*.
+          format: date-time
+        applyToChildren:
+          type: boolean
+          description: A Boolean TRUE/FALSE flag. For Parent Accounts, set to TRUE if you want the specified end-date to be applied to any billing entities associated with Child Accounts. *(Optional)*
+        billingEntities:
+          minItems: 1
+          type: array
+          description: Defines which billing entities associated with the Account will have the specified end-date applied. For example, if you want the specified end-date to be applied to all Prepayments/Commitments created for the Account use `"PREPAYMENT"`.
+          items:
+            $ref: '#/components/schemas/BillingEntity'
       description: ''
-    AbstractResponseWithCustomFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-    UsageFilterMode:
-      type: string
-      description: ''
-      enum:
-      - INCLUDE
-      - EXCLUDE
   responses:
     Error:
       description: Error message

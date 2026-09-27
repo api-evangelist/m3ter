@@ -416,32 +416,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    CommitmentFee:
-      required:
-      - amount
-      - date
-      - servicePeriodEndDate
-      - servicePeriodStartDate
-      type: object
-      properties:
-        date:
-          type: string
-          description: ''
-          format: date
-        amount:
-          type: number
-          description: ''
-          format: double
-          exclusiveMinimum: 0
-        servicePeriodStartDate:
-          type: string
-          description: ''
-          format: date-time
-        servicePeriodEndDate:
-          type: string
-          description: ''
-          format: date-time
-      description: ''
     AbstractRequest:
       type: object
       properties:
@@ -452,6 +426,25 @@ components:
             - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
 
             - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
           format: int64
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
@@ -813,15 +806,6 @@ components:
               **NOTE:** If no charge types are specified, by default *all types* can draw-down against the Commitment amount at billing.'
             items:
               $ref: '#/components/schemas/CommitmentLineItemType'
-    CommitmentLineItemType:
-      type: string
-      description: Available line item types for Commitments
-      enum:
-      - STANDING_CHARGE
-      - USAGE
-      - MINIMUM_SPEND
-      - COUNTER_RUNNING_TOTAL_CHARGE
-      - COUNTER_ADJUSTMENT_DEBIT
     PaginatedCommitmentResponseData:
       type: object
       properties:
@@ -834,25 +818,15 @@ components:
           type: string
           description: ''
       description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
+    CommitmentLineItemType:
+      type: string
+      description: Available line item types for Commitments
+      enum:
+      - STANDING_CHARGE
+      - USAGE
+      - MINIMUM_SPEND
+      - COUNTER_RUNNING_TOTAL_CHARGE
+      - COUNTER_ADJUSTMENT_DEBIT
     ChildBillingMode:
       type: string
       description: 'If the Account is either a Parent or a Child Account, this specifies the Account hierarchy billing mode. The mode determines how billing will be handled and shown on bills for charges due on the Parent Account, and charges due on Child Accounts:
@@ -869,6 +843,32 @@ components:
       - PARENT_SUMMARY
       - PARENT_BREAKDOWN
       - CHILD
+    CommitmentFee:
+      required:
+      - amount
+      - date
+      - servicePeriodEndDate
+      - servicePeriodStartDate
+      type: object
+      properties:
+        date:
+          type: string
+          description: ''
+          format: date
+        amount:
+          type: number
+          description: ''
+          format: double
+          exclusiveMinimum: 0
+        servicePeriodStartDate:
+          type: string
+          description: ''
+          format: date-time
+        servicePeriodEndDate:
+          type: string
+          description: ''
+          format: date-time
+      description: ''
   responses:
     Error:
       description: Error message

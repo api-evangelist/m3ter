@@ -312,6 +312,39 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     AbstractResponseWithAuditFields:
       type: object
       description: ''
@@ -340,20 +373,6 @@ components:
             description: The ID of the user who last modified this item.
             x-stainless-skip:
             - terraform
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
     PaginatedCounterAdjustmentResponseData:
       type: object
       properties:
@@ -365,25 +384,6 @@ components:
         nextToken:
           type: string
           description: ''
-      description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
       description: ''
     CounterAdjustmentRequest:
       type: object

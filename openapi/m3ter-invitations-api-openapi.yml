@@ -142,25 +142,37 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    OrgUserInvitationRequest:
+    PaginatedOrgUserInvitationResponseData:
       type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/OrgUserInvitationResponse'
+        nextToken:
+          type: string
+          description: ''
       description: ''
-      allOf:
-      - $ref: '#/components/schemas/UserRequest'
-      - properties:
-          permissionPolicyIds:
-            type: array
-            description: 'The IDs of the permission policies the invited user has been assigned. This controls the access rights and privileges that this user will have when working in the m3ter Organization. '
-            items:
-              type: string
-          dtEndAccess:
-            type: string
-            description: 'The date when access will end for the user *(in ISO-8601 format)*. Leave blank for no end date, which gives the user permanent access. '
-            format: date-time
-          dtExpiry:
-            type: string
-            description: The date when the invite expires *(in ISO-8601 format)*. After this date the invited user can no longer accept the invite. By default, any invite is valid for 30 days from the date the invite is sent.
-            format: date-time
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     UserRequest:
       required:
       - email
@@ -258,37 +270,25 @@ components:
             description: The UUID of the user who last modified the invitation.
             x-stainless-skip:
             - terraform
-    PaginatedOrgUserInvitationResponseData:
+    OrgUserInvitationRequest:
       type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/OrgUserInvitationResponse'
-        nextToken:
-          type: string
-          description: ''
       description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
+      allOf:
+      - $ref: '#/components/schemas/UserRequest'
+      - properties:
+          permissionPolicyIds:
+            type: array
+            description: 'The IDs of the permission policies the invited user has been assigned. This controls the access rights and privileges that this user will have when working in the m3ter Organization. '
+            items:
+              type: string
+          dtEndAccess:
+            type: string
+            description: 'The date when access will end for the user *(in ISO-8601 format)*. Leave blank for no end date, which gives the user permanent access. '
+            format: date-time
+          dtExpiry:
+            type: string
+            description: The date when the invite expires *(in ISO-8601 format)*. After this date the invited user can no longer accept the invite. By default, any invite is valid for 30 days from the date the invite is sent.
+            format: date-time
   responses:
     Error:
       description: Error message

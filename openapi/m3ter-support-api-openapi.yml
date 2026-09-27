@@ -84,28 +84,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    PermissionStatementWrapper:
-      required:
-      - action
-      - effect
-      - resource
-      type: object
-      properties:
-        effect:
-          type: string
-          description: ''
-        action:
-          type: array
-          description: ''
-          items:
-            type: string
-        resource:
-          minItems: 1
-          type: array
-          description: ''
-          items:
-            type: string
-      description: ''
     AbstractRequest:
       type: object
       properties:
@@ -120,14 +98,12 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    SupportRequest:
+    SupportResponse:
       type: object
       description: ''
       allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - dtEndSupportUsersAccess
-        properties:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
           dtEndSupportUsersAccess:
             type: string
             description: The Date/Time Support access ends *(in ISO-8601 format)*.
@@ -156,12 +132,14 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    SupportResponse:
+    SupportRequest:
       type: object
       description: ''
       allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - dtEndSupportUsersAccess
+        properties:
           dtEndSupportUsersAccess:
             type: string
             description: The Date/Time Support access ends *(in ISO-8601 format)*.
@@ -171,6 +149,28 @@ components:
             description: The Permission Policies assigned to any support users when they access your Organization.
             items:
               $ref: '#/components/schemas/PermissionStatementWrapper'
+    PermissionStatementWrapper:
+      required:
+      - action
+      - effect
+      - resource
+      type: object
+      properties:
+        effect:
+          type: string
+          description: ''
+        action:
+          type: array
+          description: ''
+          items:
+            type: string
+        resource:
+          minItems: 1
+          type: array
+          description: ''
+          items:
+            type: string
+      description: ''
   responses:
     Error:
       description: Error message

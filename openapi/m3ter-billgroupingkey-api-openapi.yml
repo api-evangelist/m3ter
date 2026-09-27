@@ -270,6 +270,84 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractPickListResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          code:
+            type: string
+            description: The short code of the data entity.
+          name:
+            type: string
+            description: The name of the data entity.
+          archived:
+            type: boolean
+            description: TRUE / FALSE flag indicating whether the data entity is archived. An entity can be archived if it is obsolete.
+    PaginatedBillGroupingKeyResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/BillGroupingKeyResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    BillGroupingKeyResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractPickListResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          exclusive:
+            type: boolean
+            description: Whether or not the Bill Grouping Key will be used exclusively by one entity.
+          dtCreated:
+            type: string
+            description: The DateTime when the Bill Grouping Key was created.(*in ISO 8601 format*)
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the Bill Grouping Key was last modified.(*in ISO 8601 format*)
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this Bill Grouping Key.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this Bill Grouping Key.
+            x-stainless-skip:
+            - terraform
     BillGroupingKeyRequest:
       type: object
       description: ''
@@ -309,84 +387,6 @@ components:
               * TRUE - the entity is in the archived state.
 
               * FALSE - the entity is not in the archived state.'
-    AbstractPickListResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          code:
-            type: string
-            description: The short code of the data entity.
-          name:
-            type: string
-            description: The name of the data entity.
-          archived:
-            type: boolean
-            description: TRUE / FALSE flag indicating whether the data entity is archived. An entity can be archived if it is obsolete.
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    BillGroupingKeyResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractPickListResponse'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          exclusive:
-            type: boolean
-            description: Whether or not the Bill Grouping Key will be used exclusively by one entity.
-          dtCreated:
-            type: string
-            description: The DateTime when the Bill Grouping Key was created.(*in ISO 8601 format*)
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the Bill Grouping Key was last modified.(*in ISO 8601 format*)
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The id of the user who created this Bill Grouping Key.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The id of the user who last modified this Bill Grouping Key.
-            x-stainless-skip:
-            - terraform
-    PaginatedBillGroupingKeyResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/BillGroupingKeyResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
   responses:
     Error:
       description: Error message

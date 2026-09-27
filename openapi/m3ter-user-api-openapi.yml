@@ -48,99 +48,25 @@ paths:
           x-stainless-deprecation-message: the org id should be set at the client level instead
 components:
   schemas:
-    ServiceUserResponse:
+    MeResponse:
       type: object
+      properties:
+        user:
+          description: ''
+          $ref: '#/components/schemas/UserResponse'
+        serviceUser:
+          description: ''
+          $ref: '#/components/schemas/ServiceUserResponse'
+        organization:
+          description: ''
+          $ref: '#/components/schemas/OrganizationResponse'
       description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          name:
-            type: string
-            description: ''
-          dtCreated:
-            type: string
-            description: The DateTime when the service user was created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the service user was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The id of the user who created this service user.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The id of the user who last modified this service user.
-            x-stainless-skip:
-            - terraform
-    OrganizationStatus:
+    OrganizationType:
       type: string
       description: ''
       enum:
-      - ACTIVE
-      - ARCHIVED
-    UserResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          firstName:
-            type: string
-            description: The first name of the user.
-          lastName:
-            type: string
-            description: 'The surname of the user. '
-          contactNumber:
-            type: string
-            description: The user's contact telephone number.
-          email:
-            type: string
-            description: 'The email address for this user. '
-          organizations:
-            type: array
-            description: An array listing the Organizations where this user has access.
-            items:
-              type: string
-          firstAcceptedTermsAndConditions:
-            type: string
-            description: 'The date and time *(in ISO 8601 format)* when this user first accepted the the m3ter terms and conditions.  '
-            format: date-time
-          lastAcceptedTermsAndConditions:
-            type: string
-            description: 'The date and time *(in ISO 8601 format)* when this user last accepted the the m3ter terms and conditions.  '
-            format: date-time
-          supportUser:
-            type: boolean
-            description: 'Indicates whether this is a m3ter Support user. '
-          dtCreated:
-            type: string
-            description: The date and time *(in ISO-8601 format)* when the user was created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The date and time *(in ISO-8601 format)* when the user was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The user who created this user.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The unique identifier (UUID) of the user who last modified this user record.
-            x-stainless-skip:
-            - terraform
+      - PRODUCTION
+      - SANDBOX
     OrganizationResponse:
       type: object
       description: ''
@@ -229,12 +155,37 @@ components:
             description: The id of the user who last modified this organization.
             x-stainless-skip:
             - terraform
-    OrganizationType:
-      type: string
+    ServiceUserResponse:
+      type: object
       description: ''
-      enum:
-      - PRODUCTION
-      - SANDBOX
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: ''
+          dtCreated:
+            type: string
+            description: The DateTime when the service user was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the service user was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this service user.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this service user.
+            x-stainless-skip:
+            - terraform
     AbstractResponse:
       required:
       - id
@@ -254,19 +205,68 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    MeResponse:
-      type: object
-      properties:
-        user:
-          description: ''
-          $ref: '#/components/schemas/UserResponse'
-        serviceUser:
-          description: ''
-          $ref: '#/components/schemas/ServiceUserResponse'
-        organization:
-          description: ''
-          $ref: '#/components/schemas/OrganizationResponse'
+    OrganizationStatus:
+      type: string
       description: ''
+      enum:
+      - ACTIVE
+      - ARCHIVED
+    UserResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          firstName:
+            type: string
+            description: The first name of the user.
+          lastName:
+            type: string
+            description: 'The surname of the user. '
+          contactNumber:
+            type: string
+            description: The user's contact telephone number.
+          email:
+            type: string
+            description: 'The email address for this user. '
+          organizations:
+            type: array
+            description: An array listing the Organizations where this user has access.
+            items:
+              type: string
+          firstAcceptedTermsAndConditions:
+            type: string
+            description: 'The date and time *(in ISO 8601 format)* when this user first accepted the the m3ter terms and conditions.  '
+            format: date-time
+          lastAcceptedTermsAndConditions:
+            type: string
+            description: 'The date and time *(in ISO 8601 format)* when this user last accepted the the m3ter terms and conditions.  '
+            format: date-time
+          supportUser:
+            type: boolean
+            description: 'Indicates whether this is a m3ter Support user. '
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the user was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the user was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The user who created this user.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this user record.
+            x-stainless-skip:
+            - terraform
   responses:
     Error:
       description: Error message

@@ -266,6 +266,54 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    BillJobRecalculateRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - billIds
+        properties:
+          billIds:
+            maxItems: 100
+            minItems: 1
+            type: array
+            description: 'The array of unique identifiers (UUIDs) for the Bills which are to be recalculated. '
+            items:
+              type: string
     BillJobRequest:
       type: object
       description: ''
@@ -382,58 +430,27 @@ components:
       - RUNNING
       - COMPLETE
       - CANCELLED
-    BillJobRecalculateRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - billIds
-        properties:
-          billIds:
-            maxItems: 100
-            minItems: 1
-            type: array
-            description: 'The array of unique identifiers (UUIDs) for the Bills which are to be recalculated. '
-            items:
-              type: string
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
+    BillJobBillingFrequency:
+      type: string
+      description: 'Defines how often Bills are generated.
 
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+        - **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
 
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    CurrencyConversion:
-      required:
-      - from
-      - to
-      type: object
-      properties:
-        from:
-          minLength: 1
-          type: string
-          description: 'Currency to convert from. For example: GBP.'
-          example: EUR
-        to:
-          minLength: 1
-          type: string
-          description: 'Currency to convert to. For example: USD.'
-          example: USD
-        multiplier:
-          type: number
-          description: Conversion rate between currencies.
-          format: double
-          example: 1.12
-          exclusiveMinimum: 0
-      description: An array of currency conversion rates from Bill currency to Organization currency. For example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate.
+        - **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
+
+        - **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
+
+        - **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
+
+        - **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
+
+        '
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - ANNUALLY
+      - AD_HOC
     BillJobResponse:
       type: object
       description: ''
@@ -580,46 +597,29 @@ components:
       enum:
       - CREATE
       - RECALCULATE
-    BillJobBillingFrequency:
-      type: string
-      description: 'Defines how often Bills are generated.
-
-        - **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
-
-        - **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
-
-        - **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
-
-        - **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
-
-        - **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
-
-        '
-      enum:
-      - DAILY
-      - WEEKLY
-      - MONTHLY
-      - ANNUALLY
-      - AD_HOC
-    AbstractResponse:
+    CurrencyConversion:
       required:
-      - id
+      - from
+      - to
       type: object
       properties:
-        id:
+        from:
+          minLength: 1
           type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
+          description: 'Currency to convert from. For example: GBP.'
+          example: EUR
+        to:
+          minLength: 1
+          type: string
+          description: 'Currency to convert to. For example: USD.'
+          example: USD
+        multiplier:
+          type: number
+          description: Conversion rate between currencies.
+          format: double
+          example: 1.12
+          exclusiveMinimum: 0
+      description: An array of currency conversion rates from Bill currency to Organization currency. For example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate.
     PaginatedBillJobResponseData:
       type: object
       properties:

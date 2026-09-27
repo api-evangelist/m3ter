@@ -370,87 +370,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    ReplaceAccountPlanResponse:
-      type: object
-      properties:
-        originalAccountPlan:
-          description: ''
-          $ref: '#/components/schemas/AccountPlanResponse'
-        newAccountPlan:
-          description: ''
-          $ref: '#/components/schemas/AccountPlanResponse'
-      description: ''
-    AccountPlanRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - accountId
-        - startDate
-        properties:
-          accountId:
-            maxLength: 36
-            minLength: 36
-            type: string
-            description: The unique identifier (UUID) for the Account.
-          planId:
-            maxLength: 36
-            minLength: 36
-            type: string
-            description: 'The unique identifier (UUID) of the Plan to be attached to the Account to create an AccountPlan.
-
-
-              **Note:** Exclusive of the `planGroupId` request parameter - exactly one of `planId` or `planGroupId` must be used per call.'
-          planGroupId:
-            maxLength: 36
-            minLength: 36
-            type: string
-            description: 'The unique identifier (UUID) of the PlanGroup to be attached to the Account to create an AccountPlanGroup.
-
-
-              **Note:** Exclusive of the `planId` request parameter - exactly one of `planId` or `planGroupId` must be used per call.'
-          startDate:
-            type: string
-            description: The start date *(in ISO-8601 format)* for the AccountPlan or AccountPlanGroup becoming active for the Account.
-            format: date-time
-          endDate:
-            type: string
-            description: The end date *(in ISO-8601 format)* for when the AccountPlan or AccountPlanGroup ceases to be active for the Account. If not specified, the AccountPlan or AccountPlanGroup remains active indefinitely.
-            format: date-time
-          code:
-            maxLength: 80
-            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
-            type: string
-            description: A unique short code for the AccountPlan or AccountPlanGroup.
-          billEpoch:
-            type: string
-            description: 'Optional setting to define a *billing cycle date*, which acts as a reference for when in the applied billing frequency period bills are created:
-
-              * For example, if you attach a Plan to an Account where the Plan is configured for monthly billing frequency and you''ve defined the period the Plan will apply to the Account to be from January 1st, 2022 until January 1st, 2023. You then set a `billEpoch` date of February 15th, 2022. The first Bill will be created for the Account on February 15th, and subsequent Bills created on the 15th of the months following for the remainder of the billing period - March 15th, April 15th, and so on.
-
-              * If not defined, then the `billEpoch` date set for the Account will be used instead.
-
-              * The date is in ISO-8601 format.'
-            format: date
-          contractId:
-            maxLength: 36
-            minLength: 36
-            type: string
-            description: The unique identifier (UUID) for a Contract to which you want to add the Plan or Plan Group being attached to the Account.
-          childBillingMode:
-            description: 'If the Account is either a Parent or a Child Account, this specifies the Account hierarchy billing mode. The mode determines how billing will be handled and shown on bills for charges due on the Parent Account, and charges due on Child Accounts:
-
-
-              * **Parent Breakdown** - a separate bill line item per Account. Default setting.
-
-
-              * **Parent Summary** - single bill line item for all Accounts.
-
-
-              * **Child** - the Child Account is billed.'
-            $ref: '#/components/schemas/ChildBillingMode'
     AbstractRequest:
       type: object
       properties:
@@ -464,18 +383,6 @@ components:
           format: int64
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
-      description: ''
-    PaginatedAccountPlanResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/AccountPlanResponse'
-        nextToken:
-          type: string
-          description: ''
       description: ''
     AbstractRequestWithCustomFields:
       type: object
@@ -575,41 +482,6 @@ components:
             description: The unique identifier (UUID) for the user who last modified the AccountPlan or AccountPlanGroup.
             x-stainless-skip:
             - terraform
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    ChildBillingMode:
-      type: string
-      description: 'If the Account is either a Parent or a Child Account, this specifies the Account hierarchy billing mode. The mode determines how billing will be handled and shown on bills for charges due on the Parent Account, and charges due on Child Accounts:
-
-
-        * **Parent Breakdown** - a separate bill line item per Account. Default setting.
-
-
-        * **Parent Summary** - single bill line item for all Accounts.
-
-
-        * **Child** - the Child Account is billed.'
-      enum:
-      - PARENT_SUMMARY
-      - PARENT_BREAKDOWN
-      - CHILD
     AbstractResponseWithCustomFields:
       type: object
       description: ''
@@ -633,6 +505,134 @@ components:
                 type: integer
               - title: NumberCustomFieldRes
                 type: number
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AccountPlanRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - accountId
+        - startDate
+        properties:
+          accountId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: The unique identifier (UUID) for the Account.
+          planId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: 'The unique identifier (UUID) of the Plan to be attached to the Account to create an AccountPlan.
+
+
+              **Note:** Exclusive of the `planGroupId` request parameter - exactly one of `planId` or `planGroupId` must be used per call.'
+          planGroupId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: 'The unique identifier (UUID) of the PlanGroup to be attached to the Account to create an AccountPlanGroup.
+
+
+              **Note:** Exclusive of the `planId` request parameter - exactly one of `planId` or `planGroupId` must be used per call.'
+          startDate:
+            type: string
+            description: The start date *(in ISO-8601 format)* for the AccountPlan or AccountPlanGroup becoming active for the Account.
+            format: date-time
+          endDate:
+            type: string
+            description: The end date *(in ISO-8601 format)* for when the AccountPlan or AccountPlanGroup ceases to be active for the Account. If not specified, the AccountPlan or AccountPlanGroup remains active indefinitely.
+            format: date-time
+          code:
+            maxLength: 80
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: A unique short code for the AccountPlan or AccountPlanGroup.
+          billEpoch:
+            type: string
+            description: 'Optional setting to define a *billing cycle date*, which acts as a reference for when in the applied billing frequency period bills are created:
+
+              * For example, if you attach a Plan to an Account where the Plan is configured for monthly billing frequency and you''ve defined the period the Plan will apply to the Account to be from January 1st, 2022 until January 1st, 2023. You then set a `billEpoch` date of February 15th, 2022. The first Bill will be created for the Account on February 15th, and subsequent Bills created on the 15th of the months following for the remainder of the billing period - March 15th, April 15th, and so on.
+
+              * If not defined, then the `billEpoch` date set for the Account will be used instead.
+
+              * The date is in ISO-8601 format.'
+            format: date
+          contractId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: The unique identifier (UUID) for a Contract to which you want to add the Plan or Plan Group being attached to the Account.
+          childBillingMode:
+            description: 'If the Account is either a Parent or a Child Account, this specifies the Account hierarchy billing mode. The mode determines how billing will be handled and shown on bills for charges due on the Parent Account, and charges due on Child Accounts:
+
+
+              * **Parent Breakdown** - a separate bill line item per Account. Default setting.
+
+
+              * **Parent Summary** - single bill line item for all Accounts.
+
+
+              * **Child** - the Child Account is billed.'
+            $ref: '#/components/schemas/ChildBillingMode'
+    PaginatedAccountPlanResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AccountPlanResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    ReplaceAccountPlanResponse:
+      type: object
+      properties:
+        originalAccountPlan:
+          description: ''
+          $ref: '#/components/schemas/AccountPlanResponse'
+        newAccountPlan:
+          description: ''
+          $ref: '#/components/schemas/AccountPlanResponse'
+      description: ''
+    ChildBillingMode:
+      type: string
+      description: 'If the Account is either a Parent or a Child Account, this specifies the Account hierarchy billing mode. The mode determines how billing will be handled and shown on bills for charges due on the Parent Account, and charges due on Child Accounts:
+
+
+        * **Parent Breakdown** - a separate bill line item per Account. Default setting.
+
+
+        * **Parent Summary** - single bill line item for all Accounts.
+
+
+        * **Child** - the Child Account is billed.'
+      enum:
+      - PARENT_SUMMARY
+      - PARENT_BREAKDOWN
+      - CHILD
   responses:
     Error:
       description: Error message

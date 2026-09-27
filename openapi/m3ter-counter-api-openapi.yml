@@ -251,6 +251,39 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     AbstractResponseWithAuditFields:
       type: object
       description: ''
@@ -279,20 +312,25 @@ components:
             description: The ID of the user who last modified this item.
             x-stainless-skip:
             - terraform
-    AbstractRequest:
+    CounterResponse:
       type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
       description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          code:
+            type: string
+            description: Code of the Counter. A unique short code to identify the Counter.
+          productId:
+            type: string
+            description: UUID of the product the Counter belongs to. *(Optional)* - if no `productId` is returned, the Counter is Global. A Global Counter can be used to price Plans or Plan Templates belonging to any Product.
+          name:
+            type: string
+            description: Name of the Counter.
+          unit:
+            type: string
+            description: Label for units shown on Bill line items, and indicating to customers what they are being charged for.
     CounterRequest:
       type: object
       description: ''
@@ -321,25 +359,6 @@ components:
             minLength: 1
             type: string
             description: User defined label for units shown on Bill line items, and indicating to your customers what they are being charged for.
-    CounterResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          code:
-            type: string
-            description: Code of the Counter. A unique short code to identify the Counter.
-          productId:
-            type: string
-            description: UUID of the product the Counter belongs to. *(Optional)* - if no `productId` is returned, the Counter is Global. A Global Counter can be used to price Plans or Plan Templates belonging to any Product.
-          name:
-            type: string
-            description: Name of the Counter.
-          unit:
-            type: string
-            description: Label for units shown on Bill line items, and indicating to customers what they are being charged for.
     PaginatedCounterResponseData:
       type: object
       properties:
@@ -351,25 +370,6 @@ components:
         nextToken:
           type: string
           description: ''
-      description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
       description: ''
   responses:
     Error:

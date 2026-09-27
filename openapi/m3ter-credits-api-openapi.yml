@@ -264,31 +264,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    CreditLineItemRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/MemoLineItemRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
-      - properties:
-          amountToApplyOnBill:
-            type: number
-            description: ''
-          creditReasonId:
-            type: string
-            description: The UUID of the credit reason.
-    PaginatedCreditLineItemResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/CreditLineItemResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
     AbstractRequest:
       type: object
       properties:
@@ -316,29 +291,70 @@ components:
           creditReasonId:
             type: string
             description: The UUID of the credit reason for this credit line item.
-    LineItemType:
-      type: string
-      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
-      enum:
-      - STANDING_CHARGE
-      - USAGE
-      - COUNTER_RUNNING_TOTAL_CHARGE
-      - COUNTER_ADJUSTMENT_DEBIT
-      - COUNTER_ADJUSTMENT_CREDIT
-      - USAGE_CREDIT
-      - MINIMUM_SPEND
-      - MINIMUM_SPEND_REFUND
-      - CREDIT_DEDUCTION
-      - MANUAL_ADJUSTMENT
-      - CREDIT_MEMO
-      - DEBIT_MEMO
-      - COMMITMENT_CONSUMED
-      - COMMITMENT_FEE
-      - OVERAGE_SURCHARGE
-      - OVERAGE_USAGE
-      - BALANCE_CONSUMED
-      - BALANCE_FEE
-      - AD_HOC
+    MemoLineItemRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - accountingProductId
+        - amount
+        - description
+        - productId
+        - referencedBillId
+        - referencedLineItemId
+        - servicePeriodEndDate
+        - servicePeriodStartDate
+        properties:
+          reasonId:
+            type: string
+            description: The UUID of the line item reason.
+          lineItemType:
+            description: ''
+            $ref: '#/components/schemas/LineItemType'
+          amountToApplyOnBill:
+            type: number
+            description: ''
+          productId:
+            type: string
+            description: The UUID of the Product.
+          accountingProductId:
+            type: string
+            description: ''
+          description:
+            minLength: 1
+            type: string
+            description: The description for the line item.
+          amount:
+            type: number
+            description: The amount for the line item.
+            exclusiveMinimum: 0
+          referencedBillId:
+            type: string
+            description: 'The UUID of the bill for the line item. '
+          referencedLineItemId:
+            type: string
+            description: The UUID of the line item.
+          servicePeriodStartDate:
+            type: string
+            description: The service period start date in ISO-8601 format. *(inclusive of the starting date)*.
+            format: date-time
+          servicePeriodEndDate:
+            type: string
+            description: The service period end date in ISO-8601 format.*(exclusive of the ending date)*.
+            format: date-time
+    PaginatedCreditLineItemResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/CreditLineItemResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     AbstractBillLineItemResponse:
       type: object
       description: ''
@@ -409,58 +425,42 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    MemoLineItemRequest:
+    CreditLineItemRequest:
       type: object
       description: ''
       allOf:
+      - $ref: '#/components/schemas/MemoLineItemRequest'
       - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - accountingProductId
-        - amount
-        - description
-        - productId
-        - referencedBillId
-        - referencedLineItemId
-        - servicePeriodEndDate
-        - servicePeriodStartDate
-        properties:
-          reasonId:
-            type: string
-            description: The UUID of the line item reason.
-          lineItemType:
-            description: ''
-            $ref: '#/components/schemas/LineItemType'
+      - properties:
           amountToApplyOnBill:
             type: number
             description: ''
-          productId:
+          creditReasonId:
             type: string
-            description: The UUID of the Product.
-          accountingProductId:
-            type: string
-            description: ''
-          description:
-            minLength: 1
-            type: string
-            description: The description for the line item.
-          amount:
-            type: number
-            description: The amount for the line item.
-            exclusiveMinimum: 0
-          referencedBillId:
-            type: string
-            description: 'The UUID of the bill for the line item. '
-          referencedLineItemId:
-            type: string
-            description: The UUID of the line item.
-          servicePeriodStartDate:
-            type: string
-            description: The service period start date in ISO-8601 format. *(inclusive of the starting date)*.
-            format: date-time
-          servicePeriodEndDate:
-            type: string
-            description: The service period end date in ISO-8601 format.*(exclusive of the ending date)*.
-            format: date-time
+            description: The UUID of the credit reason.
+    LineItemType:
+      type: string
+      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
+      enum:
+      - STANDING_CHARGE
+      - USAGE
+      - COUNTER_RUNNING_TOTAL_CHARGE
+      - COUNTER_ADJUSTMENT_DEBIT
+      - COUNTER_ADJUSTMENT_CREDIT
+      - USAGE_CREDIT
+      - MINIMUM_SPEND
+      - MINIMUM_SPEND_REFUND
+      - CREDIT_DEDUCTION
+      - MANUAL_ADJUSTMENT
+      - CREDIT_MEMO
+      - DEBIT_MEMO
+      - COMMITMENT_CONSUMED
+      - COMMITMENT_FEE
+      - OVERAGE_SURCHARGE
+      - OVERAGE_USAGE
+      - BALANCE_CONSUMED
+      - BALANCE_FEE
+      - AD_HOC
   responses:
     Error:
       description: Error message

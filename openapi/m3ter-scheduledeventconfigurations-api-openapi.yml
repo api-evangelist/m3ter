@@ -235,34 +235,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractResponseWithAuditFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          dtCreated:
-            type: string
-            description: The DateTime when this item was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The ID of the user who created this item.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The ID of the user who last modified this item.
-            x-stainless-skip:
-            - terraform
     AbstractRequest:
       type: object
       properties:
@@ -365,6 +337,34 @@ components:
         offset: 5
       allOf:
       - $ref: '#/components/schemas/AbstractRequest'
+    AbstractResponseWithAuditFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
     PaginatedScheduledEventConfigurationResponseData:
       type: object
       properties:

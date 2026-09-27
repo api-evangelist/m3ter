@@ -497,112 +497,73 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    PaginatedBalanceResponseData:
+    PaginatedBalanceTransactionResponseData:
       type: object
       properties:
         data:
           type: array
           description: ''
           items:
-            $ref: '#/components/schemas/BalanceResponse'
+            $ref: '#/components/schemas/BalanceTransactionResponse'
         nextToken:
           type: string
           description: ''
       description: ''
-    BalanceResponse:
+    BalanceTransactionResponse:
       type: object
       description: ''
       allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
       - $ref: '#/components/schemas/AbstractResponse'
       - properties:
-          code:
-            type: string
-            description: A unique short code assigned to the Balance.
-          name:
-            type: string
-            description: The official name of the Balance.
           description:
             type: string
-            description: A description of the Balance.
-          accountId:
-            type: string
-            description: The unique identifier (UUID) for the end customer Account the Balance belongs to.
+            description: A brief description explaining the purpose or context of the transaction.
           amount:
             type: number
-            description: The financial value that the Balance holds.
-          currency:
-            type: string
-            description: 'The currency code used for the Balance amount. For example: USD, GBP or EUR.'
-          startDate:
-            type: string
-            description: The date *(in ISO 8601 format)* when the Balance becomes active.
-            format: date-time
-          endDate:
-            type: string
-            description: The date *(in ISO 8601 format)* after which the Balance will no longer be active.
-            format: date-time
-          rolloverAmount:
+            description: The financial value of the transaction, as recorded in the balance.
+          paid:
             type: number
-            description: 'The maximum amount that can be carried over past the Balance end date and draw-down against for billing if there is an unused Balance amount remaining when the Balance end date is reached.
-
-              '
-          rolloverEndDate:
+            description: The actual payment amount if the payment currency differs from the Balance currency.
+          currencyPaid:
             type: string
-            description: The end date *(in ISO 8601 format)* for the rollover grace period, which is the period that unused Balance amounts can be carried over beyond the specified Balance `endDate` and continue to be drawn-down against for billing.
+            description: The currency code such as USD, GBP, EUR of the payment, if it differs from the balance currency.
+          entityType:
+            description: The type of entity associated with the Transaction - identifies who or what was responsible for the Transaction being added to the Balance - such as a **User**, a **Service User**, or a **Bill**.
+            $ref: '#/components/schemas/EntityType'
+          entityId:
+            type: string
+            description: The unique identifier (UUID) for the entity associated with the Transaction, as specified by the `entityType`.
+          transactionTypeId:
+            type: string
+            description: 'The unique identifier (UUID) for the Transaction type. This is obtained from the list of created Transaction Types within the Organization Configuration. '
+          appliedDate:
+            type: string
+            description: The date *(in ISO 8601 format)* when the balance transaction was applied, i.e., when the balance was affected.
             format: date-time
-          balanceDrawDownDescription:
+          transactionDate:
             type: string
-            description: A description for the bill line items for charges drawn-down against the Balance.
-          overageSurchargePercent:
-            type: number
-            description: The percentage surcharge applied to overage charges *(usage above the Balance)*.
-            format: double
-          overageDescription:
-            type: string
-            description: A description for overage charges.
-          productIds:
-            type: array
-            description: A list of Product IDs whose consumption charges due at billing can be drawn-down against the Balance amount.
-            items:
-              type: string
-          lineItemTypes:
-            type: array
-            description: 'A list of line item charge types that can draw-down against the Balance amount at billing. '
-            items:
-              $ref: '#/components/schemas/BalanceLineItemType'
-          contractId:
-            type: string
-            description: The unique identifier (UUID) for a Contract on the Account the Balance has been added to.
-          consumptionsAccountingProductId:
-            type: string
-            description: Product ID that any Balance Consumed line items will be attributed to for accounting purposes.(*Optional*)
-          feesAccountingProductId:
-            type: string
-            description: Product ID that any Balance Fees line items will be attributed to for accounting purposes.(*Optional*)
-          allowOverdraft:
-            type: boolean
-            description: Allow balance amounts to fall below zero. This feature is enabled on request. Please get in touch with m3ter Support or your m3ter contact if you would like it enabling for your organization(s).
+            description: The date *(in ISO 8601 format)* when the transaction was recorded in the system.
+            format: date-time
           dtCreated:
             type: string
-            description: The date and time *(in ISO 8601 format)* when the Balance was first created.
+            description: The date and time *(in ISO 8601 format)* when the balance transaction was first created.
             format: date-time
             x-stainless-skip:
             - terraform
           dtLastModified:
             type: string
-            description: The date and time *(in ISO 8601 format)* when the Balance was last modified.
+            description: The date and time *(in ISO 8601 format)* when the balance transaction was last modified.
             format: date-time
             x-stainless-skip:
             - terraform
           createdBy:
             type: string
-            description: The unique identifier (UUID) for the user who created the Balance.
+            description: The unique identifier (UUID) for the user who created the balance transaction.
             x-stainless-skip:
             - terraform
           lastModifiedBy:
             type: string
-            description: The unique identifier (UUID) for the user who last modified the Balance.
+            description: The unique identifier (UUID) for the user who last modified the balance transaction.
             x-stainless-skip:
             - terraform
     AbstractRequestWithCustomFields:
@@ -662,6 +623,48 @@ components:
             type: string
             description: The date *(in ISO 8601 format)* when the transaction occurred.
             format: date-time
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     BalanceTransactionsSummary:
       type: object
       properties:
@@ -690,36 +693,27 @@ components:
           description: Amount consumed from the original balance
           example: 100
       description: ''
-    PaginatedBalanceTransactionResponseData:
+    BalanceLineItemType:
+      type: string
+      description: Available line item types for Balances
+      enum:
+      - STANDING_CHARGE
+      - USAGE
+      - MINIMUM_SPEND
+      - COUNTER_RUNNING_TOTAL_CHARGE
+      - COUNTER_ADJUSTMENT_DEBIT
+      - AD_HOC
+    PaginatedBalanceResponseData:
       type: object
       properties:
         data:
           type: array
           description: ''
           items:
-            $ref: '#/components/schemas/BalanceTransactionResponse'
+            $ref: '#/components/schemas/BalanceResponse'
         nextToken:
           type: string
           description: ''
-      description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
       description: ''
     BalanceRequest:
       type: object
@@ -846,39 +840,102 @@ components:
             type: boolean
             description: Allow balance amounts to fall below zero. This feature is enabled on request. Please get in touch with m3ter Support or your m3ter contact if you would like it enabling for your organization(s).
             example: false
-    BalanceLineItemType:
-      type: string
-      description: Available line item types for Balances
-      enum:
-      - STANDING_CHARGE
-      - USAGE
-      - MINIMUM_SPEND
-      - COUNTER_RUNNING_TOTAL_CHARGE
-      - COUNTER_ADJUSTMENT_DEBIT
-      - AD_HOC
-    AbstractResponseWithCustomFields:
+    BalanceResponse:
       type: object
       description: ''
       allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
       - $ref: '#/components/schemas/AbstractResponse'
       - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+          code:
+            type: string
+            description: A unique short code assigned to the Balance.
+          name:
+            type: string
+            description: The official name of the Balance.
+          description:
+            type: string
+            description: A description of the Balance.
+          accountId:
+            type: string
+            description: The unique identifier (UUID) for the end customer Account the Balance belongs to.
+          amount:
+            type: number
+            description: The financial value that the Balance holds.
+          currency:
+            type: string
+            description: 'The currency code used for the Balance amount. For example: USD, GBP or EUR.'
+          startDate:
+            type: string
+            description: The date *(in ISO 8601 format)* when the Balance becomes active.
+            format: date-time
+          endDate:
+            type: string
+            description: The date *(in ISO 8601 format)* after which the Balance will no longer be active.
+            format: date-time
+          rolloverAmount:
+            type: number
+            description: 'The maximum amount that can be carried over past the Balance end date and draw-down against for billing if there is an unused Balance amount remaining when the Balance end date is reached.
 
-
-              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
+              '
+          rolloverEndDate:
+            type: string
+            description: The end date *(in ISO 8601 format)* for the rollover grace period, which is the period that unused Balance amounts can be carried over beyond the specified Balance `endDate` and continue to be drawn-down against for billing.
+            format: date-time
+          balanceDrawDownDescription:
+            type: string
+            description: A description for the bill line items for charges drawn-down against the Balance.
+          overageSurchargePercent:
+            type: number
+            description: The percentage surcharge applied to overage charges *(usage above the Balance)*.
+            format: double
+          overageDescription:
+            type: string
+            description: A description for overage charges.
+          productIds:
+            type: array
+            description: A list of Product IDs whose consumption charges due at billing can be drawn-down against the Balance amount.
+            items:
+              type: string
+          lineItemTypes:
+            type: array
+            description: 'A list of line item charge types that can draw-down against the Balance amount at billing. '
+            items:
+              $ref: '#/components/schemas/BalanceLineItemType'
+          contractId:
+            type: string
+            description: The unique identifier (UUID) for a Contract on the Account the Balance has been added to.
+          consumptionsAccountingProductId:
+            type: string
+            description: Product ID that any Balance Consumed line items will be attributed to for accounting purposes.(*Optional*)
+          feesAccountingProductId:
+            type: string
+            description: Product ID that any Balance Fees line items will be attributed to for accounting purposes.(*Optional*)
+          allowOverdraft:
+            type: boolean
+            description: Allow balance amounts to fall below zero. This feature is enabled on request. Please get in touch with m3ter Support or your m3ter contact if you would like it enabling for your organization(s).
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO 8601 format)* when the Balance was first created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO 8601 format)* when the Balance was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) for the user who created the Balance.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) for the user who last modified the Balance.
+            x-stainless-skip:
+            - terraform
     EntityType:
       type: string
       description: ''
@@ -888,63 +945,6 @@ components:
       - USER
       - SERVICE_USER
       - SCHEDULER
-    BalanceTransactionResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          description:
-            type: string
-            description: A brief description explaining the purpose or context of the transaction.
-          amount:
-            type: number
-            description: The financial value of the transaction, as recorded in the balance.
-          paid:
-            type: number
-            description: The actual payment amount if the payment currency differs from the Balance currency.
-          currencyPaid:
-            type: string
-            description: The currency code such as USD, GBP, EUR of the payment, if it differs from the balance currency.
-          entityType:
-            description: The type of entity associated with the Transaction - identifies who or what was responsible for the Transaction being added to the Balance - such as a **User**, a **Service User**, or a **Bill**.
-            $ref: '#/components/schemas/EntityType'
-          entityId:
-            type: string
-            description: The unique identifier (UUID) for the entity associated with the Transaction, as specified by the `entityType`.
-          transactionTypeId:
-            type: string
-            description: 'The unique identifier (UUID) for the Transaction type. This is obtained from the list of created Transaction Types within the Organization Configuration. '
-          appliedDate:
-            type: string
-            description: The date *(in ISO 8601 format)* when the balance transaction was applied, i.e., when the balance was affected.
-            format: date-time
-          transactionDate:
-            type: string
-            description: The date *(in ISO 8601 format)* when the transaction was recorded in the system.
-            format: date-time
-          dtCreated:
-            type: string
-            description: The date and time *(in ISO 8601 format)* when the balance transaction was first created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The date and time *(in ISO 8601 format)* when the balance transaction was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The unique identifier (UUID) for the user who created the balance transaction.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The unique identifier (UUID) for the user who last modified the balance transaction.
-            x-stainless-skip:
-            - terraform
   responses:
     Error:
       description: Error message

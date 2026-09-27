@@ -358,45 +358,104 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    PermissionStatement:
-      required:
-      - action
-      - effect
-      - resource
+    PermissionPolicyResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the Permission Policy.
+          permissionPolicy:
+            type: array
+            description: 'Array containing the Permission Policies information. '
+            items:
+              $ref: '#/components/schemas/PermissionStatement'
+          managedPolicy:
+            type: boolean
+            description: 'Indicates whether this is a system generated Managed Permission Policy. '
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Permission Policy was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Permission Policy was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this Permission Policy.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this Permission Policy.
+            x-stainless-skip:
+            - terraform
+    PaginatedOrgUserResponseData:
       type: object
       properties:
-        effect:
-          description: 'Specifies whether or not the user is allowed to perform the action on the resource.
-
-
-            **NOTE:** Use lower case, for example: `"allow"`. If you use upper case, you''ll receive an error.'
-          $ref: '#/components/schemas/PermissionEffect'
-        action:
+        data:
           type: array
-          description: 'The actions available to users who are assigned the Permission Policy - what they can do or cannot do with respect to the specified resource.
-
-
-            **NOTE:** Use lower case and a colon-separated format, for example, if you want to confer full CRUD, use:
-
-            ```
-
-            "config:create",
-
-            "config:delete",
-
-            "config:retrieve",
-
-            "config:update"
-
-            ```'
+          description: ''
           items:
-            $ref: '#/components/schemas/PermissionAction'
-        resource:
-          minItems: 1
+            $ref: '#/components/schemas/OrgUserResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    OrgUserRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+
+            - **Newly created entity:** On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:** On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.
+
+            '
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        permissionPolicy:
           type: array
-          description: See [Statements - Available Resources](https://www.m3ter.com/docs/guides/managing-organization-and-users/creating-and-managing-permissions#statements---available-resources) for a listing of available resources for Permission Policy statements.
+          description: 'An array of permission statements for the user. Each permission statement defines a specific permission for the user.
+
+
+            See [Understanding, Creating, and Managing Permission Policies](https://www.m3ter.com/docs/guides/organization-and-access-management/creating-and-managing-permissions) for more information.'
           items:
-            type: string
+            $ref: '#/components/schemas/PermissionStatement'
+        dtEndAccess:
+          type: string
+          description: The date and time *(in ISO 8601 format)* when the user's access will end. Use this to set or update the expiration of the user's access.
+          format: date-time
       description: ''
     UserResponse:
       type: object
@@ -470,6 +529,12 @@ components:
             type: string
             description: The date and time *(in ISO 8601 format)* when the user's access will end. Used to set or update the date and time a user's access expires.
             format: date-time
+    PermissionEffect:
+      type: string
+      description: ''
+      enum:
+      - ALLOW
+      - DENY
     PermissionAction:
       type: string
       description: ''
@@ -523,110 +588,45 @@ components:
             description: The unique identifier (UUID) of the user who last modified this Resource Group.
             x-stainless-skip:
             - terraform
-    PermissionPolicyResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          name:
-            type: string
-            description: The name of the Permission Policy.
-          permissionPolicy:
-            type: array
-            description: 'Array containing the Permission Policies information. '
-            items:
-              $ref: '#/components/schemas/PermissionStatement'
-          managedPolicy:
-            type: boolean
-            description: 'Indicates whether this is a system generated Managed Permission Policy. '
-          dtCreated:
-            type: string
-            description: The date and time *(in ISO-8601 format)* when the Permission Policy was created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The date and time *(in ISO-8601 format)* when the Permission Policy was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The unique identifier (UUID) of the user who created this Permission Policy.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The unique identifier (UUID) of the user who last modified this Permission Policy.
-            x-stainless-skip:
-            - terraform
-    AbstractResponse:
+    PermissionStatement:
       required:
-      - id
+      - action
+      - effect
+      - resource
       type: object
       properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    OrgUserRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
+        effect:
+          description: 'Specifies whether or not the user is allowed to perform the action on the resource.
 
 
-            - **Newly created entity:** On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:** On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.
-
-            '
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        permissionPolicy:
+            **NOTE:** Use lower case, for example: `"allow"`. If you use upper case, you''ll receive an error.'
+          $ref: '#/components/schemas/PermissionEffect'
+        action:
           type: array
-          description: 'An array of permission statements for the user. Each permission statement defines a specific permission for the user.
+          description: 'The actions available to users who are assigned the Permission Policy - what they can do or cannot do with respect to the specified resource.
 
 
-            See [Understanding, Creating, and Managing Permission Policies](https://www.m3ter.com/docs/guides/organization-and-access-management/creating-and-managing-permissions) for more information.'
+            **NOTE:** Use lower case and a colon-separated format, for example, if you want to confer full CRUD, use:
+
+            ```
+
+            "config:create",
+
+            "config:delete",
+
+            "config:retrieve",
+
+            "config:update"
+
+            ```'
           items:
-            $ref: '#/components/schemas/PermissionStatement'
-        dtEndAccess:
-          type: string
-          description: The date and time *(in ISO 8601 format)* when the user's access will end. Use this to set or update the expiration of the user's access.
-          format: date-time
-      description: ''
-    PermissionEffect:
-      type: string
-      description: ''
-      enum:
-      - ALLOW
-      - DENY
-    PaginatedOrgUserResponseData:
-      type: object
-      properties:
-        data:
+            $ref: '#/components/schemas/PermissionAction'
+        resource:
+          minItems: 1
           type: array
-          description: ''
+          description: See [Statements - Available Resources](https://www.m3ter.com/docs/guides/managing-organization-and-users/creating-and-managing-permissions#statements---available-resources) for a listing of available resources for Permission Policy statements.
           items:
-            $ref: '#/components/schemas/OrgUserResponse'
-        nextToken:
-          type: string
-          description: ''
+            type: string
       description: ''
   responses:
     Error:

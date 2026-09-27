@@ -284,6 +284,99 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    AbstractRequestWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+    BillingFrequency:
+      type: string
+      description: 'Defines how often Bills are generated.
+
+
+        * **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
+
+
+        * **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
+
+
+        * **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
+
+
+        * **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
+
+
+        * **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
+
+        '
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - ANNUALLY
+      - AD_HOC
+      - MIXED
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     PlanTemplateRequest:
       type: object
       description: ''
@@ -425,42 +518,6 @@ components:
 
 
               Overrides the setting at Organizational level for minimum spend billing in arrears/in advance.'
-    AbstractRequestWithCustomFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            maxItems: 100
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldReq
-                type: string
-              - title: IntegerCustomFieldReq
-                type: integer
-              - title: NumberCustomFieldReq
-                type: number
-    PaginatedPlanTemplateResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/PlanTemplateResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
     PlanTemplateResponse:
       type: object
       description: ''
@@ -593,75 +650,18 @@ components:
             description: The unique identifier (UUID) of the user who last modified this PlanTemplate.
             x-stainless-skip:
             - terraform
-    AbstractResponse:
-      required:
-      - id
+    PaginatedPlanTemplateResponseData:
       type: object
       properties:
-        id:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/PlanTemplateResponse'
+        nextToken:
           type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
+          description: ''
       description: ''
-    BillingFrequency:
-      type: string
-      description: 'Defines how often Bills are generated.
-
-
-        * **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
-
-
-        * **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
-
-
-        * **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
-
-
-        * **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
-
-
-        * **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
-
-        '
-      enum:
-      - DAILY
-      - WEEKLY
-      - MONTHLY
-      - ANNUALLY
-      - AD_HOC
-      - MIXED
-    AbstractResponseWithCustomFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
   responses:
     Error:
       description: Error message

@@ -93,6 +93,70 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AdHocDataExportConfigurationRequest:
+      required:
+      - sourceType
+      type: object
+      properties:
+        sourceType:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/SourceType'
+          - description: 'The type of data to export. Possible values are: OPERATIONAL, USAGE.'
+        destinationIds:
+          type: array
+          description: 'The destination ids.
+
+
+            **Note:** If you omit a Destination, this means that when the Export job runs and has succeeded, you can download the data export file locally. For details, see the [Get Data Export File Download URL](https://www.m3ter.com/docs/api#tag/ExportDestination/operation/GenerateDataExportFileDownloadUrl) endpoint in this API Reference.'
+          items:
+            type: string
+        exportFileFormat:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/ExportFileFormat'
+          - description: The export file format.
+        startDate:
+          type: string
+          description: The inclusive start date for the data export.
+          format: date-time
+      description: Base mode request containing ad-hoc data export configuration
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+    DataExplorerGroup:
+      type: object
+      properties:
+        groupType:
+          description: ''
+          $ref: '#/components/schemas/DataExplorerGroupType'
+      description: Group by a field
+      discriminator:
+        propertyName: groupType
+        mapping:
+          ACCOUNT: '#/components/schemas/DataExplorerAccountGroup'
+          DIMENSION: '#/components/schemas/DataExplorerDimensionGroup'
+          TIME: '#/components/schemas/DataExplorerTimeGroup'
+    DataExplorerGroupType:
+      type: string
+      description: Type of group
+      enum:
+      - ACCOUNT
+      - DIMENSION
+      - TIME
     OperationalDataType:
       type: string
       description: ''
@@ -117,19 +181,6 @@ components:
       - BALANCE_TRANSACTIONS
       - TRANSACTION_TYPES
       - CHARGES
-    DataExplorerGroupType:
-      type: string
-      description: Type of group
-      enum:
-      - ACCOUNT
-      - DIMENSION
-      - TIME
-    SourceType:
-      type: string
-      description: ''
-      enum:
-      - USAGE
-      - OPERATIONAL
     DataExplorerMeterField:
       required:
       - fieldCode
@@ -145,39 +196,12 @@ components:
           type: string
           description: Field code
       description: Meter field
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
+    ExportFileFormat:
+      type: string
       description: ''
-    DataExplorerAggregation:
-      required:
-      - fieldType
-      - function
-      type: object
-      properties:
-        fieldType:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/DataExplorerFieldType'
-          - description: Type of field
-        function:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/DataExplorerAggregationFunction'
-          - description: Aggregation function to apply
-      description: Aggregation to be applied to a field
-      allOf:
-      - $ref: '#/components/schemas/DataExplorerMeterField'
+      enum:
+      - CSV
+      - JSONL
     DataExplorerAggregationFunction:
       type: string
       description: Aggregation function
@@ -189,35 +213,12 @@ components:
       - LATEST
       - MEAN
       - UNIQUE
-    AdHocResponse:
-      type: object
-      properties:
-        jobId:
-          type: string
-          description: The id of the job
-      description: Response containing data export ad-hoc jobId
-    AdHocOperationalDataExportConfigurationRequest:
-      required:
-      - operationalDataTypes
-      - sourceType
-      type: object
-      properties:
-        sourceType:
-          allOf:
-          - type: string
-            enum:
-            - OPERATIONAL
-          - description: 'The type of data to export. Possible values are: OPERATIONAL'
-        operationalDataTypes:
-          minItems: 1
-          type: array
-          description: The list of the operational data types should be exported for.
-          items:
-            $ref: '#/components/schemas/OperationalDataType'
-      description: Request representing an operational data export configuration.
-      allOf:
-      - $ref: '#/components/schemas/AdHocDataExportConfigurationRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
+    SourceType:
+      type: string
+      description: ''
+      enum:
+      - USAGE
+      - OPERATIONAL
     AdHocUsageDataExportConfigurationRequestV2:
       required:
       - sourceType
@@ -262,48 +263,41 @@ components:
       allOf:
       - $ref: '#/components/schemas/AdHocDataExportConfigurationRequest'
       - $ref: '#/components/schemas/AbstractRequest'
+    AdHocOperationalDataExportConfigurationRequest:
+      required:
+      - operationalDataTypes
+      - sourceType
+      type: object
+      properties:
+        sourceType:
+          allOf:
+          - type: string
+            enum:
+            - OPERATIONAL
+          - description: 'The type of data to export. Possible values are: OPERATIONAL'
+        operationalDataTypes:
+          minItems: 1
+          type: array
+          description: The list of the operational data types should be exported for.
+          items:
+            $ref: '#/components/schemas/OperationalDataType'
+      description: Request representing an operational data export configuration.
+      allOf:
+      - $ref: '#/components/schemas/AdHocDataExportConfigurationRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+    AdHocResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+          description: The id of the job
+      description: Response containing data export ad-hoc jobId
     DataExplorerFieldType:
       type: string
       description: Type of field
       enum:
       - DIMENSION
       - MEASURE
-    ExportFileFormat:
-      type: string
-      description: ''
-      enum:
-      - CSV
-      - JSONL
-    AdHocDataExportConfigurationRequest:
-      required:
-      - sourceType
-      type: object
-      properties:
-        sourceType:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/SourceType'
-          - description: 'The type of data to export. Possible values are: OPERATIONAL, USAGE.'
-        destinationIds:
-          type: array
-          description: 'The destination ids.
-
-
-            **Note:** If you omit a Destination, this means that when the Export job runs and has succeeded, you can download the data export file locally. For details, see the [Get Data Export File Download URL](https://www.m3ter.com/docs/api#tag/ExportDestination/operation/GenerateDataExportFileDownloadUrl) endpoint in this API Reference.'
-          items:
-            type: string
-        exportFileFormat:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/ExportFileFormat'
-          - description: The export file format.
-        startDate:
-          type: string
-          description: The inclusive start date for the data export.
-          format: date-time
-      description: Base mode request containing ad-hoc data export configuration
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
     DataExplorerDimensionFilter:
       required:
       - values
@@ -318,19 +312,25 @@ components:
       description: Filter by dimension
       allOf:
       - $ref: '#/components/schemas/DataExplorerMeterField'
-    DataExplorerGroup:
+    DataExplorerAggregation:
+      required:
+      - fieldType
+      - function
       type: object
       properties:
-        groupType:
+        fieldType:
           description: ''
-          $ref: '#/components/schemas/DataExplorerGroupType'
-      description: Group by a field
-      discriminator:
-        propertyName: groupType
-        mapping:
-          ACCOUNT: '#/components/schemas/DataExplorerAccountGroup'
-          DIMENSION: '#/components/schemas/DataExplorerDimensionGroup'
-          TIME: '#/components/schemas/DataExplorerTimeGroup'
+          allOf:
+          - $ref: '#/components/schemas/DataExplorerFieldType'
+          - description: Type of field
+        function:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/DataExplorerAggregationFunction'
+          - description: Aggregation function to apply
+      description: Aggregation to be applied to a field
+      allOf:
+      - $ref: '#/components/schemas/DataExplorerMeterField'
   responses:
     Error:
       description: Error message

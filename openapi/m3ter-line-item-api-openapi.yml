@@ -105,6 +105,115 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    AbstractBillLineItemResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          lineItemType:
+            description: ''
+            $ref: '#/components/schemas/LineItemType'
+          productId:
+            type: string
+            description: ''
+          description:
+            type: string
+            description: ''
+          servicePeriodStartDate:
+            type: string
+            description: ''
+            format: date-time
+          servicePeriodEndDate:
+            type: string
+            description: ''
+            format: date-time
+          referencedBillId:
+            type: string
+            description: ''
+          referencedLineItemId:
+            type: string
+            description: ''
+          dtCreated:
+            type: string
+            description: The DateTime when the line item was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the line item was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this line item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this line item.
+            x-stainless-skip:
+            - terraform
+    BillLineItemPricingBandUsage:
+      type: object
+      properties:
+        pricingBandId:
+          type: string
+          description: 'The UUID for the pricing band. '
+        lowerLimit:
+          type: number
+          description: The lower limit *(start)* of the pricing band.
+          format: double
+        fixedPrice:
+          type: number
+          description: 'Fixed price is a charge entered for certain pricing types such as Stairstep, Custom Tiered, and Custom Volume. It is a set price and not dependent on usage.
+
+
+
+            '
+        unitSubtotal:
+          type: number
+          description: 'The subtotal of the unit usage. '
+        unitPrice:
+          type: number
+          description: 'The price per unit in the band. '
+        bandUnits:
+          type: number
+          description: 'The number of units used within the band. '
+        bandQuantity:
+          type: number
+          description: 'Usage amount within the band. '
+        bandSubtotal:
+          type: number
+          description: 'Subtotal amount for the band. '
+        creditTypeId:
+          type: string
+          description: The UUID of the credit type.
+        convertedBandSubtotal:
+          type: number
+          description: ''
+      description: Array containing the pricing band information, which shows the details for each pricing band or tier.
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     PaginatedBillLineItemResponseData:
       type: object
       properties:
@@ -255,115 +364,6 @@ components:
             type: object
             additionalProperties: true
             description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    AbstractBillLineItemResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          lineItemType:
-            description: ''
-            $ref: '#/components/schemas/LineItemType'
-          productId:
-            type: string
-            description: ''
-          description:
-            type: string
-            description: ''
-          servicePeriodStartDate:
-            type: string
-            description: ''
-            format: date-time
-          servicePeriodEndDate:
-            type: string
-            description: ''
-            format: date-time
-          referencedBillId:
-            type: string
-            description: ''
-          referencedLineItemId:
-            type: string
-            description: ''
-          dtCreated:
-            type: string
-            description: The DateTime when the line item was created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the line item was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The ID of the user who created this line item.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The ID of the user who last modified this line item.
-            x-stainless-skip:
-            - terraform
-    BillLineItemPricingBandUsage:
-      type: object
-      properties:
-        pricingBandId:
-          type: string
-          description: 'The UUID for the pricing band. '
-        lowerLimit:
-          type: number
-          description: The lower limit *(start)* of the pricing band.
-          format: double
-        fixedPrice:
-          type: number
-          description: 'Fixed price is a charge entered for certain pricing types such as Stairstep, Custom Tiered, and Custom Volume. It is a set price and not dependent on usage.
-
-
-
-            '
-        unitSubtotal:
-          type: number
-          description: 'The subtotal of the unit usage. '
-        unitPrice:
-          type: number
-          description: 'The price per unit in the band. '
-        bandUnits:
-          type: number
-          description: 'The number of units used within the band. '
-        bandQuantity:
-          type: number
-          description: 'Usage amount within the band. '
-        bandSubtotal:
-          type: number
-          description: 'Subtotal amount for the band. '
-        creditTypeId:
-          type: string
-          description: The UUID of the credit type.
-        convertedBandSubtotal:
-          type: number
-          description: ''
-      description: Array containing the pricing band information, which shows the details for each pricing band or tier.
   responses:
     Error:
       description: Error message

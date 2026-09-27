@@ -288,6 +288,68 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    EventResponse:
+      required:
+      - dtActioned
+      - eventName
+      - eventTime
+      - id
+      - m3terEvent
+      type: object
+      properties:
+        id:
+          type: string
+          description: The uniqie identifier (UUID) of the Event.
+        eventName:
+          type: string
+          description: The name of the Event as it is registered in the system. This name is used to categorize and trigger associated actions.
+        eventTime:
+          type: string
+          description: The time when the Event was triggered, using the ISO 8601 date and time format.
+          format: date-time
+        m3terEvent:
+          description: 'The Data Transfer Object (DTO) containing the details of the Event. '
+        dtActioned:
+          type: string
+          description: 'When an Event was actioned. It follows the ISO 8601 date and time format.
+
+
+            You can action an Event to indicate that it has been followed up and resolved - this is useful when dealing with integration error Events or ingest failure Events.'
+          format: date-time
+      description: Response containing an Event entity.
+      example:
+        id: 9cb46d85-7cb6-4637-80a1-d4ec38e4ab30
+        eventName: configuration.commitment.created
+        eventTime: '2022-10-28T13:54:49.557Z'
+        dtActioned: '2022-10-28T13:56:49.557Z'
+        m3terEvent:
+          eventData:
+            newDto:
+              commitmentFeeDescription: ''
+              endDate: '2024-12-31'
+              billingInterval: 1
+              orgId: 396d788d-5174-XXXX-9d69-YYYY4671fc33
+              overageSurchargePercent: 5
+              overageDescription: ''
+              currency: USD
+              id: 480d317e-2030-416b-b64b-c07577c418b4
+              amountSpent: 0
+              accountCode: doetech_premium
+              amount: 15000
+              billingOffset: 0
+              lastModifiedBy: USER_810e3a43-XXXX-4dab-YYYY-470977405b58
+              billingPlanId: 0409e75a-8a87-43de-aa58-fc6ec823ce37
+              version: 1
+              accountId: 1cf2a754-476c-498c-b05a-7d41abfc404d
+              dtCreated: '2022-10-28T13:54:48.081781Z'
+              amountPrePaid: 0
+              productIds:
+              - bec371ef-dbad-4e73-a56a-dadecff2287c
+              createdBy: USER_810e3a43-XXXX-4dab-YYYY-470977405b58
+              contractId: 68595d6d-261f-496b-bf88-51fc7d2b5ccc
+              commitmentUsageDescription: ''
+              startDate: '2023-01-01'
+              dtLastModified: '2022-10-28T13:54:48.081781Z'
     EventTypeResponse:
       type: object
       properties:
@@ -405,80 +467,6 @@ components:
         - integration.missingaccountmapping.error
         - integration.perform.error
         - integration.validation.error
-    PaginatedEventResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/EventResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    EventResponse:
-      required:
-      - dtActioned
-      - eventName
-      - eventTime
-      - id
-      - m3terEvent
-      type: object
-      properties:
-        id:
-          type: string
-          description: The uniqie identifier (UUID) of the Event.
-        eventName:
-          type: string
-          description: The name of the Event as it is registered in the system. This name is used to categorize and trigger associated actions.
-        eventTime:
-          type: string
-          description: The time when the Event was triggered, using the ISO 8601 date and time format.
-          format: date-time
-        m3terEvent:
-          description: 'The Data Transfer Object (DTO) containing the details of the Event. '
-        dtActioned:
-          type: string
-          description: 'When an Event was actioned. It follows the ISO 8601 date and time format.
-
-
-            You can action an Event to indicate that it has been followed up and resolved - this is useful when dealing with integration error Events or ingest failure Events.'
-          format: date-time
-      description: Response containing an Event entity.
-      example:
-        id: 9cb46d85-7cb6-4637-80a1-d4ec38e4ab30
-        eventName: configuration.commitment.created
-        eventTime: '2022-10-28T13:54:49.557Z'
-        dtActioned: '2022-10-28T13:56:49.557Z'
-        m3terEvent:
-          eventData:
-            newDto:
-              commitmentFeeDescription: ''
-              endDate: '2024-12-31'
-              billingInterval: 1
-              orgId: 396d788d-5174-XXXX-9d69-YYYY4671fc33
-              overageSurchargePercent: 5
-              overageDescription: ''
-              currency: USD
-              id: 480d317e-2030-416b-b64b-c07577c418b4
-              amountSpent: 0
-              accountCode: doetech_premium
-              amount: 15000
-              billingOffset: 0
-              lastModifiedBy: USER_810e3a43-XXXX-4dab-YYYY-470977405b58
-              billingPlanId: 0409e75a-8a87-43de-aa58-fc6ec823ce37
-              version: 1
-              accountId: 1cf2a754-476c-498c-b05a-7d41abfc404d
-              dtCreated: '2022-10-28T13:54:48.081781Z'
-              amountPrePaid: 0
-              productIds:
-              - bec371ef-dbad-4e73-a56a-dadecff2287c
-              createdBy: USER_810e3a43-XXXX-4dab-YYYY-470977405b58
-              contractId: 68595d6d-261f-496b-bf88-51fc7d2b5ccc
-              commitmentUsageDescription: ''
-              startDate: '2023-01-01'
-              dtLastModified: '2022-10-28T13:54:48.081781Z'
     EventFieldsResponse:
       type: object
       properties:
@@ -517,6 +505,18 @@ components:
             new.overageSurchargePercent: double
             new.productIds: array
             new.startDate: string
+    PaginatedEventResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/EventResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
   responses:
     Error:
       description: Error message

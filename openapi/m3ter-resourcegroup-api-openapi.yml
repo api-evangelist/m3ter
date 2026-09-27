@@ -494,80 +494,23 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    PermissionStatement:
+    ResourceGroupRequest:
       required:
-      - action
-      - effect
-      - resource
+      - name
       type: object
       properties:
-        effect:
-          description: 'Specifies whether or not the user is allowed to perform the action on the resource.
-
-
-            **NOTE:** Use lower case, for example: `"allow"`. If you use upper case, you''ll receive an error.'
-          $ref: '#/components/schemas/PermissionEffect'
-        action:
-          type: array
-          description: 'The actions available to users who are assigned the Permission Policy - what they can do or cannot do with respect to the specified resource.
-
-
-            **NOTE:** Use lower case and a colon-separated format, for example, if you want to confer full CRUD, use:
-
-            ```
-
-            "config:create",
-
-            "config:delete",
-
-            "config:retrieve",
-
-            "config:update"
-
-            ```'
-          items:
-            $ref: '#/components/schemas/PermissionAction'
-        resource:
-          minItems: 1
-          type: array
-          description: See [Statements - Available Resources](https://www.m3ter.com/docs/guides/managing-organization-and-users/creating-and-managing-permissions#statements---available-resources) for a listing of available resources for Permission Policy statements.
-          items:
-            type: string
+        version:
+          type: integer
+          description: ''
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+          description: ''
       description: ''
-    ResourceGroupItemResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          targetId:
-            type: string
-            description: The UUID of the item.
-          targetType:
-            description: ''
-            $ref: '#/components/schemas/TargetType'
-          dtCreated:
-            type: string
-            description: The DateTime when the item was created for the resource group.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the resource group item was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The id of the user who created this item for the resource group.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The id of the user who last modified this item for the resource group.
-            x-stainless-skip:
-            - terraform
     PaginatedResourceGroupItemResponseData:
       type: object
       properties:
@@ -580,118 +523,6 @@ components:
           type: string
           description: ''
       description: ''
-    PaginatedResourceGroupResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/ResourceGroupResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    ResourceGroupItemRequest:
-      required:
-      - targetId
-      - targetType
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the group.
-
-            '
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        targetId:
-          minLength: 1
-          type: string
-          description: 'The id of the item or group you want to:
-
-            - *Add Item* call: add to a Resource Group.
-
-            - *Remove Item* call: remove from the Resource Group.'
-        targetType:
-          description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
-          $ref: '#/components/schemas/TargetType'
-      description: ''
-      example:
-        targetId: 06f6b50c-a868-4ca6-XXXX-448e507d5248
-        targetType: item
-    PermissionAction:
-      type: string
-      description: ''
-      enum:
-      - ALL
-      - CONFIG_CREATE
-      - CONFIG_RETRIEVE
-      - CONFIG_UPDATE
-      - CONFIG_DELETE
-      - CONFIG_EXPORT
-      - ANALYTICS_QUERY
-      - MEASUREMENTS_UPLOAD
-      - MEASUREMENTS_FILEUPLOAD
-      - MEASUREMENTS_RETRIEVE
-      - MEASUREMENTS_EXPORT
-      - FORECAST_RETRIEVE
-      - HEALTHSCORES_RETRIEVE
-      - ANOMALIES_RETRIEVE
-      - EXPORTS_DOWNLOAD
-      - MARKETPLACE_USAGE_CREATE
-      - MARKETPLACE_USAGE_RETRIEVE
-      - AUDIT_RETRIEVE
-    PaginatedPermissionPolicyResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/PermissionPolicyResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    ResourceGroupResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          name:
-            type: string
-            description: The name of the Resource Group.
-          dtCreated:
-            type: string
-            description: The date and time *(in ISO-8601 format)* when the Resource Group was created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The date and time *(in ISO-8601 format)* when the Resource Group was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The unique identifier (UUID) of the user who created this Resource Group.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The unique identifier (UUID) of the user who last modified this Resource Group.
-            x-stainless-skip:
-            - terraform
-    TargetType:
-      type: string
-      description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
-      enum:
-      - ITEM
-      - GROUP
     PermissionPolicyResponse:
       type: object
       description: ''
@@ -731,6 +562,37 @@ components:
             description: The unique identifier (UUID) of the user who last modified this Permission Policy.
             x-stainless-skip:
             - terraform
+    ResourceGroupResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the Resource Group.
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Resource Group was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Resource Group was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this Resource Group.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this Resource Group.
+            x-stainless-skip:
+            - terraform
     AbstractResponse:
       required:
       - id
@@ -750,28 +612,166 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    ResourceGroupItemRequest:
+      required:
+      - targetId
+      - targetType
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the group.
+
+            '
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        targetId:
+          minLength: 1
+          type: string
+          description: 'The id of the item or group you want to:
+
+            - *Add Item* call: add to a Resource Group.
+
+            - *Remove Item* call: remove from the Resource Group.'
+        targetType:
+          description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
+          $ref: '#/components/schemas/TargetType'
+      description: ''
+      example:
+        targetId: 06f6b50c-a868-4ca6-XXXX-448e507d5248
+        targetType: item
+    PaginatedResourceGroupResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ResourceGroupResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    TargetType:
+      type: string
+      description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
+      enum:
+      - ITEM
+      - GROUP
+    ResourceGroupItemResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          targetId:
+            type: string
+            description: The UUID of the item.
+          targetType:
+            description: ''
+            $ref: '#/components/schemas/TargetType'
+          dtCreated:
+            type: string
+            description: The DateTime when the item was created for the resource group.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the resource group item was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this item for the resource group.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this item for the resource group.
+            x-stainless-skip:
+            - terraform
     PermissionEffect:
       type: string
       description: ''
       enum:
       - ALLOW
       - DENY
-    ResourceGroupRequest:
-      required:
-      - name
+    PermissionAction:
+      type: string
+      description: ''
+      enum:
+      - ALL
+      - CONFIG_CREATE
+      - CONFIG_RETRIEVE
+      - CONFIG_UPDATE
+      - CONFIG_DELETE
+      - CONFIG_EXPORT
+      - ANALYTICS_QUERY
+      - MEASUREMENTS_UPLOAD
+      - MEASUREMENTS_FILEUPLOAD
+      - MEASUREMENTS_RETRIEVE
+      - MEASUREMENTS_EXPORT
+      - FORECAST_RETRIEVE
+      - HEALTHSCORES_RETRIEVE
+      - ANOMALIES_RETRIEVE
+      - EXPORTS_DOWNLOAD
+      - MARKETPLACE_USAGE_CREATE
+      - MARKETPLACE_USAGE_RETRIEVE
+      - AUDIT_RETRIEVE
+    PaginatedPermissionPolicyResponseData:
       type: object
       properties:
-        version:
-          type: integer
+        data:
+          type: array
           description: ''
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        name:
-          maxLength: 100
-          minLength: 1
+          items:
+            $ref: '#/components/schemas/PermissionPolicyResponse'
+        nextToken:
           type: string
           description: ''
+      description: ''
+    PermissionStatement:
+      required:
+      - action
+      - effect
+      - resource
+      type: object
+      properties:
+        effect:
+          description: 'Specifies whether or not the user is allowed to perform the action on the resource.
+
+
+            **NOTE:** Use lower case, for example: `"allow"`. If you use upper case, you''ll receive an error.'
+          $ref: '#/components/schemas/PermissionEffect'
+        action:
+          type: array
+          description: 'The actions available to users who are assigned the Permission Policy - what they can do or cannot do with respect to the specified resource.
+
+
+            **NOTE:** Use lower case and a colon-separated format, for example, if you want to confer full CRUD, use:
+
+            ```
+
+            "config:create",
+
+            "config:delete",
+
+            "config:retrieve",
+
+            "config:update"
+
+            ```'
+          items:
+            $ref: '#/components/schemas/PermissionAction'
+        resource:
+          minItems: 1
+          type: array
+          description: See [Statements - Available Resources](https://www.m3ter.com/docs/guides/managing-organization-and-users/creating-and-managing-permissions#statements---available-resources) for a listing of available resources for Permission Policy statements.
+          items:
+            type: string
       description: ''
   responses:
     Error:
