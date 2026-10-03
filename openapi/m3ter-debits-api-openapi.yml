@@ -264,6 +264,25 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     AbstractRequest:
       type: object
       properties:
@@ -278,6 +297,18 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    PaginatedDebitLineItemResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/DebitLineItemResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     DebitLineItemRequest:
       type: object
       description: ''
@@ -291,19 +322,57 @@ components:
           debitReasonId:
             type: string
             description: The ID of the Debit Reason given for this debit line item.
-    DebitLineItemResponse:
+    AbstractBillLineItemResponse:
       type: object
       description: ''
       allOf:
-      - $ref: '#/components/schemas/AbstractBillLineItemResponse'
       - $ref: '#/components/schemas/AbstractResponse'
       - properties:
-          amount:
-            type: number
+          lineItemType:
             description: ''
-          debitReasonId:
+            $ref: '#/components/schemas/LineItemType'
+          productId:
             type: string
-            description: The UUID of the debit reason for this debit line item.
+            description: ''
+          description:
+            type: string
+            description: ''
+          servicePeriodStartDate:
+            type: string
+            description: ''
+            format: date-time
+          servicePeriodEndDate:
+            type: string
+            description: ''
+            format: date-time
+          referencedBillId:
+            type: string
+            description: ''
+          referencedLineItemId:
+            type: string
+            description: ''
+          dtCreated:
+            type: string
+            description: The DateTime when the line item was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the line item was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this line item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this line item.
+            x-stainless-skip:
+            - terraform
     MemoLineItemRequest:
       type: object
       description: ''
@@ -356,88 +425,19 @@ components:
             type: string
             description: The service period end date in ISO-8601 format.*(exclusive of the ending date)*.
             format: date-time
-    AbstractBillLineItemResponse:
+    DebitLineItemResponse:
       type: object
       description: ''
       allOf:
+      - $ref: '#/components/schemas/AbstractBillLineItemResponse'
       - $ref: '#/components/schemas/AbstractResponse'
       - properties:
-          lineItemType:
+          amount:
+            type: number
             description: ''
-            $ref: '#/components/schemas/LineItemType'
-          productId:
+          debitReasonId:
             type: string
-            description: ''
-          description:
-            type: string
-            description: ''
-          servicePeriodStartDate:
-            type: string
-            description: ''
-            format: date-time
-          servicePeriodEndDate:
-            type: string
-            description: ''
-            format: date-time
-          referencedBillId:
-            type: string
-            description: ''
-          referencedLineItemId:
-            type: string
-            description: ''
-          dtCreated:
-            type: string
-            description: The DateTime when the line item was created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the line item was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The ID of the user who created this line item.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The ID of the user who last modified this line item.
-            x-stainless-skip:
-            - terraform
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    PaginatedDebitLineItemResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/DebitLineItemResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
+            description: The UUID of the debit reason for this debit line item.
     LineItemType:
       type: string
       description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.

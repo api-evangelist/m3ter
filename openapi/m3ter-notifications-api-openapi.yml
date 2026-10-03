@@ -312,6 +312,37 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PaginatedNotificationResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/NotificationResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     AbstractRequest:
       type: object
       properties:
@@ -372,65 +403,18 @@ components:
       description: Request containing a Notification entity.
       allOf:
       - $ref: '#/components/schemas/AbstractRequest'
-    AbstractResponse:
+    EvaluateCalculationResponse:
       required:
-      - id
+      - success
       type: object
       properties:
-        id:
+        success:
+          type: boolean
+          description: Indicates whether the calculation evaluated to True against the specified Event.
+        errorMessage:
           type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    AbstractResponseWithAuditFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          dtCreated:
-            type: string
-            description: The DateTime when this item was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The ID of the user who created this item.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The ID of the user who last modified this item.
-            x-stainless-skip:
-            - terraform
-    PaginatedNotificationResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/NotificationResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
+          description: Optional message providing details about any errors that occurred during the evaluation. If no errors occurred, this is `null`.
+      description: Response containing the results of a calculation evaluation.
     NotificationResponse:
       type: object
       description: Response containing a Notification entity.
@@ -477,6 +461,34 @@ components:
             description: The short code for the Notification.
             example: commitment_under_10_percent
         description: Response containing a Notification entity
+    AbstractResponseWithAuditFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
     EvaluateCalculationRequest:
       type: object
       properties:
@@ -490,18 +502,6 @@ components:
           type: string
           description: "The calculation expression to be evaluated. This should be structured in the same way as the calculation you'll use for a Notification based on an Event of the same type.\n\nThe calculation for a Notification is a logical expression that evaluates to a Boolean. Calculations are used to define the precise conditions for a Notification that is based on an Event of a specifc Type to be triggered. If an Event of that type occurs and the calculation used in a Notification based on that Event type evaluates as `True`, a Notification for the Event is triggered and sent to the configured Notification destination. \nCalculations can reference numeric, string, and boolean Event fields.  \n\nSee [Creating Calculations](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications/key-concepts-and-relationships#creating-calculations) in the m3ter documentation for more information. "
       description: Request for evaluating a calculation against an existing Event or Event name.
-    EvaluateCalculationResponse:
-      required:
-      - success
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: Indicates whether the calculation evaluated to True against the specified Event.
-        errorMessage:
-          type: string
-          description: Optional message providing details about any errors that occurred during the evaluation. If no errors occurred, this is `null`.
-      description: Response containing the results of a calculation evaluation.
   responses:
     Error:
       description: Error message

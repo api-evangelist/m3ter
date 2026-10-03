@@ -53,6 +53,32 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    BillDataResponse:
+      type: object
+      properties:
+        values:
+          type: array
+          description: A list of bill line items.
+          items:
+            $ref: '#/components/schemas/BillData'
+      description: Response containing bill line items.
+    BillData:
+      type: object
+      properties:
+        updatedDate:
+          type: string
+          description: ''
+          format: date-time
+        dimensions:
+          description: ''
+          $ref: '#/components/schemas/LineItemDimensions'
+        measures:
+          description: ''
+          $ref: '#/components/schemas/LineItemMeasures'
+        billDetails:
+          description: ''
+          $ref: '#/components/schemas/BillDetails'
+      description: ''
     AbstractRequest:
       type: object
       properties:
@@ -67,57 +93,59 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    DimensionQuery:
-      required:
-      - filter
-      - name
+    BillDetails:
       type: object
       properties:
-        name:
-          minLength: 1
+        day:
+          type: integer
+          description: ''
+          format: int32
+        week:
           type: string
-          description: The Dimension name to target.
-        attributes:
-          type: array
-          description: The dimension attribute to target
-          items:
-            type: string
-        filter:
-          minItems: 1
-          type: array
-          description: The value of a dimension to filter by. Use "*" to filter on all dimension values.
-          items:
-            type: string
-      description: Dimension of a Meter used as a filter.
-    LineItemMeasures:
-      type: object
-      properties:
-        convertedSubtotal:
-          type: number
           description: ''
-          format: double
-        subtotal:
-          type: number
+        year:
+          type: integer
           description: ''
-          format: double
-        version:
-          type: number
+          format: int32
+        month:
+          type: string
           description: ''
-          format: double
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        conversionRate:
-          type: number
+        locked:
+          type: string
           description: ''
-          format: double
-        quantity:
-          type: number
+        status:
+          type: string
           description: ''
-          format: double
-        units:
-          type: number
+        dueDate:
+          type: string
           description: ''
-          format: double
+        startDate:
+          type: string
+          description: ''
+        endDate:
+          type: string
+          description: ''
+        servicePeriodStartDate:
+          type: string
+          description: ''
+        servicePeriodEndDate:
+          type: string
+          description: ''
+        billDate:
+          type: string
+          description: ''
+        timezone:
+          type: string
+          description: ''
+        yearMonth:
+          type: string
+          description: ''
+        billCurrency:
+          type: string
+          description: ''
+        billingFrequency:
+          type: string
+          description: ''
       description: ''
     LineItemDimensions:
       type: object
@@ -174,77 +202,29 @@ components:
           type: string
           description: ''
       description: ''
-    BillData:
-      type: object
-      properties:
-        updatedDate:
-          type: string
-          description: ''
-          format: date-time
-        dimensions:
-          description: ''
-          $ref: '#/components/schemas/LineItemDimensions'
-        measures:
-          description: ''
-          $ref: '#/components/schemas/LineItemMeasures'
-        billDetails:
-          description: ''
-          $ref: '#/components/schemas/BillDetails'
-      description: ''
-    BillDetails:
-      type: object
-      properties:
-        day:
-          type: integer
-          description: ''
-          format: int32
-        week:
-          type: string
-          description: ''
-        year:
-          type: integer
-          description: ''
-          format: int32
-        month:
-          type: string
-          description: ''
-        locked:
-          type: string
-          description: ''
-        status:
-          type: string
-          description: ''
-        dueDate:
-          type: string
-          description: ''
-        startDate:
-          type: string
-          description: ''
-        endDate:
-          type: string
-          description: ''
-        servicePeriodStartDate:
-          type: string
-          description: ''
-        servicePeriodEndDate:
-          type: string
-          description: ''
-        billDate:
-          type: string
-          description: ''
-        timezone:
-          type: string
-          description: ''
-        yearMonth:
-          type: string
-          description: ''
-        billCurrency:
-          type: string
-          description: ''
-        billingFrequency:
-          type: string
-          description: ''
-      description: ''
+    LineItemType:
+      type: string
+      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
+      enum:
+      - STANDING_CHARGE
+      - USAGE
+      - COUNTER_RUNNING_TOTAL_CHARGE
+      - COUNTER_ADJUSTMENT_DEBIT
+      - COUNTER_ADJUSTMENT_CREDIT
+      - USAGE_CREDIT
+      - MINIMUM_SPEND
+      - MINIMUM_SPEND_REFUND
+      - CREDIT_DEDUCTION
+      - MANUAL_ADJUSTMENT
+      - CREDIT_MEMO
+      - DEBIT_MEMO
+      - COMMITMENT_CONSUMED
+      - COMMITMENT_FEE
+      - OVERAGE_SURCHARGE
+      - OVERAGE_USAGE
+      - BALANCE_CONSUMED
+      - BALANCE_FEE
+      - AD_HOC
     QueryBillDataRequest:
       required:
       - endDate
@@ -281,38 +261,58 @@ components:
       description: Data Explorer Bill data query.
       allOf:
       - $ref: '#/components/schemas/AbstractRequest'
-    LineItemType:
-      type: string
-      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
-      enum:
-      - STANDING_CHARGE
-      - USAGE
-      - COUNTER_RUNNING_TOTAL_CHARGE
-      - COUNTER_ADJUSTMENT_DEBIT
-      - COUNTER_ADJUSTMENT_CREDIT
-      - USAGE_CREDIT
-      - MINIMUM_SPEND
-      - MINIMUM_SPEND_REFUND
-      - CREDIT_DEDUCTION
-      - MANUAL_ADJUSTMENT
-      - CREDIT_MEMO
-      - DEBIT_MEMO
-      - COMMITMENT_CONSUMED
-      - COMMITMENT_FEE
-      - OVERAGE_SURCHARGE
-      - OVERAGE_USAGE
-      - BALANCE_CONSUMED
-      - BALANCE_FEE
-      - AD_HOC
-    BillDataResponse:
+    DimensionQuery:
+      required:
+      - filter
+      - name
       type: object
       properties:
-        values:
+        name:
+          minLength: 1
+          type: string
+          description: The Dimension name to target.
+        attributes:
           type: array
-          description: A list of bill line items.
+          description: The dimension attribute to target
           items:
-            $ref: '#/components/schemas/BillData'
-      description: Response containing bill line items.
+            type: string
+        filter:
+          minItems: 1
+          type: array
+          description: The value of a dimension to filter by. Use "*" to filter on all dimension values.
+          items:
+            type: string
+      description: Dimension of a Meter used as a filter.
+    LineItemMeasures:
+      type: object
+      properties:
+        convertedSubtotal:
+          type: number
+          description: ''
+          format: double
+        subtotal:
+          type: number
+          description: ''
+          format: double
+        version:
+          type: number
+          description: ''
+          format: double
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        conversionRate:
+          type: number
+          description: ''
+          format: double
+        quantity:
+          type: number
+          description: ''
+          format: double
+        units:
+          type: number
+          description: ''
+          format: double
+      description: ''
   responses:
     Error:
       description: Error message

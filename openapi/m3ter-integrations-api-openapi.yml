@@ -1217,33 +1217,89 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    TriggerType:
-      type: string
-      description: 'Specifies the type of trigger for the integration. '
-      enum:
-      - EVENT
-      - SCHEDULE
-    AbstractResponse:
-      required:
-      - id
+    IntegrationRunLogResponse:
       type: object
       properties:
-        id:
+        Payload:
           type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
+          description: Base64 encoded log
+      description: Response containing the log for an IntegrationRun entity
+    SystemResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: System name
+        displayName:
+          type: string
+          description: User friendly display name
+        validationSupported:
+          type: boolean
+          description: Whether or not m3ter supports validation of requests for this system. Requests will need to made without validation
+        supportedAuthTypes:
+          type: array
+          description: List of supported auth types
+          items:
+            $ref: '#/components/schemas/AuthType'
+      description: Response containing information about a system that m3ter can integrate with
+    IntegrationConfigRequest:
+      type: object
       description: ''
-    AbstractList_ConfigSetting_:
-      $ref: '#/components/schemas/AbstractCollection_ConfigSetting_'
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - destination
+        - entityType
+        properties:
+          entityType:
+            minLength: 1
+            pattern: ^[a-zA-Z0-9_-]*$
+            type: string
+            description: Specifies the type of entity for which the integration configuration is being updated. Must be a valid alphanumeric string.
+            example: Bill
+          entityId:
+            type: string
+            description: The unique identifier (UUID) of the entity. This field is used to specify which entity's integration configuration you're updating.
+            example: 00000000-0000-0000-0000-000000000000
+          destination:
+            minLength: 1
+            pattern: ^[a-zA-Z0-9_-]*$
+            type: string
+            description: Denotes the integration destination. This field identifies the target platform or service for the integration.
+            example: Stripe
+          destinationId:
+            type: string
+            description: The unique identifier (UUID) for the integration destination.
+            example: 00000000-0000-0000-0000-000000000000
+          configData:
+            description: A flexible object to include any additional configuration data specific to the integration.
+            allOf:
+            - type: object
+              additionalProperties: true
+            - default: {}
+          credentials:
+            description: Base model for defining integration credentials across different types of integrations.
+            $ref: '#/components/schemas/IntegrationCredentialsRequestBase'
+          integrationCredentialsId:
+            type: string
+            description: ''
+            example: 00000000-0000-0000-0000-000000000000
+          name:
+            type: string
+            description: ''
+            example: My Integration
+    PaginatedIntegrationConfigResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/IntegrationConfigResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     RunStatus:
       type: string
       description: ''
@@ -1259,52 +1315,92 @@ components:
       - DISABLED
       - TIMEOUT_LIMIT_EXCEEDED
       - RATE_LIMIT_RETRY
-    PaginatedWebhookDestinationResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/WebhookDestinationResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    EntityConfiguration:
+    AvailableConfigurationResponse:
       required:
-      - destinations
-      - entityConfigurationOptions
-      - readableName
-      - released
+      - globalConfigurationOptions
+      - selectedConfigurations
+      - supportedEntities
       type: object
       properties:
-        readableName:
-          type: string
-          description: A human-readable name for the entity. Helps in identifying the entity type easily.
-        destinations:
-          type: array
-          description: An array of `DestinationConfiguration` objects, detailing available destinations for this entity.
-          items:
-            $ref: '#/components/schemas/DestinationConfiguration'
-        entityConfigurationOptions:
-          description: An array of objects, each representing a specific configuration option available for the entity.
+        supportedEntities:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/EntityConfiguration'
+          description: An object mapping entity types to their respective `EntityConfiguration`. Provides information on which entities are supported and their configurations.
+        selectedConfigurations:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ConfigOptions'
+          description: ''
+        globalConfigurationOptions:
+          description: An array of objects, each representing a global configuration option available for integrations.
           $ref: '#/components/schemas/ConfigOptions'
-        released:
-          type: boolean
-          description: 'A boolean indicating whether this entity configuration is released and available for use.
-
-
-            * TRUE - Configuration is released.
-
-            * FALSE - Configuration is not released.'
-      description: Configuration details for a specific entity type in the integration.
-    ConfigOptions:
+      description: Response containing available configuration options for integrations.
+    IntegrationRunDao.Order:
+      type: string
+      description: ''
+      enum:
+      - ASC
+      - DESC
+    IntegrationCredentialsResponse:
       type: object
+      description: Response containing a IntegrationCredentials entity
       allOf:
-      - $ref: '#/components/schemas/ArrayList_ConfigSetting_'
-      - $ref: '#/components/schemas/AbstractList_ConfigSetting_'
-      - $ref: '#/components/schemas/AbstractCollection_ConfigSetting_'
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - required:
+        - destination
+        - type
+        properties:
+          type:
+            minLength: 1
+            type: string
+            description: the type of credentials
+          destination:
+            minLength: 1
+            type: string
+            description: the system the integration is for
+          destinationId:
+            type: string
+            description: the destinationId the integration is for
+          name:
+            type: string
+            description: the name of the credentials
+        description: Response containing a IntegrationCredentials entity
+    AbstractResponseWithAuditFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
+    TriggerType:
+      type: string
+      description: 'Specifies the type of trigger for the integration. '
+      enum:
+      - EVENT
+      - SCHEDULE
     DestinationRequest:
       type: object
       description: ''
@@ -1328,76 +1424,100 @@ components:
           active:
             type: boolean
             description: ''
-    AbstractRequest:
+    AbstractList_ConfigSetting_:
+      $ref: '#/components/schemas/AbstractCollection_ConfigSetting_'
+    ConfigOptionsResponse:
       type: object
       properties:
+        id:
+          type: string
+          description: ''
+        label:
+          type: string
+          description: ''
+      description: Response containing an options for a configuration
+    WebhookDestinationRequest:
+      required:
+      - credentials
+      - url
+      type: object
+      properties:
+        url:
+          minLength: 1
+          type: string
+          description: The URL to which the webhook requests will be sent.
+        credentials:
+          description: 'The credentials required for the webhook. '
+          allOf:
+          - $ref: '#/components/schemas/IntegrationM3terSignedCredentialsRequest'
+          - description: Request representing a credential set for m3ter request signing
+      description: This response contains details about the `WebhookDestinationRequest` entity, including the URL and credentials required for webhook activation.
+      allOf:
+      - $ref: '#/components/schemas/DestinationRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
         version:
           type: integer
-          description: 'The version number of the entity:
+          description: 'The version number:
 
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
 
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
           format: int64
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    IntegrationRunResponse:
+    AbstractCollection_ConfigSetting_:
       type: object
-      description: Response containing an IntegrationRun entity.
+      properties:
+        empty:
+          type: boolean
+          description: ''
+      description: ''
+    ConfigOptions:
+      type: object
       allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
-      - $ref: '#/components/schemas/AbstractResponse'
+      - $ref: '#/components/schemas/ArrayList_ConfigSetting_'
+      - $ref: '#/components/schemas/AbstractList_ConfigSetting_'
+      - $ref: '#/components/schemas/AbstractCollection_ConfigSetting_'
+    IntegrationM3terSignedCredentialsRequest:
+      type: object
+      description: 'This schema defines the credentials required for m3ter request signing. '
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - $ref: '#/components/schemas/IntegrationCredentialsRequestBase'
       - required:
-        - destination
-        - entityId
-        - entityType
-        - status
+        - apiKey
+        - secret
+        - type
         properties:
-          entityType:
+          type:
             minLength: 1
             type: string
-            description: 'The type of entity the integration run is for. Two options:
-
-              * Bill
-
-              * Notification'
-          entityId:
+            description: Specifies the authorization type. For this schema, it is exclusively set to M3TER_SIGNED_REQUEST.
+            enum:
+            - M3TER_SIGNED_REQUEST
+          empty:
+            type: boolean
+            description: "A flag to indicate whether the credentials are empty. \n\n* TRUE - empty credentials.\n* FALSE - credential details required."
+          apiKey:
             minLength: 1
             type: string
-            description: The unique identifier (UUID) of the entity the integration run is for.
-          dtStarted:
+            description: The API key provided by m3ter. This key is part of the credential set required for signing requests and authenticating with m3ter services.
+            example: api key
+          secret:
+            minLength: 1
             type: string
-            description: The date and time the integration run was started *(in ISO-8601 format)*.
-            format: date-time
-          dtCompleted:
-            type: string
-            description: The date and time the integration was completed. *(in ISO-8601 format)*.
-            format: date-time
-          status:
-            description: The current status of the integration run.
-            allOf:
-            - $ref: '#/components/schemas/RunStatus'
-            - description: Status of the integration
-          destination:
-            type: string
-            description: The destination system for the integration run.
-          destinationId:
-            type: string
-            description: Identifier of the destination
-          error:
-            type: string
-            description: Describes any errors encountered during the integration run.
-          url:
-            type: string
-            description: The URL of the entity in the destination system if available.
-          externalId:
-            type: string
-            description: The external ID in the destination system if available.
-          parentIntegrationRunId:
-            type: string
-            description: ID of the parent integration run, or null if this is a parent integration run
-        description: Response containing a IntegrationRun entity
+            description: The secret associated with the API key. This secret is used in conjunction with the API key to generate a signature for secure authentication.
+            example: api secret
+        description: Request representing a credential set for m3ter request signing
     IntegrationConfigResponse:
       type: object
       description: Response containing a IntegrationConfigResponse entity.
@@ -1457,192 +1577,34 @@ components:
             description: The name of the configuration
             example: My Integration
         description: Response containing a IntegrationConfigResponse entity
-    AuthType:
-      type: string
-      description: ''
-      enum:
-      - OAUTH_CODE
-      - OAUTH_CLIENT_CREDENTIALS
-      - HTTP_BASIC
-      - M3TER_SIGNED_REQUEST
-      - AWS_INTEGRATION
-      - PADDLE
-      - NETSUITE
-      - CHARGEBEE
-      - M3TER_APP_SIGNATURE
-      - M3TER_SERVICE_USER
-      - STRIPE_SIGNED_REQUEST
-      - OPSGENIE_KEY
-      - SAP_BYD
-      - HUBSPOT_ACCESS_TOKEN
-      - HUBSPOT_CLIENT_SECRET
-      - SLACK_WEBHOOK
-      - SAGE_INTACCT_CLIENT_CREDENTIALS
-      - SAGE_INTACCT_CLIENT_SECRET
-      - STATIC_API_KEY
-    DestinationType:
-      type: string
-      description: ''
-      enum:
-      - WEBHOOK
-      - NETSUITE
-      - STRIPE
-      - STRIPE_TEST
-      - AWS
-      - PADDLE
-      - PADDLE_SANDBOX
-      - SALESFORCE
-      - XERO
-      - CHARGEBEE
-      - QUICKBOOKS
-      - QUICKBOOKS_SANDBOX
-      - M3TER
-    ArrayList_ConfigSetting_:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractList_ConfigSetting_'
-      - $ref: '#/components/schemas/AbstractCollection_ConfigSetting_'
-      - properties:
-          empty:
-            type: boolean
-            description: ''
-    ConfigOptionsResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          description: ''
-        label:
-          type: string
-          description: ''
-      description: Response containing an options for a configuration
-    IntegrationM3terSignedCredentialsResponse:
-      type: object
-      properties:
-        apiKey:
-          type: string
-          description: The API key provided by m3ter. This key is part of the credential set required for signing requests and authenticating with m3ter services.
-          example: api key
-        secret:
-          type: string
-          description: The secret associated with the API key. This secret is used in conjunction with the API key to generate a signature for secure authentication.
-          example: api secret
-      description: 'Response representing a set of credentials used for signing m3ter requests. '
-      allOf:
-      - $ref: '#/components/schemas/IntegrationCredentialsResponse'
-      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
-      - $ref: '#/components/schemas/AbstractResponse'
-    IntegrationCredentialsResponse:
-      type: object
-      description: Response containing a IntegrationCredentials entity
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - required:
-        - destination
-        - type
-        properties:
-          type:
-            minLength: 1
-            type: string
-            description: the type of credentials
-          destination:
-            minLength: 1
-            type: string
-            description: the system the integration is for
-          destinationId:
-            type: string
-            description: the destinationId the integration is for
-          name:
-            type: string
-            description: the name of the credentials
-        description: Response containing a IntegrationCredentials entity
-    AvailableConfigurationResponse:
+    EntityConfiguration:
       required:
-      - globalConfigurationOptions
-      - selectedConfigurations
-      - supportedEntities
+      - destinations
+      - entityConfigurationOptions
+      - readableName
+      - released
       type: object
       properties:
-        supportedEntities:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/EntityConfiguration'
-          description: An object mapping entity types to their respective `EntityConfiguration`. Provides information on which entities are supported and their configurations.
-        selectedConfigurations:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/ConfigOptions'
-          description: ''
-        globalConfigurationOptions:
-          description: An array of objects, each representing a global configuration option available for integrations.
-          $ref: '#/components/schemas/ConfigOptions'
-      description: Response containing available configuration options for integrations.
-    IntegrationConfigRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - destination
-        - entityType
-        properties:
-          entityType:
-            minLength: 1
-            pattern: ^[a-zA-Z0-9_-]*$
-            type: string
-            description: Specifies the type of entity for which the integration configuration is being updated. Must be a valid alphanumeric string.
-            example: Bill
-          entityId:
-            type: string
-            description: The unique identifier (UUID) of the entity. This field is used to specify which entity's integration configuration you're updating.
-            example: 00000000-0000-0000-0000-000000000000
-          destination:
-            minLength: 1
-            pattern: ^[a-zA-Z0-9_-]*$
-            type: string
-            description: Denotes the integration destination. This field identifies the target platform or service for the integration.
-            example: Stripe
-          destinationId:
-            type: string
-            description: The unique identifier (UUID) for the integration destination.
-            example: 00000000-0000-0000-0000-000000000000
-          configData:
-            description: A flexible object to include any additional configuration data specific to the integration.
-            allOf:
-            - type: object
-              additionalProperties: true
-            - default: {}
-          credentials:
-            description: Base model for defining integration credentials across different types of integrations.
-            $ref: '#/components/schemas/IntegrationCredentialsRequestBase'
-          integrationCredentialsId:
-            type: string
-            description: ''
-            example: 00000000-0000-0000-0000-000000000000
-          name:
-            type: string
-            description: ''
-            example: My Integration
-    SystemResponse:
-      type: object
-      properties:
-        identifier:
+        readableName:
           type: string
-          description: System name
-        displayName:
-          type: string
-          description: User friendly display name
-        validationSupported:
-          type: boolean
-          description: Whether or not m3ter supports validation of requests for this system. Requests will need to made without validation
-        supportedAuthTypes:
+          description: A human-readable name for the entity. Helps in identifying the entity type easily.
+        destinations:
           type: array
-          description: List of supported auth types
+          description: An array of `DestinationConfiguration` objects, detailing available destinations for this entity.
           items:
-            $ref: '#/components/schemas/AuthType'
-      description: Response containing information about a system that m3ter can integrate with
+            $ref: '#/components/schemas/DestinationConfiguration'
+        entityConfigurationOptions:
+          description: An array of objects, each representing a specific configuration option available for the entity.
+          $ref: '#/components/schemas/ConfigOptions'
+        released:
+          type: boolean
+          description: 'A boolean indicating whether this entity configuration is released and available for use.
+
+
+            * TRUE - Configuration is released.
+
+            * FALSE - Configuration is not released.'
+      description: Configuration details for a specific entity type in the integration.
     DestinationConfiguration:
       required:
       - apiName
@@ -1687,19 +1649,170 @@ components:
           items:
             type: string
       description: Configuration details for a specific destination within an entity.
-    IntegrationRunDao.Order:
+    IntegrationRunResponse:
+      type: object
+      description: Response containing an IntegrationRun entity.
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - required:
+        - destination
+        - entityId
+        - entityType
+        - status
+        properties:
+          entityType:
+            minLength: 1
+            type: string
+            description: 'The type of entity the integration run is for. Two options:
+
+              * Bill
+
+              * Notification'
+          entityId:
+            minLength: 1
+            type: string
+            description: The unique identifier (UUID) of the entity the integration run is for.
+          dtStarted:
+            type: string
+            description: The date and time the integration run was started *(in ISO-8601 format)*.
+            format: date-time
+          dtCompleted:
+            type: string
+            description: The date and time the integration was completed. *(in ISO-8601 format)*.
+            format: date-time
+          status:
+            description: The current status of the integration run.
+            allOf:
+            - $ref: '#/components/schemas/RunStatus'
+            - description: Status of the integration
+          destination:
+            type: string
+            description: The destination system for the integration run.
+          destinationId:
+            type: string
+            description: Identifier of the destination
+          error:
+            type: string
+            description: Describes any errors encountered during the integration run.
+          url:
+            type: string
+            description: The URL of the entity in the destination system if available.
+          externalId:
+            type: string
+            description: The external ID in the destination system if available.
+          parentIntegrationRunId:
+            type: string
+            description: ID of the parent integration run, or null if this is a parent integration run
+        description: Response containing a IntegrationRun entity
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    ArrayList_ConfigSetting_:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractList_ConfigSetting_'
+      - $ref: '#/components/schemas/AbstractCollection_ConfigSetting_'
+      - properties:
+          empty:
+            type: boolean
+            description: ''
+    PaginatedIntegrationRunResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/IntegrationRunResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    PaginatedWebhookDestinationResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/WebhookDestinationResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AuthType:
       type: string
       description: ''
       enum:
-      - ASC
-      - DESC
-    IntegrationRunLogResponse:
+      - OAUTH_CODE
+      - OAUTH_CLIENT_CREDENTIALS
+      - HTTP_BASIC
+      - M3TER_SIGNED_REQUEST
+      - AWS_INTEGRATION
+      - PADDLE
+      - NETSUITE
+      - CHARGEBEE
+      - M3TER_APP_SIGNATURE
+      - M3TER_SERVICE_USER
+      - STRIPE_SIGNED_REQUEST
+      - OPSGENIE_KEY
+      - SAP_BYD
+      - HUBSPOT_ACCESS_TOKEN
+      - HUBSPOT_CLIENT_SECRET
+      - SLACK_WEBHOOK
+      - SAGE_INTACCT_CLIENT_CREDENTIALS
+      - SAGE_INTACCT_CLIENT_SECRET
+      - STATIC_API_KEY
+    DestinationType:
+      type: string
+      description: ''
+      enum:
+      - WEBHOOK
+      - NETSUITE
+      - STRIPE
+      - STRIPE_TEST
+      - AWS
+      - PADDLE
+      - PADDLE_SANDBOX
+      - SALESFORCE
+      - XERO
+      - CHARGEBEE
+      - QUICKBOOKS
+      - QUICKBOOKS_SANDBOX
+      - M3TER
+    DestinationResponse:
       type: object
-      properties:
-        Payload:
-          type: string
-          description: Base64 encoded log
-      description: Response containing the log for an IntegrationRun entity
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: ''
+          description:
+            type: string
+            description: ''
+          code:
+            type: string
+            description: ''
+          active:
+            type: boolean
+            description: ''
+        description: Response containing a Destination
     WebhookDestinationResponse:
       type: object
       properties:
@@ -1716,41 +1829,6 @@ components:
       - $ref: '#/components/schemas/DestinationResponse'
       - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
       - $ref: '#/components/schemas/AbstractResponse'
-    AbstractResponseWithAuditFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          dtCreated:
-            type: string
-            description: The DateTime when this item was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The ID of the user who created this item.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The ID of the user who last modified this item.
-            x-stainless-skip:
-            - terraform
-    AbstractCollection_ConfigSetting_:
-      type: object
-      properties:
-        empty:
-          type: boolean
-          description: ''
-      description: ''
     IntegrationCredentialsRequestBase:
       required:
       - type
@@ -1792,100 +1870,22 @@ components:
       description: Base model for defining integration credentials across different types of integrations.
       allOf:
       - $ref: '#/components/schemas/AbstractRequest'
-    PaginatedIntegrationConfigResponseData:
+    IntegrationM3terSignedCredentialsResponse:
       type: object
       properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/IntegrationConfigResponse'
-        nextToken:
+        apiKey:
           type: string
-          description: ''
-      description: ''
-    WebhookDestinationRequest:
-      required:
-      - credentials
-      - url
-      type: object
-      properties:
-        url:
-          minLength: 1
+          description: The API key provided by m3ter. This key is part of the credential set required for signing requests and authenticating with m3ter services.
+          example: api key
+        secret:
           type: string
-          description: The URL to which the webhook requests will be sent.
-        credentials:
-          description: 'The credentials required for the webhook. '
-          allOf:
-          - $ref: '#/components/schemas/IntegrationM3terSignedCredentialsRequest'
-          - description: Request representing a credential set for m3ter request signing
-      description: This response contains details about the `WebhookDestinationRequest` entity, including the URL and credentials required for webhook activation.
+          description: The secret associated with the API key. This secret is used in conjunction with the API key to generate a signature for secure authentication.
+          example: api secret
+      description: 'Response representing a set of credentials used for signing m3ter requests. '
       allOf:
-      - $ref: '#/components/schemas/DestinationRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
-    DestinationResponse:
-      type: object
-      description: ''
-      allOf:
+      - $ref: '#/components/schemas/IntegrationCredentialsResponse'
       - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
       - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          name:
-            type: string
-            description: ''
-          description:
-            type: string
-            description: ''
-          code:
-            type: string
-            description: ''
-          active:
-            type: boolean
-            description: ''
-        description: Response containing a Destination
-    PaginatedIntegrationRunResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/IntegrationRunResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    IntegrationM3terSignedCredentialsRequest:
-      type: object
-      description: 'This schema defines the credentials required for m3ter request signing. '
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - $ref: '#/components/schemas/IntegrationCredentialsRequestBase'
-      - required:
-        - apiKey
-        - secret
-        - type
-        properties:
-          type:
-            minLength: 1
-            type: string
-            description: Specifies the authorization type. For this schema, it is exclusively set to M3TER_SIGNED_REQUEST.
-            enum:
-            - M3TER_SIGNED_REQUEST
-          empty:
-            type: boolean
-            description: "A flag to indicate whether the credentials are empty. \n\n* TRUE - empty credentials.\n* FALSE - credential details required."
-          apiKey:
-            minLength: 1
-            type: string
-            description: The API key provided by m3ter. This key is part of the credential set required for signing requests and authenticating with m3ter services.
-            example: api key
-          secret:
-            minLength: 1
-            type: string
-            description: The secret associated with the API key. This secret is used in conjunction with the API key to generate a signature for secure authentication.
-            example: api secret
-        description: Request representing a credential set for m3ter request signing
   responses:
     Error:
       description: Error message

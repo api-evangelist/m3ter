@@ -336,6 +336,44 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    LookupTableRevisionStatus:
+      type: string
+      description: Status of a Lookup Table Revision
+      enum:
+      - DRAFT
+      - PUBLISHED
+      - ARCHIVED
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PaginatedLookupTableRevisionResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/LookupTableRevisionResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     AbstractRequest:
       type: object
       properties:
@@ -350,30 +388,93 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    AbstractRequestWithCustomFields:
+    LookupTableRevisionResponse:
       type: object
-      description: ''
+      properties:
+        name:
+          type: string
+          description: The name of the Lookup Table Revision.
+        status:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/LookupTableRevisionStatus'
+          - description: The status of the Lookup Table Revision
+        startDate:
+          type: string
+          description: The start date of the Lookup Table Revision
+          format: date-time
+        fields:
+          type: array
+          description: The list of fields of the Lookup Table Revision.
+          items:
+            $ref: '#/components/schemas/LookupTableRevisionField'
+        keys:
+          type: array
+          description: The ordered keys of the Lookup Table Revision
+          items:
+            type: string
+        dtCreated:
+          type: string
+          description: The DateTime when the Lookup Table Revision was created.
+          format: date-time
+          x-stainless-skip:
+          - terraform
+        dtLastModified:
+          type: string
+          description: The DateTime when the Lookup Table Revision was last modified.
+          format: date-time
+          x-stainless-skip:
+          - terraform
+        createdBy:
+          type: string
+          description: The id of the user who created the Lookup Table Revision.
+          x-stainless-skip:
+          - terraform
+        lastModifiedBy:
+          type: string
+          description: The id of the user who last modified the Lookup Table Revision.
+          x-stainless-skip:
+          - terraform
+        itemCount:
+          type: integer
+          description: ''
+          format: int64
+      description: Response containing a LookupTableRevision entity
       allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            maxItems: 100
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldReq
-                type: string
-              - title: IntegerCustomFieldReq
-                type: integer
-              - title: NumberCustomFieldReq
-                type: number
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+    LookupTableRevisionField:
+      required:
+      - type
+      type: object
+      properties:
+        name:
+          maxLength: 256
+          pattern: ^[\p{L}_$][\p{L}_$0-9]*$
+          type: string
+          description: The name of the field
+          example: lookuptablerevisionfieldkey
+        type:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/LookupTableRevisionFieldType'
+          - description: The type of the field
+      description: Field of a Lookup Table Revision
+    LookupTableRevisionStatusRequest:
+      type: object
+      properties:
+        status:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/LookupTableRevisionStatus'
+          - description: The status of the Lookup Table Revision
+        version:
+          type: integer
+          description: The version of the LookupTableRevision.
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: Request containing the status details for a LookupTableRevision entity
     LookupTableRevisionRequest:
       required:
       - fields
@@ -432,131 +533,30 @@ components:
                 type: integer
               - title: NumberCustomFieldRes
                 type: number
-    AbstractResponse:
-      required:
-      - id
+    AbstractRequestWithCustomFields:
       type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
       description: ''
-    PaginatedLookupTableRevisionResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/LookupTableRevisionResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    LookupTableRevisionField:
-      required:
-      - type
-      type: object
-      properties:
-        name:
-          maxLength: 256
-          pattern: ^[\p{L}_$][\p{L}_$0-9]*$
-          type: string
-          description: The name of the field
-          example: lookuptablerevisionfieldkey
-        type:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/LookupTableRevisionFieldType'
-          - description: The type of the field
-      description: Field of a Lookup Table Revision
-    LookupTableRevisionStatus:
-      type: string
-      description: Status of a Lookup Table Revision
-      enum:
-      - DRAFT
-      - PUBLISHED
-      - ARCHIVED
-    LookupTableRevisionStatusRequest:
-      type: object
-      properties:
-        status:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/LookupTableRevisionStatus'
-          - description: The status of the Lookup Table Revision
-        version:
-          type: integer
-          description: The version of the LookupTableRevision.
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: Request containing the status details for a LookupTableRevision entity
-    LookupTableRevisionResponse:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the Lookup Table Revision.
-        status:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/LookupTableRevisionStatus'
-          - description: The status of the Lookup Table Revision
-        startDate:
-          type: string
-          description: The start date of the Lookup Table Revision
-          format: date-time
-        fields:
-          type: array
-          description: The list of fields of the Lookup Table Revision.
-          items:
-            $ref: '#/components/schemas/LookupTableRevisionField'
-        keys:
-          type: array
-          description: The ordered keys of the Lookup Table Revision
-          items:
-            type: string
-        dtCreated:
-          type: string
-          description: The DateTime when the Lookup Table Revision was created.
-          format: date-time
-          x-stainless-skip:
-          - terraform
-        dtLastModified:
-          type: string
-          description: The DateTime when the Lookup Table Revision was last modified.
-          format: date-time
-          x-stainless-skip:
-          - terraform
-        createdBy:
-          type: string
-          description: The id of the user who created the Lookup Table Revision.
-          x-stainless-skip:
-          - terraform
-        lastModifiedBy:
-          type: string
-          description: The id of the user who last modified the Lookup Table Revision.
-          x-stainless-skip:
-          - terraform
-        itemCount:
-          type: integer
-          description: ''
-          format: int64
-      description: Response containing a LookupTableRevision entity
       allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
-      - $ref: '#/components/schemas/AbstractResponse'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
     LookupTableRevisionFieldType:
       type: string
       description: Type of a Lookup Table Revision Field

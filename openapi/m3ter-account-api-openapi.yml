@@ -461,6 +461,41 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    BillingEntity:
+      type: string
+      description: ''
+      enum:
+      - CONTRACT
+      - ACCOUNTPLAN
+      - PREPAYMENT
+      - PRICINGS
+      - COUNTER_PRICINGS
+    StatementAutoGenerateMode:
+      type: string
+      description: "Specify whether to auto-generate statements once Bills are *approved* or *locked*. It will not auto-generate if a bill is in *pending* state. \n\nThe default value is **None**.\n\n- **None**. Statements will not be auto-generated.\n- **JSON**. Statements are auto-generated in JSON format.\n- **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats."
+      enum:
+      - NONE
+      - JSON
+      - JSON_AND_CSV
     AbstractRequest:
       type: object
       properties:
@@ -475,45 +510,186 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    AbstractRequestWithCustomFields:
+    EndDateBillingEntitiesRequest:
+      required:
+      - billingEntities
+      - endDate
       type: object
+      properties:
+        endDate:
+          type: string
+          description: The end date and time applied to the specified billing entities *(in ISO 8601 format)*.
+          format: date-time
+        applyToChildren:
+          type: boolean
+          description: A Boolean TRUE/FALSE flag. For Parent Accounts, set to TRUE if you want the specified end-date to be applied to any billing entities associated with Child Accounts. *(Optional)*
+        billingEntities:
+          minItems: 1
+          type: array
+          description: Defines which billing entities associated with the Account will have the specified end-date applied. For example, if you want the specified end-date to be applied to all Prepayments/Commitments created for the Account use `"PREPAYMENT"`.
+          items:
+            $ref: '#/components/schemas/BillingEntity'
       description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            maxItems: 100
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldReq
-                type: string
-              - title: IntegerCustomFieldReq
-                type: integer
-              - title: NumberCustomFieldReq
-                type: number
-    Set_String_:
+    PaginatedAccountResponseData:
       type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AccountResponse'
+        nextToken:
+          type: string
+          description: ''
       description: ''
+    AccountResponse:
+      type: object
+      description: Response containing an AccountResponse entity.
       allOf:
-      - $ref: '#/components/schemas/Collection_String_'
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
       - properties:
-          empty:
-            type: boolean
-            description: ''
-    BillCreditType:
-      type: string
+          name:
+            type: string
+            description: Name of the Account.
+          code:
+            type: string
+            description: 'Code of the Account.
+
+              This is a unique short code used for the Account.'
+          address:
+            description: Contact address for the Account.
+            allOf:
+            - $ref: '#/components/schemas/Address'
+            - description: Address of the Account
+          emailAddress:
+            type: string
+            description: Contact email for the Account.
+          parentAccountId:
+            type: string
+            description: Parent Account ID, or null if this account does not have a parent.
+          billEpoch:
+            type: string
+            description: 'Defines first bill date for Account Bills. For example, if the Plan attached to the Account is set for monthly billing frequency and you set the first bill date to be January 1st, Bills are created every month starting on that date.
+
+
+              Optional attribute - if not defined, then first bill date is determined by the Epoch settings at Organizational level.'
+            format: date
+          purchaseOrderNumber:
+            type: string
+            description: 'Purchase Order Number of the Account.
+
+
+              Optional attribute - allows you to set a purchase order number that comes through into invoicing. For example, your financial systems might require this as a reference for clearing payments.'
+          currency:
+            type: string
+            description: 'Account level billing currency, such as USD or GBP. Optional attribute:
+
+              - If you define an Account currency, this will be used for bills.
+
+              - If you do not define a currency, the billing currency defined at Organizational will be used.
+
+
+              **Note:** If you''ve attached a Plan to the Account that uses a different currency to the billing currency, then you must add the relevant currency conversion rate at Organization level to ensure the billing process can convert line items calculated using the Plan currency into the selected billing currency. If you don''t add these conversion rates, then bills will fail for the Account.'
+            example: USD
+          statementDefinitionId:
+            type: string
+            description: 'The UUID of the statement definition used when Bill statements are generated for the Account. If no statement definition is specified for the Account, the statement definition specified at Organizational level is used.
+
+
+              Bill statements can be used as informative backing sheets to invoices. Based on the usage breakdown defined in the statement definition, generated statements give a breakdown of usage charges on Account Bills, which helps customers better understand usage charges incurred over the billing period.
+
+
+              See [Working with Bill Statements](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/working-with-bill-statements) in the m3ter documentation for more details.'
+          dtCreated:
+            type: string
+            description: The DateTime when the Account was created *(in ISO 8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the Account was last modified *(in ISO 8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created the account.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified the Account.
+            x-stainless-skip:
+            - terraform
+          autoGenerateStatementMode:
+            description: 'Specify whether to auto-generate statements once Bills are approved or locked.
+
+
+              - **None**. Statements will not be auto-generated.
+
+              - **JSON**. Statements are auto-generated in JSON format.
+
+              - **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats. '
+            $ref: '#/components/schemas/StatementAutoGenerateMode'
+          creditApplicationOrder:
+            type: array
+            description: 'The order in which any Prepayment or Balance amounts on the Account are to be drawn-down against for billing. Four options:
+
+              - `"PREPAYMENT","BALANCE"`. Draw-down against Prepayment credit before Balance credit.
+
+              - `"BALANCE","PREPAYMENT"`. Draw-down against Balance credit before Prepayment credit.
+
+              - `"PREPAYMENT"`. Only draw-down against Prepayment credit.
+
+              - `"BALANCE"`. Only draw-down against Balance credit.'
+            items:
+              $ref: '#/components/schemas/BillCreditType'
+          daysBeforeBillDue:
+            type: integer
+            description: The number of days after the Bill generation date shown on Bills as the due date.
+            format: int32
+    EndDateBillingEntitiesResponse:
+      type: object
+      properties:
+        statusMessage:
+          type: string
+          description: A message indicating the status of the operation.
+        updatedEntities:
+          properties:
+            CONTRACT:
+              $ref: '#/components/schemas/Set_String_'
+            ACCOUNTPLAN:
+              $ref: '#/components/schemas/Set_String_'
+            PREPAYMENT:
+              $ref: '#/components/schemas/Set_String_'
+            PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+            COUNTER_PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the updated entities.
+        failedEntities:
+          properties:
+            CONTRACT:
+              $ref: '#/components/schemas/Set_String_'
+            ACCOUNTPLAN:
+              $ref: '#/components/schemas/Set_String_'
+            PREPAYMENT:
+              $ref: '#/components/schemas/Set_String_'
+            PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+            COUNTER_PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the entities for which the update failed.
       description: ''
-      enum:
-      - PREPAYMENT
-      - BALANCE
+    Collection_String_:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          description: ''
+      description: ''
     AccountRequest:
       type: object
       description: Account request for operations such as Create or Update Account.
@@ -625,102 +801,6 @@ components:
               **Note:** If you define `daysBeforeBillDue` at individual Account level, this will take precedence over any `daysBeforeBillDue` setting defined at Organization level.'
             format: int32
             exclusiveMinimum: 0
-    AbstractResponseWithCustomFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    PaginatedAccountResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/AccountResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    EndDateBillingEntitiesResponse:
-      type: object
-      properties:
-        statusMessage:
-          type: string
-          description: A message indicating the status of the operation.
-        updatedEntities:
-          properties:
-            CONTRACT:
-              $ref: '#/components/schemas/Set_String_'
-            ACCOUNTPLAN:
-              $ref: '#/components/schemas/Set_String_'
-            PREPAYMENT:
-              $ref: '#/components/schemas/Set_String_'
-            PRICINGS:
-              $ref: '#/components/schemas/Set_String_'
-            COUNTER_PRICINGS:
-              $ref: '#/components/schemas/Set_String_'
-          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the updated entities.
-        failedEntities:
-          properties:
-            CONTRACT:
-              $ref: '#/components/schemas/Set_String_'
-            ACCOUNTPLAN:
-              $ref: '#/components/schemas/Set_String_'
-            PREPAYMENT:
-              $ref: '#/components/schemas/Set_String_'
-            PRICINGS:
-              $ref: '#/components/schemas/Set_String_'
-            COUNTER_PRICINGS:
-              $ref: '#/components/schemas/Set_String_'
-          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the entities for which the update failed.
-      description: ''
-    BillingEntity:
-      type: string
-      description: ''
-      enum:
-      - CONTRACT
-      - ACCOUNTPLAN
-      - PREPAYMENT
-      - PRICINGS
-      - COUNTER_PRICINGS
     Address:
       type: object
       properties:
@@ -755,148 +835,68 @@ components:
           type: string
           description: ''
       description: Contact address.
-    Collection_String_:
+    AbstractRequestWithCustomFields:
       type: object
-      properties:
-        empty:
-          type: boolean
-          description: ''
       description: ''
-    StatementAutoGenerateMode:
-      type: string
-      description: "Specify whether to auto-generate statements once Bills are *approved* or *locked*. It will not auto-generate if a bill is in *pending* state. \n\nThe default value is **None**.\n\n- **None**. Statements will not be auto-generated.\n- **JSON**. Statements are auto-generated in JSON format.\n- **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats."
-      enum:
-      - NONE
-      - JSON
-      - JSON_AND_CSV
-    AccountResponse:
-      type: object
-      description: Response containing an AccountResponse entity.
       allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
       - $ref: '#/components/schemas/AbstractResponse'
       - properties:
-          name:
-            type: string
-            description: Name of the Account.
-          code:
-            type: string
-            description: 'Code of the Account.
-
-              This is a unique short code used for the Account.'
-          address:
-            description: Contact address for the Account.
-            allOf:
-            - $ref: '#/components/schemas/Address'
-            - description: Address of the Account
-          emailAddress:
-            type: string
-            description: Contact email for the Account.
-          parentAccountId:
-            type: string
-            description: Parent Account ID, or null if this account does not have a parent.
-          billEpoch:
-            type: string
-            description: 'Defines first bill date for Account Bills. For example, if the Plan attached to the Account is set for monthly billing frequency and you set the first bill date to be January 1st, Bills are created every month starting on that date.
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
 
 
-              Optional attribute - if not defined, then first bill date is determined by the Epoch settings at Organizational level.'
-            format: date
-          purchaseOrderNumber:
-            type: string
-            description: 'Purchase Order Number of the Account.
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
 
 
-              Optional attribute - allows you to set a purchase order number that comes through into invoicing. For example, your financial systems might require this as a reference for clearing payments.'
-          currency:
-            type: string
-            description: 'Account level billing currency, such as USD or GBP. Optional attribute:
-
-              - If you define an Account currency, this will be used for bills.
-
-              - If you do not define a currency, the billing currency defined at Organizational will be used.
-
-
-              **Note:** If you''ve attached a Plan to the Account that uses a different currency to the billing currency, then you must add the relevant currency conversion rate at Organization level to ensure the billing process can convert line items calculated using the Plan currency into the selected billing currency. If you don''t add these conversion rates, then bills will fail for the Account.'
-            example: USD
-          statementDefinitionId:
-            type: string
-            description: 'The UUID of the statement definition used when Bill statements are generated for the Account. If no statement definition is specified for the Account, the statement definition specified at Organizational level is used.
-
-
-              Bill statements can be used as informative backing sheets to invoices. Based on the usage breakdown defined in the statement definition, generated statements give a breakdown of usage charges on Account Bills, which helps customers better understand usage charges incurred over the billing period.
-
-
-              See [Working with Bill Statements](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/working-with-bill-statements) in the m3ter documentation for more details.'
-          dtCreated:
-            type: string
-            description: The DateTime when the Account was created *(in ISO 8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the Account was last modified *(in ISO 8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The ID of the user who created the account.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The ID of the user who last modified the Account.
-            x-stainless-skip:
-            - terraform
-          autoGenerateStatementMode:
-            description: 'Specify whether to auto-generate statements once Bills are approved or locked.
-
-
-              - **None**. Statements will not be auto-generated.
-
-              - **JSON**. Statements are auto-generated in JSON format.
-
-              - **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats. '
-            $ref: '#/components/schemas/StatementAutoGenerateMode'
-          creditApplicationOrder:
-            type: array
-            description: 'The order in which any Prepayment or Balance amounts on the Account are to be drawn-down against for billing. Four options:
-
-              - `"PREPAYMENT","BALANCE"`. Draw-down against Prepayment credit before Balance credit.
-
-              - `"BALANCE","PREPAYMENT"`. Draw-down against Balance credit before Prepayment credit.
-
-              - `"PREPAYMENT"`. Only draw-down against Prepayment credit.
-
-              - `"BALANCE"`. Only draw-down against Balance credit.'
-            items:
-              $ref: '#/components/schemas/BillCreditType'
-          daysBeforeBillDue:
-            type: integer
-            description: The number of days after the Bill generation date shown on Bills as the due date.
-            format: int32
-    EndDateBillingEntitiesRequest:
-      required:
-      - billingEntities
-      - endDate
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+    Set_String_:
       type: object
-      properties:
-        endDate:
-          type: string
-          description: The end date and time applied to the specified billing entities *(in ISO 8601 format)*.
-          format: date-time
-        applyToChildren:
-          type: boolean
-          description: A Boolean TRUE/FALSE flag. For Parent Accounts, set to TRUE if you want the specified end-date to be applied to any billing entities associated with Child Accounts. *(Optional)*
-        billingEntities:
-          minItems: 1
-          type: array
-          description: Defines which billing entities associated with the Account will have the specified end-date applied. For example, if you want the specified end-date to be applied to all Prepayments/Commitments created for the Account use `"PREPAYMENT"`.
-          items:
-            $ref: '#/components/schemas/BillingEntity'
       description: ''
+      allOf:
+      - $ref: '#/components/schemas/Collection_String_'
+      - properties:
+          empty:
+            type: boolean
+            description: ''
+    BillCreditType:
+      type: string
+      description: ''
+      enum:
+      - PREPAYMENT
+      - BALANCE
   responses:
     Error:
       description: Error message

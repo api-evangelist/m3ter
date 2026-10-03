@@ -270,6 +270,25 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     AbstractRequest:
       type: object
       properties:
@@ -284,6 +303,161 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    PlanTemplateResponse:
+      type: object
+      description: ''
+      example:
+        id: string
+        version: 1
+        customFields:
+          example1: 123
+          example2: string
+        productId: string
+        name: string
+        currency: USD
+        standingCharge: 0
+        standingChargeDescription: string
+        standingChargeInterval: 1
+        standingChargeOffset: 364
+        billFrequencyInterval: 1
+        billFrequency: DAILY
+        ordinal: 0
+        code: string
+        minimumSpend: 0
+        minimumSpendDescription: string
+        standingChargeBillInAdvance: true
+        minimumSpendBillInAdvance: false
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          productId:
+            type: string
+            description: The unique identifier (UUID) of the Product associated with this PlanTemplate.
+          name:
+            type: string
+            description: Descriptive name for the PlanTemplate.
+          currency:
+            type: string
+            description: The ISO currency code for the pricing currency used by Plans based on the Plan Template to define charge rates for Product consumption - for example USD, GBP, EUR.
+          standingCharge:
+            type: number
+            description: The fixed charge *(standing charge)* applied to customer bills. This charge is prorated and must be a non-negative number.
+            format: double
+          standingChargeDescription:
+            type: string
+            description: Standing charge description *(displayed on the bill line item)*.
+          standingChargeInterval:
+            type: integer
+            description: "How often the standing charge is applied. \nFor example, if the bill is issued every three months and `standingChargeInterval` is 2, then the standing charge is applied every six months."
+            format: int32
+          standingChargeOffset:
+            type: integer
+            description: "Defines an offset for when the standing charge is first applied. \nFor example, if the bill is issued every three months and the `standingChargeOfset` is 0, then the charge is applied to the first bill *(at three months)*; if 1, it would be applied to the second bill *(at six months)*, and so on."
+            format: int32
+          billFrequencyInterval:
+            type: integer
+            description: "How often bills are issued. \nFor example, if `billFrequency` is Monthly and `billFrequencyInterval` is 3, bills are issued every three months."
+            format: int32
+          billFrequency:
+            description: 'Determines the frequency at which bills are generated.
+
+
+              * **Daily**. Starting at midnight each day, covering the twenty-four hour period following.
+
+
+              * **Weekly**. Starting at midnight on a Monday, covering the seven-day period following.
+
+
+              * **Monthly**. Starting at midnight on the first day of each month, covering the entire calendar month following.
+
+
+              * **Annually**. Starting at midnight on first day of each year covering the entire calendar year following.'
+            $ref: '#/components/schemas/BillingFrequency'
+          ordinal:
+            type: integer
+            description: 'The ranking of the PlanTemplate among your pricing plans. Lower numbers represent more basic plans, while higher numbers represent premium plans. This must be a non-negative integer.
+
+
+              **NOTE:** **DEPRECATED** - no longer used.'
+            format: int64
+          code:
+            type: string
+            description: A unique, short code reference for the PlanTemplate. This code should not contain control characters or spaces.
+          minimumSpend:
+            type: number
+            description: The Product minimum spend amount per billing cycle for end customer Accounts on a pricing Plan based on the PlanTemplate. This must be a non-negative number.
+            format: double
+          minimumSpendDescription:
+            type: string
+            description: Minimum spend description *(displayed on the bill line item)*.
+          standingChargeBillInAdvance:
+            type: boolean
+            description: 'A boolean that determines when the standing charge is billed.
+
+
+              * TRUE - standing charge is billed at the start of each billing period.
+
+              * FALSE - standing charge is billed at the end of each billing period.
+
+
+              Overrides the setting at Organizational level for standing charge billing in arrears/in advance.'
+          minimumSpendBillInAdvance:
+            type: boolean
+            description: 'A boolean that determines when the minimum spend is billed.
+
+
+              * TRUE - minimum spend is billed at the start of each billing period.
+
+              * FALSE - minimum spend is billed at the end of each billing period.
+
+
+              Overrides the setting at Organizational level for minimum spend billing in arrears/in advance.'
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the PlanTemplate was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the PlanTemplate was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this PlanTemplate.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this PlanTemplate.
+            x-stainless-skip:
+            - terraform
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
     AbstractRequestWithCustomFields:
       type: object
       description: ''
@@ -308,74 +482,17 @@ components:
                 type: integer
               - title: NumberCustomFieldReq
                 type: number
-    BillingFrequency:
-      type: string
-      description: 'Defines how often Bills are generated.
-
-
-        * **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
-
-
-        * **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
-
-
-        * **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
-
-
-        * **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
-
-
-        * **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
-
-        '
-      enum:
-      - DAILY
-      - WEEKLY
-      - MONTHLY
-      - ANNUALLY
-      - AD_HOC
-      - MIXED
-    AbstractResponseWithCustomFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-    AbstractResponse:
-      required:
-      - id
+    PaginatedPlanTemplateResponseData:
       type: object
       properties:
-        id:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/PlanTemplateResponse'
+        nextToken:
           type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
+          description: ''
       description: ''
     PlanTemplateRequest:
       type: object
@@ -518,150 +635,33 @@ components:
 
 
               Overrides the setting at Organizational level for minimum spend billing in arrears/in advance.'
-    PlanTemplateResponse:
-      type: object
-      description: ''
-      example:
-        id: string
-        version: 1
-        customFields:
-          example1: 123
-          example2: string
-        productId: string
-        name: string
-        currency: USD
-        standingCharge: 0
-        standingChargeDescription: string
-        standingChargeInterval: 1
-        standingChargeOffset: 364
-        billFrequencyInterval: 1
-        billFrequency: DAILY
-        ordinal: 0
-        code: string
-        minimumSpend: 0
-        minimumSpendDescription: string
-        standingChargeBillInAdvance: true
-        minimumSpendBillInAdvance: false
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          productId:
-            type: string
-            description: The unique identifier (UUID) of the Product associated with this PlanTemplate.
-          name:
-            type: string
-            description: Descriptive name for the PlanTemplate.
-          currency:
-            type: string
-            description: The ISO currency code for the pricing currency used by Plans based on the Plan Template to define charge rates for Product consumption - for example USD, GBP, EUR.
-          standingCharge:
-            type: number
-            description: The fixed charge *(standing charge)* applied to customer bills. This charge is prorated and must be a non-negative number.
-            format: double
-          standingChargeDescription:
-            type: string
-            description: Standing charge description *(displayed on the bill line item)*.
-          standingChargeInterval:
-            type: integer
-            description: "How often the standing charge is applied. \nFor example, if the bill is issued every three months and `standingChargeInterval` is 2, then the standing charge is applied every six months."
-            format: int32
-          standingChargeOffset:
-            type: integer
-            description: "Defines an offset for when the standing charge is first applied. \nFor example, if the bill is issued every three months and the `standingChargeOfset` is 0, then the charge is applied to the first bill *(at three months)*; if 1, it would be applied to the second bill *(at six months)*, and so on."
-            format: int32
-          billFrequencyInterval:
-            type: integer
-            description: "How often bills are issued. \nFor example, if `billFrequency` is Monthly and `billFrequencyInterval` is 3, bills are issued every three months."
-            format: int32
-          billFrequency:
-            description: 'Determines the frequency at which bills are generated.
+    BillingFrequency:
+      type: string
+      description: 'Defines how often Bills are generated.
 
 
-              * **Daily**. Starting at midnight each day, covering the twenty-four hour period following.
+        * **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
 
 
-              * **Weekly**. Starting at midnight on a Monday, covering the seven-day period following.
+        * **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
 
 
-              * **Monthly**. Starting at midnight on the first day of each month, covering the entire calendar month following.
+        * **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
 
 
-              * **Annually**. Starting at midnight on first day of each year covering the entire calendar year following.'
-            $ref: '#/components/schemas/BillingFrequency'
-          ordinal:
-            type: integer
-            description: 'The ranking of the PlanTemplate among your pricing plans. Lower numbers represent more basic plans, while higher numbers represent premium plans. This must be a non-negative integer.
+        * **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
 
 
-              **NOTE:** **DEPRECATED** - no longer used.'
-            format: int64
-          code:
-            type: string
-            description: A unique, short code reference for the PlanTemplate. This code should not contain control characters or spaces.
-          minimumSpend:
-            type: number
-            description: The Product minimum spend amount per billing cycle for end customer Accounts on a pricing Plan based on the PlanTemplate. This must be a non-negative number.
-            format: double
-          minimumSpendDescription:
-            type: string
-            description: Minimum spend description *(displayed on the bill line item)*.
-          standingChargeBillInAdvance:
-            type: boolean
-            description: 'A boolean that determines when the standing charge is billed.
+        * **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
 
-
-              * TRUE - standing charge is billed at the start of each billing period.
-
-              * FALSE - standing charge is billed at the end of each billing period.
-
-
-              Overrides the setting at Organizational level for standing charge billing in arrears/in advance.'
-          minimumSpendBillInAdvance:
-            type: boolean
-            description: 'A boolean that determines when the minimum spend is billed.
-
-
-              * TRUE - minimum spend is billed at the start of each billing period.
-
-              * FALSE - minimum spend is billed at the end of each billing period.
-
-
-              Overrides the setting at Organizational level for minimum spend billing in arrears/in advance.'
-          dtCreated:
-            type: string
-            description: The date and time *(in ISO-8601 format)* when the PlanTemplate was created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The date and time *(in ISO-8601 format)* when the PlanTemplate was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The unique identifier (UUID) of the user who created this PlanTemplate.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The unique identifier (UUID) of the user who last modified this PlanTemplate.
-            x-stainless-skip:
-            - terraform
-    PaginatedPlanTemplateResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/PlanTemplateResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
+        '
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - ANNUALLY
+      - AD_HOC
+      - MIXED
   responses:
     Error:
       description: Error message

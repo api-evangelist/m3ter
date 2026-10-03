@@ -266,20 +266,27 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
+    BillJobBillingFrequency:
+      type: string
+      description: 'Defines how often Bills are generated.
 
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+        - **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
 
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
+        - **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
+
+        - **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
+
+        - **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
+
+        - **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
+
+        '
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - ANNUALLY
+      - AD_HOC
     AbstractResponse:
       required:
       - id
@@ -299,21 +306,70 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    BillJobRecalculateRequest:
+    BillJobStatus:
+      type: string
+      description: The current status of the BillJob, indicating its progress or completion state.
+      enum:
+      - PENDING
+      - INITIALIZING
+      - RUNNING
+      - COMPLETE
+      - CANCELLED
+    AbstractRequest:
       type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
       description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - billIds
-        properties:
-          billIds:
-            maxItems: 100
-            minItems: 1
-            type: array
-            description: 'The array of unique identifiers (UUIDs) for the Bills which are to be recalculated. '
-            items:
-              type: string
+    BillJobType:
+      type: string
+      description: "Specifies the type of BillJob. \n\n* **Create** when creating a new Bill.\n* **Recalculate** when recalculating an existing Bill."
+      enum:
+      - CREATE
+      - RECALCULATE
+    CurrencyConversion:
+      required:
+      - from
+      - to
+      type: object
+      properties:
+        from:
+          minLength: 1
+          type: string
+          description: 'Currency to convert from. For example: GBP.'
+          example: EUR
+        to:
+          minLength: 1
+          type: string
+          description: 'Currency to convert to. For example: USD.'
+          example: USD
+        multiplier:
+          type: number
+          description: Conversion rate between currencies.
+          format: double
+          example: 1.12
+          exclusiveMinimum: 0
+      description: An array of currency conversion rates from Bill currency to Organization currency. For example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate.
+    PaginatedBillJobResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/BillJobResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     BillJobRequest:
       type: object
       description: ''
@@ -421,36 +477,21 @@ components:
             type: string
             description: The starting date *(epoch)* for Daily billing frequency *(in ISO 8601 format)*, determining the first Bill date for daily Bills.
             format: date
-    BillJobStatus:
-      type: string
-      description: The current status of the BillJob, indicating its progress or completion state.
-      enum:
-      - PENDING
-      - INITIALIZING
-      - RUNNING
-      - COMPLETE
-      - CANCELLED
-    BillJobBillingFrequency:
-      type: string
-      description: 'Defines how often Bills are generated.
-
-        - **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
-
-        - **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
-
-        - **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
-
-        - **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
-
-        - **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
-
-        '
-      enum:
-      - DAILY
-      - WEEKLY
-      - MONTHLY
-      - ANNUALLY
-      - AD_HOC
+    BillJobRecalculateRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - billIds
+        properties:
+          billIds:
+            maxItems: 100
+            minItems: 1
+            type: array
+            description: 'The array of unique identifiers (UUIDs) for the Bills which are to be recalculated. '
+            items:
+              type: string
     BillJobResponse:
       type: object
       description: ''
@@ -591,47 +632,6 @@ components:
             description: The unique identifier (UUID) for the user who last modified this BillJob.
             x-stainless-skip:
             - terraform
-    BillJobType:
-      type: string
-      description: "Specifies the type of BillJob. \n\n* **Create** when creating a new Bill.\n* **Recalculate** when recalculating an existing Bill."
-      enum:
-      - CREATE
-      - RECALCULATE
-    CurrencyConversion:
-      required:
-      - from
-      - to
-      type: object
-      properties:
-        from:
-          minLength: 1
-          type: string
-          description: 'Currency to convert from. For example: GBP.'
-          example: EUR
-        to:
-          minLength: 1
-          type: string
-          description: 'Currency to convert to. For example: USD.'
-          example: USD
-        multiplier:
-          type: number
-          description: Conversion rate between currencies.
-          format: double
-          example: 1.12
-          exclusiveMinimum: 0
-      description: An array of currency conversion rates from Bill currency to Organization currency. For example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate.
-    PaginatedBillJobResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/BillJobResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
   responses:
     Error:
       description: Error message

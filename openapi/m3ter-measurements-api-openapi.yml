@@ -359,6 +359,104 @@ paths:
         - measurements:fileUpload
 components:
   schemas:
+    GenerateDownloadUrlResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The presigned download URL
+      description: It contains details for downloading a file
+    PaginatedUploadJobResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/UploadJobResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    SubmitMeasurementsRequest:
+      required:
+      - measurements
+      type: object
+      properties:
+        measurements:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          description: Request containing the usage data measurements for submission.
+          items:
+            $ref: '#/components/schemas/MeasurementRequest'
+      description: ''
+    SubmitMeasurementsResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          description: '`accepted` is returned when successful.'
+      description: ''
+      example:
+        result: accepted
+    UploadJobResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: UUID of the file upload job.
+        version:
+          type: integer
+          description: 'The version number. Default value when newly created is one. '
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        fileName:
+          type: string
+          description: 'The name of the measurements file for the upload job. '
+        uploadDate:
+          type: string
+          description: The upload date for the upload job *(in ISO-8601 format)*.
+        contentLength:
+          type: integer
+          description: 'The size of the body in bytes. For example: `"contentLength": 485`, where 485 is the size in bytes of the file uploaded.'
+          format: int64
+        status:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/JobStatus'
+          - description: The status
+        totalRows:
+          type: integer
+          description: 'The total number of rows in the file. '
+          format: int64
+        processedRows:
+          type: integer
+          description: The number of rows that were processed during ingest.
+          format: int64
+        failedRows:
+          type: integer
+          description: The number of rows that failed processing during ingest.
+          format: int64
+      description: Response containing the upload job details.
+    UrlDownloadResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+          description: UUID of the download job
+        url:
+          type: string
+          description: The URL
+        headers:
+          description: The headers
+          allOf:
+          - type: object
+            additionalProperties:
+              type: string
+          - description: The headers
+      description: It contains details for downloading a file
     JobStatus:
       type: string
       description: 'The status of the file upload job. '
@@ -367,6 +465,56 @@ components:
       - running
       - failed
       - succeeded
+    UrlUploadResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+          description: UUID of the upload job
+        url:
+          type: string
+          description: The URL
+        headers:
+          description: The headers
+          allOf:
+          - type: object
+            additionalProperties:
+              type: string
+          - description: The headers
+      description: Response containing the upload job URL details
+    GetUploadUrlRequest:
+      required:
+      - contentLength
+      - contentType
+      - fileName
+      type: object
+      properties:
+        fileName:
+          maxLength: 100
+          minLength: 1
+          type: string
+          description: 'The name of the measurements file to be uploaded.  '
+        contentType:
+          maxLength: 20
+          minLength: 1
+          type: string
+          description: 'The media type of the entity body sent, for example: `"contentType":"text/json"`.
+
+
+            **NOTE:** Currently only a JSON formatted file type is supported by the File Upload Service.'
+          enum:
+          - application/json
+          - text/json
+        contentLength:
+          maximum: 1073741824
+          minimum: 1
+          type: integer
+          description: 'The size of the body in bytes. For example: `"contentLength": 485`, where 485 is the size in bytes of the file to upload.
+
+
+            **NOTE:** Required.'
+          format: int64
+      description: Request containing the file details when generating an upload URL.
     MeasurementRequest:
       required:
       - account
@@ -494,154 +642,6 @@ components:
         income:
           property1: 0
           property2: 0
-    UploadJobResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          description: UUID of the file upload job.
-        version:
-          type: integer
-          description: 'The version number. Default value when newly created is one. '
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        fileName:
-          type: string
-          description: 'The name of the measurements file for the upload job. '
-        uploadDate:
-          type: string
-          description: The upload date for the upload job *(in ISO-8601 format)*.
-        contentLength:
-          type: integer
-          description: 'The size of the body in bytes. For example: `"contentLength": 485`, where 485 is the size in bytes of the file uploaded.'
-          format: int64
-        status:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/JobStatus'
-          - description: The status
-        totalRows:
-          type: integer
-          description: 'The total number of rows in the file. '
-          format: int64
-        processedRows:
-          type: integer
-          description: The number of rows that were processed during ingest.
-          format: int64
-        failedRows:
-          type: integer
-          description: The number of rows that failed processing during ingest.
-          format: int64
-      description: Response containing the upload job details.
-    GetUploadUrlRequest:
-      required:
-      - contentLength
-      - contentType
-      - fileName
-      type: object
-      properties:
-        fileName:
-          maxLength: 100
-          minLength: 1
-          type: string
-          description: 'The name of the measurements file to be uploaded.  '
-        contentType:
-          maxLength: 20
-          minLength: 1
-          type: string
-          description: 'The media type of the entity body sent, for example: `"contentType":"text/json"`.
-
-
-            **NOTE:** Currently only a JSON formatted file type is supported by the File Upload Service.'
-          enum:
-          - application/json
-          - text/json
-        contentLength:
-          maximum: 1073741824
-          minimum: 1
-          type: integer
-          description: 'The size of the body in bytes. For example: `"contentLength": 485`, where 485 is the size in bytes of the file to upload.
-
-
-            **NOTE:** Required.'
-          format: int64
-      description: Request containing the file details when generating an upload URL.
-    PaginatedUploadJobResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/UploadJobResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    SubmitMeasurementsResponse:
-      type: object
-      properties:
-        result:
-          type: string
-          description: '`accepted` is returned when successful.'
-      description: ''
-      example:
-        result: accepted
-    UrlUploadResponse:
-      type: object
-      properties:
-        jobId:
-          type: string
-          description: UUID of the upload job
-        url:
-          type: string
-          description: The URL
-        headers:
-          description: The headers
-          allOf:
-          - type: object
-            additionalProperties:
-              type: string
-          - description: The headers
-      description: Response containing the upload job URL details
-    SubmitMeasurementsRequest:
-      required:
-      - measurements
-      type: object
-      properties:
-        measurements:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          description: Request containing the usage data measurements for submission.
-          items:
-            $ref: '#/components/schemas/MeasurementRequest'
-      description: ''
-    UrlDownloadResponse:
-      type: object
-      properties:
-        jobId:
-          type: string
-          description: UUID of the download job
-        url:
-          type: string
-          description: The URL
-        headers:
-          description: The headers
-          allOf:
-          - type: object
-            additionalProperties:
-              type: string
-          - description: The headers
-      description: It contains details for downloading a file
-    GenerateDownloadUrlResponse:
-      type: object
-      properties:
-        url:
-          type: string
-          description: The presigned download URL
-      description: It contains details for downloading a file
   responses:
     Error:
       description: Error message

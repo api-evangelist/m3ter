@@ -256,40 +256,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    DebitReasonRequest:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/AbstractPickListRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
-    AbstractPickListResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          code:
-            type: string
-            description: The short code of the data entity.
-          name:
-            type: string
-            description: The name of the data entity.
-          archived:
-            type: boolean
-            description: TRUE / FALSE flag indicating whether the data entity is archived. An entity can be archived if it is obsolete.
     AbstractResponse:
       required:
       - id
@@ -321,6 +287,67 @@ components:
           type: string
           description: ''
       description: ''
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractPickListResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          code:
+            type: string
+            description: The short code of the data entity.
+          name:
+            type: string
+            description: The name of the data entity.
+          archived:
+            type: boolean
+            description: TRUE / FALSE flag indicating whether the data entity is archived. An entity can be archived if it is obsolete.
+    DebitReasonRequest:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/AbstractPickListRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+    AbstractPickListRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - name
+        properties:
+          code:
+            maxLength: 80
+            pattern: ^[\p{L}_$][\p{L}_$0-9]*$
+            type: string
+            description: The short code for the entity.
+            example: code
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: The name of the entity.
+          archived:
+            type: boolean
+            description: 'A Boolean TRUE / FALSE flag indicating whether the entity is archived. An entity can be archived if it is obsolete.
+
+
+              * TRUE - the entity is in the archived state.
+
+              * FALSE - the entity is not in the archived state.'
     DebitReasonResponse:
       type: object
       description: ''
@@ -350,33 +377,6 @@ components:
             description: The id of the user who last modified this debit reason.
             x-stainless-skip:
             - terraform
-    AbstractPickListRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - name
-        properties:
-          code:
-            maxLength: 80
-            pattern: ^[\p{L}_$][\p{L}_$0-9]*$
-            type: string
-            description: The short code for the entity.
-            example: code
-          name:
-            maxLength: 200
-            minLength: 1
-            type: string
-            description: The name of the entity.
-          archived:
-            type: boolean
-            description: 'A Boolean TRUE / FALSE flag indicating whether the entity is archived. An entity can be archived if it is obsolete.
-
-
-              * TRUE - the entity is in the archived state.
-
-              * FALSE - the entity is not in the archived state.'
   responses:
     Error:
       description: Error message

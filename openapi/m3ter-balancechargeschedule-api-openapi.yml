@@ -336,6 +336,100 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    BalanceChargeScheduleRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - billFrequency
+        - billFrequencyInterval
+        - billInAdvance
+        - chargeDescription
+        - code
+        - currency
+        - name
+        - servicePeriodEndDate
+        - servicePeriodStartDate
+        properties:
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: The name of the Balance Charge Schedule.
+          code:
+            maxLength: 80
+            minLength: 1
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: Unique short code for the Balance Charge Schedule.
+          amount:
+            minimum: 0
+            type: number
+            description: The amount of each Charge created by the Balance Charge Schedule. Must be omitted if `units` and `unitPrice` are provided.
+          units:
+            type: number
+            description: Number of units defined for the Charges created by the Schedule. Required when `unitPrice` is provided. Must be omitted when `amount` is used.
+          unitPrice:
+            type: number
+            description: Unit price for Charge. Must be provided when `units` is used. Must be omitted when `amount` is used.
+          currency:
+            type: string
+            description: The currency of the Charges created by the Balance Charge Schedule.
+          servicePeriodStartDate:
+            type: string
+            description: The service period start date (*in ISO-8601 format)* of the Balance Charge Schedule.
+            format: date-time
+          servicePeriodEndDate:
+            type: string
+            description: The service period end date (*in ISO-8601 format*) of the Balance Charge Schedule.
+            format: date-time
+          billEpoch:
+            type: string
+            description: Specify a billing cycle date (*in ISO-8601 format*) for when the first Bill is created for Balance Charges created by the Schedule, and also acts as a reference for when in the Schedule period subsequent Bills are created for the defined `billFrequency`. If left blank, then the relevant Epoch date from your Organization's configuration will be used as the billing cycle date instead.
+            format: date
+          billFrequency:
+            description: Specify the daily, weekly, monthly, or yearly intervals for when Bills for Charges created by the Schedule against the Balance are generated for the Account.
+            allOf:
+            - $ref: '#/components/schemas/ScheduleFrequency'
+            - description: Together with billFrequencyInterval, defines how often Bills are generated.
+          billFrequencyInterval:
+            maximum: 365
+            minimum: 1
+            type: integer
+            description: How often Bills are issued. For example, if billFrequency is `MONTHLY` and `billFrequencyInterval` is 3, Bills are issued every three months.
+            format: int32
+          billInAdvance:
+            type: boolean
+            description: 'Used to specify how Charges created by the Balance Charge Schedule are billed - either in arrears or in advance:
+
+              * Use `false` for billing in arrears.
+
+              * Use `true` for billing in advance.'
+          chargeDescription:
+            minLength: 1
+            type: string
+            description: The description for Charges created by the Balance Charge Schedule. Used on Bills for Charge line items.
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     AbstractRequest:
       type: object
       properties:
@@ -350,30 +444,18 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    AbstractRequestWithCustomFields:
+    PaginatedBalanceChargeScheduleResponseData:
       type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/BalanceChargeScheduleResponse'
+        nextToken:
+          type: string
+          description: ''
       description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            maxItems: 100
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldReq
-                type: string
-              - title: IntegerCustomFieldReq
-                type: integer
-              - title: NumberCustomFieldReq
-                type: number
     AbstractResponseWithCustomFields:
       type: object
       description: ''
@@ -397,25 +479,6 @@ components:
                 type: integer
               - title: NumberCustomFieldRes
                 type: number
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
     BalanceChargeScheduleResponse:
       type: object
       description: ''
@@ -508,18 +571,30 @@ components:
             type: string
             description: The date and time (*in ISO-8601 format*) when the previous Charge was generated by the Balance Charge Schedule.
             format: date-time
-    PaginatedBalanceChargeScheduleResponseData:
+    AbstractRequestWithCustomFields:
       type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/BalanceChargeScheduleResponse'
-        nextToken:
-          type: string
-          description: ''
       description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
     ScheduleFrequency:
       type: string
       description: Represents standard scheduling frequencies options for a job.
@@ -528,81 +603,6 @@ components:
       - WEEKLY
       - MONTHLY
       - ANNUALLY
-    BalanceChargeScheduleRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - billFrequency
-        - billFrequencyInterval
-        - billInAdvance
-        - chargeDescription
-        - code
-        - currency
-        - name
-        - servicePeriodEndDate
-        - servicePeriodStartDate
-        properties:
-          name:
-            maxLength: 200
-            minLength: 1
-            type: string
-            description: The name of the Balance Charge Schedule.
-          code:
-            maxLength: 80
-            minLength: 1
-            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
-            type: string
-            description: Unique short code for the Balance Charge Schedule.
-          amount:
-            minimum: 0
-            type: number
-            description: The amount of each Charge created by the Balance Charge Schedule. Must be omitted if `units` and `unitPrice` are provided.
-          units:
-            type: number
-            description: Number of units defined for the Charges created by the Schedule. Required when `unitPrice` is provided. Must be omitted when `amount` is used.
-          unitPrice:
-            type: number
-            description: Unit price for Charge. Must be provided when `units` is used. Must be omitted when `amount` is used.
-          currency:
-            type: string
-            description: The currency of the Charges created by the Balance Charge Schedule.
-          servicePeriodStartDate:
-            type: string
-            description: The service period start date (*in ISO-8601 format)* of the Balance Charge Schedule.
-            format: date-time
-          servicePeriodEndDate:
-            type: string
-            description: The service period end date (*in ISO-8601 format*) of the Balance Charge Schedule.
-            format: date-time
-          billEpoch:
-            type: string
-            description: Specify a billing cycle date (*in ISO-8601 format*) for when the first Bill is created for Balance Charges created by the Schedule, and also acts as a reference for when in the Schedule period subsequent Bills are created for the defined `billFrequency`. If left blank, then the relevant Epoch date from your Organization's configuration will be used as the billing cycle date instead.
-            format: date
-          billFrequency:
-            description: Specify the daily, weekly, monthly, or yearly intervals for when Bills for Charges created by the Schedule against the Balance are generated for the Account.
-            allOf:
-            - $ref: '#/components/schemas/ScheduleFrequency'
-            - description: Together with billFrequencyInterval, defines how often Bills are generated.
-          billFrequencyInterval:
-            maximum: 365
-            minimum: 1
-            type: integer
-            description: How often Bills are issued. For example, if billFrequency is `MONTHLY` and `billFrequencyInterval` is 3, Bills are issued every three months.
-            format: int32
-          billInAdvance:
-            type: boolean
-            description: 'Used to specify how Charges created by the Balance Charge Schedule are billed - either in arrears or in advance:
-
-              * Use `false` for billing in arrears.
-
-              * Use `true` for billing in advance.'
-          chargeDescription:
-            minLength: 1
-            type: string
-            description: The description for Charges created by the Balance Charge Schedule. Used on Bills for Charge line items.
   responses:
     Error:
       description: Error message

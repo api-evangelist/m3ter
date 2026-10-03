@@ -295,6 +295,65 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    BasePricingResponseWithPricingBands:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/BasePricingResponse'
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          pricingBands:
+            type: array
+            description: ''
+            items:
+              $ref: '#/components/schemas/PricingBand'
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PricingBand:
+      required:
+      - fixedPrice
+      - lowerLimit
+      - unitPrice
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID for the Pricing band.
+        lowerLimit:
+          minimum: 0
+          type: number
+          description: Lower limit for the Pricing band.
+          format: double
+        fixedPrice:
+          type: number
+          description: Fixed price charged for the Pricing band.
+          format: double
+        unitPrice:
+          type: number
+          description: Unit price charged for the Pricing band.
+          format: double
+        creditTypeId:
+          type: string
+          description: '**OBSOLETE - this is deprecated and no longer used.** '
+      description: ''
     PricingRequest:
       type: object
       properties:
@@ -392,6 +451,91 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    PricingType:
+      type: string
+      description: '* **DEBIT**. Default setting. The amount calculated using the Pricing is added to the bill as a debit.
+
+
+        * **PRODUCT_CREDIT**. The amount calculated using the Pricing is added to the bill as a credit *(negative amount)*. To prevent negative billing, the bill will be capped at the total of other line items for the *same* Product.
+
+
+        * **GLOBAL_CREDIT**. The amount calculated using the Pricing is added to the bill as a credit *(negative amount)*. To prevent negative billing, the bill will be capped at the total of other line items for the entire bill, which might include other Products the Account consumes.'
+      enum:
+      - DEBIT
+      - PRODUCT_CREDIT
+      - GLOBAL_CREDIT
+    BasePricingRequestWithPricingBands:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/BasePricingRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - pricingBands
+        properties:
+          pricingBands:
+            minItems: 1
+            type: array
+            description: ''
+            items:
+              $ref: '#/components/schemas/PricingBand'
+    BasePricingResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          planId:
+            type: string
+            description: UUID of the Plan the Pricing is created for.
+          planTemplateId:
+            type: string
+            description: UUID of the Plan Template the Pricing was created for.
+          cumulative:
+            type: boolean
+            description: 'Controls whether or not charge rates under a set of pricing bands configured for a Pricing are applied according to each separate band or at the highest band reached.
+
+
+              The default value is **TRUE**.
+
+
+              * When TRUE, at billing charge rates are applied according to each separate band.
+
+
+              * When FALSE, at billing charge rates are applied according to highest band reached.'
+          startDate:
+            type: string
+            description: The start date *(in ISO-8601 format)* for when the Pricing starts to be active for the Plan of Plan Template.
+            format: date-time
+          endDate:
+            type: string
+            description: 'The end date *(in ISO-8601 format)* for when the Pricing ceases to be active for the Plan or Plan Template.
+
+
+              If not specified, the Pricing remains active indefinitely.'
+            format: date-time
+          code:
+            type: string
+            description: Unique short code for the Pricing.
+          description:
+            type: string
+            description: Displayed on Bill line items.
+          accountingProductId:
+            type: string
+            description: Optional Product ID this Pricing should be attributed to for accounting purposes.
+    PaginatedPricingResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/PricingResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     BasePricingRequest:
       type: object
       description: ''
@@ -446,40 +590,40 @@ components:
             minLength: 36
             type: string
             description: Optional Product ID this Pricing should be attributed to for accounting purposes
-    BasePricingRequestWithPricingBands:
+    AggregationType:
+      type: string
+      description: ''
+      enum:
+      - SIMPLE
+      - COMPOUND
+    AbstractResponseWithAuditFields:
       type: object
       description: ''
       allOf:
-      - $ref: '#/components/schemas/BasePricingRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - pricingBands
-        properties:
-          pricingBands:
-            minItems: 1
-            type: array
-            description: ''
-            items:
-              $ref: '#/components/schemas/PricingBand'
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
     PricingResponse:
       type: object
       description: ''
@@ -554,150 +698,6 @@ components:
           accountingProductId:
             type: string
             description: ''
-    BasePricingResponseWithPricingBands:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/BasePricingResponse'
-      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          pricingBands:
-            type: array
-            description: ''
-            items:
-              $ref: '#/components/schemas/PricingBand'
-    AbstractResponseWithAuditFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          dtCreated:
-            type: string
-            description: The DateTime when this item was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The ID of the user who created this item.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The ID of the user who last modified this item.
-            x-stainless-skip:
-            - terraform
-    PaginatedPricingResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/PricingResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    PricingType:
-      type: string
-      description: '* **DEBIT**. Default setting. The amount calculated using the Pricing is added to the bill as a debit.
-
-
-        * **PRODUCT_CREDIT**. The amount calculated using the Pricing is added to the bill as a credit *(negative amount)*. To prevent negative billing, the bill will be capped at the total of other line items for the *same* Product.
-
-
-        * **GLOBAL_CREDIT**. The amount calculated using the Pricing is added to the bill as a credit *(negative amount)*. To prevent negative billing, the bill will be capped at the total of other line items for the entire bill, which might include other Products the Account consumes.'
-      enum:
-      - DEBIT
-      - PRODUCT_CREDIT
-      - GLOBAL_CREDIT
-    BasePricingResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          planId:
-            type: string
-            description: UUID of the Plan the Pricing is created for.
-          planTemplateId:
-            type: string
-            description: UUID of the Plan Template the Pricing was created for.
-          cumulative:
-            type: boolean
-            description: 'Controls whether or not charge rates under a set of pricing bands configured for a Pricing are applied according to each separate band or at the highest band reached.
-
-
-              The default value is **TRUE**.
-
-
-              * When TRUE, at billing charge rates are applied according to each separate band.
-
-
-              * When FALSE, at billing charge rates are applied according to highest band reached.'
-          startDate:
-            type: string
-            description: The start date *(in ISO-8601 format)* for when the Pricing starts to be active for the Plan of Plan Template.
-            format: date-time
-          endDate:
-            type: string
-            description: 'The end date *(in ISO-8601 format)* for when the Pricing ceases to be active for the Plan or Plan Template.
-
-
-              If not specified, the Pricing remains active indefinitely.'
-            format: date-time
-          code:
-            type: string
-            description: Unique short code for the Pricing.
-          description:
-            type: string
-            description: Displayed on Bill line items.
-          accountingProductId:
-            type: string
-            description: Optional Product ID this Pricing should be attributed to for accounting purposes.
-    PricingBand:
-      required:
-      - fixedPrice
-      - lowerLimit
-      - unitPrice
-      type: object
-      properties:
-        id:
-          type: string
-          description: The ID for the Pricing band.
-        lowerLimit:
-          minimum: 0
-          type: number
-          description: Lower limit for the Pricing band.
-          format: double
-        fixedPrice:
-          type: number
-          description: Fixed price charged for the Pricing band.
-          format: double
-        unitPrice:
-          type: number
-          description: Unit price charged for the Pricing band.
-          format: double
-        creditTypeId:
-          type: string
-          description: '**OBSOLETE - this is deprecated and no longer used.** '
-      description: ''
-    AggregationType:
-      type: string
-      description: ''
-      enum:
-      - SIMPLE
-      - COMPOUND
   responses:
     Error:
       description: Error message

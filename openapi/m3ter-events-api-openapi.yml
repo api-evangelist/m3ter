@@ -288,6 +288,56 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    EventFieldsResponse:
+      type: object
+      properties:
+        events:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+          description: "An object containing the list of Fields for the queried Event Type. \n\nSee the 200 Response sample where we have queried to get the Fields for the `configuration.commitment.created` Event Type. \n\n**Note:** `new` represents the attributes the newly created object has."
+      description: Response containing the list of Fields for an Event Type.
+      example:
+        events:
+          configuration.commitment.created:
+            new.accountCode: string
+            new.accountId: string
+            new.accountingProductId: string
+            new.amount: double
+            new.amountFirstBill: double
+            new.amountPrePaid: double
+            new.amountSpent: double
+            new.billEpoch: string
+            new.billingInterval: int
+            new.billingOffset: int
+            new.billingPlanId: string
+            new.commitmentFeeBillInAdvance: boolean
+            new.commitmentFeeDescription: string
+            new.commitmentUsageDescription: string
+            new.contractId: string
+            new.currency: string
+            new.customFields: map
+            new.endDate: string
+            new.feeDates: array
+            new.id: string
+            new.overageDescription: string
+            new.overageSurchargePercent: double
+            new.productIds: array
+            new.startDate: string
+    PaginatedEventResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/EventResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     EventResponse:
       required:
       - dtActioned
@@ -467,56 +517,6 @@ components:
         - integration.missingaccountmapping.error
         - integration.perform.error
         - integration.validation.error
-    EventFieldsResponse:
-      type: object
-      properties:
-        events:
-          type: object
-          additionalProperties:
-            type: object
-            additionalProperties:
-              type: string
-          description: "An object containing the list of Fields for the queried Event Type. \n\nSee the 200 Response sample where we have queried to get the Fields for the `configuration.commitment.created` Event Type. \n\n**Note:** `new` represents the attributes the newly created object has."
-      description: Response containing the list of Fields for an Event Type.
-      example:
-        events:
-          configuration.commitment.created:
-            new.accountCode: string
-            new.accountId: string
-            new.accountingProductId: string
-            new.amount: double
-            new.amountFirstBill: double
-            new.amountPrePaid: double
-            new.amountSpent: double
-            new.billEpoch: string
-            new.billingInterval: int
-            new.billingOffset: int
-            new.billingPlanId: string
-            new.commitmentFeeBillInAdvance: boolean
-            new.commitmentFeeDescription: string
-            new.commitmentUsageDescription: string
-            new.contractId: string
-            new.currency: string
-            new.customFields: map
-            new.endDate: string
-            new.feeDates: array
-            new.id: string
-            new.overageDescription: string
-            new.overageSurchargePercent: double
-            new.productIds: array
-            new.startDate: string
-    PaginatedEventResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/EventResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
   responses:
     Error:
       description: Error message

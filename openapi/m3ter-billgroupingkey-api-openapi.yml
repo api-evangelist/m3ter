@@ -256,66 +256,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    AbstractPickListResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          code:
-            type: string
-            description: The short code of the data entity.
-          name:
-            type: string
-            description: The name of the data entity.
-          archived:
-            type: boolean
-            description: TRUE / FALSE flag indicating whether the data entity is archived. An entity can be archived if it is obsolete.
-    PaginatedBillGroupingKeyResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/BillGroupingKeyResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
     BillGroupingKeyResponse:
       type: object
       description: ''
@@ -348,18 +288,39 @@ components:
             description: The id of the user who last modified this Bill Grouping Key.
             x-stainless-skip:
             - terraform
-    BillGroupingKeyRequest:
+    AbstractResponse:
+      required:
+      - id
       type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
       description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractPickListRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - exclusive
-        properties:
-          exclusive:
-            type: boolean
-            description: Whether or not the Bill Grouping Key will be used exclusively by one entity.
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     AbstractPickListRequest:
       type: object
       description: ''
@@ -387,6 +348,45 @@ components:
               * TRUE - the entity is in the archived state.
 
               * FALSE - the entity is not in the archived state.'
+    BillGroupingKeyRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractPickListRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - exclusive
+        properties:
+          exclusive:
+            type: boolean
+            description: Whether or not the Bill Grouping Key will be used exclusively by one entity.
+    AbstractPickListResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          code:
+            type: string
+            description: The short code of the data entity.
+          name:
+            type: string
+            description: The name of the data entity.
+          archived:
+            type: boolean
+            description: TRUE / FALSE flag indicating whether the data entity is archived. An entity can be archived if it is obsolete.
+    PaginatedBillGroupingKeyResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/BillGroupingKeyResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
   responses:
     Error:
       description: Error message

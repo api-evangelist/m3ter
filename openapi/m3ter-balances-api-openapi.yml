@@ -483,238 +483,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    PaginatedBalanceTransactionResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/BalanceTransactionResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    BalanceTransactionResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          description:
-            type: string
-            description: A brief description explaining the purpose or context of the transaction.
-          amount:
-            type: number
-            description: The financial value of the transaction, as recorded in the balance.
-          paid:
-            type: number
-            description: The actual payment amount if the payment currency differs from the Balance currency.
-          currencyPaid:
-            type: string
-            description: The currency code such as USD, GBP, EUR of the payment, if it differs from the balance currency.
-          entityType:
-            description: The type of entity associated with the Transaction - identifies who or what was responsible for the Transaction being added to the Balance - such as a **User**, a **Service User**, or a **Bill**.
-            $ref: '#/components/schemas/EntityType'
-          entityId:
-            type: string
-            description: The unique identifier (UUID) for the entity associated with the Transaction, as specified by the `entityType`.
-          transactionTypeId:
-            type: string
-            description: 'The unique identifier (UUID) for the Transaction type. This is obtained from the list of created Transaction Types within the Organization Configuration. '
-          appliedDate:
-            type: string
-            description: The date *(in ISO 8601 format)* when the balance transaction was applied, i.e., when the balance was affected.
-            format: date-time
-          transactionDate:
-            type: string
-            description: The date *(in ISO 8601 format)* when the transaction was recorded in the system.
-            format: date-time
-          dtCreated:
-            type: string
-            description: The date and time *(in ISO 8601 format)* when the balance transaction was first created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The date and time *(in ISO 8601 format)* when the balance transaction was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The unique identifier (UUID) for the user who created the balance transaction.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The unique identifier (UUID) for the user who last modified the balance transaction.
-            x-stainless-skip:
-            - terraform
-    AbstractRequestWithCustomFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            maxItems: 100
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldReq
-                type: string
-              - title: IntegerCustomFieldReq
-                type: integer
-              - title: NumberCustomFieldReq
-                type: number
-    BalanceTransactionRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - amount
-        properties:
-          description:
-            type: string
-            description: A brief description explaining the purpose and context of the transaction.
-          amount:
-            type: number
-            description: The financial value of the transaction.
-          paid:
-            type: number
-            description: The payment amount if the payment currency differs from the Balance currency.
-          currencyPaid:
-            type: string
-            description: 'The currency code of the payment if it differs from the Balance currency. For example: USD, GBP or EUR. '
-          transactionTypeId:
-            maxLength: 36
-            pattern: ^[a-zA-Z0-9-]*$
-            type: string
-            description: 'The unique identifier (UUID) of the transaction type. This is obtained from the list of created Transaction Types within the Organization Configuration. '
-          appliedDate:
-            type: string
-            description: The date *(in ISO 8601 format)* when the Balance transaction was applied.
-            format: date-time
-          transactionDate:
-            type: string
-            description: The date *(in ISO 8601 format)* when the transaction occurred.
-            format: date-time
-    AbstractResponseWithCustomFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    BalanceTransactionsSummary:
-      type: object
-      properties:
-        totalCreditAmount:
-          type: number
-          description: ''
-          example: 250
-        totalDebitAmount:
-          type: number
-          description: ''
-          example: 125.5
-        initialCreditAmount:
-          type: number
-          description: ''
-          example: 300
-        expiredBalanceAmount:
-          type: number
-          description: Amount of the balance that expired without being used
-          example: 50
-        rolloverConsumed:
-          type: number
-          description: Amount consumed from rollover credit
-          example: 75
-        balanceConsumed:
-          type: number
-          description: Amount consumed from the original balance
-          example: 100
-      description: ''
-    BalanceLineItemType:
-      type: string
-      description: Available line item types for Balances
-      enum:
-      - STANDING_CHARGE
-      - USAGE
-      - MINIMUM_SPEND
-      - COUNTER_RUNNING_TOTAL_CHARGE
-      - COUNTER_ADJUSTMENT_DEBIT
-      - AD_HOC
-    PaginatedBalanceResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/BalanceResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
     BalanceRequest:
       type: object
       description: ''
@@ -840,6 +608,82 @@ components:
             type: boolean
             description: Allow balance amounts to fall below zero. This feature is enabled on request. Please get in touch with m3ter Support or your m3ter contact if you would like it enabling for your organization(s).
             example: false
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PaginatedBalanceTransactionResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/BalanceTransactionResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    EntityType:
+      type: string
+      description: ''
+      enum:
+      - BILL
+      - COMMITMENT
+      - USER
+      - SERVICE_USER
+      - SCHEDULER
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    BalanceLineItemType:
+      type: string
+      description: Available line item types for Balances
+      enum:
+      - STANDING_CHARGE
+      - USAGE
+      - MINIMUM_SPEND
+      - COUNTER_RUNNING_TOTAL_CHARGE
+      - COUNTER_ADJUSTMENT_DEBIT
+      - AD_HOC
+    PaginatedBalanceResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/BalanceResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     BalanceResponse:
       type: object
       description: ''
@@ -936,15 +780,171 @@ components:
             description: The unique identifier (UUID) for the user who last modified the Balance.
             x-stainless-skip:
             - terraform
-    EntityType:
-      type: string
+    AbstractResponseWithCustomFields:
+      type: object
       description: ''
-      enum:
-      - BILL
-      - COMMITMENT
-      - USER
-      - SERVICE_USER
-      - SCHEDULER
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+    BalanceTransactionRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - amount
+        properties:
+          description:
+            type: string
+            description: A brief description explaining the purpose and context of the transaction.
+          amount:
+            type: number
+            description: The financial value of the transaction.
+          paid:
+            type: number
+            description: The payment amount if the payment currency differs from the Balance currency.
+          currencyPaid:
+            type: string
+            description: 'The currency code of the payment if it differs from the Balance currency. For example: USD, GBP or EUR. '
+          transactionTypeId:
+            maxLength: 36
+            pattern: ^[a-zA-Z0-9-]*$
+            type: string
+            description: 'The unique identifier (UUID) of the transaction type. This is obtained from the list of created Transaction Types within the Organization Configuration. '
+          appliedDate:
+            type: string
+            description: The date *(in ISO 8601 format)* when the Balance transaction was applied.
+            format: date-time
+          transactionDate:
+            type: string
+            description: The date *(in ISO 8601 format)* when the transaction occurred.
+            format: date-time
+    BalanceTransactionResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          description:
+            type: string
+            description: A brief description explaining the purpose or context of the transaction.
+          amount:
+            type: number
+            description: The financial value of the transaction, as recorded in the balance.
+          paid:
+            type: number
+            description: The actual payment amount if the payment currency differs from the Balance currency.
+          currencyPaid:
+            type: string
+            description: The currency code such as USD, GBP, EUR of the payment, if it differs from the balance currency.
+          entityType:
+            description: The type of entity associated with the Transaction - identifies who or what was responsible for the Transaction being added to the Balance - such as a **User**, a **Service User**, or a **Bill**.
+            $ref: '#/components/schemas/EntityType'
+          entityId:
+            type: string
+            description: The unique identifier (UUID) for the entity associated with the Transaction, as specified by the `entityType`.
+          transactionTypeId:
+            type: string
+            description: 'The unique identifier (UUID) for the Transaction type. This is obtained from the list of created Transaction Types within the Organization Configuration. '
+          appliedDate:
+            type: string
+            description: The date *(in ISO 8601 format)* when the balance transaction was applied, i.e., when the balance was affected.
+            format: date-time
+          transactionDate:
+            type: string
+            description: The date *(in ISO 8601 format)* when the transaction was recorded in the system.
+            format: date-time
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO 8601 format)* when the balance transaction was first created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO 8601 format)* when the balance transaction was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) for the user who created the balance transaction.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) for the user who last modified the balance transaction.
+            x-stainless-skip:
+            - terraform
+    AbstractRequestWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+    BalanceTransactionsSummary:
+      type: object
+      properties:
+        totalCreditAmount:
+          type: number
+          description: ''
+          example: 250
+        totalDebitAmount:
+          type: number
+          description: ''
+          example: 125.5
+        initialCreditAmount:
+          type: number
+          description: ''
+          example: 300
+        expiredBalanceAmount:
+          type: number
+          description: Amount of the balance that expired without being used
+          example: 50
+        rolloverConsumed:
+          type: number
+          description: Amount consumed from rollover credit
+          example: 75
+        balanceConsumed:
+          type: number
+          description: Amount consumed from the original balance
+          example: 100
+      description: ''
   responses:
     Error:
       description: Error message

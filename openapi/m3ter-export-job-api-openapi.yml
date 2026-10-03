@@ -158,14 +158,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    Status:
-      type: string
-      description: ''
-      enum:
-      - PENDING
-      - RUNNING
-      - SUCCEEDED
-      - FAILED
     AbstractResponse:
       required:
       - id
@@ -185,24 +177,20 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    Status:
+      type: string
+      description: ''
+      enum:
+      - PENDING
+      - RUNNING
+      - SUCCEEDED
+      - FAILED
     SourceType:
       type: string
       description: ''
       enum:
       - USAGE
       - OPERATIONAL
-    PaginatedJobResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/JobResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
     JobResponse:
       type: object
       properties:
@@ -233,6 +221,18 @@ components:
       description: Base Response containing data export job
       allOf:
       - $ref: '#/components/schemas/AbstractResponse'
+    PaginatedJobResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/JobResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
   responses:
     Error:
       description: Error message

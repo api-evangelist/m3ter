@@ -233,20 +233,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
     AbstractResponse:
       required:
       - id
@@ -266,55 +252,18 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    Measure:
+    PaginatedStatementDefinitionResponseData:
       type: object
       properties:
-        meterId:
-          type: string
-          description: The unique identifier (UUID) of the Meter containing this Measure.
-        name:
-          type: string
-          description: The name of a Measure data field *(or blank to indicate a wildcard, i.e. all fields)*. Default value is blank.
-        aggregations:
-          maxItems: 7
+        data:
           type: array
-          description: A list of Aggregations to apply to the Measure.
+          description: ''
           items:
-            $ref: '#/components/schemas/Aggregation'
+            $ref: '#/components/schemas/StatementDefinitionResponse'
+        nextToken:
+          type: string
+          description: ''
       description: ''
-    Aggregation:
-      type: string
-      description: 'Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected targetField.
-
-
-        * **SUM**. Adds the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
-
-
-        * **MIN**. Uses the minimum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
-
-
-        * **MAX**. Uses the maximum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
-
-
-        * **COUNT**. Counts the number of values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
-
-
-        * **LATEST**. Uses the most recent value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`. Note: Based on the timestamp `ts` value of usage data measurement submissions. If using this method, please ensure *distinct* `ts` values are used for usage data measurement submissions.
-
-
-        * **MEAN**. Uses the arithmetic mean of the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
-
-
-        * **UNIQUE**. Uses unique values and returns a count of the number of unique values. Can be applied to a **Metadata** `targetField`.'
-      enum:
-      - SUM
-      - MIN
-      - MAX
-      - COUNT
-      - LATEST
-      - MEAN
-      - UNIQUE
-      - CUSTOM_SQL
     StatementDefinitionRequest:
       type: object
       description: ''
@@ -350,6 +299,36 @@ components:
           generateSlimStatements:
             type: boolean
             description: ''
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    Measure:
+      type: object
+      properties:
+        meterId:
+          type: string
+          description: The unique identifier (UUID) of the Meter containing this Measure.
+        name:
+          type: string
+          description: The name of a Measure data field *(or blank to indicate a wildcard, i.e. all fields)*. Default value is blank.
+        aggregations:
+          maxItems: 7
+          type: array
+          description: A list of Aggregations to apply to the Measure.
+          items:
+            $ref: '#/components/schemas/Aggregation'
+      description: ''
     StatementDefinitionResponse:
       type: object
       description: ''
@@ -414,28 +393,6 @@ components:
             description: The unique identifier (UUID) of the user who last modified this StatementDefinition.
             x-stainless-skip:
             - terraform
-    PaginatedStatementDefinitionResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/StatementDefinitionResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    AggregationFrequency:
-      type: string
-      description: This specifies how often the data should be aggregated.
-      enum:
-      - DAY
-      - WEEK
-      - MONTH
-      - QUARTER
-      - YEAR
-      - WHOLE_PERIOD
     Dimension:
       required:
       - filter
@@ -461,6 +418,49 @@ components:
           items:
             type: string
       description: A Dimension belonging to a Meter.
+    AggregationFrequency:
+      type: string
+      description: This specifies how often the data should be aggregated.
+      enum:
+      - DAY
+      - WEEK
+      - MONTH
+      - QUARTER
+      - YEAR
+      - WHOLE_PERIOD
+    Aggregation:
+      type: string
+      description: 'Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected targetField.
+
+
+        * **SUM**. Adds the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **MIN**. Uses the minimum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **MAX**. Uses the maximum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **COUNT**. Counts the number of values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **LATEST**. Uses the most recent value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`. Note: Based on the timestamp `ts` value of usage data measurement submissions. If using this method, please ensure *distinct* `ts` values are used for usage data measurement submissions.
+
+
+        * **MEAN**. Uses the arithmetic mean of the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **UNIQUE**. Uses unique values and returns a count of the number of unique values. Can be applied to a **Metadata** `targetField`.'
+      enum:
+      - SUM
+      - MIN
+      - MAX
+      - COUNT
+      - LATEST
+      - MEAN
+      - UNIQUE
+      - CUSTOM_SQL
   responses:
     Error:
       description: Error message

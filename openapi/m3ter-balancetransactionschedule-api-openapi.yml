@@ -336,6 +336,25 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     AbstractRequest:
       type: object
       properties:
@@ -350,30 +369,76 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    AbstractRequestWithCustomFields:
+    BalanceTransactionScheduleRequest:
       type: object
       description: ''
       allOf:
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
       - $ref: '#/components/schemas/AbstractRequest'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+      - required:
+        - amount
+        - code
+        - endDate
+        - frequency
+        - frequencyInterval
+        - name
+        - startDate
+        - transactionDescription
+        - transactionTypeId
+        properties:
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: The name of the Balance Transaction Schedule.
+          code:
+            maxLength: 80
+            minLength: 1
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: The unique short code of the Balance Transaction Schedule.
+          amount:
+            minimum: 0
+            type: number
+            description: The amount of each Balance Transaction created by this Schedule.
+          transactionDescription:
+            minLength: 1
+            type: string
+            description: The description of each Balance Transaction that will be created by this Schedule.
+          paid:
+            type: number
+            description: 'The payment amount if the payment currency differs from the Balance currency. '
+          currencyPaid:
+            type: string
+            description: 'The currency code of the payment if it differs from the Balance currency. For example: USD, GBP or EUR. '
+          transactionTypeId:
+            maxLength: 36
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-]*$
+            type: string
+            description: The unique identifier (UUID) of the transaction type used to create Transactions by this Schedule. You can obtain a list of Transaction Types created for the Organization. See the the [List TransactionTypes](https://www.m3ter.com/docs/api#tag/TransactionType/operation/ListTransactionTypes) endpoint of this API Reference.
+          startDate:
+            type: string
+            description: The start date (*in ISO-8601 format*) of the Balance Transaction Schedule.
+            format: date-time
+          endDate:
+            type: string
+            description: 'The end date (*in ISO-8601 format*) of the Balance Transaction Schedule.
 
 
-              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            maxItems: 100
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldReq
-                type: string
-              - title: IntegerCustomFieldReq
-                type: integer
-              - title: NumberCustomFieldReq
-                type: number
+              **NOTE:** End date is exclusive.'
+            format: date-time
+          frequency:
+            description: Specify a daily, weekly, monthly, or yearly interval for when Transactions are generated for the Balance throughout the defined Transaction Schedule time period.
+            allOf:
+            - $ref: '#/components/schemas/ScheduleFrequency'
+            - description: Together with frequencyInterval, defines how often BalanceTransactions are generated.
+          frequencyInterval:
+            maximum: 365
+            minimum: 1
+            type: integer
+            description: Used in conjunction with `frequency` to define how often Balance Transactions are generated by the Schedule. For example, if `frequency` is MONTHLY and `frequencyInterval` is 3, then Balance Transactions are generated every three months.
+            format: int32
     BalanceTransactionScheduleResponse:
       type: object
       description: ''
@@ -475,103 +540,30 @@ components:
                 type: integer
               - title: NumberCustomFieldRes
                 type: number
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    ScheduleFrequency:
-      type: string
-      description: Represents standard scheduling frequencies options for a job.
-      enum:
-      - DAILY
-      - WEEKLY
-      - MONTHLY
-      - ANNUALLY
-    BalanceTransactionScheduleRequest:
+    AbstractRequestWithCustomFields:
       type: object
       description: ''
       allOf:
-      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
       - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - amount
-        - code
-        - endDate
-        - frequency
-        - frequencyInterval
-        - name
-        - startDate
-        - transactionDescription
-        - transactionTypeId
-        properties:
-          name:
-            maxLength: 200
-            minLength: 1
-            type: string
-            description: The name of the Balance Transaction Schedule.
-          code:
-            maxLength: 80
-            minLength: 1
-            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
-            type: string
-            description: The unique short code of the Balance Transaction Schedule.
-          amount:
-            minimum: 0
-            type: number
-            description: The amount of each Balance Transaction created by this Schedule.
-          transactionDescription:
-            minLength: 1
-            type: string
-            description: The description of each Balance Transaction that will be created by this Schedule.
-          paid:
-            type: number
-            description: 'The payment amount if the payment currency differs from the Balance currency. '
-          currencyPaid:
-            type: string
-            description: 'The currency code of the payment if it differs from the Balance currency. For example: USD, GBP or EUR. '
-          transactionTypeId:
-            maxLength: 36
-            minLength: 1
-            pattern: ^[a-zA-Z0-9-]*$
-            type: string
-            description: The unique identifier (UUID) of the transaction type used to create Transactions by this Schedule. You can obtain a list of Transaction Types created for the Organization. See the the [List TransactionTypes](https://www.m3ter.com/docs/api#tag/TransactionType/operation/ListTransactionTypes) endpoint of this API Reference.
-          startDate:
-            type: string
-            description: The start date (*in ISO-8601 format*) of the Balance Transaction Schedule.
-            format: date-time
-          endDate:
-            type: string
-            description: 'The end date (*in ISO-8601 format*) of the Balance Transaction Schedule.
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
 
 
-              **NOTE:** End date is exclusive.'
-            format: date-time
-          frequency:
-            description: Specify a daily, weekly, monthly, or yearly interval for when Transactions are generated for the Balance throughout the defined Transaction Schedule time period.
-            allOf:
-            - $ref: '#/components/schemas/ScheduleFrequency'
-            - description: Together with frequencyInterval, defines how often BalanceTransactions are generated.
-          frequencyInterval:
-            maximum: 365
-            minimum: 1
-            type: integer
-            description: Used in conjunction with `frequency` to define how often Balance Transactions are generated by the Schedule. For example, if `frequency` is MONTHLY and `frequencyInterval` is 3, then Balance Transactions are generated every three months.
-            format: int32
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
     PaginatedBalanceTransactionScheduleResponseData:
       type: object
       properties:
@@ -584,6 +576,14 @@ components:
           type: string
           description: ''
       description: ''
+    ScheduleFrequency:
+      type: string
+      description: Represents standard scheduling frequencies options for a job.
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - ANNUALLY
   responses:
     Error:
       description: Error message

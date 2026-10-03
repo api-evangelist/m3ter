@@ -327,76 +327,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    StatementsBatchJobRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - billIds
-        properties:
-          billIds:
-            maxItems: 10
-            minItems: 1
-            type: array
-            description: The list of unique identifiers (UUIDs) of the bills associated with the StatementJob.
-            items:
-              type: string
-          includeCsvFormat:
-            type: boolean
-            description: 'A Boolean value indicating whether the generated statement includes a CSV format.
-
-
-              * TRUE - includes the statement in CSV format.
-
-              * FALSE - no CSV format statement.'
-          filters:
-            description: ''
-            allOf:
-            - $ref: '#/components/schemas/StatementJobFilters'
-            - description: Optional filters to generate a statement for specific usage only.
-    StatementJobStatus:
-      type: string
-      description: The current status of the StatementJob. The status helps track the progress and outcome of a StatementJob.
-      enum:
-      - PENDING
-      - RUNNING
-      - COMPLETE
-      - CANCELLED
-      - FAILED
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
     StatementJobResponse:
       type: object
       description: ''
@@ -459,6 +389,48 @@ components:
             description: The unique identifier (UUID) of the user who last modified this StatementJob.
             x-stainless-skip:
             - terraform
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    StatementJobStatus:
+      type: string
+      description: The current status of the StatementJob. The status helps track the progress and outcome of a StatementJob.
+      enum:
+      - PENDING
+      - RUNNING
+      - COMPLETE
+      - CANCELLED
+      - FAILED
     StatementJobRequest:
       type: object
       description: ''
@@ -484,6 +456,13 @@ components:
             allOf:
             - $ref: '#/components/schemas/StatementJobFilters'
             - description: Optional filters to generate a statement for specific usage only.
+    StatementStatus:
+      type: string
+      description: ''
+      enum:
+      - LATEST
+      - STALE
+      - INVALIDATED
     StatementJobFilters:
       type: object
       properties:
@@ -494,6 +473,34 @@ components:
           items:
             type: string
       description: ''
+    StatementsBatchJobRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - billIds
+        properties:
+          billIds:
+            maxItems: 10
+            minItems: 1
+            type: array
+            description: The list of unique identifiers (UUIDs) of the bills associated with the StatementJob.
+            items:
+              type: string
+          includeCsvFormat:
+            type: boolean
+            description: 'A Boolean value indicating whether the generated statement includes a CSV format.
+
+
+              * TRUE - includes the statement in CSV format.
+
+              * FALSE - no CSV format statement.'
+          filters:
+            description: ''
+            allOf:
+            - $ref: '#/components/schemas/StatementJobFilters'
+            - description: Optional filters to generate a statement for specific usage only.
     PaginatedStatementJobResponseData:
       type: object
       properties:
@@ -506,13 +513,6 @@ components:
           type: string
           description: ''
       description: ''
-    StatementStatus:
-      type: string
-      description: ''
-      enum:
-      - LATEST
-      - STALE
-      - INVALIDATED
   responses:
     Error:
       description: Error message

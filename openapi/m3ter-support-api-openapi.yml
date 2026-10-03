@@ -84,35 +84,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    SupportResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          dtEndSupportUsersAccess:
-            type: string
-            description: The Date/Time Support access ends *(in ISO-8601 format)*.
-            format: date-time
-          supportUsersPermissionPolicy:
-            type: array
-            description: The Permission Policies assigned to any support users when they access your Organization.
-            items:
-              $ref: '#/components/schemas/PermissionStatementWrapper'
     AbstractResponse:
       required:
       - id
@@ -132,23 +103,20 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    SupportRequest:
+    AbstractRequest:
       type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
       description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - dtEndSupportUsersAccess
-        properties:
-          dtEndSupportUsersAccess:
-            type: string
-            description: The Date/Time Support access ends *(in ISO-8601 format)*.
-            format: date-time
-          supportUsersPermissionPolicy:
-            type: array
-            description: The Permission Policies assigned to any support users when they access your Organization.
-            items:
-              $ref: '#/components/schemas/PermissionStatementWrapper'
     PermissionStatementWrapper:
       required:
       - action
@@ -171,6 +139,38 @@ components:
           items:
             type: string
       description: ''
+    SupportResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtEndSupportUsersAccess:
+            type: string
+            description: The Date/Time Support access ends *(in ISO-8601 format)*.
+            format: date-time
+          supportUsersPermissionPolicy:
+            type: array
+            description: The Permission Policies assigned to any support users when they access your Organization.
+            items:
+              $ref: '#/components/schemas/PermissionStatementWrapper'
+    SupportRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - dtEndSupportUsersAccess
+        properties:
+          dtEndSupportUsersAccess:
+            type: string
+            description: The Date/Time Support access ends *(in ISO-8601 format)*.
+            format: date-time
+          supportUsersPermissionPolicy:
+            type: array
+            description: The Permission Policies assigned to any support users when they access your Organization.
+            items:
+              $ref: '#/components/schemas/PermissionStatementWrapper'
   responses:
     Error:
       description: Error message

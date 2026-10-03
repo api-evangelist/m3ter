@@ -563,6 +563,97 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    ExternalMappingConfigurationResponse:
+      required:
+      - externalSystems
+      - m3terEntities
+      type: object
+      properties:
+        m3terEntities:
+          type: array
+          description: ' An array of m3ter entity names. For example, this could include "Account".'
+          items:
+            type: string
+        externalSystems:
+          type: array
+          description: An array with the list of external systems.
+          items:
+            $ref: '#/components/schemas/ExternalSystemResponse'
+      description: Response containing permitted External Mapping configuration.
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PaginatedExternalMappingResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ExternalMappingResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    ExternalMappingResponse:
+      type: object
+      description: Response containing an External Mapping entity.
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - required:
+        - externalId
+        - externalSystem
+        - externalTable
+        - m3terEntity
+        - m3terId
+        properties:
+          m3terEntity:
+            minLength: 1
+            type: string
+            description: 'The name of the m3ter entity that is part of the External Mapping. For example, this could be "Account". '
+            example: Account
+          m3terId:
+            minLength: 1
+            type: string
+            description: The unique identifier (UUID) of the m3ter entity.
+            example: 00000000-0000-0000-0000-000000000000
+          externalSystem:
+            minLength: 1
+            type: string
+            description: 'The name of the external system where the entity you are mapping resides. '
+            example: Stripe
+          externalTable:
+            minLength: 1
+            type: string
+            description: 'The name of the table in the external system where the entity resides. '
+            example: Customer
+          externalId:
+            minLength: 1
+            type: string
+            description: The unique identifier (UUID) of the entity in the external system.
+            example: cus_00000000000000
+          integrationConfigId:
+            type: string
+            description: UUID of the configuration this mapping is for
+            example: 00000000-0000-0000-0000-000000000000
+        description: Response containing an ExternalMapping entity
     AbstractRequest:
       type: object
       properties:
@@ -595,54 +686,44 @@ components:
           type: boolean
           description: ''
       description: Response containing external system and permitted tables.
-    PaginatedExternalMappingResponseData:
+    ExternalEntityResponse:
       type: object
       properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/ExternalMappingResponse'
-        nextToken:
+        externalId:
           type: string
           description: ''
-      description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
+        externalName:
           type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    ExternalMappingConfigurationResponse:
-      required:
-      - externalSystems
-      - m3terEntities
+          description: ''
+      description: Response containing an entity on an external system
+    AbstractResponseWithAuditFields:
       type: object
-      properties:
-        m3terEntities:
-          type: array
-          description: ' An array of m3ter entity names. For example, this could include "Account".'
-          items:
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
             type: string
-        externalSystems:
-          type: array
-          description: An array with the list of external systems.
-          items:
-            $ref: '#/components/schemas/ExternalSystemResponse'
-      description: Response containing permitted External Mapping configuration.
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
     ExternalMappingRequest:
       required:
       - externalId
@@ -689,87 +770,6 @@ components:
       description: Request containing an External Mapping entity.
       allOf:
       - $ref: '#/components/schemas/AbstractRequest'
-    ExternalEntityResponse:
-      type: object
-      properties:
-        externalId:
-          type: string
-          description: ''
-        externalName:
-          type: string
-          description: ''
-      description: Response containing an entity on an external system
-    ExternalMappingResponse:
-      type: object
-      description: Response containing an External Mapping entity.
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - required:
-        - externalId
-        - externalSystem
-        - externalTable
-        - m3terEntity
-        - m3terId
-        properties:
-          m3terEntity:
-            minLength: 1
-            type: string
-            description: 'The name of the m3ter entity that is part of the External Mapping. For example, this could be "Account". '
-            example: Account
-          m3terId:
-            minLength: 1
-            type: string
-            description: The unique identifier (UUID) of the m3ter entity.
-            example: 00000000-0000-0000-0000-000000000000
-          externalSystem:
-            minLength: 1
-            type: string
-            description: 'The name of the external system where the entity you are mapping resides. '
-            example: Stripe
-          externalTable:
-            minLength: 1
-            type: string
-            description: 'The name of the table in the external system where the entity resides. '
-            example: Customer
-          externalId:
-            minLength: 1
-            type: string
-            description: The unique identifier (UUID) of the entity in the external system.
-            example: cus_00000000000000
-          integrationConfigId:
-            type: string
-            description: UUID of the configuration this mapping is for
-            example: 00000000-0000-0000-0000-000000000000
-        description: Response containing an ExternalMapping entity
-    AbstractResponseWithAuditFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          dtCreated:
-            type: string
-            description: The DateTime when this item was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The ID of the user who created this item.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The ID of the user who last modified this item.
-            x-stainless-skip:
-            - terraform
   responses:
     Error:
       description: Error message

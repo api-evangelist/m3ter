@@ -312,20 +312,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
     AbstractResponse:
       required:
       - id
@@ -345,45 +331,43 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    AbstractResponseWithAuditFields:
+    CounterAdjustmentResponse:
       type: object
       description: ''
       allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
       - $ref: '#/components/schemas/AbstractResponse'
       - properties:
-          dtCreated:
+          counterId:
             type: string
-            description: The DateTime when this item was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
+            description: The ID of the Counter that was used to make the CounterAdjustment on the Account.
+          accountId:
             type: string
-            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
+            description: The Account ID the CounterAdjustment was created for.
+          date:
             type: string
-            description: The ID of the user who created this item.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
+            description: The date the CounterAdjustment was created for the Account *(in ISO-8601 date format)*.
+            format: date
+          value:
+            type: integer
+            description: Integer Value of the Counter that was used to make the CounterAdjustment.
+            format: int32
+          purchaseOrderNumber:
             type: string
-            description: The ID of the user who last modified this item.
-            x-stainless-skip:
-            - terraform
-    PaginatedCounterAdjustmentResponseData:
+            description: Purchase Order Number for the Counter Adjustment. *(Optional)*
+    AbstractRequest:
       type: object
       properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/CounterAdjustmentResponse'
-        nextToken:
-          type: string
-          description: ''
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
       description: ''
     CounterAdjustmentRequest:
       type: object
@@ -424,30 +408,46 @@ components:
             maxLength: 100
             type: string
             description: Purchase Order Number for the Counter Adjustment. *(Optional)*
-    CounterAdjustmentResponse:
+    PaginatedCounterAdjustmentResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/CounterAdjustmentResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AbstractResponseWithAuditFields:
       type: object
       description: ''
       allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
       - $ref: '#/components/schemas/AbstractResponse'
       - properties:
-          counterId:
+          dtCreated:
             type: string
-            description: The ID of the Counter that was used to make the CounterAdjustment on the Account.
-          accountId:
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
             type: string
-            description: The Account ID the CounterAdjustment was created for.
-          date:
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
             type: string
-            description: The date the CounterAdjustment was created for the Account *(in ISO-8601 date format)*.
-            format: date
-          value:
-            type: integer
-            description: Integer Value of the Counter that was used to make the CounterAdjustment.
-            format: int32
-          purchaseOrderNumber:
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
             type: string
-            description: Purchase Order Number for the Counter Adjustment. *(Optional)*
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
   responses:
     Error:
       description: Error message

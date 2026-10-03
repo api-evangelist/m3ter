@@ -48,25 +48,62 @@ paths:
           x-stainless-deprecation-message: the org id should be set at the client level instead
 components:
   schemas:
-    MeResponse:
+    AbstractResponse:
+      required:
+      - id
       type: object
       properties:
-        user:
-          description: ''
-          $ref: '#/components/schemas/UserResponse'
-        serviceUser:
-          description: ''
-          $ref: '#/components/schemas/ServiceUserResponse'
-        organization:
-          description: ''
-          $ref: '#/components/schemas/OrganizationResponse'
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
       description: ''
-    OrganizationType:
+    ServiceUserResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: ''
+          dtCreated:
+            type: string
+            description: The DateTime when the service user was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the service user was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this service user.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this service user.
+            x-stainless-skip:
+            - terraform
+    OrganizationStatus:
       type: string
       description: ''
       enum:
-      - PRODUCTION
-      - SANDBOX
+      - ACTIVE
+      - ARCHIVED
     OrganizationResponse:
       type: object
       description: ''
@@ -155,62 +192,25 @@ components:
             description: The id of the user who last modified this organization.
             x-stainless-skip:
             - terraform
-    ServiceUserResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          name:
-            type: string
-            description: ''
-          dtCreated:
-            type: string
-            description: The DateTime when the service user was created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the service user was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The id of the user who created this service user.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The id of the user who last modified this service user.
-            x-stainless-skip:
-            - terraform
-    AbstractResponse:
-      required:
-      - id
+    MeResponse:
       type: object
       properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
+        user:
+          description: ''
+          $ref: '#/components/schemas/UserResponse'
+        serviceUser:
+          description: ''
+          $ref: '#/components/schemas/ServiceUserResponse'
+        organization:
+          description: ''
+          $ref: '#/components/schemas/OrganizationResponse'
       description: ''
-    OrganizationStatus:
+    OrganizationType:
       type: string
       description: ''
       enum:
-      - ACTIVE
-      - ARCHIVED
+      - PRODUCTION
+      - SANDBOX
     UserResponse:
       type: object
       description: ''

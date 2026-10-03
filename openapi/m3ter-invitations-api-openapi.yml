@@ -142,73 +142,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    PaginatedOrgUserInvitationResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/OrgUserInvitationResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    UserRequest:
-      required:
-      - email
-      - firstName
-      - lastName
-      type: object
-      properties:
-        m3terUser:
-          type: boolean
-          description: ''
-        version:
-          type: integer
-          description: ''
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        firstName:
-          maxLength: 100
-          minLength: 1
-          type: string
-          description: ''
-        lastName:
-          maxLength: 100
-          minLength: 1
-          type: string
-          description: ''
-        contactNumber:
-          maxLength: 50
-          type: string
-          description: ''
-        email:
-          minLength: 1
-          type: string
-          description: ''
-          format: email
-      description: ''
     OrgUserInvitationResponse:
       type: object
       description: ''
@@ -270,6 +203,61 @@ components:
             description: The UUID of the user who last modified the invitation.
             x-stainless-skip:
             - terraform
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    UserRequest:
+      required:
+      - email
+      - firstName
+      - lastName
+      type: object
+      properties:
+        m3terUser:
+          type: boolean
+          description: ''
+        version:
+          type: integer
+          description: ''
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        firstName:
+          maxLength: 100
+          minLength: 1
+          type: string
+          description: ''
+        lastName:
+          maxLength: 100
+          minLength: 1
+          type: string
+          description: ''
+        contactNumber:
+          maxLength: 50
+          type: string
+          description: ''
+        email:
+          minLength: 1
+          type: string
+          description: ''
+          format: email
+      description: ''
     OrgUserInvitationRequest:
       type: object
       description: ''
@@ -289,6 +277,18 @@ components:
             type: string
             description: The date when the invite expires *(in ISO-8601 format)*. After this date the invited user can no longer accept the invite. By default, any invite is valid for 30 days from the date the invite is sent.
             format: date-time
+    PaginatedOrgUserInvitationResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/OrgUserInvitationResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
   responses:
     Error:
       description: Error message
