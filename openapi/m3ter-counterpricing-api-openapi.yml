@@ -268,156 +268,18 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    BasePricingResponseWithPricingBands:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/BasePricingResponse'
-      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          pricingBands:
-            type: array
-            description: ''
-            items:
-              $ref: '#/components/schemas/PricingBand'
-    AbstractResponse:
-      required:
-      - id
+    PaginatedCounterPricingResponseData:
       type: object
       properties:
-        id:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/CounterPricingResponse'
+        nextToken:
           type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
+          description: ''
       description: ''
-    PricingBand:
-      required:
-      - fixedPrice
-      - lowerLimit
-      - unitPrice
-      type: object
-      properties:
-        id:
-          type: string
-          description: The ID for the Pricing band.
-        lowerLimit:
-          minimum: 0
-          type: number
-          description: Lower limit for the Pricing band.
-          format: double
-        fixedPrice:
-          type: number
-          description: Fixed price charged for the Pricing band.
-          format: double
-        unitPrice:
-          type: number
-          description: Unit price charged for the Pricing band.
-          format: double
-        creditTypeId:
-          type: string
-          description: '**OBSOLETE - this is deprecated and no longer used.** '
-      description: ''
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    CounterPricingRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/BasePricingRequestWithPricingBands'
-      - $ref: '#/components/schemas/BasePricingRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - counterId
-        properties:
-          counterId:
-            minLength: 1
-            type: string
-            description: UUID of the Counter used to create the pricing.
-          runningTotalBillInAdvance:
-            type: boolean
-            description: 'The default value is **TRUE**.
-
-
-              * When **TRUE**, running totals are billed at the start of each billing period.
-
-
-              * When **FALSE**, running totals are billed at the end of each billing period.
-
-
-              *(Optional)*.'
-          proRateRunningTotal:
-            type: boolean
-            description: 'The default value is **TRUE**.
-
-
-              * When **TRUE**, counter running total charges are prorated and are billed according to the number of days in billing period.
-
-
-              * When **FALSE**, counter running total charges are not prorated and are billed for the entire billing period.
-
-
-              *(Optional)*.'
-          proRateAdjustmentDebit:
-            type: boolean
-            description: 'The default value is **TRUE**.
-
-
-              * When **TRUE**, counter adjustment debits are prorated and are billed according to the number of days in billing period.
-
-
-              * When **FALSE**, counter adjustment debits are not prorated and are billed for the entire billing period.
-
-
-              *(Optional)*.'
-          proRateAdjustmentCredit:
-            type: boolean
-            description: 'The default value is **TRUE**.
-
-
-              * When **TRUE**, counter adjustment credits are prorated and are billed according to the number of days in billing period.
-
-
-              * When **FALSE**, counter adjustment credits are not prorated and are billed for the entire billing period.
-
-
-              *(Optional)*.'
-    BasePricingRequestWithPricingBands:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/BasePricingRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - pricingBands
-        properties:
-          pricingBands:
-            minItems: 1
-            type: array
-            description: ''
-            items:
-              $ref: '#/components/schemas/PricingBand'
     BasePricingResponse:
       type: object
       description: ''
@@ -517,6 +379,171 @@ components:
             minLength: 36
             type: string
             description: Optional Product ID this Pricing should be attributed to for accounting purposes
+    PricingBand:
+      required:
+      - fixedPrice
+      - lowerLimit
+      - unitPrice
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID for the Pricing band.
+        lowerLimit:
+          minimum: 0
+          type: number
+          description: Lower limit for the Pricing band.
+          format: double
+        fixedPrice:
+          type: number
+          description: Fixed price charged for the Pricing band.
+          format: double
+        unitPrice:
+          type: number
+          description: Unit price charged for the Pricing band.
+          format: double
+        creditTypeId:
+          type: string
+          description: '**OBSOLETE - this is deprecated and no longer used.** '
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractResponseWithAuditFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    CounterPricingRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/BasePricingRequestWithPricingBands'
+      - $ref: '#/components/schemas/BasePricingRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - counterId
+        properties:
+          counterId:
+            minLength: 1
+            type: string
+            description: UUID of the Counter used to create the pricing.
+          runningTotalBillInAdvance:
+            type: boolean
+            description: 'The default value is **TRUE**.
+
+
+              * When **TRUE**, running totals are billed at the start of each billing period.
+
+
+              * When **FALSE**, running totals are billed at the end of each billing period.
+
+
+              *(Optional)*.'
+          proRateRunningTotal:
+            type: boolean
+            description: 'The default value is **TRUE**.
+
+
+              * When **TRUE**, counter running total charges are prorated and are billed according to the number of days in billing period.
+
+
+              * When **FALSE**, counter running total charges are not prorated and are billed for the entire billing period.
+
+
+              *(Optional)*.'
+          proRateAdjustmentDebit:
+            type: boolean
+            description: 'The default value is **TRUE**.
+
+
+              * When **TRUE**, counter adjustment debits are prorated and are billed according to the number of days in billing period.
+
+
+              * When **FALSE**, counter adjustment debits are not prorated and are billed for the entire billing period.
+
+
+              *(Optional)*.'
+          proRateAdjustmentCredit:
+            type: boolean
+            description: 'The default value is **TRUE**.
+
+
+              * When **TRUE**, counter adjustment credits are prorated and are billed according to the number of days in billing period.
+
+
+              * When **FALSE**, counter adjustment credits are not prorated and are billed for the entire billing period.
+
+
+              *(Optional)*.'
+    BasePricingRequestWithPricingBands:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/BasePricingRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - pricingBands
+        properties:
+          pricingBands:
+            minItems: 1
+            type: array
+            description: ''
+            items:
+              $ref: '#/components/schemas/PricingBand'
     CounterPricingResponse:
       type: object
       description: ''
@@ -565,46 +592,19 @@ components:
 
 
               * When FALSE, counter adjustment credits are not prorated and are billed for the entire billing period.'
-    AbstractResponseWithAuditFields:
+    BasePricingResponseWithPricingBands:
       type: object
       description: ''
       allOf:
+      - $ref: '#/components/schemas/BasePricingResponse'
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
       - $ref: '#/components/schemas/AbstractResponse'
       - properties:
-          dtCreated:
-            type: string
-            description: The DateTime when this item was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The ID of the user who created this item.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The ID of the user who last modified this item.
-            x-stainless-skip:
-            - terraform
-    PaginatedCounterPricingResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/CounterPricingResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
+          pricingBands:
+            type: array
+            description: ''
+            items:
+              $ref: '#/components/schemas/PricingBand'
   responses:
     Error:
       description: Error message

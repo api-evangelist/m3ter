@@ -358,47 +358,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    OrgUserResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/UserResponse'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          permissionPolicy:
-            type: array
-            description: An array of permission statements for the user. Each permission statement defines a specific permission for the user.
-            items:
-              $ref: '#/components/schemas/PermissionStatement'
-          dtEndAccess:
-            type: string
-            description: The date and time *(in ISO 8601 format)* when the user's access will end. Used to set or update the date and time a user's access expires.
-            format: date-time
-    PermissionEffect:
-      type: string
-      description: ''
-      enum:
-      - ALLOW
-      - DENY
     PermissionStatement:
       required:
       - action
@@ -439,139 +398,6 @@ components:
           items:
             type: string
       description: ''
-    OrgUserRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-
-            - **Newly created entity:** On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:** On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.
-
-            '
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        permissionPolicy:
-          type: array
-          description: 'An array of permission statements for the user. Each permission statement defines a specific permission for the user.
-
-
-            See [Understanding, Creating, and Managing Permission Policies](https://www.m3ter.com/docs/guides/organization-and-access-management/creating-and-managing-permissions) for more information.'
-          items:
-            $ref: '#/components/schemas/PermissionStatement'
-        dtEndAccess:
-          type: string
-          description: The date and time *(in ISO 8601 format)* when the user's access will end. Use this to set or update the expiration of the user's access.
-          format: date-time
-      description: ''
-    PaginatedOrgUserResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/OrgUserResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    PermissionPolicyResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          name:
-            type: string
-            description: The name of the Permission Policy.
-          permissionPolicy:
-            type: array
-            description: 'Array containing the Permission Policies information. '
-            items:
-              $ref: '#/components/schemas/PermissionStatement'
-          managedPolicy:
-            type: boolean
-            description: 'Indicates whether this is a system generated Managed Permission Policy. '
-          dtCreated:
-            type: string
-            description: The date and time *(in ISO-8601 format)* when the Permission Policy was created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The date and time *(in ISO-8601 format)* when the Permission Policy was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The unique identifier (UUID) of the user who created this Permission Policy.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The unique identifier (UUID) of the user who last modified this Permission Policy.
-            x-stainless-skip:
-            - terraform
-    PermissionAction:
-      type: string
-      description: ''
-      enum:
-      - ALL
-      - CONFIG_CREATE
-      - CONFIG_RETRIEVE
-      - CONFIG_UPDATE
-      - CONFIG_DELETE
-      - CONFIG_EXPORT
-      - ANALYTICS_QUERY
-      - MEASUREMENTS_UPLOAD
-      - MEASUREMENTS_FILEUPLOAD
-      - MEASUREMENTS_RETRIEVE
-      - MEASUREMENTS_EXPORT
-      - FORECAST_RETRIEVE
-      - HEALTHSCORES_RETRIEVE
-      - ANOMALIES_RETRIEVE
-      - EXPORTS_DOWNLOAD
-      - MARKETPLACE_USAGE_CREATE
-      - MARKETPLACE_USAGE_RETRIEVE
-      - AUDIT_RETRIEVE
-    ResourceGroupResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          name:
-            type: string
-            description: The name of the Resource Group.
-          dtCreated:
-            type: string
-            description: The date and time *(in ISO-8601 format)* when the Resource Group was created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The date and time *(in ISO-8601 format)* when the Resource Group was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The unique identifier (UUID) of the user who created this Resource Group.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The unique identifier (UUID) of the user who last modified this Resource Group.
-            x-stainless-skip:
-            - terraform
     UserResponse:
       type: object
       description: ''
@@ -628,6 +454,180 @@ components:
             description: The unique identifier (UUID) of the user who last modified this user record.
             x-stainless-skip:
             - terraform
+    PermissionAction:
+      type: string
+      description: ''
+      enum:
+      - ALL
+      - CONFIG_CREATE
+      - CONFIG_RETRIEVE
+      - CONFIG_UPDATE
+      - CONFIG_DELETE
+      - CONFIG_EXPORT
+      - ANALYTICS_QUERY
+      - MEASUREMENTS_UPLOAD
+      - MEASUREMENTS_FILEUPLOAD
+      - MEASUREMENTS_RETRIEVE
+      - MEASUREMENTS_EXPORT
+      - FORECAST_RETRIEVE
+      - HEALTHSCORES_RETRIEVE
+      - ANOMALIES_RETRIEVE
+      - EXPORTS_DOWNLOAD
+      - MARKETPLACE_USAGE_CREATE
+      - MARKETPLACE_USAGE_RETRIEVE
+      - AUDIT_RETRIEVE
+    PermissionEffect:
+      type: string
+      description: ''
+      enum:
+      - ALLOW
+      - DENY
+    PermissionPolicyResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the Permission Policy.
+          permissionPolicy:
+            type: array
+            description: 'Array containing the Permission Policies information. '
+            items:
+              $ref: '#/components/schemas/PermissionStatement'
+          managedPolicy:
+            type: boolean
+            description: 'Indicates whether this is a system generated Managed Permission Policy. '
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Permission Policy was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Permission Policy was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this Permission Policy.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this Permission Policy.
+            x-stainless-skip:
+            - terraform
+    OrgUserRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+
+            - **Newly created entity:** On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:** On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.
+
+            '
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        permissionPolicy:
+          type: array
+          description: 'An array of permission statements for the user. Each permission statement defines a specific permission for the user.
+
+
+            See [Understanding, Creating, and Managing Permission Policies](https://www.m3ter.com/docs/guides/organization-and-access-management/creating-and-managing-permissions) for more information.'
+          items:
+            $ref: '#/components/schemas/PermissionStatement'
+        dtEndAccess:
+          type: string
+          description: The date and time *(in ISO 8601 format)* when the user's access will end. Use this to set or update the expiration of the user's access.
+          format: date-time
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    OrgUserResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/UserResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          permissionPolicy:
+            type: array
+            description: An array of permission statements for the user. Each permission statement defines a specific permission for the user.
+            items:
+              $ref: '#/components/schemas/PermissionStatement'
+          dtEndAccess:
+            type: string
+            description: The date and time *(in ISO 8601 format)* when the user's access will end. Used to set or update the date and time a user's access expires.
+            format: date-time
+    ResourceGroupResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the Resource Group.
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Resource Group was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Resource Group was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this Resource Group.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this Resource Group.
+            x-stainless-skip:
+            - terraform
+    PaginatedOrgUserResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/OrgUserResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
   responses:
     Error:
       description: Error message

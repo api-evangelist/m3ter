@@ -53,15 +53,28 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    BillDataResponse:
+    DimensionQuery:
+      required:
+      - filter
+      - name
       type: object
       properties:
-        values:
+        name:
+          minLength: 1
+          type: string
+          description: The Dimension name to target.
+        attributes:
           type: array
-          description: A list of bill line items.
+          description: The dimension attribute to target
           items:
-            $ref: '#/components/schemas/BillData'
-      description: Response containing bill line items.
+            type: string
+        filter:
+          minItems: 1
+          type: array
+          description: The value of a dimension to filter by. Use "*" to filter on all dimension values.
+          items:
+            type: string
+      description: Dimension of a Meter used as a filter.
     BillData:
       type: object
       properties:
@@ -79,6 +92,81 @@ components:
           description: ''
           $ref: '#/components/schemas/BillDetails'
       description: ''
+    LineItemMeasures:
+      type: object
+      properties:
+        convertedSubtotal:
+          type: number
+          description: ''
+          format: double
+        subtotal:
+          type: number
+          description: ''
+          format: double
+        version:
+          type: number
+          description: ''
+          format: double
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        conversionRate:
+          type: number
+          description: ''
+          format: double
+        quantity:
+          type: number
+          description: ''
+          format: double
+        units:
+          type: number
+          description: ''
+          format: double
+      description: ''
+    QueryBillDataRequest:
+      required:
+      - endDate
+      - lineItemTypes
+      - startDate
+      type: object
+      properties:
+        startDate:
+          type: string
+          description: ISO 8601 formatted start date for the aggregation.
+          format: date-time
+        endDate:
+          type: string
+          description: ISO 8601 formatted end date for the aggregation.
+          format: date-time
+        dimensions:
+          maxItems: 100
+          type: array
+          description: Dimensions to filter by. Valid dimensions include 'account' and 'product name'
+          items:
+            $ref: '#/components/schemas/DimensionQuery'
+        lineItemTypes:
+          minItems: 1
+          type: array
+          description: Line item types to query for.
+          items:
+            $ref: '#/components/schemas/LineItemType'
+        limit:
+          maximum: 2000
+          minimum: 1
+          type: integer
+          description: Limit the number of data points returned
+          format: int32
+      description: Data Explorer Bill data query.
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+    BillDataResponse:
+      type: object
+      properties:
+        values:
+          type: array
+          description: A list of bill line items.
+          items:
+            $ref: '#/components/schemas/BillData'
+      description: Response containing bill line items.
     AbstractRequest:
       type: object
       properties:
@@ -93,60 +181,29 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    BillDetails:
-      type: object
-      properties:
-        day:
-          type: integer
-          description: ''
-          format: int32
-        week:
-          type: string
-          description: ''
-        year:
-          type: integer
-          description: ''
-          format: int32
-        month:
-          type: string
-          description: ''
-        locked:
-          type: string
-          description: ''
-        status:
-          type: string
-          description: ''
-        dueDate:
-          type: string
-          description: ''
-        startDate:
-          type: string
-          description: ''
-        endDate:
-          type: string
-          description: ''
-        servicePeriodStartDate:
-          type: string
-          description: ''
-        servicePeriodEndDate:
-          type: string
-          description: ''
-        billDate:
-          type: string
-          description: ''
-        timezone:
-          type: string
-          description: ''
-        yearMonth:
-          type: string
-          description: ''
-        billCurrency:
-          type: string
-          description: ''
-        billingFrequency:
-          type: string
-          description: ''
-      description: ''
+    LineItemType:
+      type: string
+      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
+      enum:
+      - STANDING_CHARGE
+      - USAGE
+      - COUNTER_RUNNING_TOTAL_CHARGE
+      - COUNTER_ADJUSTMENT_DEBIT
+      - COUNTER_ADJUSTMENT_CREDIT
+      - USAGE_CREDIT
+      - MINIMUM_SPEND
+      - MINIMUM_SPEND_REFUND
+      - CREDIT_DEDUCTION
+      - MANUAL_ADJUSTMENT
+      - CREDIT_MEMO
+      - DEBIT_MEMO
+      - COMMITMENT_CONSUMED
+      - COMMITMENT_FEE
+      - OVERAGE_SURCHARGE
+      - OVERAGE_USAGE
+      - BALANCE_CONSUMED
+      - BALANCE_FEE
+      - AD_HOC
     LineItemDimensions:
       type: object
       properties:
@@ -202,116 +259,59 @@ components:
           type: string
           description: ''
       description: ''
-    LineItemType:
-      type: string
-      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
-      enum:
-      - STANDING_CHARGE
-      - USAGE
-      - COUNTER_RUNNING_TOTAL_CHARGE
-      - COUNTER_ADJUSTMENT_DEBIT
-      - COUNTER_ADJUSTMENT_CREDIT
-      - USAGE_CREDIT
-      - MINIMUM_SPEND
-      - MINIMUM_SPEND_REFUND
-      - CREDIT_DEDUCTION
-      - MANUAL_ADJUSTMENT
-      - CREDIT_MEMO
-      - DEBIT_MEMO
-      - COMMITMENT_CONSUMED
-      - COMMITMENT_FEE
-      - OVERAGE_SURCHARGE
-      - OVERAGE_USAGE
-      - BALANCE_CONSUMED
-      - BALANCE_FEE
-      - AD_HOC
-    QueryBillDataRequest:
-      required:
-      - endDate
-      - lineItemTypes
-      - startDate
+    BillDetails:
       type: object
       properties:
+        day:
+          type: integer
+          description: ''
+          format: int32
+        week:
+          type: string
+          description: ''
+        year:
+          type: integer
+          description: ''
+          format: int32
+        month:
+          type: string
+          description: ''
+        locked:
+          type: string
+          description: ''
+        status:
+          type: string
+          description: ''
+        dueDate:
+          type: string
+          description: ''
         startDate:
           type: string
-          description: ISO 8601 formatted start date for the aggregation.
-          format: date-time
+          description: ''
         endDate:
           type: string
-          description: ISO 8601 formatted end date for the aggregation.
-          format: date-time
-        dimensions:
-          maxItems: 100
-          type: array
-          description: Dimensions to filter by. Valid dimensions include 'account' and 'product name'
-          items:
-            $ref: '#/components/schemas/DimensionQuery'
-        lineItemTypes:
-          minItems: 1
-          type: array
-          description: Line item types to query for.
-          items:
-            $ref: '#/components/schemas/LineItemType'
-        limit:
-          maximum: 2000
-          minimum: 1
-          type: integer
-          description: Limit the number of data points returned
-          format: int32
-      description: Data Explorer Bill data query.
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-    DimensionQuery:
-      required:
-      - filter
-      - name
-      type: object
-      properties:
-        name:
-          minLength: 1
+          description: ''
+        servicePeriodStartDate:
           type: string
-          description: The Dimension name to target.
-        attributes:
-          type: array
-          description: The dimension attribute to target
-          items:
-            type: string
-        filter:
-          minItems: 1
-          type: array
-          description: The value of a dimension to filter by. Use "*" to filter on all dimension values.
-          items:
-            type: string
-      description: Dimension of a Meter used as a filter.
-    LineItemMeasures:
-      type: object
-      properties:
-        convertedSubtotal:
-          type: number
           description: ''
-          format: double
-        subtotal:
-          type: number
+        servicePeriodEndDate:
+          type: string
           description: ''
-          format: double
-        version:
-          type: number
+        billDate:
+          type: string
           description: ''
-          format: double
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        conversionRate:
-          type: number
+        timezone:
+          type: string
           description: ''
-          format: double
-        quantity:
-          type: number
+        yearMonth:
+          type: string
           description: ''
-          format: double
-        units:
-          type: number
+        billCurrency:
+          type: string
           description: ''
-          format: double
+        billingFrequency:
+          type: string
+          description: ''
       description: ''
   responses:
     Error:

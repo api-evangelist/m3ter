@@ -258,25 +258,23 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractResponse:
-      required:
-      - id
+    PlanGroupLinkRequest:
       type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
       description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - planGroupId
+        - planId
+        properties:
+          planGroupId:
+            minLength: 1
+            type: string
+            description: ''
+          planId:
+            minLength: 1
+            type: string
+            description: ''
     PaginatedPlanGroupLinkResponseData:
       type: object
       properties:
@@ -288,20 +286,6 @@ components:
         nextToken:
           type: string
           description: ''
-      description: ''
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
       description: ''
     PlanGroupLinkResponse:
       type: object
@@ -337,23 +321,39 @@ components:
             description: The id of the user who last modified this plan group link.
             x-stainless-skip:
             - terraform
-    PlanGroupLinkRequest:
+    AbstractResponse:
+      required:
+      - id
       type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
       description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - planGroupId
-        - planId
-        properties:
-          planGroupId:
-            minLength: 1
-            type: string
-            description: ''
-          planId:
-            minLength: 1
-            type: string
-            description: ''
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
   responses:
     Error:
       description: Error message

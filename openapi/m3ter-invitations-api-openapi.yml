@@ -142,67 +142,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    OrgUserInvitationResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          email:
-            type: string
-            description: 'The email address of the invitee. The invitation will be sent to this email address. '
-          permissionPolicyIds:
-            type: array
-            description: 'The IDs of the permission policies the invited user has been assigned. This controls the access rights and privileges that this user will have when working in the m3ter Organization. '
-            items:
-              type: string
-          firstName:
-            type: string
-            description: The first name of the invitee.
-          lastName:
-            type: string
-            description: The surname of the invitee.
-          dtEndAccess:
-            type: string
-            description: 'The date that access will end for the user *(in ISO-8601 format)*. If this is blank, there is no end date  meaning that the user has permanent access. '
-            format: date-time
-          dtExpiry:
-            type: string
-            description: The date when the invite expires *(in ISO-8601 format)*. After this date the invited user can no longer accept the invite. By default, any invite is valid for 30 days from the date the invite is sent.
-            format: date-time
-          invitingPrincipalId:
-            type: string
-            description: 'The UUID of the user who sent the invite. '
-          accepted:
-            type: boolean
-            description: 'Boolean indicating whether the user has accepted the invitation.
-
-
-              * TRUE - the invite has been accepted.
-
-              * FALSE - the invite has not yet been accepted.'
-          dtCreated:
-            type: string
-            description: The DateTime when the invitation was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the invitation was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The UUID of the user who created the invitation.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The UUID of the user who last modified the invitation.
-            x-stainless-skip:
-            - terraform
     AbstractResponse:
       required:
       - id
@@ -277,6 +216,67 @@ components:
             type: string
             description: The date when the invite expires *(in ISO-8601 format)*. After this date the invited user can no longer accept the invite. By default, any invite is valid for 30 days from the date the invite is sent.
             format: date-time
+    OrgUserInvitationResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          email:
+            type: string
+            description: 'The email address of the invitee. The invitation will be sent to this email address. '
+          permissionPolicyIds:
+            type: array
+            description: 'The IDs of the permission policies the invited user has been assigned. This controls the access rights and privileges that this user will have when working in the m3ter Organization. '
+            items:
+              type: string
+          firstName:
+            type: string
+            description: The first name of the invitee.
+          lastName:
+            type: string
+            description: The surname of the invitee.
+          dtEndAccess:
+            type: string
+            description: 'The date that access will end for the user *(in ISO-8601 format)*. If this is blank, there is no end date  meaning that the user has permanent access. '
+            format: date-time
+          dtExpiry:
+            type: string
+            description: The date when the invite expires *(in ISO-8601 format)*. After this date the invited user can no longer accept the invite. By default, any invite is valid for 30 days from the date the invite is sent.
+            format: date-time
+          invitingPrincipalId:
+            type: string
+            description: 'The UUID of the user who sent the invite. '
+          accepted:
+            type: boolean
+            description: 'Boolean indicating whether the user has accepted the invitation.
+
+
+              * TRUE - the invite has been accepted.
+
+              * FALSE - the invite has not yet been accepted.'
+          dtCreated:
+            type: string
+            description: The DateTime when the invitation was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the invitation was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The UUID of the user who created the invitation.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The UUID of the user who last modified the invitation.
+            x-stainless-skip:
+            - terraform
     PaginatedOrgUserInvitationResponseData:
       type: object
       properties:

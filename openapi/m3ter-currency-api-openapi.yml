@@ -266,6 +266,33 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    AbstractPickListResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          code:
+            type: string
+            description: The short code of the data entity.
+          name:
+            type: string
+            description: The name of the data entity.
+          archived:
+            type: boolean
+            description: TRUE / FALSE flag indicating whether the data entity is archived. An entity can be archived if it is obsolete.
+    PaginatedCurrencyResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/CurrencyResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     AbstractResponse:
       required:
       - id
@@ -285,6 +312,33 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    AbstractPickListRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - name
+        properties:
+          code:
+            maxLength: 80
+            pattern: ^[\p{L}_$][\p{L}_$0-9]*$
+            type: string
+            description: The short code for the entity.
+            example: code
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: The name of the entity.
+          archived:
+            type: boolean
+            description: 'A Boolean TRUE / FALSE flag indicating whether the entity is archived. An entity can be archived if it is obsolete.
+
+
+              * TRUE - the entity is in the archived state.
+
+              * FALSE - the entity is not in the archived state.'
     AbstractRequest:
       type: object
       properties:
@@ -299,6 +353,23 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    CurrencyRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractPickListRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          maxDecimalPlaces:
+            maximum: 5
+            minimum: 0
+            type: integer
+            description: Indicates the maximum number of decimal places to use for this Currency.
+            format: int32
+            example: 2
+          roundingMode:
+            description: ''
+            $ref: '#/components/schemas/RoundingMode'
     CurrencyResponse:
       type: object
       description: ''
@@ -347,77 +418,6 @@ components:
       - HALF_DOWN
       - HALF_EVEN
       - UNNECESSARY
-    PaginatedCurrencyResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/CurrencyResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    AbstractPickListRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - name
-        properties:
-          code:
-            maxLength: 80
-            pattern: ^[\p{L}_$][\p{L}_$0-9]*$
-            type: string
-            description: The short code for the entity.
-            example: code
-          name:
-            maxLength: 200
-            minLength: 1
-            type: string
-            description: The name of the entity.
-          archived:
-            type: boolean
-            description: 'A Boolean TRUE / FALSE flag indicating whether the entity is archived. An entity can be archived if it is obsolete.
-
-
-              * TRUE - the entity is in the archived state.
-
-              * FALSE - the entity is not in the archived state.'
-    AbstractPickListResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          code:
-            type: string
-            description: The short code of the data entity.
-          name:
-            type: string
-            description: The name of the data entity.
-          archived:
-            type: boolean
-            description: TRUE / FALSE flag indicating whether the data entity is archived. An entity can be archived if it is obsolete.
-    CurrencyRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractPickListRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
-      - properties:
-          maxDecimalPlaces:
-            maximum: 5
-            minimum: 0
-            type: integer
-            description: Indicates the maximum number of decimal places to use for this Currency.
-            format: int32
-            example: 2
-          roundingMode:
-            description: ''
-            $ref: '#/components/schemas/RoundingMode'
   responses:
     Error:
       description: Error message

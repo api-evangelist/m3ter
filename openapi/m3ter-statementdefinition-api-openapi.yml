@@ -233,25 +233,74 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractResponse:
+    AggregationFrequency:
+      type: string
+      description: This specifies how often the data should be aggregated.
+      enum:
+      - DAY
+      - WEEK
+      - MONTH
+      - QUARTER
+      - YEAR
+      - WHOLE_PERIOD
+    Dimension:
       required:
-      - id
+      - filter
+      - name
       type: object
       properties:
-        id:
+        meterId:
           type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
+          description: The unique identifier (UUID) of the Meter containing this Dimension.
+        name:
+          minLength: 1
+          type: string
+          description: The name of the Dimension to target in the Meter.
+        attributes:
+          type: array
+          description: The Dimension attribute to target.
+          items:
+            type: string
+        filter:
+          minItems: 1
+          type: array
+          description: The value of a Dimension to use as a filter. Use "*" as a wildcard to filter on all Dimension values.
+          items:
+            type: string
+      description: A Dimension belonging to a Meter.
+    Aggregation:
+      type: string
+      description: 'Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected targetField.
 
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
 
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
+        * **SUM**. Adds the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **MIN**. Uses the minimum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **MAX**. Uses the maximum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **COUNT**. Counts the number of values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **LATEST**. Uses the most recent value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`. Note: Based on the timestamp `ts` value of usage data measurement submissions. If using this method, please ensure *distinct* `ts` values are used for usage data measurement submissions.
+
+
+        * **MEAN**. Uses the arithmetic mean of the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **UNIQUE**. Uses unique values and returns a count of the number of unique values. Can be applied to a **Metadata** `targetField`.'
+      enum:
+      - SUM
+      - MIN
+      - MAX
+      - COUNT
+      - LATEST
+      - MEAN
+      - UNIQUE
+      - CUSTOM_SQL
     PaginatedStatementDefinitionResponseData:
       type: object
       properties:
@@ -263,71 +312,6 @@ components:
         nextToken:
           type: string
           description: ''
-      description: ''
-    StatementDefinitionRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - aggregationFrequency
-        properties:
-          name:
-            type: string
-            description: Descriptive name for the StatementDefinition providing context and information.
-          aggregationFrequency:
-            description: This specifies how often the Statement should aggregate data.
-            $ref: '#/components/schemas/AggregationFrequency'
-          includePricePerUnit:
-            type: boolean
-            description: 'A Boolean indicating whether to include the price per unit in the Statement.
-
-
-              * TRUE - includes the price per unit.
-
-              * FALSE - excludes the price per unit.'
-          dimensions:
-            type: array
-            description: An array of objects, each representing a Dimension data field from a Meter *(for Meters that have Dimensions setup)*.
-            items:
-              $ref: '#/components/schemas/Dimension'
-          measures:
-            type: array
-            description: An array of objects, each representing a Measure data field from a Meter.
-            items:
-              $ref: '#/components/schemas/Measure'
-          generateSlimStatements:
-            type: boolean
-            description: ''
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    Measure:
-      type: object
-      properties:
-        meterId:
-          type: string
-          description: The unique identifier (UUID) of the Meter containing this Measure.
-        name:
-          type: string
-          description: The name of a Measure data field *(or blank to indicate a wildcard, i.e. all fields)*. Default value is blank.
-        aggregations:
-          maxItems: 7
-          type: array
-          description: A list of Aggregations to apply to the Measure.
-          items:
-            $ref: '#/components/schemas/Aggregation'
       description: ''
     StatementDefinitionResponse:
       type: object
@@ -393,74 +377,90 @@ components:
             description: The unique identifier (UUID) of the user who last modified this StatementDefinition.
             x-stainless-skip:
             - terraform
-    Dimension:
+    AbstractResponse:
       required:
-      - filter
-      - name
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    StatementDefinitionRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - aggregationFrequency
+        properties:
+          name:
+            type: string
+            description: Descriptive name for the StatementDefinition providing context and information.
+          aggregationFrequency:
+            description: This specifies how often the Statement should aggregate data.
+            $ref: '#/components/schemas/AggregationFrequency'
+          includePricePerUnit:
+            type: boolean
+            description: 'A Boolean indicating whether to include the price per unit in the Statement.
+
+
+              * TRUE - includes the price per unit.
+
+              * FALSE - excludes the price per unit.'
+          dimensions:
+            type: array
+            description: An array of objects, each representing a Dimension data field from a Meter *(for Meters that have Dimensions setup)*.
+            items:
+              $ref: '#/components/schemas/Dimension'
+          measures:
+            type: array
+            description: An array of objects, each representing a Measure data field from a Meter.
+            items:
+              $ref: '#/components/schemas/Measure'
+          generateSlimStatements:
+            type: boolean
+            description: ''
+    Measure:
       type: object
       properties:
         meterId:
           type: string
-          description: The unique identifier (UUID) of the Meter containing this Dimension.
+          description: The unique identifier (UUID) of the Meter containing this Measure.
         name:
-          minLength: 1
           type: string
-          description: The name of the Dimension to target in the Meter.
-        attributes:
+          description: The name of a Measure data field *(or blank to indicate a wildcard, i.e. all fields)*. Default value is blank.
+        aggregations:
+          maxItems: 7
           type: array
-          description: The Dimension attribute to target.
+          description: A list of Aggregations to apply to the Measure.
           items:
-            type: string
-        filter:
-          minItems: 1
-          type: array
-          description: The value of a Dimension to use as a filter. Use "*" as a wildcard to filter on all Dimension values.
-          items:
-            type: string
-      description: A Dimension belonging to a Meter.
-    AggregationFrequency:
-      type: string
-      description: This specifies how often the data should be aggregated.
-      enum:
-      - DAY
-      - WEEK
-      - MONTH
-      - QUARTER
-      - YEAR
-      - WHOLE_PERIOD
-    Aggregation:
-      type: string
-      description: 'Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected targetField.
-
-
-        * **SUM**. Adds the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
-
-
-        * **MIN**. Uses the minimum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
-
-
-        * **MAX**. Uses the maximum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
-
-
-        * **COUNT**. Counts the number of values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
-
-
-        * **LATEST**. Uses the most recent value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`. Note: Based on the timestamp `ts` value of usage data measurement submissions. If using this method, please ensure *distinct* `ts` values are used for usage data measurement submissions.
-
-
-        * **MEAN**. Uses the arithmetic mean of the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
-
-
-        * **UNIQUE**. Uses unique values and returns a count of the number of unique values. Can be applied to a **Metadata** `targetField`.'
-      enum:
-      - SUM
-      - MIN
-      - MAX
-      - COUNT
-      - LATEST
-      - MEAN
-      - UNIQUE
-      - CUSTOM_SQL
+            $ref: '#/components/schemas/Aggregation'
+      description: ''
   responses:
     Error:
       description: Error message

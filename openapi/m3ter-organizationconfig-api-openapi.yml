@@ -81,230 +81,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    StatementAutoGenerateMode:
-      type: string
-      description: "Specify whether to auto-generate statements once Bills are *approved* or *locked*. It will not auto-generate if a bill is in *pending* state. \n\nThe default value is **None**.\n\n- **None**. Statements will not be auto-generated.\n- **JSON**. Statements are auto-generated in JSON format.\n- **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats."
-      enum:
-      - NONE
-      - JSON
-      - JSON_AND_CSV
-    InvoiceDate:
-      type: string
-      description: 'The date to use for the invoice date. '
-      enum:
-      - LAST_DAY_OF_ARREARS
-      - FIRST_DAY_OF_NEXT_PERIOD
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    OrganizationConfigResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          timezone:
-            type: string
-            description: 'The timezone for the Organization. '
-            example: UTC
-            default: UTC
-          yearEpoch:
-            type: string
-            description: The first bill date *(in ISO-8601 format)* for yearly billing periods.
-            example: '2022-01-01'
-            default: '2022-01-01'
-          monthEpoch:
-            type: string
-            description: The first bill date *(in ISO-8601 format)* for monthly billing periods.
-            example: '2022-01-01'
-            default: '2022-01-01'
-          weekEpoch:
-            type: string
-            description: The first bill date *(in ISO-8601 format)* for weekly billing periods.
-            example: '2022-01-04'
-            default: '2022-01-04'
-          dayEpoch:
-            type: string
-            description: The first bill date *(in ISO-8601 format)* for daily billing periods.
-            example: '2022-01-01'
-            default: '2022-01-01'
-          currency:
-            type: string
-            description: 'The currency code for the currency used in this Organization. For example: USD, GBP, or EUR.'
-          currencyConversions:
-            type: array
-            description: "Currency conversion rates from Bill currency to Organization currency. \n\nFor example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate. "
-            items:
-              $ref: '#/components/schemas/CurrencyConversion'
-          daysBeforeBillDue:
-            type: integer
-            description: The number of days after the Bill generation date shown on Bills as the due date.
-            format: int32
-          scheduledBillInterval:
-            type: number
-            description: "Specifies the required interval for updating bills. \n\n* **For portions of an hour (minutes)**. Two options: **0.25** (15 minutes) and **0.5** (30 minutes).\n* **For full hours.** Eight possible values: **1**, **2**, **3**, **4**, **6**, **8**, **12**, or **24**.\n* **Default.** The default is **0**, which disables scheduling."
-            format: double
-          scheduledBillOffset:
-            type: integer
-            description: Offset (hours) within the scheduled interval to run the job, interpreted in the organization's timezone. For daily (24h) schedules this is the hour of day (0-23). Only supported when ScheduledBillInterval is 24 (daily) at present.
-            format: int32
-          standingChargeBillInAdvance:
-            type: boolean
-            description: "Specifies whether the standing charge is billed in advance at the start of each billing period, or billed in arrears at the end of each billing period. \n\n* **TRUE** - bill in advance *(start of each billing period)*.\n* **FALSE** - bill in arrears *(end of each billing period)*."
-          commitmentFeeBillInAdvance:
-            type: boolean
-            description: "Specifies whether commitments *(prepayments)* are billed in advance at the start of each billing period, or billed in arrears at the end of each billing period. \n\n* **TRUE** - bill in advance *(start of each billing period)*.\n* **FALSE** - bill in arrears *(end of each billing period)*."
-          minimumSpendBillInAdvance:
-            type: boolean
-            description: "Specifies whether minimum spend amounts are billed in advance at the start of each billing period, or billed in arrears at the end of each billing period. \n\n* **TRUE** - bill in advance *(start of each billing period)*.\n* **FALSE** - bill in arrears *(end of each billing period)*."
-          autoApproveBillsGracePeriod:
-            type: integer
-            description: Grace period before bills are auto-approved. Used in combination with the field `autoApproveBillsGracePeriodUnit`.
-            format: int32
-          autoApproveBillsGracePeriodUnit:
-            description: ' '
-            $ref: '#/components/schemas/TimePeriodUnit'
-          externalInvoiceDate:
-            description: ''
-            $ref: '#/components/schemas/InvoiceDate'
-          suppressedEmptyBills:
-            type: boolean
-            description: "Specifies whether to supress generating bills that have no line items. \n\n* **TRUE** - prevents generating bills with no line items.\n* **FALSE** - bills are still generated even when they have no line items. "
-          consolidateBills:
-            type: boolean
-            description: 'Specifies whether to consolidate different billing frequencies onto the same bill.
-
-
-              * **TRUE** - consolidate different billing frequencies onto the same bill.
-
-              * **FALSE** - bills are not consolidated.'
-          defaultStatementDefinitionId:
-            type: string
-            description: 'Organization level default `statementDefinitionId` to be used when there is no statement definition linked to the account.
-
-
-              Statement definitions are used to generate bill statements, which are informative backing sheets to invoices. '
-          billPrefix:
-            type: string
-            description: Prefix to be used for sequential invoice numbers. This will be combined with the `sequenceStartNumber`.
-          sequenceStartNumber:
-            type: integer
-            description: The starting number to be used for sequential invoice numbers. This will be combined with the `billPrefix`.
-            format: int32
-          autoGenerateStatementMode:
-            description: 'Specifies whether to auto-generate statements once Bills are *approved* or *locked*. It will not auto-generate if a bill is in *pending* state.
-
-
-              The default value is **None**.
-
-
-              - **None**. Statements will not be auto-generated.
-
-              - **JSON**. Statements are auto-generated in JSON format.
-
-              - **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats. '
-            $ref: '#/components/schemas/StatementAutoGenerateMode'
-          creditApplicationOrder:
-            type: array
-            description: 'The order in which any Prepayment or Balance credit amounts on Accounts are to be drawn-down against for billing. Four options:
-
-              - `"PREPAYMENT","BALANCE"`. Draw-down against Prepayment credit before Balance credit.
-
-              - `"BALANCE","PREPAYMENT"`. Draw-down against Balance credit before Prepayment credit.
-
-              - `"PREPAYMENT"`. Only draw-down against Prepayment credit.
-
-              - `"BALANCE"`. Only draw-down against Balance credit.'
-            items:
-              $ref: '#/components/schemas/BillCreditType'
-          allowNegativeBalances:
-            type: boolean
-            description: Allow balance amounts to fall below zero. This feature is enabled on request. Please get in touch with m3ter Support or your m3ter contact if you would like it enabling for your organization(s).
-          allowOverlappingPlans:
-            type: boolean
-            description: Allows plans to overlap time periods for different contracts.
-          dtCreated:
-            type: string
-            description: The DateTime when the organization config was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the organization config was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The id of the user who created this organization config.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The id of the user who last modified this organization config.
-            x-stainless-skip:
-            - terraform
-    CurrencyConversion:
-      required:
-      - from
-      - to
-      type: object
-      properties:
-        from:
-          minLength: 1
-          type: string
-          description: 'Currency to convert from. For example: GBP.'
-          example: EUR
-        to:
-          minLength: 1
-          type: string
-          description: 'Currency to convert to. For example: USD.'
-          example: USD
-        multiplier:
-          type: number
-          description: Conversion rate between currencies.
-          format: double
-          example: 1.12
-          exclusiveMinimum: 0
-      description: An array of currency conversion rates from Bill currency to Organization currency. For example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate.
-    TimePeriodUnit:
-      type: string
-      description: Time unit of grace period before bills are auto-approved. Used in combination with the field `autoApproveBillsGracePeriod`.
-      enum:
-      - MINUTES
-      - HOURS
-      - DAYS
     OrganizationConfigRequest:
       type: object
       description: ''
@@ -524,12 +300,236 @@ components:
               For example, if you define `billPrefix` to be **INVOICE-** and you set the `seqenceStartNumber` as **100**, the first Bill created after updating your Organization Configuration will have a `sequentialInvoiceNumber` assigned of **INVOICE-101**. Subsequent Bills created will be numbered in time sequence for their initial creation date/time.'
             format: int32
             example: 1000
+    StatementAutoGenerateMode:
+      type: string
+      description: "Specify whether to auto-generate statements once Bills are *approved* or *locked*. It will not auto-generate if a bill is in *pending* state. \n\nThe default value is **None**.\n\n- **None**. Statements will not be auto-generated.\n- **JSON**. Statements are auto-generated in JSON format.\n- **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats."
+      enum:
+      - NONE
+      - JSON
+      - JSON_AND_CSV
+    OrganizationConfigResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          timezone:
+            type: string
+            description: 'The timezone for the Organization. '
+            example: UTC
+            default: UTC
+          yearEpoch:
+            type: string
+            description: The first bill date *(in ISO-8601 format)* for yearly billing periods.
+            example: '2022-01-01'
+            default: '2022-01-01'
+          monthEpoch:
+            type: string
+            description: The first bill date *(in ISO-8601 format)* for monthly billing periods.
+            example: '2022-01-01'
+            default: '2022-01-01'
+          weekEpoch:
+            type: string
+            description: The first bill date *(in ISO-8601 format)* for weekly billing periods.
+            example: '2022-01-04'
+            default: '2022-01-04'
+          dayEpoch:
+            type: string
+            description: The first bill date *(in ISO-8601 format)* for daily billing periods.
+            example: '2022-01-01'
+            default: '2022-01-01'
+          currency:
+            type: string
+            description: 'The currency code for the currency used in this Organization. For example: USD, GBP, or EUR.'
+          currencyConversions:
+            type: array
+            description: "Currency conversion rates from Bill currency to Organization currency. \n\nFor example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate. "
+            items:
+              $ref: '#/components/schemas/CurrencyConversion'
+          daysBeforeBillDue:
+            type: integer
+            description: The number of days after the Bill generation date shown on Bills as the due date.
+            format: int32
+          scheduledBillInterval:
+            type: number
+            description: "Specifies the required interval for updating bills. \n\n* **For portions of an hour (minutes)**. Two options: **0.25** (15 minutes) and **0.5** (30 minutes).\n* **For full hours.** Eight possible values: **1**, **2**, **3**, **4**, **6**, **8**, **12**, or **24**.\n* **Default.** The default is **0**, which disables scheduling."
+            format: double
+          scheduledBillOffset:
+            type: integer
+            description: Offset (hours) within the scheduled interval to run the job, interpreted in the organization's timezone. For daily (24h) schedules this is the hour of day (0-23). Only supported when ScheduledBillInterval is 24 (daily) at present.
+            format: int32
+          standingChargeBillInAdvance:
+            type: boolean
+            description: "Specifies whether the standing charge is billed in advance at the start of each billing period, or billed in arrears at the end of each billing period. \n\n* **TRUE** - bill in advance *(start of each billing period)*.\n* **FALSE** - bill in arrears *(end of each billing period)*."
+          commitmentFeeBillInAdvance:
+            type: boolean
+            description: "Specifies whether commitments *(prepayments)* are billed in advance at the start of each billing period, or billed in arrears at the end of each billing period. \n\n* **TRUE** - bill in advance *(start of each billing period)*.\n* **FALSE** - bill in arrears *(end of each billing period)*."
+          minimumSpendBillInAdvance:
+            type: boolean
+            description: "Specifies whether minimum spend amounts are billed in advance at the start of each billing period, or billed in arrears at the end of each billing period. \n\n* **TRUE** - bill in advance *(start of each billing period)*.\n* **FALSE** - bill in arrears *(end of each billing period)*."
+          autoApproveBillsGracePeriod:
+            type: integer
+            description: Grace period before bills are auto-approved. Used in combination with the field `autoApproveBillsGracePeriodUnit`.
+            format: int32
+          autoApproveBillsGracePeriodUnit:
+            description: ' '
+            $ref: '#/components/schemas/TimePeriodUnit'
+          externalInvoiceDate:
+            description: ''
+            $ref: '#/components/schemas/InvoiceDate'
+          suppressedEmptyBills:
+            type: boolean
+            description: "Specifies whether to supress generating bills that have no line items. \n\n* **TRUE** - prevents generating bills with no line items.\n* **FALSE** - bills are still generated even when they have no line items. "
+          consolidateBills:
+            type: boolean
+            description: 'Specifies whether to consolidate different billing frequencies onto the same bill.
+
+
+              * **TRUE** - consolidate different billing frequencies onto the same bill.
+
+              * **FALSE** - bills are not consolidated.'
+          defaultStatementDefinitionId:
+            type: string
+            description: 'Organization level default `statementDefinitionId` to be used when there is no statement definition linked to the account.
+
+
+              Statement definitions are used to generate bill statements, which are informative backing sheets to invoices. '
+          billPrefix:
+            type: string
+            description: Prefix to be used for sequential invoice numbers. This will be combined with the `sequenceStartNumber`.
+          sequenceStartNumber:
+            type: integer
+            description: The starting number to be used for sequential invoice numbers. This will be combined with the `billPrefix`.
+            format: int32
+          autoGenerateStatementMode:
+            description: 'Specifies whether to auto-generate statements once Bills are *approved* or *locked*. It will not auto-generate if a bill is in *pending* state.
+
+
+              The default value is **None**.
+
+
+              - **None**. Statements will not be auto-generated.
+
+              - **JSON**. Statements are auto-generated in JSON format.
+
+              - **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats. '
+            $ref: '#/components/schemas/StatementAutoGenerateMode'
+          creditApplicationOrder:
+            type: array
+            description: 'The order in which any Prepayment or Balance credit amounts on Accounts are to be drawn-down against for billing. Four options:
+
+              - `"PREPAYMENT","BALANCE"`. Draw-down against Prepayment credit before Balance credit.
+
+              - `"BALANCE","PREPAYMENT"`. Draw-down against Balance credit before Prepayment credit.
+
+              - `"PREPAYMENT"`. Only draw-down against Prepayment credit.
+
+              - `"BALANCE"`. Only draw-down against Balance credit.'
+            items:
+              $ref: '#/components/schemas/BillCreditType'
+          allowNegativeBalances:
+            type: boolean
+            description: Allow balance amounts to fall below zero. This feature is enabled on request. Please get in touch with m3ter Support or your m3ter contact if you would like it enabling for your organization(s).
+          allowOverlappingPlans:
+            type: boolean
+            description: Allows plans to overlap time periods for different contracts.
+          dtCreated:
+            type: string
+            description: The DateTime when the organization config was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the organization config was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this organization config.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this organization config.
+            x-stainless-skip:
+            - terraform
     BillCreditType:
       type: string
       description: ''
       enum:
       - PREPAYMENT
       - BALANCE
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    CurrencyConversion:
+      required:
+      - from
+      - to
+      type: object
+      properties:
+        from:
+          minLength: 1
+          type: string
+          description: 'Currency to convert from. For example: GBP.'
+          example: EUR
+        to:
+          minLength: 1
+          type: string
+          description: 'Currency to convert to. For example: USD.'
+          example: USD
+        multiplier:
+          type: number
+          description: Conversion rate between currencies.
+          format: double
+          example: 1.12
+          exclusiveMinimum: 0
+      description: An array of currency conversion rates from Bill currency to Organization currency. For example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate.
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    TimePeriodUnit:
+      type: string
+      description: Time unit of grace period before bills are auto-approved. Used in combination with the field `autoApproveBillsGracePeriod`.
+      enum:
+      - MINUTES
+      - HOURS
+      - DAYS
+    InvoiceDate:
+      type: string
+      description: 'The date to use for the invoice date. '
+      enum:
+      - LAST_DAY_OF_ARREARS
+      - FIRST_DAY_OF_NEXT_PERIOD
   responses:
     Error:
       description: Error message

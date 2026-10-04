@@ -158,6 +158,18 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    PaginatedJobResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/JobResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     AbstractResponse:
       required:
       - id
@@ -221,18 +233,6 @@ components:
       description: Base Response containing data export job
       allOf:
       - $ref: '#/components/schemas/AbstractResponse'
-    PaginatedJobResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/JobResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
   responses:
     Error:
       description: Error message

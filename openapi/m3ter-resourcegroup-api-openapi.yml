@@ -494,77 +494,12 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    ResourceGroupItemResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          targetId:
-            type: string
-            description: The UUID of the item.
-          targetType:
-            description: ''
-            $ref: '#/components/schemas/TargetType'
-          dtCreated:
-            type: string
-            description: The DateTime when the item was created for the resource group.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the resource group item was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The id of the user who created this item for the resource group.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The id of the user who last modified this item for the resource group.
-            x-stainless-skip:
-            - terraform
-    PaginatedPermissionPolicyResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/PermissionPolicyResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    PermissionEffect:
+    TargetType:
       type: string
-      description: ''
+      description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
       enum:
-      - ALLOW
-      - DENY
+      - ITEM
+      - GROUP
     PermissionStatement:
       required:
       - action
@@ -605,31 +540,36 @@ components:
           items:
             type: string
       description: ''
-    ResourceGroupRequest:
-      required:
-      - name
-      type: object
-      properties:
-        version:
-          type: integer
-          description: ''
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        name:
-          maxLength: 100
-          minLength: 1
-          type: string
-          description: ''
+    PermissionAction:
+      type: string
       description: ''
-    PaginatedResourceGroupResponseData:
+      enum:
+      - ALL
+      - CONFIG_CREATE
+      - CONFIG_RETRIEVE
+      - CONFIG_UPDATE
+      - CONFIG_DELETE
+      - CONFIG_EXPORT
+      - ANALYTICS_QUERY
+      - MEASUREMENTS_UPLOAD
+      - MEASUREMENTS_FILEUPLOAD
+      - MEASUREMENTS_RETRIEVE
+      - MEASUREMENTS_EXPORT
+      - FORECAST_RETRIEVE
+      - HEALTHSCORES_RETRIEVE
+      - ANOMALIES_RETRIEVE
+      - EXPORTS_DOWNLOAD
+      - MARKETPLACE_USAGE_CREATE
+      - MARKETPLACE_USAGE_RETRIEVE
+      - AUDIT_RETRIEVE
+    PaginatedPermissionPolicyResponseData:
       type: object
       properties:
         data:
           type: array
           description: ''
           items:
-            $ref: '#/components/schemas/ResourceGroupResponse'
+            $ref: '#/components/schemas/PermissionPolicyResponse'
         nextToken:
           type: string
           description: ''
@@ -673,40 +613,77 @@ components:
             description: The unique identifier (UUID) of the user who last modified this Permission Policy.
             x-stainless-skip:
             - terraform
-    PaginatedResourceGroupItemResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/ResourceGroupItemResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    PermissionAction:
+    PermissionEffect:
       type: string
       description: ''
       enum:
-      - ALL
-      - CONFIG_CREATE
-      - CONFIG_RETRIEVE
-      - CONFIG_UPDATE
-      - CONFIG_DELETE
-      - CONFIG_EXPORT
-      - ANALYTICS_QUERY
-      - MEASUREMENTS_UPLOAD
-      - MEASUREMENTS_FILEUPLOAD
-      - MEASUREMENTS_RETRIEVE
-      - MEASUREMENTS_EXPORT
-      - FORECAST_RETRIEVE
-      - HEALTHSCORES_RETRIEVE
-      - ANOMALIES_RETRIEVE
-      - EXPORTS_DOWNLOAD
-      - MARKETPLACE_USAGE_CREATE
-      - MARKETPLACE_USAGE_RETRIEVE
-      - AUDIT_RETRIEVE
+      - ALLOW
+      - DENY
+    ResourceGroupItemRequest:
+      required:
+      - targetId
+      - targetType
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the group.
+
+            '
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        targetId:
+          minLength: 1
+          type: string
+          description: 'The id of the item or group you want to:
+
+            - *Add Item* call: add to a Resource Group.
+
+            - *Remove Item* call: remove from the Resource Group.'
+        targetType:
+          description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
+          $ref: '#/components/schemas/TargetType'
+      description: ''
+      example:
+        targetId: 06f6b50c-a868-4ca6-XXXX-448e507d5248
+        targetType: item
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    ResourceGroupRequest:
+      required:
+      - name
+      type: object
+      properties:
+        version:
+          type: integer
+          description: ''
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+          description: ''
+      description: ''
     ResourceGroupResponse:
       type: object
       description: ''
@@ -738,41 +715,64 @@ components:
             description: The unique identifier (UUID) of the user who last modified this Resource Group.
             x-stainless-skip:
             - terraform
-    TargetType:
-      type: string
-      description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
-      enum:
-      - ITEM
-      - GROUP
-    ResourceGroupItemRequest:
-      required:
-      - targetId
-      - targetType
+    PaginatedResourceGroupResponseData:
       type: object
       properties:
-        version:
-          type: integer
-          description: 'The version number of the group.
-
-            '
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        targetId:
-          minLength: 1
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ResourceGroupResponse'
+        nextToken:
           type: string
-          description: 'The id of the item or group you want to:
-
-            - *Add Item* call: add to a Resource Group.
-
-            - *Remove Item* call: remove from the Resource Group.'
-        targetType:
-          description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
-          $ref: '#/components/schemas/TargetType'
+          description: ''
       description: ''
-      example:
-        targetId: 06f6b50c-a868-4ca6-XXXX-448e507d5248
-        targetType: item
+    PaginatedResourceGroupItemResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ResourceGroupItemResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    ResourceGroupItemResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          targetId:
+            type: string
+            description: The UUID of the item.
+          targetType:
+            description: ''
+            $ref: '#/components/schemas/TargetType'
+          dtCreated:
+            type: string
+            description: The DateTime when the item was created for the resource group.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the resource group item was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this item for the resource group.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this item for the resource group.
+            x-stainless-skip:
+            - terraform
   responses:
     Error:
       description: Error message

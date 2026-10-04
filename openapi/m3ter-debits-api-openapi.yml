@@ -264,39 +264,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
     PaginatedDebitLineItemResponseData:
       type: object
       properties:
@@ -309,19 +276,6 @@ components:
           type: string
           description: ''
       description: ''
-    DebitLineItemRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/MemoLineItemRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
-      - properties:
-          amountToApplyOnBill:
-            type: number
-            description: ''
-          debitReasonId:
-            type: string
-            description: The ID of the Debit Reason given for this debit line item.
     AbstractBillLineItemResponse:
       type: object
       description: ''
@@ -373,6 +327,88 @@ components:
             description: The ID of the user who last modified this line item.
             x-stainless-skip:
             - terraform
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    DebitLineItemResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractBillLineItemResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          amount:
+            type: number
+            description: ''
+          debitReasonId:
+            type: string
+            description: The UUID of the debit reason for this debit line item.
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    LineItemType:
+      type: string
+      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
+      enum:
+      - STANDING_CHARGE
+      - USAGE
+      - COUNTER_RUNNING_TOTAL_CHARGE
+      - COUNTER_ADJUSTMENT_DEBIT
+      - COUNTER_ADJUSTMENT_CREDIT
+      - USAGE_CREDIT
+      - MINIMUM_SPEND
+      - MINIMUM_SPEND_REFUND
+      - CREDIT_DEDUCTION
+      - MANUAL_ADJUSTMENT
+      - CREDIT_MEMO
+      - DEBIT_MEMO
+      - COMMITMENT_CONSUMED
+      - COMMITMENT_FEE
+      - OVERAGE_SURCHARGE
+      - OVERAGE_USAGE
+      - BALANCE_CONSUMED
+      - BALANCE_FEE
+      - AD_HOC
+    DebitLineItemRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/MemoLineItemRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          amountToApplyOnBill:
+            type: number
+            description: ''
+          debitReasonId:
+            type: string
+            description: The ID of the Debit Reason given for this debit line item.
     MemoLineItemRequest:
       type: object
       description: ''
@@ -425,42 +461,6 @@ components:
             type: string
             description: The service period end date in ISO-8601 format.*(exclusive of the ending date)*.
             format: date-time
-    DebitLineItemResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractBillLineItemResponse'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          amount:
-            type: number
-            description: ''
-          debitReasonId:
-            type: string
-            description: The UUID of the debit reason for this debit line item.
-    LineItemType:
-      type: string
-      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
-      enum:
-      - STANDING_CHARGE
-      - USAGE
-      - COUNTER_RUNNING_TOTAL_CHARGE
-      - COUNTER_ADJUSTMENT_DEBIT
-      - COUNTER_ADJUSTMENT_CREDIT
-      - USAGE_CREDIT
-      - MINIMUM_SPEND
-      - MINIMUM_SPEND_REFUND
-      - CREDIT_DEDUCTION
-      - MANUAL_ADJUSTMENT
-      - CREDIT_MEMO
-      - DEBIT_MEMO
-      - COMMITMENT_CONSUMED
-      - COMMITMENT_FEE
-      - OVERAGE_SURCHARGE
-      - OVERAGE_USAGE
-      - BALANCE_CONSUMED
-      - BALANCE_FEE
-      - AD_HOC
   responses:
     Error:
       description: Error message

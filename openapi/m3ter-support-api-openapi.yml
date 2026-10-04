@@ -84,6 +84,43 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    SupportResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtEndSupportUsersAccess:
+            type: string
+            description: The Date/Time Support access ends *(in ISO-8601 format)*.
+            format: date-time
+          supportUsersPermissionPolicy:
+            type: array
+            description: The Permission Policies assigned to any support users when they access your Organization.
+            items:
+              $ref: '#/components/schemas/PermissionStatementWrapper'
+    PermissionStatementWrapper:
+      required:
+      - action
+      - effect
+      - resource
+      type: object
+      properties:
+        effect:
+          type: string
+          description: ''
+        action:
+          type: array
+          description: ''
+          items:
+            type: string
+        resource:
+          minItems: 1
+          type: array
+          description: ''
+          items:
+            type: string
+      description: ''
     AbstractResponse:
       required:
       - id
@@ -117,43 +154,6 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    PermissionStatementWrapper:
-      required:
-      - action
-      - effect
-      - resource
-      type: object
-      properties:
-        effect:
-          type: string
-          description: ''
-        action:
-          type: array
-          description: ''
-          items:
-            type: string
-        resource:
-          minItems: 1
-          type: array
-          description: ''
-          items:
-            type: string
-      description: ''
-    SupportResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          dtEndSupportUsersAccess:
-            type: string
-            description: The Date/Time Support access ends *(in ISO-8601 format)*.
-            format: date-time
-          supportUsersPermissionPolicy:
-            type: array
-            description: The Permission Policies assigned to any support users when they access your Organization.
-            items:
-              $ref: '#/components/schemas/PermissionStatementWrapper'
     SupportRequest:
       type: object
       description: ''

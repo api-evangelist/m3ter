@@ -645,57 +645,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    PaginatedPermissionPolicyResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/PermissionPolicyResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    PermissionEffect:
-      type: string
-      description: ''
-      enum:
-      - ALLOW
-      - DENY
     PermissionStatement:
       required:
       - action
@@ -736,86 +685,36 @@ components:
           items:
             type: string
       description: ''
-    PrincipalPermissionRequest:
-      type: object
+    PermissionRequest:
+      $ref: '#/components/schemas/AbstractRequest'
+    PermissionAction:
+      type: string
       description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - principalId
-        properties:
-          principalId:
-            minLength: 1
-            type: string
-            description: ''
-    PermissionPolicyRequest:
-      required:
-      - name
-      - permissionPolicy
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            * **Create entity:** Not valid for initial insertion of new entity - do not use for Create. On initial Create, version is set at 1 and listed in the response.
-
-            * **Update Entity:** On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.
-
-
-            '
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        name:
-          maxLength: 100
-          minLength: 1
-          type: string
-          description: ''
-        permissionPolicy:
-          minItems: 1
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/PermissionStatement'
+      enum:
+      - ALL
+      - CONFIG_CREATE
+      - CONFIG_RETRIEVE
+      - CONFIG_UPDATE
+      - CONFIG_DELETE
+      - CONFIG_EXPORT
+      - ANALYTICS_QUERY
+      - MEASUREMENTS_UPLOAD
+      - MEASUREMENTS_FILEUPLOAD
+      - MEASUREMENTS_RETRIEVE
+      - MEASUREMENTS_EXPORT
+      - FORECAST_RETRIEVE
+      - HEALTHSCORES_RETRIEVE
+      - ANOMALIES_RETRIEVE
+      - EXPORTS_DOWNLOAD
+      - MARKETPLACE_USAGE_CREATE
+      - MARKETPLACE_USAGE_RETRIEVE
+      - AUDIT_RETRIEVE
+    PermissionEffect:
+      type: string
       description: ''
-    PrincipalPermissionResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          permissionPolicyId:
-            type: string
-            description: ''
-          principalId:
-            type: string
-            description: ''
-          principalType:
-            description: ''
-            $ref: '#/components/schemas/PrincipalType'
-          dtCreated:
-            type: string
-            description: The DateTime *(in ISO-8601 format)* when the principal permission was created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime *(in ISO-8601 format)* when the principal permission was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The id of the user who created this principal permission.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The id of the user who last modified this principal permission.
-            x-stainless-skip:
-            - terraform
+      enum:
+      - ALLOW
+      - DENY
     PermissionPolicyResponse:
       type: object
       description: ''
@@ -855,30 +754,131 @@ components:
             description: The unique identifier (UUID) of the user who last modified this Permission Policy.
             x-stainless-skip:
             - terraform
-    PermissionAction:
-      type: string
+    PaginatedPermissionPolicyResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/PermissionPolicyResponse'
+        nextToken:
+          type: string
+          description: ''
       description: ''
-      enum:
-      - ALL
-      - CONFIG_CREATE
-      - CONFIG_RETRIEVE
-      - CONFIG_UPDATE
-      - CONFIG_DELETE
-      - CONFIG_EXPORT
-      - ANALYTICS_QUERY
-      - MEASUREMENTS_UPLOAD
-      - MEASUREMENTS_FILEUPLOAD
-      - MEASUREMENTS_RETRIEVE
-      - MEASUREMENTS_EXPORT
-      - FORECAST_RETRIEVE
-      - HEALTHSCORES_RETRIEVE
-      - ANOMALIES_RETRIEVE
-      - EXPORTS_DOWNLOAD
-      - MARKETPLACE_USAGE_CREATE
-      - MARKETPLACE_USAGE_RETRIEVE
-      - AUDIT_RETRIEVE
-    PermissionRequest:
-      $ref: '#/components/schemas/AbstractRequest'
+    PermissionPolicyRequest:
+      required:
+      - name
+      - permissionPolicy
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            * **Create entity:** Not valid for initial insertion of new entity - do not use for Create. On initial Create, version is set at 1 and listed in the response.
+
+            * **Update Entity:** On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.
+
+
+            '
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+          description: ''
+        permissionPolicy:
+          minItems: 1
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/PermissionStatement'
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PrincipalPermissionRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - principalId
+        properties:
+          principalId:
+            minLength: 1
+            type: string
+            description: ''
+    PrincipalPermissionResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          permissionPolicyId:
+            type: string
+            description: ''
+          principalId:
+            type: string
+            description: ''
+          principalType:
+            description: ''
+            $ref: '#/components/schemas/PrincipalType'
+          dtCreated:
+            type: string
+            description: The DateTime *(in ISO-8601 format)* when the principal permission was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime *(in ISO-8601 format)* when the principal permission was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this principal permission.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this principal permission.
+            x-stainless-skip:
+            - terraform
     PrincipalType:
       type: string
       description: ''

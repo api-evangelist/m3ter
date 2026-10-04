@@ -287,6 +287,99 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    ChargeRequest:
+      type: object
+      description: Request containing a Charge entity
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - accountId
+        - code
+        - currency
+        - entityType
+        - lineItemType
+        - name
+        - servicePeriodEndDate
+        - servicePeriodStartDate
+        properties:
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: Name of the Charge. Added to the Bill line item description for this Charge.
+          code:
+            maxLength: 80
+            minLength: 1
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: Unique short code for the Charge.
+          accountId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: The ID of the Account the Charge is being created for.
+          billDate:
+            type: string
+            description: The date when the Charge will be added to a Bill.
+            example: '2022-01-04'
+          amount:
+            type: number
+            description: Amount of the Charge. If `amount` is provided, then `units` and `unitPrice` must be omitted.
+          units:
+            type: number
+            description: Number of units of the Charge. If `amount` is omitted, then provide together with `unitPrice`. When `amount` is provided, `units` must be omitted.
+          unitPrice:
+            type: number
+            description: Unit price. If `amount` is omitted, then provide together with `units`. When `amount` is provided, `unitPrice` must be omitted.
+          currency:
+            minLength: 1
+            type: string
+            description: Charge currency.
+          description:
+            type: string
+            description: The description added to the Bill line item for the Charge.
+          entityType:
+            description: 'The entity type the Charge is created for.
+
+
+              **NOTE:** If `entityType` is `BALANCE`, you must provide the `entityId` of the Balance the Charge is for.'
+            allOf:
+            - $ref: '#/components/schemas/ChargeEntityType'
+            - description: 'The entity this charge is created for, ex: Balance or AD_HOC if none applies'
+          lineItemType:
+            description: The line item type used for Charge billing.
+            allOf:
+            - $ref: '#/components/schemas/ChargeLineItemType'
+            - description: The Line Item Type to be used for this Charge
+          entityId:
+            type: string
+            description: 'The ID of the Charge linked entity. For example, the ID of an Account Balance if a Balance Charge.
+
+
+              **NOTE:** If `entityType` is `BALANCE`, you must provide the `entityId` of the Balance the Charge is for.'
+          accountingProductId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: The Accounting Product ID assigned to the Charge.
+          servicePeriodStartDate:
+            type: string
+            description: The service period start date (*in ISO-8601 format*) for the Charge.
+            format: date-time
+          servicePeriodEndDate:
+            type: string
+            description: 'The service period end date (*in ISO-8601 format*)for the Charge.
+
+
+              **NOTE:** End date is exclusive.'
+            format: date-time
+          notes:
+            type: string
+            description: Used to enter information about the Charge for accounting purposes, such as the reason it was created. This information will not be added to a Bill line item for the Charge.
+          contractId:
+            type: string
+            description: The ID of a Contract on the Account that the Charge will be added to.
+        description: Request containing a Charge entity
     ChargeResponse:
       type: object
       properties:
@@ -401,18 +494,12 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    PaginatedChargeResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/ChargeResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
+    ChargeEntityType:
+      type: string
+      description: The entity type the Charge has been created for.
+      enum:
+      - AD_HOC
+      - BALANCE
     AbstractRequest:
       type: object
       properties:
@@ -427,111 +514,24 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    ChargeRequest:
-      type: object
-      description: Request containing a Charge entity
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - accountId
-        - code
-        - currency
-        - entityType
-        - lineItemType
-        - name
-        - servicePeriodEndDate
-        - servicePeriodStartDate
-        properties:
-          name:
-            maxLength: 200
-            minLength: 1
-            type: string
-            description: Name of the Charge. Added to the Bill line item description for this Charge.
-          code:
-            maxLength: 80
-            minLength: 1
-            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
-            type: string
-            description: Unique short code for the Charge.
-          accountId:
-            maxLength: 36
-            minLength: 36
-            type: string
-            description: The ID of the Account the Charge is being created for.
-          billDate:
-            type: string
-            description: The date when the Charge will be added to a Bill.
-            example: '2022-01-04'
-          amount:
-            type: number
-            description: Amount of the Charge. If `amount` is provided, then `units` and `unitPrice` must be omitted.
-          units:
-            type: number
-            description: Number of units of the Charge. If `amount` is omitted, then provide together with `unitPrice`. When `amount` is provided, `units` must be omitted.
-          unitPrice:
-            type: number
-            description: Unit price. If `amount` is omitted, then provide together with `units`. When `amount` is provided, `unitPrice` must be omitted.
-          currency:
-            minLength: 1
-            type: string
-            description: Charge currency.
-          description:
-            type: string
-            description: The description added to the Bill line item for the Charge.
-          entityType:
-            description: 'The entity type the Charge is created for.
-
-
-              **NOTE:** If `entityType` is `BALANCE`, you must provide the `entityId` of the Balance the Charge is for.'
-            allOf:
-            - $ref: '#/components/schemas/ChargeEntityType'
-            - description: 'The entity this charge is created for, ex: Balance or AD_HOC if none applies'
-          lineItemType:
-            description: The line item type used for Charge billing.
-            allOf:
-            - $ref: '#/components/schemas/ChargeLineItemType'
-            - description: The Line Item Type to be used for this Charge
-          entityId:
-            type: string
-            description: 'The ID of the Charge linked entity. For example, the ID of an Account Balance if a Balance Charge.
-
-
-              **NOTE:** If `entityType` is `BALANCE`, you must provide the `entityId` of the Balance the Charge is for.'
-          accountingProductId:
-            maxLength: 36
-            minLength: 36
-            type: string
-            description: The Accounting Product ID assigned to the Charge.
-          servicePeriodStartDate:
-            type: string
-            description: The service period start date (*in ISO-8601 format*) for the Charge.
-            format: date-time
-          servicePeriodEndDate:
-            type: string
-            description: 'The service period end date (*in ISO-8601 format*)for the Charge.
-
-
-              **NOTE:** End date is exclusive.'
-            format: date-time
-          notes:
-            type: string
-            description: Used to enter information about the Charge for accounting purposes, such as the reason it was created. This information will not be added to a Bill line item for the Charge.
-          contractId:
-            type: string
-            description: The ID of a Contract on the Account that the Charge will be added to.
-        description: Request containing a Charge entity
     ChargeLineItemType:
       type: string
       description: Available line item types that can be used for billing a Charge.
       enum:
       - BALANCE_FEE
       - AD_HOC
-    ChargeEntityType:
-      type: string
-      description: The entity type the Charge has been created for.
-      enum:
-      - AD_HOC
-      - BALANCE
+    PaginatedChargeResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ChargeResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
   responses:
     Error:
       description: Error message

@@ -108,6 +108,18 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    PaginatedMarketplaceUsageReportResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/MarketplaceUsageReportResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     MarketplaceUsageReportResponse:
       required:
       - accountId
@@ -133,18 +145,6 @@ components:
               type: number
           description: ''
       description: Response containing marketplace usage report information
-    PaginatedMarketplaceUsageReportResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/MarketplaceUsageReportResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
   responses:
     Error:
       description: Error message

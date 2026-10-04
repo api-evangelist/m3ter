@@ -254,6 +254,51 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    PaginatedAggregationResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AggregationResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    Aggregation:
+      type: string
+      description: 'Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected targetField.
+
+
+        * **SUM**. Adds the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **MIN**. Uses the minimum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **MAX**. Uses the maximum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **COUNT**. Counts the number of values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **LATEST**. Uses the most recent value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`. Note: Based on the timestamp `ts` value of usage data measurement submissions. If using this method, please ensure *distinct* `ts` values are used for usage data measurement submissions.
+
+
+        * **MEAN**. Uses the arithmetic mean of the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **UNIQUE**. Uses unique values and returns a count of the number of unique values. Can be applied to a **Metadata** `targetField`.'
+      enum:
+      - SUM
+      - MIN
+      - MAX
+      - COUNT
+      - LATEST
+      - MEAN
+      - UNIQUE
+      - CUSTOM_SQL
     AbstractResponse:
       required:
       - id
@@ -273,88 +318,6 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    Rounding:
-      type: string
-      description: 'Specifies how you want to deal with non-integer, fractional number Aggregation values.
-
-
-        **NOTES:**
-
-        * "NEAREST" rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.
-
-        * Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45. '
-      enum:
-      - UP
-      - DOWN
-      - NEAREST
-      - NONE
-    AbstractAggregationRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - name
-        - quantityPerUnit
-        - rounding
-        - unit
-        properties:
-          version:
-            type: integer
-            description: 'The version number of the Aggregation:
-
-              - **Create entity:** Not valid for initial insertion of new Aggregation - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-              - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-            format: int64
-            x-stainless-terraform-configurability: computed
-            x-stainless-terraform-always-send: true
-          name:
-            maxLength: 200
-            minLength: 1
-            type: string
-            description: Descriptive name for the Aggregation.
-          rounding:
-            description: "Specifies how you want to deal with non-integer, fractional number Aggregation values.\n\n**NOTES:**\n* **NEAREST** rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.\n* Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45.\n\nEnum: ???UP??? ???DOWN??? ???NEAREST??? ???NONE???\n\n "
-            $ref: '#/components/schemas/Rounding'
-          quantityPerUnit:
-            type: number
-            description: 'Defines how much of a quantity equates to 1 unit. Used when setting the price per unit for billing purposes - if charging for kilobytes per second (KiBy/s) at rate of $0.25 per 500 KiBy/s, then set quantityPerUnit to 500 and price Plan at $0.25 per unit.
-
-
-              **Note:** If `quantityPerUnit` is set to a value other than one, `rounding` is typically set to `"UP"`.'
-            exclusiveMinimum: 0
-          unit:
-            maxLength: 50
-            minLength: 1
-            type: string
-            description: User defined label for units shown for Bill line items, indicating to your customers what they are being charged for.
-          code:
-            maxLength: 80
-            pattern: ^[\p{L}_$][\p{L}_$0-9]*$
-            type: string
-            description: Code of the new Aggregation. A unique short code to identify the Aggregation.
-            example: example_code
-          accountingProductId:
-            maxLength: 36
-            minLength: 36
-            type: string
-            description: Optional Product ID this Aggregation should be attributed to for accounting purposes.
     AggregationRequest:
       type: object
       description: ''
@@ -429,53 +392,123 @@ components:
 
 
               **NOTE:** The `customSql` Aggregation type is currently available in Preview release. If you are interested in using this feature, please get in touch with m3ter Support or your m3ter contact.'
-    AbstractResponseWithCustomFields:
+    AbstractAggregationResponse:
       type: object
       description: ''
       allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
       - $ref: '#/components/schemas/AbstractResponse'
       - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+          name:
+            type: string
+            description: Descriptive name for the Aggregation.
+          rounding:
+            description: 'Specifies how you want to deal with non-integer, fractional number Aggregation values.
 
 
-              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+              **NOTES:**
+
+              * **NEAREST** rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.
+
+              * Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45.
 
 
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
+              Enum: ???UP??? ???DOWN??? ???NEAREST??? ???NONE???
+
+              '
+            $ref: '#/components/schemas/Rounding'
+          quantityPerUnit:
+            type: number
+            description: 'Defines how much of a quantity equates to 1 unit. Used when setting the price per unit for billing purposes - if charging for kilobytes per second (KiBy/s) at rate of $0.25 per 500 KiBy/s, then set quantityPerUnit to 500 and price Plan at $0.25 per unit.
+
+
+              If `quantityPerUnit` is set to a value other than one, rounding is typically set to UP.'
+          unit:
+            type: string
+            description: "User defined or following the *Unified Code for Units of Measure* (UCUM). \n\nUsed as the label for billing, indicating to your customers what they are being charged for."
+          code:
+            type: string
+            description: Code of the Aggregation. A unique short code to identify the Aggregation.
+          segments:
+            type: array
+            description: '*(Optional)*. Used when creating a segmented Aggregation, which segments the usage data collected by a single Meter. Works together with `segmentedFields`.
+
+
+              Contains the values that are to be used as the segments, read from the fields in the meter pointed at by `segmentedFields`.  '
+            items:
+              type: object
+              additionalProperties:
                 type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-    AbstractRequestWithCustomFields:
+          accountingProductId:
+            type: string
+            description: Optional Product ID this Aggregation should be attributed to for accounting purposes.
+    AbstractAggregationRequest:
       type: object
       description: ''
       allOf:
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
       - $ref: '#/components/schemas/AbstractRequest'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+      - required:
+        - name
+        - quantityPerUnit
+        - rounding
+        - unit
+        properties:
+          version:
+            type: integer
+            description: 'The version number of the Aggregation:
+
+              - **Create entity:** Not valid for initial insertion of new Aggregation - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+              - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+            format: int64
+            x-stainless-terraform-configurability: computed
+            x-stainless-terraform-always-send: true
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: Descriptive name for the Aggregation.
+          rounding:
+            description: "Specifies how you want to deal with non-integer, fractional number Aggregation values.\n\n**NOTES:**\n* **NEAREST** rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.\n* Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45.\n\nEnum: ???UP??? ???DOWN??? ???NEAREST??? ???NONE???\n\n "
+            $ref: '#/components/schemas/Rounding'
+          quantityPerUnit:
+            type: number
+            description: 'Defines how much of a quantity equates to 1 unit. Used when setting the price per unit for billing purposes - if charging for kilobytes per second (KiBy/s) at rate of $0.25 per 500 KiBy/s, then set quantityPerUnit to 500 and price Plan at $0.25 per unit.
 
 
-              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+              **Note:** If `quantityPerUnit` is set to a value other than one, `rounding` is typically set to `"UP"`.'
+            exclusiveMinimum: 0
+          unit:
+            maxLength: 50
+            minLength: 1
+            type: string
+            description: User defined label for units shown for Bill line items, indicating to your customers what they are being charged for.
+          code:
+            maxLength: 80
+            pattern: ^[\p{L}_$][\p{L}_$0-9]*$
+            type: string
+            description: Code of the new Aggregation. A unique short code to identify the Aggregation.
+            example: example_code
+          accountingProductId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: Optional Product ID this Aggregation should be attributed to for accounting purposes.
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
 
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
 
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            maxItems: 100
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldReq
-                type: string
-              - title: IntegerCustomFieldReq
-                type: integer
-              - title: NumberCustomFieldReq
-                type: number
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     AggregationResponse:
       type: object
       description: ''
@@ -538,101 +571,68 @@ components:
             description: The id of the user who last modified this aggregation.
             x-stainless-skip:
             - terraform
-    AbstractAggregationResponse:
+    AbstractResponseWithCustomFields:
       type: object
       description: ''
       allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
       - $ref: '#/components/schemas/AbstractResponse'
       - properties:
-          name:
-            type: string
-            description: Descriptive name for the Aggregation.
-          rounding:
-            description: 'Specifies how you want to deal with non-integer, fractional number Aggregation values.
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
 
 
-              **NOTES:**
-
-              * **NEAREST** rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.
-
-              * Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45.
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
 
 
-              Enum: ???UP??? ???DOWN??? ???NEAREST??? ???NONE???
-
-              '
-            $ref: '#/components/schemas/Rounding'
-          quantityPerUnit:
-            type: number
-            description: 'Defines how much of a quantity equates to 1 unit. Used when setting the price per unit for billing purposes - if charging for kilobytes per second (KiBy/s) at rate of $0.25 per 500 KiBy/s, then set quantityPerUnit to 500 and price Plan at $0.25 per unit.
-
-
-              If `quantityPerUnit` is set to a value other than one, rounding is typically set to UP.'
-          unit:
-            type: string
-            description: "User defined or following the *Unified Code for Units of Measure* (UCUM). \n\nUsed as the label for billing, indicating to your customers what they are being charged for."
-          code:
-            type: string
-            description: Code of the Aggregation. A unique short code to identify the Aggregation.
-          segments:
-            type: array
-            description: '*(Optional)*. Used when creating a segmented Aggregation, which segments the usage data collected by a single Meter. Works together with `segmentedFields`.
-
-
-              Contains the values that are to be used as the segments, read from the fields in the meter pointed at by `segmentedFields`.  '
-            items:
-              type: object
-              additionalProperties:
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
                 type: string
-          accountingProductId:
-            type: string
-            description: Optional Product ID this Aggregation should be attributed to for accounting purposes.
-    PaginatedAggregationResponseData:
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+    AbstractRequestWithCustomFields:
       type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/AggregationResponse'
-        nextToken:
-          type: string
-          description: ''
       description: ''
-    Aggregation:
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+    Rounding:
       type: string
-      description: 'Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected targetField.
+      description: 'Specifies how you want to deal with non-integer, fractional number Aggregation values.
 
 
-        * **SUM**. Adds the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+        **NOTES:**
 
+        * "NEAREST" rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.
 
-        * **MIN**. Uses the minimum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
-
-
-        * **MAX**. Uses the maximum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
-
-
-        * **COUNT**. Counts the number of values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
-
-
-        * **LATEST**. Uses the most recent value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`. Note: Based on the timestamp `ts` value of usage data measurement submissions. If using this method, please ensure *distinct* `ts` values are used for usage data measurement submissions.
-
-
-        * **MEAN**. Uses the arithmetic mean of the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
-
-
-        * **UNIQUE**. Uses unique values and returns a count of the number of unique values. Can be applied to a **Metadata** `targetField`.'
+        * Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45. '
       enum:
-      - SUM
-      - MIN
-      - MAX
-      - COUNT
-      - LATEST
-      - MEAN
-      - UNIQUE
-      - CUSTOM_SQL
+      - UP
+      - DOWN
+      - NEAREST
+      - NONE
   responses:
     Error:
       description: Error message

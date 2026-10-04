@@ -822,6 +822,32 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    LookupTableRevisionCopyRequest:
+      type: object
+      properties:
+        revisionId:
+          type: string
+          description: The target Revision id that the source Revision's data will be copied to. *(Optional)*
+      description: ''
+    LookupTableRevisionDataRequest:
+      required:
+      - items
+      type: object
+      properties:
+        items:
+          maxItems: 2000
+          type: array
+          description: The data for a lookup table revision
+          items:
+            type: object
+            additionalProperties: true
+        version:
+          type: integer
+          description: The version of the LookupTableRevisionData.
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     LookupTableRevisionDataResponse:
       required:
       - items
@@ -863,16 +889,40 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: Response containing data for a Lookup Table Revision
-    LookupTableRevisionDataItemDeleteRequest:
+    LookupTableDataDownloadJobResponse:
       type: object
       properties:
-        version:
-          type: integer
-          description: The version of the Lookup Table Revision Data.
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
+        jobId:
+          type: string
+          description: UUID of the download job
+      description: Response containing the download job details
+    PaginatedLookupTableRevisionDataJobResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/LookupTableRevisionDataJobResponse'
+        nextToken:
+          type: string
+          description: ''
       description: ''
+    LookupTableDataArchivedRequest:
+      required:
+      - contentType
+      type: object
+      properties:
+        contentType:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/ContentType'
+          - type: string
+            description: The content type
+            enum:
+            - application/jsonl
+            - text/csv
+      description: Request containing the file details when requesting an archived data URL
     LookupTableRevisionCopyResponse:
       type: object
       properties:
@@ -883,13 +933,86 @@ components:
           type: string
           description: The ID of the destination Revision.
       description: ''
-    LookupTableDataJobStatus:
+    LookupTableDataArchivedResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The presigned URL
+        expiry:
+          type: string
+          description: The URL expiry time
+          format: date-time
+      description: Response containing the archive job URL details
+    LookupTableRevisionDataItemDeleteRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: The version of the Lookup Table Revision Data.
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    LookupTableDataUploadResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+          description: UUID of the upload job
+        url:
+          type: string
+          description: The presigned URL
+        headers:
+          description: ''
+          allOf:
+          - type: object
+            additionalProperties:
+              type: string
+          - description: The headers
+      description: Response containing the upload job URL details
+    JobType:
       type: string
-      description: The status of a job
+      description: ''
       enum:
-      - PENDING
-      - FAILED
-      - SUCCEEDED
+      - COPY
+      - UPLOAD
+      - DOWNLOAD
+      - ARCHIVE
+    LookupTableDataUploadRequest:
+      required:
+      - contentLength
+      - contentType
+      - fileName
+      type: object
+      properties:
+        fileName:
+          maxLength: 100
+          minLength: 1
+          type: string
+          description: The name of the file to be uploaded.
+        contentType:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/ContentType'
+          - type: string
+            description: The content type
+            enum:
+            - application/jsonl
+            - text/csv
+        version:
+          type: integer
+          description: Version of the Lookup Table Revision Data.
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        contentLength:
+          maximum: 104857600
+          minimum: 1
+          type: integer
+          description: 'The size of the file body in bytes. For example: `"contentLength": 485`, where 485 is the size in bytes of the file to upload.'
+          format: int64
+      description: Request containing the file details when generating an upload URL
     LookupTableRevisionDataJobResponse:
       type: object
       properties:
@@ -937,37 +1060,35 @@ components:
           type: string
           description: The download Url expiry if the Lookup Table Revision Data job is a DOWNLOAD job.
       description: Response containing the LookupTableRevisionData job details
-    PaginatedLookupTableRevisionDataJobResponseData:
+    LookupTableRevisionDataDeleteResponse:
       type: object
       properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/LookupTableRevisionDataJobResponse'
-        nextToken:
+        result:
           type: string
-          description: ''
+          description: The result of the Lookup Table Revision Data delete action.
       description: ''
-    LookupTableRevisionDataRequest:
+    LookupTableDataJobStatus:
+      type: string
+      description: The status of a job
+      enum:
+      - PENDING
+      - FAILED
+      - SUCCEEDED
+    LookupTableDataDownloadJobRequest:
       required:
-      - items
+      - contentType
       type: object
       properties:
-        items:
-          maxItems: 2000
-          type: array
-          description: The data for a lookup table revision
-          items:
-            type: object
-            additionalProperties: true
-        version:
-          type: integer
-          description: The version of the LookupTableRevisionData.
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
+        contentType:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/ContentType'
+          - type: string
+            description: The content type
+            enum:
+            - application/jsonl
+            - text/csv
+      description: Request containing the file details when triggering a download job
     ContentType:
       type: string
       description: The content type of the file
@@ -989,127 +1110,6 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    LookupTableRevisionCopyRequest:
-      type: object
-      properties:
-        revisionId:
-          type: string
-          description: The target Revision id that the source Revision's data will be copied to. *(Optional)*
-      description: ''
-    LookupTableDataDownloadJobRequest:
-      required:
-      - contentType
-      type: object
-      properties:
-        contentType:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/ContentType'
-          - type: string
-            description: The content type
-            enum:
-            - application/jsonl
-            - text/csv
-      description: Request containing the file details when triggering a download job
-    LookupTableDataDownloadJobResponse:
-      type: object
-      properties:
-        jobId:
-          type: string
-          description: UUID of the download job
-      description: Response containing the download job details
-    LookupTableDataUploadResponse:
-      type: object
-      properties:
-        jobId:
-          type: string
-          description: UUID of the upload job
-        url:
-          type: string
-          description: The presigned URL
-        headers:
-          description: ''
-          allOf:
-          - type: object
-            additionalProperties:
-              type: string
-          - description: The headers
-      description: Response containing the upload job URL details
-    LookupTableDataArchivedRequest:
-      required:
-      - contentType
-      type: object
-      properties:
-        contentType:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/ContentType'
-          - type: string
-            description: The content type
-            enum:
-            - application/jsonl
-            - text/csv
-      description: Request containing the file details when requesting an archived data URL
-    JobType:
-      type: string
-      description: ''
-      enum:
-      - COPY
-      - UPLOAD
-      - DOWNLOAD
-      - ARCHIVE
-    LookupTableDataArchivedResponse:
-      type: object
-      properties:
-        url:
-          type: string
-          description: The presigned URL
-        expiry:
-          type: string
-          description: The URL expiry time
-          format: date-time
-      description: Response containing the archive job URL details
-    LookupTableRevisionDataDeleteResponse:
-      type: object
-      properties:
-        result:
-          type: string
-          description: The result of the Lookup Table Revision Data delete action.
-      description: ''
-    LookupTableDataUploadRequest:
-      required:
-      - contentLength
-      - contentType
-      - fileName
-      type: object
-      properties:
-        fileName:
-          maxLength: 100
-          minLength: 1
-          type: string
-          description: The name of the file to be uploaded.
-        contentType:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/ContentType'
-          - type: string
-            description: The content type
-            enum:
-            - application/jsonl
-            - text/csv
-        version:
-          type: integer
-          description: Version of the Lookup Table Revision Data.
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        contentLength:
-          maximum: 104857600
-          minimum: 1
-          type: integer
-          description: 'The size of the file body in bytes. For example: `"contentLength": 485`, where 485 is the size in bytes of the file to upload.'
-          format: int64
-      description: Request containing the file details when generating an upload URL
   responses:
     Error:
       description: Error message

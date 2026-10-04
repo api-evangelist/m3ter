@@ -1243,27 +1243,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    BillJobBillingFrequency:
-      type: string
-      description: 'Defines how often Bills are generated.
-
-        - **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
-
-        - **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
-
-        - **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
-
-        - **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
-
-        - **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
-
-        '
-      enum:
-      - DAILY
-      - WEEKLY
-      - MONTHLY
-      - ANNUALLY
-      - AD_HOC
     UpdateBillStatusRequest:
       required:
       - status
@@ -1273,6 +1252,352 @@ components:
           description: The new status you want to assign to the Bill. Must be one "Pending" or "Approved".
           $ref: '#/components/schemas/BillStatus'
       description: ''
+    PaginatedBillResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/BillResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    BillLineItemResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractBillLineItemResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          productName:
+            type: string
+            description: 'The name of the Product associated with this line item. '
+          productCode:
+            type: string
+            description: The code of the Product associated with this line item.
+          accountingProductId:
+            type: string
+            description: The unique identifier (UUID) for the associated Accounting Product.
+          accountingProductName:
+            type: string
+            description: The name of the Accounting Product associated with this line item.
+          accountingProductCode:
+            type: string
+            description: The code of the Accounting Product associated with this line item.
+          aggregationId:
+            type: string
+            description: 'A unique identifier (UUID) for the Aggregation that contributes to this Bill line item. '
+          compoundAggregationId:
+            type: string
+            description: A unique identifier (UUID) for the Compound Aggregation, if applicable.
+          counterId:
+            type: string
+            description: The unique identifier (UUID) for the Counter associated with this line item.
+          chargeId:
+            type: string
+            description: The unique identifier (UUID) for the Charge associated with this line item.
+          segment:
+            type: object
+            additionalProperties:
+              type: string
+            description: Specifies the segment name or identifier when segmented Aggregation is used. This is relevant for more complex billing structures.
+          group:
+            type: object
+            additionalProperties:
+              type: string
+            description: ''
+          meterId:
+            type: string
+            description: 'The unique identifier (UUID) of the Meter responsible for tracking usage. '
+          planId:
+            type: string
+            description: 'A unique identifier (UUID) for the billing Plan associated with this line item. '
+          planGroupId:
+            type: string
+            description: The unique identifier (UUID) of the Plan Group associated with this line item.
+          commitmentId:
+            type: string
+            description: 'The unique identifier (UUID) of the Commitment associated with this line item. '
+          balanceId:
+            type: string
+            description: The unique identifier (UUID) for the Balance associated with this line item.
+          billId:
+            type: string
+            description: 'The unique identifier (UUID) for the Bill that includes this line item. '
+          quantity:
+            type: number
+            description: The amount of the product or service used in this line item.
+          units:
+            type: number
+            description: "The number of units rated in the line item, each of which is of the type specified in the `unit` field. For example: 400 api_calls. \n\nIn this example, the unit type of **api_calls** is read from the `unit` field."
+          unit:
+            type: string
+            description: 'Specifies the unit type. For example: **MB**, **GB**, **api_calls**, and so on.  '
+          subtotal:
+            type: number
+            description: The subtotal amount when not currency converted *(in the cases where currency conversion is required)*.
+          currency:
+            type: string
+            description: 'The currency in which the line item is billed, represented as a currency code. For example, USD, GBP, or EUR. '
+          conversionRate:
+            type: number
+            description: The currency conversion rate *(if used)* for the line item.
+          convertedSubtotal:
+            type: number
+            description: The subtotal amount for this line item after currency conversion, if applicable.
+          creditTypeId:
+            type: string
+            description: The unique identifier (UUID) for the type of credit applied to this line item.
+          pricingId:
+            type: string
+            description: 'The unique identifier (UUID) of the Pricing used for this line item, '
+          bandUsage:
+            type: array
+            description: Array containing the pricing band information, which shows the details for each pricing band or tier.
+            items:
+              $ref: '#/components/schemas/BillLineItemPricingBandUsage'
+          reasonId:
+            type: string
+            description: 'A unique identifier (UUID) for the reason or justification for this line item, if applicable. '
+          contractId:
+            type: string
+            description: 'The unique identifier (UUID) for the Contract associated with this line item. '
+          jsonUsageGenerated:
+            type: boolean
+            description: Boolean flag indicating whether the Bill line item has associated statement usage in JSON format. When a Bill statement is generated, usage line items have their usage stored in JSON format.
+            deprecated: true
+          averageUnitPrice:
+            type: number
+            description: Represents the average unit price calculated across all pricing bands or tiers for this line item.
+          sequenceNumber:
+            type: integer
+            description: 'The line item sequence number. '
+            format: int32
+          additional:
+            type: object
+            additionalProperties: true
+            description: ''
+    DownloadCsvRequest:
+      type: object
+      properties:
+        startDate:
+          type: string
+          description: Specifies the start date of the billing period for downloading Bills. Format should be a valid date in ISO 8601 format. Bills with a start date on or after this date will be included in the download.
+          format: date-time
+        endDate:
+          type: string
+          description: Specifies the end date of the billing period for downloading Bills. Format should be a valid date in ISO 8601. Bills with an end date on or before this date will be included in the download.
+          format: date-time
+        externalInvoiceDateStart:
+          type: string
+          description: '*(Optional)*. Specifies the start date in ISO 8601 format for filtering Bills by external invoice date.'
+          format: date-time
+        externalInvoiceDateEnd:
+          type: string
+          description: '*(Optional)*. Specifies the end date in ISO 8601 format for filtering Bills by external invoice date.'
+          format: date-time
+        externalSystem:
+          description: 'Use this parameter if you have implemented an integration with your Xero system and want a downloaded CSV file to be loaded into Xero.
+
+
+            * **XERO** - loads into the Xero system.
+
+            * **STANDARD** - not loaded into the external system.'
+          $ref: '#/components/schemas/ExternalSystem'
+      description: ''
+      example:
+        startDate: '2019-08-24T14:15:22Z'
+        endDate: '2019-08-24T14:15:22Z'
+        externalSystem: STANDARD
+    BillJobRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          lastDateInBillingPeriod:
+            type: string
+            description: 'Specifies the date *(in ISO 8601 format)* of the last day in the billing period, defining the time range for the associated Bills.
+
+
+              For example: `"2023-03-24"`.'
+            format: date
+          billingFrequency:
+            description: 'How often Bills are generated.
+
+
+              * **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
+
+
+              * **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
+
+
+              * **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
+
+
+              * **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
+
+
+              * **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
+
+              '
+            $ref: '#/components/schemas/BillJobBillingFrequency'
+          billFrequencyInterval:
+            type: integer
+            description: 'How often Bills are issued - used in conjunction with `billingFrequency`.
+
+
+              For example, if `billingFrequency` is set to Monthly and `billFrequencyInterval` is set to 3, Bills are issued every three months.'
+            format: int32
+          billDate:
+            type: string
+            description: 'The specific billing date *(in ISO 8601 format)*, determining when the Bill was generated.
+
+
+              For example: `"2023-01-24"`.'
+            format: date
+          externalInvoiceDate:
+            type: string
+            description: 'For accounting purposes, the date set at Organization level to use for external invoicing with respect to billing periods - two options:
+
+              * `FIRST_DAY_OF_NEXT_PERIOD` *(Default)*. Used when you want to recognize usage revenue in the following period.
+
+              * `LAST_DAY_OF_ARREARS`. Used when you want to recognize usage revenue in the same period that it''s consumed, instead of in the following period.
+
+
+              For example, if the retrieved Bill was on a monthly billing frequency and the billing period for the Bill is September 2023 and the *External invoice date* is set at `FIRST_DAY_OF_NEXT_PERIOD`, then the `externalInvoiceDate` will be `"2023-10-01"`.
+
+
+              **NOTE:** To change the `externalInvoiceDate` setting for your Organization, you can use the [Update OrganizationConfig](https://www.m3ter.com/docs/api#tag/OrganizationConfig/operation/GetOrganizationConfig) call.'
+            format: date
+          dueDate:
+            type: string
+            description: 'The due date *(in ISO 8601 format)* for payment of the Bill.
+
+
+              For example: `"2023-02-24"`.'
+            format: date
+          accountIds:
+            maxItems: 100
+            minItems: 1
+            type: array
+            description: An array of UUIDs representing the end customer Accounts associated with the BillJob.
+            items:
+              type: string
+          targetCurrency:
+            maxLength: 3
+            minLength: 3
+            type: string
+            description: The currency code used for the Bill, such as USD, GBP, or EUR.
+          currencyConversions:
+            maxItems: 250
+            type: array
+            description: An array of currency conversion rates from Bill currency to Organization currency. For example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate.
+            items:
+              $ref: '#/components/schemas/CurrencyConversion'
+          timezone:
+            type: string
+            description: Specifies the time zone used for the generated Bills, ensuring alignment with the local time zone.
+            example: UTC
+            default: UTC
+          yearEpoch:
+            type: string
+            description: The starting date *(epoch)* for Yearly billing frequency *(in ISO 8601 format)*, determining the first Bill date for yearly Bills.
+            format: date
+          monthEpoch:
+            type: string
+            description: The starting date *(epoch)* for Monthly billing frequency *(in ISO 8601 format)*, determining the first Bill date for monthly Bills.
+            format: date
+          weekEpoch:
+            type: string
+            description: The starting date *(epoch)* for Weekly billing frequency *(in ISO 8601 format)*, determining the first Bill date for weekly Bills.
+            format: date
+          dayEpoch:
+            type: string
+            description: The starting date *(epoch)* for Daily billing frequency *(in ISO 8601 format)*, determining the first Bill date for daily Bills.
+            format: date
+    BillingFrequency:
+      type: string
+      description: 'Defines how often Bills are generated.
+
+
+        * **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
+
+
+        * **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
+
+
+        * **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
+
+
+        * **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
+
+
+        * **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
+
+        '
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - ANNUALLY
+      - AD_HOC
+      - MIXED
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    BillLineItemPricingBandUsage:
+      type: object
+      properties:
+        pricingBandId:
+          type: string
+          description: 'The UUID for the pricing band. '
+        lowerLimit:
+          type: number
+          description: The lower limit *(start)* of the pricing band.
+          format: double
+        fixedPrice:
+          type: number
+          description: 'Fixed price is a charge entered for certain pricing types such as Stairstep, Custom Tiered, and Custom Volume. It is a set price and not dependent on usage.
+
+
+
+            '
+        unitSubtotal:
+          type: number
+          description: 'The subtotal of the unit usage. '
+        unitPrice:
+          type: number
+          description: 'The price per unit in the band. '
+        bandUnits:
+          type: number
+          description: 'The number of units used within the band. '
+        bandQuantity:
+          type: number
+          description: 'Usage amount within the band. '
+        bandSubtotal:
+          type: number
+          description: 'Subtotal amount for the band. '
+        creditTypeId:
+          type: string
+          description: The UUID of the credit type.
+        convertedBandSubtotal:
+          type: number
+          description: ''
+      description: Array containing the pricing band information, which shows the details for each pricing band or tier.
     ApproveBillsRequest:
       required:
       - billIds
@@ -1285,6 +1610,52 @@ components:
           items:
             type: string
       description: ''
+    CurrencyConversion:
+      required:
+      - from
+      - to
+      type: object
+      properties:
+        from:
+          minLength: 1
+          type: string
+          description: 'Currency to convert from. For example: GBP.'
+          example: EUR
+        to:
+          minLength: 1
+          type: string
+          description: 'Currency to convert to. For example: USD.'
+          example: USD
+        multiplier:
+          type: number
+          description: Conversion rate between currencies.
+          format: double
+          example: 1.12
+          exclusiveMinimum: 0
+      description: An array of currency conversion rates from Bill currency to Organization currency. For example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate.
+    LineItemType:
+      type: string
+      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
+      enum:
+      - STANDING_CHARGE
+      - USAGE
+      - COUNTER_RUNNING_TOTAL_CHARGE
+      - COUNTER_ADJUSTMENT_DEBIT
+      - COUNTER_ADJUSTMENT_CREDIT
+      - USAGE_CREDIT
+      - MINIMUM_SPEND
+      - MINIMUM_SPEND_REFUND
+      - CREDIT_DEDUCTION
+      - MANUAL_ADJUSTMENT
+      - CREDIT_MEMO
+      - DEBIT_MEMO
+      - COMMITMENT_CONSUMED
+      - COMMITMENT_FEE
+      - OVERAGE_SURCHARGE
+      - OVERAGE_USAGE
+      - BALANCE_CONSUMED
+      - BALANCE_FEE
+      - AD_HOC
     AbstractBillLineItemResponse:
       type: object
       description: ''
@@ -1505,267 +1876,6 @@ components:
           additionalProperties: true
           description: ''
       description: ''
-    ExternalSystem:
-      type: string
-      description: '*(Optional)*. Specifies the format of the Bills data given:
-
-        - **STANDARD** A wider range of data columns is given.
-
-        - **XERO** A more limited range of data columns is given and compatible with loading into your 3rd-party Xero system.'
-      enum:
-      - STANDARD
-      - XERO
-    DownloadCsvRequest:
-      type: object
-      properties:
-        startDate:
-          type: string
-          description: Specifies the start date of the billing period for downloading Bills. Format should be a valid date in ISO 8601 format. Bills with a start date on or after this date will be included in the download.
-          format: date-time
-        endDate:
-          type: string
-          description: Specifies the end date of the billing period for downloading Bills. Format should be a valid date in ISO 8601. Bills with an end date on or before this date will be included in the download.
-          format: date-time
-        externalInvoiceDateStart:
-          type: string
-          description: '*(Optional)*. Specifies the start date in ISO 8601 format for filtering Bills by external invoice date.'
-          format: date-time
-        externalInvoiceDateEnd:
-          type: string
-          description: '*(Optional)*. Specifies the end date in ISO 8601 format for filtering Bills by external invoice date.'
-          format: date-time
-        externalSystem:
-          description: 'Use this parameter if you have implemented an integration with your Xero system and want a downloaded CSV file to be loaded into Xero.
-
-
-            * **XERO** - loads into the Xero system.
-
-            * **STANDARD** - not loaded into the external system.'
-          $ref: '#/components/schemas/ExternalSystem'
-      description: ''
-      example:
-        startDate: '2019-08-24T14:15:22Z'
-        endDate: '2019-08-24T14:15:22Z'
-        externalSystem: STANDARD
-    LineItemType:
-      type: string
-      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
-      enum:
-      - STANDING_CHARGE
-      - USAGE
-      - COUNTER_RUNNING_TOTAL_CHARGE
-      - COUNTER_ADJUSTMENT_DEBIT
-      - COUNTER_ADJUSTMENT_CREDIT
-      - USAGE_CREDIT
-      - MINIMUM_SPEND
-      - MINIMUM_SPEND_REFUND
-      - CREDIT_DEDUCTION
-      - MANUAL_ADJUSTMENT
-      - CREDIT_MEMO
-      - DEBIT_MEMO
-      - COMMITMENT_CONSUMED
-      - COMMITMENT_FEE
-      - OVERAGE_SURCHARGE
-      - OVERAGE_USAGE
-      - BALANCE_CONSUMED
-      - BALANCE_FEE
-      - AD_HOC
-    PaginatedBillLineItemResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/BillLineItemResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    BillLineItemPricingBandUsage:
-      type: object
-      properties:
-        pricingBandId:
-          type: string
-          description: 'The UUID for the pricing band. '
-        lowerLimit:
-          type: number
-          description: The lower limit *(start)* of the pricing band.
-          format: double
-        fixedPrice:
-          type: number
-          description: 'Fixed price is a charge entered for certain pricing types such as Stairstep, Custom Tiered, and Custom Volume. It is a set price and not dependent on usage.
-
-
-
-            '
-        unitSubtotal:
-          type: number
-          description: 'The subtotal of the unit usage. '
-        unitPrice:
-          type: number
-          description: 'The price per unit in the band. '
-        bandUnits:
-          type: number
-          description: 'The number of units used within the band. '
-        bandQuantity:
-          type: number
-          description: 'Usage amount within the band. '
-        bandSubtotal:
-          type: number
-          description: 'Subtotal amount for the band. '
-        creditTypeId:
-          type: string
-          description: The UUID of the credit type.
-        convertedBandSubtotal:
-          type: number
-          description: ''
-      description: Array containing the pricing band information, which shows the details for each pricing band or tier.
-    AbstractBillResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          accountId:
-            type: string
-            description: ''
-          accountCode:
-            type: string
-            description: ''
-          startDate:
-            type: string
-            description: ''
-            format: date
-          endDate:
-            type: string
-            description: ''
-            format: date
-          startDateTimeUTC:
-            type: string
-            description: ''
-            format: date-time
-          endDateTimeUTC:
-            type: string
-            description: ''
-            format: date-time
-          billDate:
-            type: string
-            description: ''
-            format: date
-          dueDate:
-            type: string
-            description: ''
-            format: date
-          billingFrequency:
-            description: ''
-            $ref: '#/components/schemas/BillingFrequency'
-          billFrequencyInterval:
-            type: integer
-            description: ''
-            format: int32
-          timezone:
-            type: string
-            description: ''
-            example: UTC
-            default: UTC
-          currency:
-            type: string
-            description: ''
-          locked:
-            type: boolean
-            description: ''
-          createdDate:
-            type: string
-            description: ''
-            format: date-time
-          status:
-            description: ''
-            $ref: '#/components/schemas/BillStatus'
-          billJobId:
-            type: string
-            description: ''
-          currencyConversions:
-            type: array
-            description: ''
-            items:
-              $ref: '#/components/schemas/CurrencyConversion'
-          lastCalculatedDate:
-            type: string
-            description: ''
-            format: date-time
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    ObjectUrlResponse:
-      type: object
-      properties:
-        downloadUrl:
-          type: string
-          description: The pre-signed download URL.
-          format: url
-      description: ''
-    CurrencyConversion:
-      required:
-      - from
-      - to
-      type: object
-      properties:
-        from:
-          minLength: 1
-          type: string
-          description: 'Currency to convert from. For example: GBP.'
-          example: EUR
-        to:
-          minLength: 1
-          type: string
-          description: 'Currency to convert to. For example: USD.'
-          example: USD
-        multiplier:
-          type: number
-          description: Conversion rate between currencies.
-          format: double
-          example: 1.12
-          exclusiveMinimum: 0
-      description: An array of currency conversion rates from Bill currency to Organization currency. For example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate.
-    BillingFrequency:
-      type: string
-      description: 'Defines how often Bills are generated.
-
-
-        * **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
-
-
-        * **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
-
-
-        * **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
-
-
-        * **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
-
-
-        * **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
-
-        '
-      enum:
-      - DAILY
-      - WEEKLY
-      - MONTHLY
-      - ANNUALLY
-      - AD_HOC
-      - MIXED
     BillStatus:
       type: string
       description: 'Indicates whether the Bill has passed human/manual approval.
@@ -1777,6 +1887,23 @@ components:
       enum:
       - PENDING
       - APPROVED
+    ExternalSystem:
+      type: string
+      description: '*(Optional)*. Specifies the format of the Bills data given:
+
+        - **STANDARD** A wider range of data columns is given.
+
+        - **XERO** A more limited range of data columns is given and compatible with loading into your 3rd-party Xero system.'
+      enum:
+      - STANDARD
+      - XERO
+    BillApprovalResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A message indicating the success or failure of the Bills' approval, along with relevant details.
+      description: ''
     BillResponse:
       type: object
       properties:
@@ -1875,247 +2002,120 @@ components:
       allOf:
       - $ref: '#/components/schemas/AbstractBillResponse'
       - $ref: '#/components/schemas/AbstractResponse'
-    BillJobRequest:
+    AbstractBillResponse:
       type: object
       description: ''
       allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
+      - $ref: '#/components/schemas/AbstractResponse'
       - properties:
-          lastDateInBillingPeriod:
+          accountId:
             type: string
-            description: 'Specifies the date *(in ISO 8601 format)* of the last day in the billing period, defining the time range for the associated Bills.
-
-
-              For example: `"2023-03-24"`.'
+            description: ''
+          accountCode:
+            type: string
+            description: ''
+          startDate:
+            type: string
+            description: ''
             format: date
-          billingFrequency:
-            description: 'How often Bills are generated.
-
-
-              * **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
-
-
-              * **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
-
-
-              * **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
-
-
-              * **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
-
-
-              * **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
-
-              '
-            $ref: '#/components/schemas/BillJobBillingFrequency'
-          billFrequencyInterval:
-            type: integer
-            description: 'How often Bills are issued - used in conjunction with `billingFrequency`.
-
-
-              For example, if `billingFrequency` is set to Monthly and `billFrequencyInterval` is set to 3, Bills are issued every three months.'
-            format: int32
+          endDate:
+            type: string
+            description: ''
+            format: date
+          startDateTimeUTC:
+            type: string
+            description: ''
+            format: date-time
+          endDateTimeUTC:
+            type: string
+            description: ''
+            format: date-time
           billDate:
             type: string
-            description: 'The specific billing date *(in ISO 8601 format)*, determining when the Bill was generated.
-
-
-              For example: `"2023-01-24"`.'
-            format: date
-          externalInvoiceDate:
-            type: string
-            description: 'For accounting purposes, the date set at Organization level to use for external invoicing with respect to billing periods - two options:
-
-              * `FIRST_DAY_OF_NEXT_PERIOD` *(Default)*. Used when you want to recognize usage revenue in the following period.
-
-              * `LAST_DAY_OF_ARREARS`. Used when you want to recognize usage revenue in the same period that it''s consumed, instead of in the following period.
-
-
-              For example, if the retrieved Bill was on a monthly billing frequency and the billing period for the Bill is September 2023 and the *External invoice date* is set at `FIRST_DAY_OF_NEXT_PERIOD`, then the `externalInvoiceDate` will be `"2023-10-01"`.
-
-
-              **NOTE:** To change the `externalInvoiceDate` setting for your Organization, you can use the [Update OrganizationConfig](https://www.m3ter.com/docs/api#tag/OrganizationConfig/operation/GetOrganizationConfig) call.'
+            description: ''
             format: date
           dueDate:
             type: string
-            description: 'The due date *(in ISO 8601 format)* for payment of the Bill.
-
-
-              For example: `"2023-02-24"`.'
+            description: ''
             format: date
-          accountIds:
-            maxItems: 100
-            minItems: 1
-            type: array
-            description: An array of UUIDs representing the end customer Accounts associated with the BillJob.
-            items:
-              type: string
-          targetCurrency:
-            maxLength: 3
-            minLength: 3
-            type: string
-            description: The currency code used for the Bill, such as USD, GBP, or EUR.
-          currencyConversions:
-            maxItems: 250
-            type: array
-            description: An array of currency conversion rates from Bill currency to Organization currency. For example, if Account is billed in GBP and Organization is set to USD, Bill line items are calculated in GBP and then converted to USD using the defined rate.
-            items:
-              $ref: '#/components/schemas/CurrencyConversion'
+          billingFrequency:
+            description: ''
+            $ref: '#/components/schemas/BillingFrequency'
+          billFrequencyInterval:
+            type: integer
+            description: ''
+            format: int32
           timezone:
             type: string
-            description: Specifies the time zone used for the generated Bills, ensuring alignment with the local time zone.
+            description: ''
             example: UTC
             default: UTC
-          yearEpoch:
+          currency:
             type: string
-            description: The starting date *(epoch)* for Yearly billing frequency *(in ISO 8601 format)*, determining the first Bill date for yearly Bills.
-            format: date
-          monthEpoch:
+            description: ''
+          locked:
+            type: boolean
+            description: ''
+          createdDate:
             type: string
-            description: The starting date *(epoch)* for Monthly billing frequency *(in ISO 8601 format)*, determining the first Bill date for monthly Bills.
-            format: date
-          weekEpoch:
+            description: ''
+            format: date-time
+          status:
+            description: ''
+            $ref: '#/components/schemas/BillStatus'
+          billJobId:
             type: string
-            description: The starting date *(epoch)* for Weekly billing frequency *(in ISO 8601 format)*, determining the first Bill date for weekly Bills.
-            format: date
-          dayEpoch:
+            description: ''
+          currencyConversions:
+            type: array
+            description: ''
+            items:
+              $ref: '#/components/schemas/CurrencyConversion'
+          lastCalculatedDate:
             type: string
-            description: The starting date *(epoch)* for Daily billing frequency *(in ISO 8601 format)*, determining the first Bill date for daily Bills.
-            format: date
-    BillApprovalResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          description: A message indicating the success or failure of the Bills' approval, along with relevant details.
-      description: ''
-    PaginatedBillResponseData:
+            description: ''
+            format: date-time
+    PaginatedBillLineItemResponseData:
       type: object
       properties:
         data:
           type: array
           description: ''
           items:
-            $ref: '#/components/schemas/BillResponse'
+            $ref: '#/components/schemas/BillLineItemResponse'
         nextToken:
           type: string
           description: ''
       description: ''
-    BillLineItemResponse:
+    BillJobBillingFrequency:
+      type: string
+      description: 'Defines how often Bills are generated.
+
+        - **Daily**. Starting at midnight each day, covering a twenty-four hour period following.
+
+        - **Weekly**. Starting at midnight on a Monday morning covering the seven-day period following.
+
+        - **Monthly**. Starting at midnight on the morning of the first day of each month covering the entire calendar month following.
+
+        - **Annually**. Starting at midnight on the morning of the first day of each year covering the entire calendar year following.
+
+        - **Ad_Hoc**. Use this setting when a custom billing schedule is used for billing an Account, such as for billing of Prepayment/Commitment fees using a custom billing schedule.
+
+        '
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - ANNUALLY
+      - AD_HOC
+    ObjectUrlResponse:
       type: object
+      properties:
+        downloadUrl:
+          type: string
+          description: The pre-signed download URL.
+          format: url
       description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractBillLineItemResponse'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          productName:
-            type: string
-            description: 'The name of the Product associated with this line item. '
-          productCode:
-            type: string
-            description: The code of the Product associated with this line item.
-          accountingProductId:
-            type: string
-            description: The unique identifier (UUID) for the associated Accounting Product.
-          accountingProductName:
-            type: string
-            description: The name of the Accounting Product associated with this line item.
-          accountingProductCode:
-            type: string
-            description: The code of the Accounting Product associated with this line item.
-          aggregationId:
-            type: string
-            description: 'A unique identifier (UUID) for the Aggregation that contributes to this Bill line item. '
-          compoundAggregationId:
-            type: string
-            description: A unique identifier (UUID) for the Compound Aggregation, if applicable.
-          counterId:
-            type: string
-            description: The unique identifier (UUID) for the Counter associated with this line item.
-          chargeId:
-            type: string
-            description: The unique identifier (UUID) for the Charge associated with this line item.
-          segment:
-            type: object
-            additionalProperties:
-              type: string
-            description: Specifies the segment name or identifier when segmented Aggregation is used. This is relevant for more complex billing structures.
-          group:
-            type: object
-            additionalProperties:
-              type: string
-            description: ''
-          meterId:
-            type: string
-            description: 'The unique identifier (UUID) of the Meter responsible for tracking usage. '
-          planId:
-            type: string
-            description: 'A unique identifier (UUID) for the billing Plan associated with this line item. '
-          planGroupId:
-            type: string
-            description: The unique identifier (UUID) of the Plan Group associated with this line item.
-          commitmentId:
-            type: string
-            description: 'The unique identifier (UUID) of the Commitment associated with this line item. '
-          balanceId:
-            type: string
-            description: The unique identifier (UUID) for the Balance associated with this line item.
-          billId:
-            type: string
-            description: 'The unique identifier (UUID) for the Bill that includes this line item. '
-          quantity:
-            type: number
-            description: The amount of the product or service used in this line item.
-          units:
-            type: number
-            description: "The number of units rated in the line item, each of which is of the type specified in the `unit` field. For example: 400 api_calls. \n\nIn this example, the unit type of **api_calls** is read from the `unit` field."
-          unit:
-            type: string
-            description: 'Specifies the unit type. For example: **MB**, **GB**, **api_calls**, and so on.  '
-          subtotal:
-            type: number
-            description: The subtotal amount when not currency converted *(in the cases where currency conversion is required)*.
-          currency:
-            type: string
-            description: 'The currency in which the line item is billed, represented as a currency code. For example, USD, GBP, or EUR. '
-          conversionRate:
-            type: number
-            description: The currency conversion rate *(if used)* for the line item.
-          convertedSubtotal:
-            type: number
-            description: The subtotal amount for this line item after currency conversion, if applicable.
-          creditTypeId:
-            type: string
-            description: The unique identifier (UUID) for the type of credit applied to this line item.
-          pricingId:
-            type: string
-            description: 'The unique identifier (UUID) of the Pricing used for this line item, '
-          bandUsage:
-            type: array
-            description: Array containing the pricing band information, which shows the details for each pricing band or tier.
-            items:
-              $ref: '#/components/schemas/BillLineItemPricingBandUsage'
-          reasonId:
-            type: string
-            description: 'A unique identifier (UUID) for the reason or justification for this line item, if applicable. '
-          contractId:
-            type: string
-            description: 'The unique identifier (UUID) for the Contract associated with this line item. '
-          jsonUsageGenerated:
-            type: boolean
-            description: Boolean flag indicating whether the Bill line item has associated statement usage in JSON format. When a Bill statement is generated, usage line items have their usage stored in JSON format.
-            deprecated: true
-          averageUnitPrice:
-            type: number
-            description: Represents the average unit price calculated across all pricing bands or tiers for this line item.
-          sequenceNumber:
-            type: integer
-            description: 'The line item sequence number. '
-            format: int32
-          additional:
-            type: object
-            additionalProperties: true
-            description: ''
   responses:
     Error:
       description: Error message

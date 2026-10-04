@@ -81,6 +81,160 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    CustomFieldResponse:
+      type: object
+      description: ''
+      example:
+        id: 81c49a54-dfcd-4da5-bbf3-d2885ec025dd
+        version: 4
+        organization:
+          Org Example 2: Sample text 2.
+          Org Example 1: 'Sample text. '
+        product:
+          Product CF Example: 42
+        account: {}
+        accountPlan:
+          New CF Test: Test Value
+        meter: {}
+        planTemplate: {}
+        plan: {}
+        aggregation: {}
+        compoundAggregation: {}
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          organization:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to the Organization. '
+          account:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to Account entities. '
+          accountPlan:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to accountPlan entities. '
+          meter:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to Meter entities. '
+          product:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to Product entities. '
+          planTemplate:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to planTemplate entities. '
+          plan:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to Plan entities. '
+          aggregation:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to simple Aggregation entities. '
+          compoundAggregation:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: 'CustomFields added to Compound Aggregation entities. '
+          contract:
+            type: object
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+            description: CustomFields added to Contract entities.
+          dtCreated:
+            type: string
+            description: The DateTime when the Organization was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when a custom field was last modified - created, modified, or deleted - for the Organization *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this custom field.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this custom field.
+            x-stainless-skip:
+            - terraform
     AbstractResponse:
       required:
       - id
@@ -255,160 +409,6 @@ components:
               - title: NumberCustomFieldReq
                 type: number
             description: Updates to Contract entity CustomFields.
-    CustomFieldResponse:
-      type: object
-      description: ''
-      example:
-        id: 81c49a54-dfcd-4da5-bbf3-d2885ec025dd
-        version: 4
-        organization:
-          Org Example 2: Sample text 2.
-          Org Example 1: 'Sample text. '
-        product:
-          Product CF Example: 42
-        account: {}
-        accountPlan:
-          New CF Test: Test Value
-        meter: {}
-        planTemplate: {}
-        plan: {}
-        aggregation: {}
-        compoundAggregation: {}
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          organization:
-            type: object
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-            description: 'CustomFields added to the Organization. '
-          account:
-            type: object
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-            description: 'CustomFields added to Account entities. '
-          accountPlan:
-            type: object
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-            description: 'CustomFields added to accountPlan entities. '
-          meter:
-            type: object
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-            description: 'CustomFields added to Meter entities. '
-          product:
-            type: object
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-            description: 'CustomFields added to Product entities. '
-          planTemplate:
-            type: object
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-            description: 'CustomFields added to planTemplate entities. '
-          plan:
-            type: object
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-            description: 'CustomFields added to Plan entities. '
-          aggregation:
-            type: object
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-            description: 'CustomFields added to simple Aggregation entities. '
-          compoundAggregation:
-            type: object
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-            description: 'CustomFields added to Compound Aggregation entities. '
-          contract:
-            type: object
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-            description: CustomFields added to Contract entities.
-          dtCreated:
-            type: string
-            description: The DateTime when the Organization was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when a custom field was last modified - created, modified, or deleted - for the Organization *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The id of the user who created this custom field.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The id of the user who last modified this custom field.
-            x-stainless-skip:
-            - terraform
   responses:
     Error:
       description: Error message

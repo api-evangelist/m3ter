@@ -360,6 +360,123 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    DataExportDestinationType:
+      type: string
+      description: The type of destination
+      enum:
+      - S3
+      - GCS
+    ExportDestinationS3Response:
+      title: ExportDestinationS3Response
+      type: object
+      properties:
+        bucketName:
+          type: string
+          description: Name of the S3 bucket for the Export Destination.
+        prefix:
+          type: string
+          description: Location in specified S3 bucket for the Export Destination. If no `prefix` is specified, then the root of the bucket is used.
+        iamRoleArn:
+          type: string
+          description: The specified IAM role ARN with PutObject permission for the specified `bucketName`, which allows the service to upload Data Exports to your S3 bucket.
+        partitionOrder:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/PartitionOrder'
+          - description: Output partitioning
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/ExportDestinationBaseResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+    ExportDestinationBaseRequest:
+      required:
+      - code
+      - name
+      type: object
+      properties:
+        name:
+          maxLength: 200
+          minLength: 1
+          type: string
+          description: The name of the Export Destination.
+        code:
+          maxLength: 80
+          minLength: 1
+          pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+          type: string
+          description: The code of the Export Destination.
+        destinationType:
+          description: ''
+          $ref: '#/components/schemas/DataExportDestinationType'
+      description: Base mode request containing available destination types
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+    GenerateExportDownloadUrlResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The presigned download URL
+        expirationTime:
+          type: string
+          description: The expiration time of the URL
+          format: date-time
+      description: It contains details for downloading an export file
+    PartitionOrder:
+      type: string
+      description: 'Specify how you want the file path to be structured in your bucket destination - by Time first (Default) or Type first.
+
+
+        Type is dependent on whether the Export is for Usage data or Operational data:
+
+        * **Usage.** Type is `measurements`.
+
+        * **Operational.** Type is one of the entities for which operational data exports are available, such as `account`, `commitment`, `meter`, and so on.
+
+
+        Example for Usage Data Export using .CSV format:
+
+        * Time first:
+
+        `{bucketName}/{prefix}/orgId={orgId}/date=2025-01-27/hour=10/type=measurements/b9a317a6-860a-40f9-9bf4-e65c44c72c94_measurements.csv.gz`
+
+        * Type first:
+
+        `{bucketName}/{prefix}/orgId={orgId}/type=measurements/date=2025-01-27/hour=10/b9a317a6-860a-40f9-9bf4-e65c44c72c94_measurements.csv.gz`'
+      enum:
+      - TYPE_FIRST
+      - TIME_FIRST
+    ExportDestinationGoogleCloudStorageResponse:
+      title: ExportDestinationGoogleCloudStorageResponse
+      type: object
+      properties:
+        bucketName:
+          type: string
+          description: The bucket name.
+        prefix:
+          type: string
+          description: The prefix.
+        projectNumber:
+          type: string
+          description: The export destination GCP projectNumber.
+        poolId:
+          type: string
+          description: The export destination Web Identity Federation poolId.
+        providerId:
+          type: string
+          description: The export destination Web Identity Federation identity providerId.
+        serviceAccountEmail:
+          type: string
+          description: The export destination service account email.
+        partitionOrder:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/PartitionOrder'
+          - description: Output partitioning
+      description: The response containing the details of an Google Cloud Storage export destination.
+      allOf:
+      - $ref: '#/components/schemas/ExportDestinationBaseResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
     AbstractResponse:
       required:
       - id
@@ -379,53 +496,6 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    ExportDestinationS3Request:
-      title: ExportDestinationS3Request
-      required:
-      - bucketName
-      - iamRoleArn
-      type: object
-      properties:
-        bucketName:
-          maxLength: 63
-          minLength: 3
-          type: string
-          description: Name of the S3 bucket for the Export Destination.
-        prefix:
-          type: string
-          description: Location in specified S3 bucket for the Export Destination. If you omit a `prefix`, then the root of the bucket will be used.
-        iamRoleArn:
-          minLength: 1
-          pattern: ^arn:aws:iam::\d+:role/.*$
-          type: string
-          description: 'To enable m3ter to upload a Data Exports to your S3 bucket, the service has to assume an IAM role with PutObject permission for the specified `bucketName`. Create a suitable IAM role in your AWS account and enter ARN:
-
-
-            **Formatting Constraints:**
-
-            * The IAM role ARN must begin with "arn:aws:iam".
-
-            * The general format required is: "arn:aws:iam::<aws account id>:role/<role name>". For example: "arn:aws:iam::922609978421:role/IAMRole636".
-
-            * If the `iamRoleArn` used doesn''t comply with this format, then an error message will be returned.
-
-
-            **More Details:** For more details and examples of the Permission and Trust Policies you can use to create the required IAM Role ARN, see [Creating Data Export Destinations](https://www.m3ter.com/docs/guides/data-exports/creating-data-export-destinations) in our main User documentation.'
-        partitionOrder:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/PartitionOrder'
-          - description: Output partitioning
-        destinationType:
-          allOf:
-          - type: string
-            enum:
-            - S3
-          - description: 'The type of destination to create. Possible values are: S3'
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/ExportDestinationBaseRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
     AbstractRequest:
       type: object
       properties:
@@ -439,18 +509,6 @@ components:
           format: int64
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
-      description: ''
-    PaginatedExportDestinationBaseResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/ExportDestinationBaseResponse'
-        nextToken:
-          type: string
-          description: ''
       description: ''
     ExportDestinationGoogleCloudStorageRequest:
       title: ExportDestinationGoogleCloudStorageRequest
@@ -499,77 +557,6 @@ components:
       allOf:
       - $ref: '#/components/schemas/ExportDestinationBaseRequest'
       - $ref: '#/components/schemas/AbstractRequest'
-    DataExportDestinationType:
-      type: string
-      description: The type of destination
-      enum:
-      - S3
-      - GCS
-    GenerateExportDownloadUrlResponse:
-      type: object
-      properties:
-        url:
-          type: string
-          description: The presigned download URL
-        expirationTime:
-          type: string
-          description: The expiration time of the URL
-          format: date-time
-      description: It contains details for downloading an export file
-    ExportDestinationBaseRequest:
-      required:
-      - code
-      - name
-      type: object
-      properties:
-        name:
-          maxLength: 200
-          minLength: 1
-          type: string
-          description: The name of the Export Destination.
-        code:
-          maxLength: 80
-          minLength: 1
-          pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
-          type: string
-          description: The code of the Export Destination.
-        destinationType:
-          description: ''
-          $ref: '#/components/schemas/DataExportDestinationType'
-      description: Base mode request containing available destination types
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-    ExportDestinationGoogleCloudStorageResponse:
-      title: ExportDestinationGoogleCloudStorageResponse
-      type: object
-      properties:
-        bucketName:
-          type: string
-          description: The bucket name.
-        prefix:
-          type: string
-          description: The prefix.
-        projectNumber:
-          type: string
-          description: The export destination GCP projectNumber.
-        poolId:
-          type: string
-          description: The export destination Web Identity Federation poolId.
-        providerId:
-          type: string
-          description: The export destination Web Identity Federation identity providerId.
-        serviceAccountEmail:
-          type: string
-          description: The export destination service account email.
-        partitionOrder:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/PartitionOrder'
-          - description: Output partitioning
-      description: The response containing the details of an Google Cloud Storage export destination.
-      allOf:
-      - $ref: '#/components/schemas/ExportDestinationBaseResponse'
-      - $ref: '#/components/schemas/AbstractResponse'
     ExportDestinationBaseResponse:
       type: object
       properties:
@@ -607,52 +594,65 @@ components:
       description: ''
       allOf:
       - $ref: '#/components/schemas/AbstractResponse'
-    PartitionOrder:
-      type: string
-      description: 'Specify how you want the file path to be structured in your bucket destination - by Time first (Default) or Type first.
-
-
-        Type is dependent on whether the Export is for Usage data or Operational data:
-
-        * **Usage.** Type is `measurements`.
-
-        * **Operational.** Type is one of the entities for which operational data exports are available, such as `account`, `commitment`, `meter`, and so on.
-
-
-        Example for Usage Data Export using .CSV format:
-
-        * Time first:
-
-        `{bucketName}/{prefix}/orgId={orgId}/date=2025-01-27/hour=10/type=measurements/b9a317a6-860a-40f9-9bf4-e65c44c72c94_measurements.csv.gz`
-
-        * Type first:
-
-        `{bucketName}/{prefix}/orgId={orgId}/type=measurements/date=2025-01-27/hour=10/b9a317a6-860a-40f9-9bf4-e65c44c72c94_measurements.csv.gz`'
-      enum:
-      - TYPE_FIRST
-      - TIME_FIRST
-    ExportDestinationS3Response:
-      title: ExportDestinationS3Response
+    PaginatedExportDestinationBaseResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ExportDestinationBaseResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    ExportDestinationS3Request:
+      title: ExportDestinationS3Request
+      required:
+      - bucketName
+      - iamRoleArn
       type: object
       properties:
         bucketName:
+          maxLength: 63
+          minLength: 3
           type: string
           description: Name of the S3 bucket for the Export Destination.
         prefix:
           type: string
-          description: Location in specified S3 bucket for the Export Destination. If no `prefix` is specified, then the root of the bucket is used.
+          description: Location in specified S3 bucket for the Export Destination. If you omit a `prefix`, then the root of the bucket will be used.
         iamRoleArn:
+          minLength: 1
+          pattern: ^arn:aws:iam::\d+:role/.*$
           type: string
-          description: The specified IAM role ARN with PutObject permission for the specified `bucketName`, which allows the service to upload Data Exports to your S3 bucket.
+          description: 'To enable m3ter to upload a Data Exports to your S3 bucket, the service has to assume an IAM role with PutObject permission for the specified `bucketName`. Create a suitable IAM role in your AWS account and enter ARN:
+
+
+            **Formatting Constraints:**
+
+            * The IAM role ARN must begin with "arn:aws:iam".
+
+            * The general format required is: "arn:aws:iam::<aws account id>:role/<role name>". For example: "arn:aws:iam::922609978421:role/IAMRole636".
+
+            * If the `iamRoleArn` used doesn''t comply with this format, then an error message will be returned.
+
+
+            **More Details:** For more details and examples of the Permission and Trust Policies you can use to create the required IAM Role ARN, see [Creating Data Export Destinations](https://www.m3ter.com/docs/guides/data-exports/creating-data-export-destinations) in our main User documentation.'
         partitionOrder:
           description: ''
           allOf:
           - $ref: '#/components/schemas/PartitionOrder'
           - description: Output partitioning
+        destinationType:
+          allOf:
+          - type: string
+            enum:
+            - S3
+          - description: 'The type of destination to create. Possible values are: S3'
       description: ''
       allOf:
-      - $ref: '#/components/schemas/ExportDestinationBaseResponse'
-      - $ref: '#/components/schemas/AbstractResponse'
+      - $ref: '#/components/schemas/ExportDestinationBaseRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
   responses:
     Error:
       description: Error message

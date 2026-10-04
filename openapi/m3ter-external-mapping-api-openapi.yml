@@ -563,6 +563,24 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    ExternalSystemResponse:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the external system.
+        tables:
+          type: array
+          description: An array containing the list of external system tables permitted in mappings.
+          items:
+            type: string
+        allowCustomExternalTables:
+          type: boolean
+          description: ''
+      description: Response containing external system and permitted tables.
     ExternalMappingConfigurationResponse:
       required:
       - externalSystems
@@ -599,18 +617,44 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    PaginatedExternalMappingResponseData:
+    ExternalEntityResponse:
       type: object
       properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/ExternalMappingResponse'
-        nextToken:
+        externalId:
           type: string
           description: ''
+        externalName:
+          type: string
+          description: ''
+      description: Response containing an entity on an external system
+    AbstractResponseWithAuditFields:
+      type: object
       description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
     ExternalMappingResponse:
       type: object
       description: Response containing an External Mapping entity.
@@ -668,62 +712,6 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    ExternalSystemResponse:
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          minLength: 1
-          type: string
-          description: The name of the external system.
-        tables:
-          type: array
-          description: An array containing the list of external system tables permitted in mappings.
-          items:
-            type: string
-        allowCustomExternalTables:
-          type: boolean
-          description: ''
-      description: Response containing external system and permitted tables.
-    ExternalEntityResponse:
-      type: object
-      properties:
-        externalId:
-          type: string
-          description: ''
-        externalName:
-          type: string
-          description: ''
-      description: Response containing an entity on an external system
-    AbstractResponseWithAuditFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          dtCreated:
-            type: string
-            description: The DateTime when this item was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The ID of the user who created this item.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The ID of the user who last modified this item.
-            x-stainless-skip:
-            - terraform
     ExternalMappingRequest:
       required:
       - externalId
@@ -770,6 +758,18 @@ components:
       description: Request containing an External Mapping entity.
       allOf:
       - $ref: '#/components/schemas/AbstractRequest'
+    PaginatedExternalMappingResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ExternalMappingResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
   responses:
     Error:
       description: Error message

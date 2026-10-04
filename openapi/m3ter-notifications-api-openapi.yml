@@ -312,6 +312,31 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    EvaluateCalculationResponse:
+      required:
+      - success
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates whether the calculation evaluated to True against the specified Event.
+        errorMessage:
+          type: string
+          description: Optional message providing details about any errors that occurred during the evaluation. If no errors occurred, this is `null`.
+      description: Response containing the results of a calculation evaluation.
+    EvaluateCalculationRequest:
+      type: object
+      properties:
+        eventId:
+          type: string
+          description: The unique identifier (UUID) of the existing Event you want to evaluate the calculation for.
+        eventName:
+          type: string
+          description: The name of the Event type to evaluate the calculation for.
+        calculation:
+          type: string
+          description: "The calculation expression to be evaluated. This should be structured in the same way as the calculation you'll use for a Notification based on an Event of the same type.\n\nThe calculation for a Notification is a logical expression that evaluates to a Boolean. Calculations are used to define the precise conditions for a Notification that is based on an Event of a specifc Type to be triggered. If an Event of that type occurs and the calculation used in a Notification based on that Event type evaluates as `True`, a Notification for the Event is triggered and sent to the configured Notification destination. \nCalculations can reference numeric, string, and boolean Event fields.  \n\nSee [Creating Calculations](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications/key-concepts-and-relationships#creating-calculations) in the m3ter documentation for more information. "
+      description: Request for evaluating a calculation against an existing Event or Event name.
     AbstractResponse:
       required:
       - id
@@ -343,6 +368,34 @@ components:
           type: string
           description: ''
       description: ''
+    AbstractResponseWithAuditFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
     AbstractRequest:
       type: object
       properties:
@@ -357,64 +410,6 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    NotificationRequest:
-      required:
-      - code
-      - description
-      - eventName
-      - name
-      type: object
-      properties:
-        name:
-          minLength: 1
-          type: string
-          description: The name of the Notification.
-          example: Commitment has under 10% remaining
-        description:
-          minLength: 1
-          type: string
-          description: The description for the Notification providing a brief overview of its purpose and functionality.
-          example: Commitment amount fell below 10%
-        active:
-          type: boolean
-          description: "Boolean flag that sets the Notification as active or inactive. Only active Notifications are sent when triggered by the Event they are based on:\n\n* **TRUE** - set Notification as active. \n* **FALSE** - set Notification as inactive."
-          example: true
-        alwaysFireEvent:
-          type: boolean
-          description: "A Boolean flag indicating whether the Notification is always triggered, regardless of other conditions and omitting reference to any calculation. This means the Notification will be triggered simply by the Event it is based on occurring and with no further conditions having to be met.\n \n*  **TRUE** - the Notification is always triggered and omits any reference to the calculation to check for other conditions being true before triggering the Notification.\n*  **FALSE** - the Notification is only triggered when the Event it is based on occurs and any calculation is checked and all conditions defined by the calculation are met."
-          example: false
-        calculation:
-          type: string
-          description: "A logical expression that that is evaluated to a Boolean. If it evaluates as `True`, a Notification for the Event is created and sent to the configured destination. \nCalculations can reference numeric, string, and boolean Event fields.  \n\nSee [Creating Calculations](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications/key-concepts-and-relationships#creating-calculations) in the m3ter documentation for more information. "
-          example: "(new.amountSpent >= ((new.amount*90)/100)) \nAND ((old.amountSpent <= ((old.amount*90)/100)) OR (old.amountSpent == null))"
-        code:
-          minLength: 1
-          type: string
-          description: The short code for the Notification.
-          example: commitment_under_10_percent
-        eventName:
-          minLength: 1
-          type: string
-          description: 'The name of the *Event type* that the Notification is based on. When an Event of this type occurs and any calculation built into the Notification evaluates to `True`, the Notification is triggered.
-
-
-            **Note:** If the Notification is set to always fire, then the Notification will always be sent when the Event of the type it is based on occurs, and without any other conditions defined by a calculation having to be met.'
-          example: configuration.commitment.updated
-      description: Request containing a Notification entity.
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-    EvaluateCalculationResponse:
-      required:
-      - success
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: Indicates whether the calculation evaluated to True against the specified Event.
-        errorMessage:
-          type: string
-          description: Optional message providing details about any errors that occurred during the evaluation. If no errors occurred, this is `null`.
-      description: Response containing the results of a calculation evaluation.
     NotificationResponse:
       type: object
       description: Response containing a Notification entity.
@@ -461,47 +456,52 @@ components:
             description: The short code for the Notification.
             example: commitment_under_10_percent
         description: Response containing a Notification entity
-    AbstractResponseWithAuditFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          dtCreated:
-            type: string
-            description: The DateTime when this item was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The ID of the user who created this item.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The ID of the user who last modified this item.
-            x-stainless-skip:
-            - terraform
-    EvaluateCalculationRequest:
+    NotificationRequest:
+      required:
+      - code
+      - description
+      - eventName
+      - name
       type: object
       properties:
-        eventId:
+        name:
+          minLength: 1
           type: string
-          description: The unique identifier (UUID) of the existing Event you want to evaluate the calculation for.
-        eventName:
+          description: The name of the Notification.
+          example: Commitment has under 10% remaining
+        description:
+          minLength: 1
           type: string
-          description: The name of the Event type to evaluate the calculation for.
+          description: The description for the Notification providing a brief overview of its purpose and functionality.
+          example: Commitment amount fell below 10%
+        active:
+          type: boolean
+          description: "Boolean flag that sets the Notification as active or inactive. Only active Notifications are sent when triggered by the Event they are based on:\n\n* **TRUE** - set Notification as active. \n* **FALSE** - set Notification as inactive."
+          example: true
+        alwaysFireEvent:
+          type: boolean
+          description: "A Boolean flag indicating whether the Notification is always triggered, regardless of other conditions and omitting reference to any calculation. This means the Notification will be triggered simply by the Event it is based on occurring and with no further conditions having to be met.\n \n*  **TRUE** - the Notification is always triggered and omits any reference to the calculation to check for other conditions being true before triggering the Notification.\n*  **FALSE** - the Notification is only triggered when the Event it is based on occurs and any calculation is checked and all conditions defined by the calculation are met."
+          example: false
         calculation:
           type: string
-          description: "The calculation expression to be evaluated. This should be structured in the same way as the calculation you'll use for a Notification based on an Event of the same type.\n\nThe calculation for a Notification is a logical expression that evaluates to a Boolean. Calculations are used to define the precise conditions for a Notification that is based on an Event of a specifc Type to be triggered. If an Event of that type occurs and the calculation used in a Notification based on that Event type evaluates as `True`, a Notification for the Event is triggered and sent to the configured Notification destination. \nCalculations can reference numeric, string, and boolean Event fields.  \n\nSee [Creating Calculations](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications/key-concepts-and-relationships#creating-calculations) in the m3ter documentation for more information. "
-      description: Request for evaluating a calculation against an existing Event or Event name.
+          description: "A logical expression that that is evaluated to a Boolean. If it evaluates as `True`, a Notification for the Event is created and sent to the configured destination. \nCalculations can reference numeric, string, and boolean Event fields.  \n\nSee [Creating Calculations](https://www.m3ter.com/docs/guides/utilizing-events-and-notifications/key-concepts-and-relationships#creating-calculations) in the m3ter documentation for more information. "
+          example: "(new.amountSpent >= ((new.amount*90)/100)) \nAND ((old.amountSpent <= ((old.amount*90)/100)) OR (old.amountSpent == null))"
+        code:
+          minLength: 1
+          type: string
+          description: The short code for the Notification.
+          example: commitment_under_10_percent
+        eventName:
+          minLength: 1
+          type: string
+          description: 'The name of the *Event type* that the Notification is based on. When an Event of this type occurs and any calculation built into the Notification evaluates to `True`, the Notification is triggered.
+
+
+            **Note:** If the Notification is set to always fire, then the Notification will always be sent when the Event of the type it is based on occurs, and without any other conditions defined by a calculation having to be met.'
+          example: configuration.commitment.updated
+      description: Request containing a Notification entity.
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
   responses:
     Error:
       description: Error message

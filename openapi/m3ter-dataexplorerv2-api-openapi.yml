@@ -294,6 +294,128 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    DataExplorerMeterField:
+      required:
+      - fieldCode
+      - meterId
+      type: object
+      properties:
+        meterId:
+          minLength: 1
+          type: string
+          description: Meter ID
+        fieldCode:
+          minLength: 1
+          type: string
+          description: Field code
+      description: Meter field
+    DataExplorerGroupType:
+      type: string
+      description: Type of group
+      enum:
+      - ACCOUNT
+      - DIMENSION
+      - TIME
+    PaginatedUsageSavedQueryResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/UsageSavedQueryResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    UsageQueryRequestWithTimePeriod:
+      type: object
+      properties:
+        timePeriod:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/UsageSavedQueryTimePeriod'
+          - description: The time period
+      description: Data Explorer saved query request.
+      allOf:
+      - $ref: '#/components/schemas/UsageQueryRequest'
+      - $ref: '#/components/schemas/RequestWithStartAndEndDate'
+    DataExplorerAggregation:
+      required:
+      - fieldType
+      - function
+      type: object
+      properties:
+        fieldType:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/DataExplorerFieldType'
+          - description: Type of field
+        function:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/DataExplorerAggregationFunction'
+          - description: Aggregation function to apply
+      description: Aggregation to be applied to a field
+      allOf:
+      - $ref: '#/components/schemas/DataExplorerMeterField'
+    DataExplorerAggregationFunction:
+      type: string
+      description: Aggregation function
+      enum:
+      - SUM
+      - MIN
+      - MAX
+      - COUNT
+      - LATEST
+      - MEAN
+      - UNIQUE
+    RequestWithStartAndEndDate:
+      type: object
+      properties:
+        startDate:
+          type: string
+          description: The inclusive start date to define a time period to filter by. (*ISO 8601 formatted*)
+          format: date-time
+        endDate:
+          type: string
+          description: The exclusive end date to define a time period to filter by. (*ISO 8601 formatted*)
+          format: date-time
+      description: ''
+    UsageSavedQueryTimePeriod:
+      type: string
+      description: Time period for saved query
+      enum:
+      - TODAY
+      - YESTERDAY
+      - WEEK_TO_DATE
+      - MONTH_TO_DATE
+      - YEAR_TO_DATE
+      - PREVIOUS_WEEK
+      - PREVIOUS_MONTH
+      - PREVIOUS_QUARTER
+      - PREVIOUS_YEAR
+      - LAST_12_HOURS
+      - LAST_7_DAYS
+      - LAST_30_DAYS
+      - LAST_35_DAYS
+      - LAST_90_DAYS
+      - LAST_120_DAYS
+      - LAST_YEAR
+    UsageSavedQueryResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the saved query
+        usageQuery:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/UsageQueryRequestWithTimePeriod'
+          - description: The query to save
+      description: Request representing a usage saved query
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
     AbstractResponse:
       required:
       - id
@@ -313,17 +435,14 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    DataExplorerGroupType:
-      type: string
-      description: Type of group
-      enum:
-      - ACCOUNT
-      - DIMENSION
-      - TIME
-    UsageSavedQueryResponse:
+    UsageSavedQueryRequest:
+      required:
+      - name
+      - usageQuery
       type: object
       properties:
         name:
+          minLength: 1
           type: string
           description: Name of the saved query
         usageQuery:
@@ -333,7 +452,41 @@ components:
           - description: The query to save
       description: Request representing a usage saved query
       allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
+      - $ref: '#/components/schemas/AbstractRequest'
+    DataExplorerFieldType:
+      type: string
+      description: Type of field
+      enum:
+      - DIMENSION
+      - MEASURE
+    DataExplorerDimensionFilter:
+      required:
+      - values
+      type: object
+      properties:
+        values:
+          minItems: 1
+          type: array
+          description: Values to filter by
+          items:
+            type: string
+      description: Filter by dimension
+      allOf:
+      - $ref: '#/components/schemas/DataExplorerMeterField'
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     UsageQueryResponse:
       type: object
       properties:
@@ -361,135 +514,6 @@ components:
 
             '
       description: ''
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    DataExplorerFieldType:
-      type: string
-      description: Type of field
-      enum:
-      - DIMENSION
-      - MEASURE
-    DataExplorerAggregationFunction:
-      type: string
-      description: Aggregation function
-      enum:
-      - SUM
-      - MIN
-      - MAX
-      - COUNT
-      - LATEST
-      - MEAN
-      - UNIQUE
-    UsageQueryRequestWithTimePeriod:
-      type: object
-      properties:
-        timePeriod:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/UsageSavedQueryTimePeriod'
-          - description: The time period
-      description: Data Explorer saved query request.
-      allOf:
-      - $ref: '#/components/schemas/UsageQueryRequest'
-      - $ref: '#/components/schemas/RequestWithStartAndEndDate'
-    DataExplorerMeterField:
-      required:
-      - fieldCode
-      - meterId
-      type: object
-      properties:
-        meterId:
-          minLength: 1
-          type: string
-          description: Meter ID
-        fieldCode:
-          minLength: 1
-          type: string
-          description: Field code
-      description: Meter field
-    DataExplorerGroup:
-      type: object
-      properties:
-        groupType:
-          description: ''
-          $ref: '#/components/schemas/DataExplorerGroupType'
-      description: Group by a field
-      discriminator:
-        propertyName: groupType
-        mapping:
-          ACCOUNT: '#/components/schemas/DataExplorerAccountGroup'
-          DIMENSION: '#/components/schemas/DataExplorerDimensionGroup'
-          TIME: '#/components/schemas/DataExplorerTimeGroup'
-    DataExplorerDimensionFilter:
-      required:
-      - values
-      type: object
-      properties:
-        values:
-          minItems: 1
-          type: array
-          description: Values to filter by
-          items:
-            type: string
-      description: Filter by dimension
-      allOf:
-      - $ref: '#/components/schemas/DataExplorerMeterField'
-    RequestWithStartAndEndDate:
-      type: object
-      properties:
-        startDate:
-          type: string
-          description: The inclusive start date to define a time period to filter by. (*ISO 8601 formatted*)
-          format: date-time
-        endDate:
-          type: string
-          description: The exclusive end date to define a time period to filter by. (*ISO 8601 formatted*)
-          format: date-time
-      description: ''
-    PaginatedUsageSavedQueryResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/UsageSavedQueryResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    UsageSavedQueryTimePeriod:
-      type: string
-      description: Time period for saved query
-      enum:
-      - TODAY
-      - YESTERDAY
-      - WEEK_TO_DATE
-      - MONTH_TO_DATE
-      - YEAR_TO_DATE
-      - PREVIOUS_WEEK
-      - PREVIOUS_MONTH
-      - PREVIOUS_QUARTER
-      - PREVIOUS_YEAR
-      - LAST_12_HOURS
-      - LAST_7_DAYS
-      - LAST_30_DAYS
-      - LAST_35_DAYS
-      - LAST_90_DAYS
-      - LAST_120_DAYS
-      - LAST_YEAR
     UsageQueryRequest:
       type: object
       properties:
@@ -560,43 +584,19 @@ components:
       description: ''
       allOf:
       - $ref: '#/components/schemas/RequestWithStartAndEndDate'
-    UsageSavedQueryRequest:
-      required:
-      - name
-      - usageQuery
+    DataExplorerGroup:
       type: object
       properties:
-        name:
-          minLength: 1
-          type: string
-          description: Name of the saved query
-        usageQuery:
+        groupType:
           description: ''
-          allOf:
-          - $ref: '#/components/schemas/UsageQueryRequestWithTimePeriod'
-          - description: The query to save
-      description: Request representing a usage saved query
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-    DataExplorerAggregation:
-      required:
-      - fieldType
-      - function
-      type: object
-      properties:
-        fieldType:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/DataExplorerFieldType'
-          - description: Type of field
-        function:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/DataExplorerAggregationFunction'
-          - description: Aggregation function to apply
-      description: Aggregation to be applied to a field
-      allOf:
-      - $ref: '#/components/schemas/DataExplorerMeterField'
+          $ref: '#/components/schemas/DataExplorerGroupType'
+      description: Group by a field
+      discriminator:
+        propertyName: groupType
+        mapping:
+          ACCOUNT: '#/components/schemas/DataExplorerAccountGroup'
+          DIMENSION: '#/components/schemas/DataExplorerDimensionGroup'
+          TIME: '#/components/schemas/DataExplorerTimeGroup'
   responses:
     Error:
       description: Error message
