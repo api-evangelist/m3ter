@@ -2538,6 +2538,12 @@ apis:
   - type: TerraformProvider
     url: https://github.com/m3ter-com/terraform-provider-m3ter
 common:
+  - type: Plans
+    url: plans/m3ter-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/m3ter-rate-limits.yml
+  - type: FinOps
+    url: finops/m3ter-finops.yml
   - type: CapabilityMap
     url: capabilities/m3ter-capability-edges.yml
     name: M3ter Business Capability Map
