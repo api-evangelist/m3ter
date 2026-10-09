@@ -1,23 +1,44 @@
-generated: '2026-07-15'
+generated: '2026-09-23'
 method: generated
-source: openapi/m3ter-openapi.yml
+source: openapi/m3ter-account-api-openapi.yml, openapi/m3ter-accountplan-api-openapi.yml, openapi/m3ter-aggregation-api-openapi.yml,
+  openapi/m3ter-auth-api-openapi.yml, openapi/m3ter-balancechargeschedule-api-openapi.yml, openapi/m3ter-balances-api-openapi.yml,
+  openapi/m3ter-balancetransactionschedule-api-openapi.yml, openapi/m3ter-bill-api-openapi.yml,
+  openapi/m3ter-billconfig-api-openapi.yml, openapi/m3ter-billgroupingkey-api-openapi.yml, openapi/m3ter-billjob-api-openapi.yml,
+  openapi/m3ter-charge-api-openapi.yml, openapi/m3ter-commitments-api-openapi.yml, openapi/m3ter-compoundaggregation-api-openapi.yml,
+  openapi/m3ter-contract-api-openapi.yml, openapi/m3ter-counter-api-openapi.yml, openapi/m3ter-counteradjustments-api-openapi.yml,
+  openapi/m3ter-counterpricing-api-openapi.yml, openapi/m3ter-creditreason-api-openapi.yml,
+  openapi/m3ter-credits-api-openapi.yml, openapi/m3ter-currency-api-openapi.yml, openapi/m3ter-custom-field-api-openapi.yml,
+  openapi/m3ter-data-explorer-api-openapi.yml, openapi/m3ter-dataexplorerv2-api-openapi.yml,
+  openapi/m3ter-debitreason-api-openapi.yml, openapi/m3ter-debits-api-openapi.yml, openapi/m3ter-events-api-openapi.yml,
+  openapi/m3ter-export-job-api-openapi.yml, openapi/m3ter-exportadhoc-api-openapi.yml, openapi/m3ter-exportdestination-api-openapi.yml,
+  openapi/m3ter-exportschedule-api-openapi.yml, openapi/m3ter-external-mapping-api-openapi.yml,
+  openapi/m3ter-integrations-api-openapi.yml, openapi/m3ter-invitations-api-openapi.yml, openapi/m3ter-line-item-api-openapi.yml,
+  openapi/m3ter-lookup-table-api-openapi.yml, openapi/m3ter-lookuptablerevision-api-openapi.yml,
+  openapi/m3ter-lookuptablerevisiondata-api-openapi.yml, openapi/m3ter-marketplace-integrations-api-openapi.yml,
+  openapi/m3ter-measurements-api-openapi.yml, openapi/m3ter-meter-api-openapi.yml, openapi/m3ter-notifications-api-openapi.yml,
+  openapi/m3ter-organizationconfig-api-openapi.yml, openapi/m3ter-orgusers-api-openapi.yml,
+  openapi/m3ter-permissionpolicy-api-openapi.yml, openapi/m3ter-plan-api-openapi.yml, openapi/m3ter-plangroup-api-openapi.yml,
+  openapi/m3ter-plangrouplink-api-openapi.yml, openapi/m3ter-plantemplate-api-openapi.yml, openapi/m3ter-pricing-api-openapi.yml,
+  openapi/m3ter-product-api-openapi.yml, openapi/m3ter-resourcegroup-api-openapi.yml, openapi/m3ter-scheduledeventconfigurations-api-openapi.yml,
+  openapi/m3ter-statementdefinition-api-openapi.yml, openapi/m3ter-statementjob-api-openapi.yml,
+  openapi/m3ter-support-api-openapi.yml, openapi/m3ter-transactiontype-api-openapi.yml, openapi/m3ter-user-api-openapi.yml
 description: Recommended x-agentic-access execution contracts, classified heuristically from
   the OpenAPI. A governance starting point for exposing this API to AI agents — review and bind
   audience per deployment. See research/curity/agentic-governance/.
 summary:
   operations: 323
   by_action_class:
-    connected: 146
-    acting: 177
+    connected: 148
+    acting: 175
   by_consequence:
-    read: 146
-    write: 169
+    read: 148
+    write: 167
     physical: 8
   human_in_the_loop_required: 0
 operations:
-- path: /organizations/{orgId}/bills/{billId}/debitlineitems/{id}
+- path: /organizations/{orgId}/accounts/search
   method: get
-  operationId: GetDebitLineItem
+  operationId: SearchAccounts
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -25,9 +46,9 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/bills/{billId}/debitlineitems/{id}
+- path: /organizations/{orgId}/accounts/{id}/enddatebillingentities
   method: put
-  operationId: PutDebitLineItem
+  operationId: EndDateBillingEntitiesForAccount
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -41,9 +62,45 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/bills/{billId}/debitlineitems/{id}
+- path: /organizations/{orgId}/accounts/{id}/children
+  method: get
+  operationId: ListAccountChildren
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/accounts/{id}
+  method: get
+  operationId: GetAccount
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/accounts/{id}
+  method: put
+  operationId: PutAccount
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/accounts/{id}
   method: delete
-  operationId: DeleteDebitLineItem
+  operationId: DeleteAccount
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -57,9 +114,9 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/bills/latest/{accountId}
+- path: /organizations/{orgId}/accounts
   method: get
-  operationId: GetLatestBill
+  operationId: ListAccounts
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -67,19 +124,9 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/bills/{billId}/debitlineitems
-  method: get
-  operationId: ListDebitLineItems
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/bills/{billId}/debitlineitems
+- path: /organizations/{orgId}/accounts
   method: post
-  operationId: PostDebitLineItem
+  operationId: PostAccount
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -93,9 +140,9 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/bills/{id}
+- path: /organizations/{orgId}/accountplans/{id}
   method: get
-  operationId: GetBill
+  operationId: GetAccountPlan
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -103,9 +150,151 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/bills/{id}
+- path: /organizations/{orgId}/accountplans/{id}
+  method: put
+  operationId: PutAccountPlan
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/accountplans/{id}
   method: delete
-  operationId: DeleteBill
+  operationId: DeleteAccountPlan
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/accountplans
+  method: get
+  operationId: ListAccountPlans
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/accountplans
+  method: post
+  operationId: PostAccountPlan
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/accountplans/{id}/replace
+  method: post
+  operationId: ReplaceAccountPlan
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/aggregations
+  method: get
+  operationId: ListAggregations
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/aggregations
+  method: post
+  operationId: PostAggregation
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/aggregations/{id}
+  method: get
+  operationId: GetAggregation
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/aggregations/{id}
+  method: put
+  operationId: PutAggregation
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/aggregations/{id}
+  method: delete
+  operationId: DeleteAggregation
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /oauth/token
+  method: post
+  operationId: GenerateToken
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -165,6 +354,156 @@ operations:
       - abnormal
       - high-value
     audit: required
+- path: /organizations/{orgId}/balances/{balanceId}/balancechargeschedules/preview
+  method: post
+  operationId: PreviewScheduledCharge
+  x-agentic-access:
+    action-class: acting
+    consequence: physical
+    subject: required
+    audience: null
+    token:
+      max-ttl: 300
+      exchange: true
+      purpose-required: true
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/balances/{balanceId}/balancechargeschedules
+  method: get
+  operationId: ListBalanceChargeSchedule
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/balances/{balanceId}/balancechargeschedules
+  method: post
+  operationId: CreateBalanceChargeSchedule
+  x-agentic-access:
+    action-class: acting
+    consequence: physical
+    subject: required
+    audience: null
+    token:
+      max-ttl: 300
+      exchange: true
+      purpose-required: true
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/balances/{balanceId}/transactions
+  method: get
+  operationId: ListBalanceTransactions
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/balances/{balanceId}/transactions
+  method: post
+  operationId: PostBalanceTransaction
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/balances/{balanceId}/transactions/summary
+  method: get
+  operationId: GetBalanceTransactionsSummary
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/balances
+  method: get
+  operationId: ListBalances
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/balances
+  method: post
+  operationId: PostBalance
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/balances/{id}
+  method: get
+  operationId: GetBalance
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/balances/{id}
+  method: put
+  operationId: PutBalance
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/balances/{id}
+  method: delete
+  operationId: DeleteBalance
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
 - path: /organizations/{orgId}/balances/{balanceId}/balancetransactionschedules
   method: get
   operationId: ListBalanceTransactionSchedule
@@ -178,64 +517,6 @@ operations:
 - path: /organizations/{orgId}/balances/{balanceId}/balancetransactionschedules
   method: post
   operationId: CreateBalanceTransactionSchedule
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/bills/{billId}/creditlineitems/{id}
-  method: get
-  operationId: GetCreditLineItem
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/bills/{billId}/creditlineitems/{id}
-  method: put
-  operationId: PutCreditLineItem
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/bills/{billId}/creditlineitems/{id}
-  method: delete
-  operationId: DeleteCreditLineItem
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/statementjobs/{id}/cancel
-  method: post
-  operationId: CancelStatementJob
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -291,9 +572,25 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/billconfig
+- path: /organizations/{orgId}/balances/{balanceId}/balancetransactionschedules/preview
+  method: post
+  operationId: PreviewBalanceTransactionSchedule
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/bills/latest/{accountId}
   method: get
-  operationId: GetBillConfig
+  operationId: GetLatestBill
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -301,9 +598,19 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/billconfig
-  method: put
-  operationId: UpdateBillConfig
+- path: /organizations/{orgId}/bills/{id}
+  method: get
+  operationId: GetBill
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/bills/{id}
+  method: delete
+  operationId: DeleteBill
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -363,32 +670,6 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/balances/{balanceId}/transactions
-  method: get
-  operationId: ListBalanceTransactions
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/balances/{balanceId}/transactions
-  method: post
-  operationId: PostBalanceTransaction
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
 - path: /organizations/{orgId}/bills/accountid/{accountId}
   method: get
   operationId: GetAllBillsForAccount
@@ -399,22 +680,6 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/balances/{balanceId}/balancetransactionschedules/preview
-  method: post
-  operationId: PreviewBalanceTransactionSchedule
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
 - path: /organizations/{orgId}/bills/{billId}/lineitems/{id}
   method: get
   operationId: GetBillLineItem
@@ -457,90 +722,6 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/charges
-  method: get
-  operationId: ListCharges
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/charges
-  method: post
-  operationId: CreateCharge
-  x-agentic-access:
-    action-class: acting
-    consequence: physical
-    subject: required
-    audience: null
-    token:
-      max-ttl: 300
-      exchange: true
-      purpose-required: true
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/balances/{balanceId}/transactions/summary
-  method: get
-  operationId: GetBalanceTransactionsSummary
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/billjobs/{id}
-  method: get
-  operationId: GetBillJob
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/balances
-  method: get
-  operationId: ListBalances
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/balances
-  method: post
-  operationId: PostBalance
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/statementjobs/{id}
-  method: get
-  operationId: GetStatementJob
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
 - path: /organizations/{orgId}/bills/{id}/statement/csv
   method: get
   operationId: GetBillCsvStatement
@@ -554,144 +735,6 @@ operations:
 - path: /organizations/{orgId}/bills/{id}/statement/csv
   method: post
   operationId: CreateBillCsvStatement
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/billjobs
-  method: get
-  operationId: ListBillJobs
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/billjobs
-  method: post
-  operationId: CreateBillJob
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/balances/{balanceId}/balancechargeschedules/preview
-  method: post
-  operationId: PreviewScheduledCharge
-  x-agentic-access:
-    action-class: acting
-    consequence: physical
-    subject: required
-    audience: null
-    token:
-      max-ttl: 300
-      exchange: true
-      purpose-required: true
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/lineitems
-  method: get
-  operationId: ListLineItems
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/balances/{id}
-  method: get
-  operationId: GetBalance
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/balances/{id}
-  method: put
-  operationId: PutBalance
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/balances/{id}
-  method: delete
-  operationId: DeleteBalance
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/billjobs/{id}/cancel
-  method: post
-  operationId: CancelBillJob
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/counteradjustments
-  method: get
-  operationId: ListCounterAdjustments
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/counteradjustments
-  method: post
-  operationId: PostCounterAdjustment
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -721,9 +764,615 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/statementjobs/batch
+- path: /organizations/{orgId}/bills/{billId}/lineitems/{id}/usage/json
+  method: get
+  operationId: GetBillLineItemJsonUsage
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/bills/approve
   method: post
-  operationId: CreateStatementJobBatch
+  operationId: ApproveBills
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/bills/billingperiod/{lastDateInBillingPeriod}/{billingFrequency}
+  method: get
+  operationId: GetAllBillsInBillingPeriod
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/bills/download/csv/url
+  method: post
+  operationId: DownloadBillsCsvUrl
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/bills/search
+  method: get
+  operationId: SearchBills
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/billconfig
+  method: get
+  operationId: GetBillConfig
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/billconfig
+  method: put
+  operationId: UpdateBillConfig
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/picklists/billgroupingkeys
+  method: get
+  operationId: ListBillGroupingKeys
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/picklists/billgroupingkeys
+  method: post
+  operationId: CreateBillGroupingKey
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/picklists/billgroupingkeys/{id}
+  method: get
+  operationId: GetBillGroupingKey
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/picklists/billgroupingkeys/{id}
+  method: put
+  operationId: UpdateBillGroupingKey
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/picklists/billgroupingkeys/{id}
+  method: delete
+  operationId: DeleteBillGroupingKey
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/billjobs/{id}
+  method: get
+  operationId: GetBillJob
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/billjobs
+  method: get
+  operationId: ListBillJobs
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/billjobs
+  method: post
+  operationId: CreateBillJob
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/billjobs/{id}/cancel
+  method: post
+  operationId: CancelBillJob
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/billjobs/recalculate
+  method: post
+  operationId: RecalculateBillJob
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/charges
+  method: get
+  operationId: ListCharges
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/charges
+  method: post
+  operationId: CreateCharge
+  x-agentic-access:
+    action-class: acting
+    consequence: physical
+    subject: required
+    audience: null
+    token:
+      max-ttl: 300
+      exchange: true
+      purpose-required: true
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/charges/{id}
+  method: get
+  operationId: GetCharge
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/charges/{id}
+  method: put
+  operationId: UpdateCharge
+  x-agentic-access:
+    action-class: acting
+    consequence: physical
+    subject: required
+    audience: null
+    token:
+      max-ttl: 300
+      exchange: true
+      purpose-required: true
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/charges/{id}
+  method: delete
+  operationId: DeleteCharge
+  x-agentic-access:
+    action-class: acting
+    consequence: physical
+    subject: required
+    audience: null
+    token:
+      max-ttl: 300
+      exchange: true
+      purpose-required: true
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/commitments/{id}
+  method: get
+  operationId: GetCommitment
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/commitments/{id}
+  method: put
+  operationId: PutCommitment
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/commitments/{id}
+  method: delete
+  operationId: DeleteCommitment
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/commitments
+  method: get
+  operationId: ListCommitments
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/commitments
+  method: post
+  operationId: PostCommitment
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/commitments/search
+  method: get
+  operationId: SearchCommitments
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/compoundaggregations/{id}
+  method: get
+  operationId: GetCompoundAggregation
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/compoundaggregations/{id}
+  method: put
+  operationId: PutCompoundAggregation
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/compoundaggregations/{id}
+  method: delete
+  operationId: DeleteCompoundAggregation
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/compoundaggregations
+  method: get
+  operationId: ListCompoundAggregations
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/compoundaggregations
+  method: post
+  operationId: PostCompoundAggregation
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/contracts
+  method: get
+  operationId: ListContracts
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/contracts
+  method: post
+  operationId: PostContract
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/contracts/{id}/enddatebillingentities
+  method: put
+  operationId: EndDateBillingEntitiesForContract
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/contracts/{id}
+  method: get
+  operationId: GetContract
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/contracts/{id}
+  method: put
+  operationId: PutContract
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/contracts/{id}
+  method: delete
+  operationId: DeleteContract
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/counters
+  method: get
+  operationId: ListCounters
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/counters
+  method: post
+  operationId: PostCounter
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/counters/{id}
+  method: get
+  operationId: GetCounter
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/counters/{id}
+  method: put
+  operationId: PutCounter
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/counters/{id}
+  method: delete
+  operationId: DeleteCounter
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/counteradjustments
+  method: get
+  operationId: ListCounterAdjustments
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/counteradjustments
+  method: post
+  operationId: PostCounterAdjustment
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -779,9 +1428,19 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/billjobs/recalculate
+- path: /organizations/{orgId}/counterpricings
+  method: get
+  operationId: ListCounterPricings
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/counterpricings
   method: post
-  operationId: RecalculateBillJob
+  operationId: PostCounterPricing
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -795,9 +1454,9 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/bills/{billId}/lineitems/{id}/usage/json
+- path: /organizations/{orgId}/counterpricings/{id}
   method: get
-  operationId: GetBillLineItemJsonUsage
+  operationId: GetCounterPricing
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -805,6 +1464,148 @@ operations:
     token:
       max-ttl: 3600
     audit: none
+- path: /organizations/{orgId}/counterpricings/{id}
+  method: put
+  operationId: PutCounterPricing
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/counterpricings/{id}
+  method: delete
+  operationId: DeleteCounterPricing
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/picklists/creditreasons
+  method: get
+  operationId: ListCreditReasons
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/picklists/creditreasons
+  method: post
+  operationId: CreateCreditReason
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/picklists/creditreasons/{id}
+  method: get
+  operationId: GetCreditReason
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/picklists/creditreasons/{id}
+  method: put
+  operationId: UpdateCreditReason
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/picklists/creditreasons/{id}
+  method: delete
+  operationId: DeleteCreditReason
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/bills/{billId}/creditlineitems/{id}
+  method: get
+  operationId: GetCreditLineItem
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/bills/{billId}/creditlineitems/{id}
+  method: put
+  operationId: PutCreditLineItem
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/bills/{billId}/creditlineitems/{id}
+  method: delete
+  operationId: DeleteCreditLineItem
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
 - path: /organizations/{orgId}/bills/{billId}/creditlineitems
   method: get
   operationId: ListCreditLineItems
@@ -831,9 +1632,9 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/balances/{balanceId}/balancechargeschedules
+- path: /organizations/{orgId}/picklists/currency/{id}
   method: get
-  operationId: ListBalanceChargeSchedule
+  operationId: GetCurrency
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -841,141 +1642,41 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/balances/{balanceId}/balancechargeschedules
-  method: post
-  operationId: CreateBalanceChargeSchedule
-  x-agentic-access:
-    action-class: acting
-    consequence: physical
-    subject: required
-    audience: null
-    token:
-      max-ttl: 300
-      exchange: true
-      purpose-required: true
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/bills/approve
-  method: post
-  operationId: ApproveBills
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/bills/billingperiod/{lastDateInBillingPeriod}/{billingFrequency}
-  method: get
-  operationId: GetAllBillsInBillingPeriod
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/statementjobs
-  method: get
-  operationId: ListStatementJobs
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/statementjobs
-  method: post
-  operationId: CreateStatementJob
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/bills/download/csv/url
-  method: post
-  operationId: DownloadBillsCsvUrl
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/charges/{id}
-  method: get
-  operationId: GetCharge
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/charges/{id}
+- path: /organizations/{orgId}/picklists/currency/{id}
   method: put
-  operationId: UpdateCharge
+  operationId: UpdateCurrency
   x-agentic-access:
     action-class: acting
-    consequence: physical
+    consequence: write
     subject: required
     audience: null
     token:
-      max-ttl: 300
-      exchange: true
-      purpose-required: true
+      max-ttl: 900
     escalation:
       human-in-the-loop: conditional
       triggers:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/charges/{id}
+- path: /organizations/{orgId}/picklists/currency/{id}
   method: delete
-  operationId: DeleteCharge
+  operationId: DeleteCurrency
   x-agentic-access:
     action-class: acting
-    consequence: physical
+    consequence: write
     subject: required
     audience: null
     token:
-      max-ttl: 300
-      exchange: true
-      purpose-required: true
+      max-ttl: 900
     escalation:
       human-in-the-loop: conditional
       triggers:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/bills/search
+- path: /organizations/{orgId}/picklists/currency
   method: get
-  operationId: SearchBills
+  operationId: ListCurrencies
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -983,467 +1684,51 @@ operations:
     token:
       max-ttl: 3600
     audit: none
+- path: /organizations/{orgId}/picklists/currency
+  method: post
+  operationId: CreateCurrency
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/customfields
+  method: get
+  operationId: GetCustomField
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/customfields
+  method: put
+  operationId: UpdateCustomFields
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
 - path: /organizations/{orgId}/dataexplorer/bills
   method: post
   operationId: PostQueryBillData
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtousergroup
-  method: post
-  operationId: AddPermissionPolicyToUserGroup
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/permissions
-  method: get
-  operationId: GetResourceGroupPermissions
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromuser
-  method: post
-  operationId: RemovePermissionPolicyFromUser
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtouser
-  method: post
-  operationId: AddPermissionPolicyToUser
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/users
-  method: get
-  operationId: ListOrgUsers
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /oauth/token
-  method: post
-  operationId: GenerateToken
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtosupportusers
-  method: post
-  operationId: AddPermissionPolicyToSupportUsers
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/removeresource
-  method: post
-  operationId: RemoveResourceFromGroup
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/users/{id}
-  method: get
-  operationId: GetOrgUser
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/users/{id}
-  method: put
-  operationId: PutOrgUser
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/resourcegroups/{type}
-  method: get
-  operationId: ListResourceGroups
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/resourcegroups/{type}
-  method: post
-  operationId: PostResourceGroup
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/users/{id}/usergroups
-  method: get
-  operationId: GetOrgUserGroups
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtoserviceuser
-  method: post
-  operationId: AddPermissionPolicyToServiceUser
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/users/me
-  method: get
-  operationId: GetMe
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/users/{id}/password/resend
-  method: put
-  operationId: AdminResendTempPass
-  x-agentic-access:
-    action-class: acting
-    consequence: physical
-    subject: required
-    audience: null
-    token:
-      max-ttl: 300
-      exchange: true
-      purpose-required: true
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/resourcegroups/{type}/{id}
-  method: get
-  operationId: GetResourceGroup
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/resourcegroups/{type}/{id}
-  method: put
-  operationId: PutResourceGroup
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/resourcegroups/{type}/{id}
-  method: delete
-  operationId: DeleteResourceGroup
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromserviceuser
-  method: post
-  operationId: RemovePermissionPolicyFromServiceUser
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/permissionpolicies
-  method: get
-  operationId: ListPermissionPolicies
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/permissionpolicies
-  method: post
-  operationId: PostPermissionPolicy
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromsupportusers
-  method: post
-  operationId: RemovePermissionPolicyFromSupportUsers
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/invitations/{id}
-  method: get
-  operationId: GetOrgUserInvitation
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/invitations
-  method: get
-  operationId: ListOrgUserInvitations
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/invitations
-  method: post
-  operationId: CreateOrgUserInvitation
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromusergroup
-  method: post
-  operationId: RemovePermissionPolicyFromUserGroup
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/users/{id}/permissions
-  method: get
-  operationId: GetOrgUserPermissions
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/permissionpolicies/{id}
-  method: get
-  operationId: GetPermissionPolicy
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/permissionpolicies/{id}
-  method: put
-  operationId: PutPermissionPolicy
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/permissionpolicies/{id}
-  method: delete
-  operationId: DeletePermissionPolicy
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/addresource
-  method: post
-  operationId: AddResourceToGroup
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/contents
-  method: post
-  operationId: ListResourceGroupsForId
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1541,9 +1826,9 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/dataexports/schedules/{id}
+- path: /organizations/{orgId}/picklists/debitreasons
   method: get
-  operationId: GetSchedule
+  operationId: ListDebitReasons
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1551,9 +1836,9 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/dataexports/schedules/{id}
-  method: put
-  operationId: UpdateSchedule
+- path: /organizations/{orgId}/picklists/debitreasons
+  method: post
+  operationId: CreateDebitReason
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1567,9 +1852,179 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/dataexports/schedules/{id}
+- path: /organizations/{orgId}/picklists/debitreasons/{id}
+  method: get
+  operationId: GetDebitReason
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/picklists/debitreasons/{id}
+  method: put
+  operationId: UpdateDebitReason
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/picklists/debitreasons/{id}
   method: delete
-  operationId: DeleteSchedule
+  operationId: DeleteDebitReason
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/bills/{billId}/debitlineitems/{id}
+  method: get
+  operationId: GetDebitLineItem
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/bills/{billId}/debitlineitems/{id}
+  method: put
+  operationId: PutDebitLineItem
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/bills/{billId}/debitlineitems/{id}
+  method: delete
+  operationId: DeleteDebitLineItem
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/bills/{billId}/debitlineitems
+  method: get
+  operationId: ListDebitLineItems
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/bills/{billId}/debitlineitems
+  method: post
+  operationId: PostDebitLineItem
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/events/{id}
+  method: get
+  operationId: GetEvent
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/events/fields
+  method: get
+  operationId: ListEventFields
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/events
+  method: get
+  operationId: ListEvents
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/events/types
+  method: get
+  operationId: ListEventTypes
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/dataexports/jobs/{id}
+  method: get
+  operationId: GetJob
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/dataexports/jobs
+  method: get
+  operationId: listJobStatuses
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/dataexports/adhoc
+  method: post
+  operationId: TriggerDataExport
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1661,6 +2116,48 @@ operations:
     token:
       max-ttl: 3600
     audit: none
+- path: /organizations/{orgId}/dataexports/schedules/{id}
+  method: get
+  operationId: GetSchedule
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/dataexports/schedules/{id}
+  method: put
+  operationId: UpdateSchedule
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/dataexports/schedules/{id}
+  method: delete
+  operationId: DeleteSchedule
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
 - path: /organizations/{orgId}/dataexports/schedules
   method: get
   operationId: listSchedules
@@ -1687,9 +2184,9 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/dataexports/jobs/{id}
+- path: /organizations/{orgId}/externalmappings
   method: get
-  operationId: GetJob
+  operationId: ListExternalMappings
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1697,19 +2194,9 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/dataexports/jobs
-  method: get
-  operationId: listJobStatuses
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/dataexports/adhoc
+- path: /organizations/{orgId}/externalmappings
   method: post
-  operationId: TriggerDataExport
+  operationId: CreateExternalMapping
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1723,27 +2210,9 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/measurements
-  method: post
-  operationId: SubmitMeasurements
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    scope:
-    - measurements:upload
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/events/{id}
+- path: /organizations/{orgId}/externalmappingconfiguration/values/{destination}/{entityType}/{integrationCredentialsId}
   method: get
-  operationId: GetEvent
+  operationId: GetExternalMappingOptionsForDestinationForCredentialsId
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1751,9 +2220,9 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/scheduledevents/configurations/{id}
+- path: /organizations/{orgId}/externalmappingconfiguration/values/{destination}/{entityType}
   method: get
-  operationId: GetScheduledEventConfiguration
+  operationId: GetExternalMappingOptionsForDestination
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1761,9 +2230,49 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/scheduledevents/configurations/{id}
+- path: /organizations/{orgId}/externalmappingconfiguration
+  method: get
+  operationId: GetExternalMappingConfiguration
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/externalmappings/externalid/{system}/{externalTable}/{externalId}
+  method: get
+  operationId: ListExternalMappingsForExternalSystemAndEntity
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/externalmappings/external/{entity}/{m3terId}
+  method: get
+  operationId: ListExternalMappingsForM3terEntity
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/externalmappings/{id}
+  method: get
+  operationId: GetExternalMapping
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/externalmappings/{id}
   method: put
-  operationId: UpdateScheduledEventConfiguration
+  operationId: UpdateExternalMapping
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1777,1733 +2286,9 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/scheduledevents/configurations/{id}
+- path: /organizations/{orgId}/externalmappings/{id}
   method: delete
-  operationId: DeleteScheduledEventConfiguration
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/notifications/configurations
-  method: get
-  operationId: ListNotifications
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/notifications/configurations
-  method: post
-  operationId: CreateNotification
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/scheduledevents/configurations
-  method: get
-  operationId: ListScheduledEventConfigurations
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/scheduledevents/configurations
-  method: post
-  operationId: CreateScheduledEventConfiguration
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/events/fields
-  method: get
-  operationId: ListEventFields
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/notifications/configurations/{id}
-  method: get
-  operationId: GetNotification
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/notifications/configurations/{id}
-  method: put
-  operationId: UpdateNotification
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/notifications/configurations/{id}
-  method: delete
-  operationId: DeleteNotification
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/events
-  method: get
-  operationId: ListEvents
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/notifications/evaluate
-  method: post
-  operationId: EvaluateCalculation
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/events/types
-  method: get
-  operationId: ListEventTypes
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/picklists/transactiontypes/{id}
-  method: get
-  operationId: GetTransactionType
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/picklists/transactiontypes/{id}
-  method: put
-  operationId: UpdateTransactionType
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/picklists/transactiontypes/{id}
-  method: delete
-  operationId: DeleteTransactionType
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/plantemplates
-  method: get
-  operationId: ListPlanTemplates
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/plantemplates
-  method: post
-  operationId: PostPlanTemplate
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/statementdefinitions/{id}
-  method: get
-  operationId: GetStatementDefinition
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/statementdefinitions/{id}
-  method: put
-  operationId: PutStatementDefinition
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/statementdefinitions/{id}
-  method: delete
-  operationId: DeleteStatementDefinition
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/support
-  method: get
-  operationId: GetSupport
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/support
-  method: put
-  operationId: PutSupport
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/accountplans/{id}
-  method: get
-  operationId: GetAccountPlan
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/accountplans/{id}
-  method: put
-  operationId: PutAccountPlan
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/accountplans/{id}
-  method: delete
-  operationId: DeleteAccountPlan
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/contracts
-  method: get
-  operationId: ListContracts
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/contracts
-  method: post
-  operationId: PostContract
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/contracts/{id}/enddatebillingentities
-  method: put
-  operationId: EndDateBillingEntitiesForContract
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/pricings/{id}
-  method: get
-  operationId: GetPricing
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/pricings/{id}
-  method: put
-  operationId: PutPricing
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/pricings/{id}
-  method: delete
-  operationId: DeletePricing
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/accounts/search
-  method: get
-  operationId: SearchAccounts
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/picklists/creditreasons
-  method: get
-  operationId: ListCreditReasons
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/picklists/creditreasons
-  method: post
-  operationId: CreateCreditReason
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/meters/{id}
-  method: get
-  operationId: GetMeter
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/meters/{id}
-  method: put
-  operationId: PutMeter
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/meters/{id}
-  method: delete
-  operationId: DeleteMeter
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/commitments/{id}
-  method: get
-  operationId: GetCommitment
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/commitments/{id}
-  method: put
-  operationId: PutCommitment
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/commitments/{id}
-  method: delete
-  operationId: DeleteCommitment
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/accounts/{id}/enddatebillingentities
-  method: put
-  operationId: EndDateBillingEntitiesForAccount
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/picklists/transactiontypes
-  method: get
-  operationId: ListTransactionTypes
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/picklists/transactiontypes
-  method: post
-  operationId: CreateTransactionType
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/products/{id}
-  method: get
-  operationId: GetProduct
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/products/{id}
-  method: put
-  operationId: PutProduct
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/products/{id}
-  method: delete
-  operationId: DeleteProduct
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/meters
-  method: get
-  operationId: ListMeters
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/meters
-  method: post
-  operationId: PostMeter
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/picklists/billgroupingkeys
-  method: get
-  operationId: ListBillGroupingKeys
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/picklists/billgroupingkeys
-  method: post
-  operationId: CreateBillGroupingKey
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/accounts/{id}/children
-  method: get
-  operationId: ListAccountChildren
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/picklists/billgroupingkeys/{id}
-  method: get
-  operationId: GetBillGroupingKey
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/picklists/billgroupingkeys/{id}
-  method: put
-  operationId: UpdateBillGroupingKey
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/picklists/billgroupingkeys/{id}
-  method: delete
-  operationId: DeleteBillGroupingKey
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/compoundaggregations/{id}
-  method: get
-  operationId: GetCompoundAggregation
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/compoundaggregations/{id}
-  method: put
-  operationId: PutCompoundAggregation
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/compoundaggregations/{id}
-  method: delete
-  operationId: DeleteCompoundAggregation
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/commitments
-  method: get
-  operationId: ListCommitments
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/commitments
-  method: post
-  operationId: PostCommitment
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/picklists/creditreasons/{id}
-  method: get
-  operationId: GetCreditReason
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/picklists/creditreasons/{id}
-  method: put
-  operationId: UpdateCreditReason
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/picklists/creditreasons/{id}
-  method: delete
-  operationId: DeleteCreditReason
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/plangrouplinks
-  method: get
-  operationId: ListPlanGroupLinks
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/plangrouplinks
-  method: post
-  operationId: PostPlanGroupLink
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/plangroups
-  method: get
-  operationId: ListPlanGroups
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/plangroups
-  method: post
-  operationId: PostPlanGroup
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/plangroups/{id}
-  method: get
-  operationId: GetPlanGroup
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/plangroups/{id}
-  method: put
-  operationId: PutPlanGroup
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/plangroups/{id}
-  method: delete
-  operationId: DeletePlanGroup
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/counterpricings
-  method: get
-  operationId: ListCounterPricings
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/counterpricings
-  method: post
-  operationId: PostCounterPricing
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/plans
-  method: get
-  operationId: ListPlans
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/plans
-  method: post
-  operationId: PostPlan
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/accountplans
-  method: get
-  operationId: ListAccountPlans
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/accountplans
-  method: post
-  operationId: PostAccountPlan
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/customfields
-  method: get
-  operationId: GetCustomField
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/customfields
-  method: put
-  operationId: UpdateCustomFields
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/compoundaggregations
-  method: get
-  operationId: ListCompoundAggregations
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/compoundaggregations
-  method: post
-  operationId: PostCompoundAggregation
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/statementdefinitions
-  method: get
-  operationId: ListStatementDefinitions
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/statementdefinitions
-  method: post
-  operationId: PostStatementDefinition
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/commitments/search
-  method: get
-  operationId: SearchCommitments
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/plans/{id}
-  method: get
-  operationId: GetPlan
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/plans/{id}
-  method: put
-  operationId: PutPlan
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/plans/{id}
-  method: delete
-  operationId: DeletePlan
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/products
-  method: get
-  operationId: ListProducts
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/products
-  method: post
-  operationId: PostProduct
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/picklists/currency/{id}
-  method: get
-  operationId: GetCurrency
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/picklists/currency/{id}
-  method: put
-  operationId: UpdateCurrency
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/picklists/currency/{id}
-  method: delete
-  operationId: DeleteCurrency
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/organizationconfig
-  method: get
-  operationId: GetOrganizationConfig
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/organizationconfig
-  method: put
-  operationId: UpdateOrganizationConfig
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/picklists/currency
-  method: get
-  operationId: ListCurrencies
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/picklists/currency
-  method: post
-  operationId: CreateCurrency
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/picklists/debitreasons
-  method: get
-  operationId: ListDebitReasons
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/picklists/debitreasons
-  method: post
-  operationId: CreateDebitReason
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/accounts/{id}
-  method: get
-  operationId: GetAccount
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/accounts/{id}
-  method: put
-  operationId: PutAccount
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/accounts/{id}
-  method: delete
-  operationId: DeleteAccount
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/counterpricings/{id}
-  method: get
-  operationId: GetCounterPricing
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/counterpricings/{id}
-  method: put
-  operationId: PutCounterPricing
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/counterpricings/{id}
-  method: delete
-  operationId: DeleteCounterPricing
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/counters
-  method: get
-  operationId: ListCounters
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/counters
-  method: post
-  operationId: PostCounter
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/plangrouplinks/{id}
-  method: get
-  operationId: GetPlanGroupLink
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/plangrouplinks/{id}
-  method: put
-  operationId: PutPlanGroupLink
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/plangrouplinks/{id}
-  method: delete
-  operationId: DeletePlanGroupLink
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/aggregations
-  method: get
-  operationId: ListAggregations
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/aggregations
-  method: post
-  operationId: PostAggregation
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/accounts
-  method: get
-  operationId: ListAccounts
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/accounts
-  method: post
-  operationId: PostAccount
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/counters/{id}
-  method: get
-  operationId: GetCounter
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/counters/{id}
-  method: put
-  operationId: PutCounter
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/counters/{id}
-  method: delete
-  operationId: DeleteCounter
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/picklists/debitreasons/{id}
-  method: get
-  operationId: GetDebitReason
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/picklists/debitreasons/{id}
-  method: put
-  operationId: UpdateDebitReason
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/picklists/debitreasons/{id}
-  method: delete
-  operationId: DeleteDebitReason
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/pricings
-  method: get
-  operationId: ListPricings
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/pricings
-  method: post
-  operationId: PostPricing
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/plantemplates/{id}
-  method: get
-  operationId: GetPlanTemplate
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/plantemplates/{id}
-  method: put
-  operationId: PutPlanTemplate
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/plantemplates/{id}
-  method: delete
-  operationId: DeletePlanTemplate
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/aggregations/{id}
-  method: get
-  operationId: GetAggregation
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/aggregations/{id}
-  method: put
-  operationId: PutAggregation
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/aggregations/{id}
-  method: delete
-  operationId: DeleteAggregation
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/accountplans/{id}/replace
-  method: post
-  operationId: ReplaceAccountPlan
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/contracts/{id}
-  method: get
-  operationId: GetContract
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/contracts/{id}
-  method: put
-  operationId: PutContract
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/contracts/{id}
-  method: delete
-  operationId: DeleteContract
+  operationId: DeleteExternalMapping
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3557,32 +2342,6 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/externalmappings
-  method: get
-  operationId: ListExternalMappings
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/externalmappings
-  method: post
-  operationId: CreateExternalMapping
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
 - path: /organizations/{orgId}/integrationdestinations/webhooks/{id}/active
   method: put
   operationId: ActivateWebhookDestination
@@ -3599,16 +2358,6 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/externalmappingconfiguration/values/{destination}/{entityType}/{integrationCredentialsId}
-  method: get
-  operationId: GetExternalMappingOptionsForDestinationForCredentialsId
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
 - path: /organizations/{orgId}/integrationconfigs/available/{systemName}/auth/{entityType}
   method: get
   operationId: GetAvailableAuthForSystemAndEntityType
@@ -3632,26 +2381,6 @@ operations:
 - path: /organizations/{orgId}/integrationconfigs/values/{systemName}/{configOption}
   method: get
   operationId: GetConfigOptionValues
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/integrationdestinations/marketplace/usageReport
-  method: get
-  operationId: GetUsageReport
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/externalmappingconfiguration/values/{destination}/{entityType}
-  method: get
-  operationId: GetExternalMappingOptionsForDestination
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3701,16 +2430,6 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/externalmappingconfiguration
-  method: get
-  operationId: GetExternalMappingConfiguration
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
 - path: /organizations/{orgId}/integrationconfigs/available
   method: get
   operationId: GetAvailableConfig
@@ -3783,16 +2502,6 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/externalmappings/externalid/{system}/{externalTable}/{externalId}
-  method: get
-  operationId: ListExternalMappingsForExternalSystemAndEntity
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
 - path: /organizations/{orgId}/integrationdestinations/webhooks
   method: get
   operationId: ListWebhookIntegrations
@@ -3829,58 +2538,6 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/externalmappings/external/{entity}/{m3terId}
-  method: get
-  operationId: ListExternalMappingsForM3terEntity
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/externalmappings/{id}
-  method: get
-  operationId: GetExternalMapping
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/externalmappings/{id}
-  method: put
-  operationId: UpdateExternalMapping
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/externalmappings/{id}
-  method: delete
-  operationId: DeleteExternalMapping
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
 - path: /organizations/{orgId}/integrationruns/{id}
   method: get
   operationId: GetIntegrationRun
@@ -3920,6 +2577,204 @@ operations:
 - path: /organizations/{orgId}/integrationconfigs/{id}
   method: delete
   operationId: DeleteIntegrationConfig
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/invitations/{id}
+  method: get
+  operationId: GetOrgUserInvitation
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/invitations
+  method: get
+  operationId: ListOrgUserInvitations
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/invitations
+  method: post
+  operationId: CreateOrgUserInvitation
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/lineitems
+  method: get
+  operationId: ListLineItems
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/lookuptables
+  method: get
+  operationId: ListLookupTable
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/lookuptables
+  method: post
+  operationId: PostLookupTable
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/lookuptables/{id}
+  method: get
+  operationId: GetLookupTable
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/lookuptables/{id}
+  method: put
+  operationId: PutLookupTable
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/lookuptables/{id}
+  method: delete
+  operationId: DeleteLookupTable
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{id}/status
+  method: put
+  operationId: UpdateLookupTableRevisionStatus
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{id}
+  method: get
+  operationId: GetLookupTableRevision
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{id}
+  method: put
+  operationId: UpdateLookupTableRevision
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{id}
+  method: delete
+  operationId: DeleteLookupTableRevision
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/lookuptables/{lookupTableId}/revisions
+  method: get
+  operationId: ListLookupTableRevision
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/lookuptables/{lookupTableId}/revisions
+  method: post
+  operationId: CreateLookupTableRevision
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3979,44 +2834,12 @@ operations:
   method: post
   operationId: GetLookupTableRevisionArchivedDataUrl
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/lookuptables
-  method: get
-  operationId: ListLookupTable
-  x-agentic-access:
     action-class: connected
     consequence: read
     subject: optional
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/lookuptables
-  method: post
-  operationId: PostLookupTable
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
 - path: /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{lookupTableRevisionId}/data/copy
   method: post
   operationId: CopyLookupTableRevisionData
@@ -4111,93 +2934,9 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{id}/status
-  method: put
-  operationId: UpdateLookupTableRevisionStatus
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{id}
-  method: get
-  operationId: GetLookupTableRevision
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{id}
-  method: put
-  operationId: UpdateLookupTableRevision
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{id}
-  method: delete
-  operationId: DeleteLookupTableRevision
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
 - path: /organizations/{orgId}/lookuptables/{lookupTableId}/revisions/{lookupTableRevisionId}/data/jobs/download
   method: post
   operationId: TriggerLookupTableRevisionDataDownloadJob
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/lookuptables/{lookupTableId}/revisions
-  method: get
-  operationId: ListLookupTableRevision
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /organizations/{orgId}/lookuptables/{lookupTableId}/revisions
-  method: post
-  operationId: CreateLookupTableRevision
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4227,9 +2966,9 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /organizations/{orgId}/lookuptables/{id}
+- path: /organizations/{orgId}/integrationdestinations/marketplace/usageReport
   method: get
-  operationId: GetLookupTable
+  operationId: GetUsageReport
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -4237,29 +2976,15 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /organizations/{orgId}/lookuptables/{id}
-  method: put
-  operationId: PutLookupTable
+- path: /organizations/{orgId}/measurements
+  method: post
+  operationId: SubmitMeasurements
   x-agentic-access:
     action-class: acting
     consequence: write
     subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /organizations/{orgId}/lookuptables/{id}
-  method: delete
-  operationId: DeleteLookupTable
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    scope:
+    - measurements:upload
     audience: null
     token:
       max-ttl: 900
@@ -4332,6 +3057,1290 @@ operations:
     subject: optional
     scope:
     - measurements:fileUpload
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/meters/{id}
+  method: get
+  operationId: GetMeter
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/meters/{id}
+  method: put
+  operationId: PutMeter
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/meters/{id}
+  method: delete
+  operationId: DeleteMeter
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/meters
+  method: get
+  operationId: ListMeters
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/meters
+  method: post
+  operationId: PostMeter
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/notifications/configurations
+  method: get
+  operationId: ListNotifications
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/notifications/configurations
+  method: post
+  operationId: CreateNotification
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/notifications/configurations/{id}
+  method: get
+  operationId: GetNotification
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/notifications/configurations/{id}
+  method: put
+  operationId: UpdateNotification
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/notifications/configurations/{id}
+  method: delete
+  operationId: DeleteNotification
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/notifications/evaluate
+  method: post
+  operationId: EvaluateCalculation
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/organizationconfig
+  method: get
+  operationId: GetOrganizationConfig
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/organizationconfig
+  method: put
+  operationId: UpdateOrganizationConfig
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/users
+  method: get
+  operationId: ListOrgUsers
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/users/{id}
+  method: get
+  operationId: GetOrgUser
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/users/{id}
+  method: put
+  operationId: PutOrgUser
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/users/{id}/usergroups
+  method: get
+  operationId: GetOrgUserGroups
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/users/{id}/password/resend
+  method: put
+  operationId: AdminResendTempPass
+  x-agentic-access:
+    action-class: acting
+    consequence: physical
+    subject: required
+    audience: null
+    token:
+      max-ttl: 300
+      exchange: true
+      purpose-required: true
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/users/{id}/permissions
+  method: get
+  operationId: GetOrgUserPermissions
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtousergroup
+  method: post
+  operationId: AddPermissionPolicyToUserGroup
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromuser
+  method: post
+  operationId: RemovePermissionPolicyFromUser
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtouser
+  method: post
+  operationId: AddPermissionPolicyToUser
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtosupportusers
+  method: post
+  operationId: AddPermissionPolicyToSupportUsers
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtoserviceuser
+  method: post
+  operationId: AddPermissionPolicyToServiceUser
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromserviceuser
+  method: post
+  operationId: RemovePermissionPolicyFromServiceUser
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/permissionpolicies
+  method: get
+  operationId: ListPermissionPolicies
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/permissionpolicies
+  method: post
+  operationId: PostPermissionPolicy
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromsupportusers
+  method: post
+  operationId: RemovePermissionPolicyFromSupportUsers
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromusergroup
+  method: post
+  operationId: RemovePermissionPolicyFromUserGroup
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/permissionpolicies/{id}
+  method: get
+  operationId: GetPermissionPolicy
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/permissionpolicies/{id}
+  method: put
+  operationId: PutPermissionPolicy
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/permissionpolicies/{id}
+  method: delete
+  operationId: DeletePermissionPolicy
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/plans
+  method: get
+  operationId: ListPlans
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/plans
+  method: post
+  operationId: PostPlan
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/plans/{id}
+  method: get
+  operationId: GetPlan
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/plans/{id}
+  method: put
+  operationId: PutPlan
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/plans/{id}
+  method: delete
+  operationId: DeletePlan
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/plangroups
+  method: get
+  operationId: ListPlanGroups
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/plangroups
+  method: post
+  operationId: PostPlanGroup
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/plangroups/{id}
+  method: get
+  operationId: GetPlanGroup
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/plangroups/{id}
+  method: put
+  operationId: PutPlanGroup
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/plangroups/{id}
+  method: delete
+  operationId: DeletePlanGroup
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/plangrouplinks
+  method: get
+  operationId: ListPlanGroupLinks
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/plangrouplinks
+  method: post
+  operationId: PostPlanGroupLink
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/plangrouplinks/{id}
+  method: get
+  operationId: GetPlanGroupLink
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/plangrouplinks/{id}
+  method: put
+  operationId: PutPlanGroupLink
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/plangrouplinks/{id}
+  method: delete
+  operationId: DeletePlanGroupLink
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/plantemplates
+  method: get
+  operationId: ListPlanTemplates
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/plantemplates
+  method: post
+  operationId: PostPlanTemplate
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/plantemplates/{id}
+  method: get
+  operationId: GetPlanTemplate
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/plantemplates/{id}
+  method: put
+  operationId: PutPlanTemplate
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/plantemplates/{id}
+  method: delete
+  operationId: DeletePlanTemplate
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/pricings/{id}
+  method: get
+  operationId: GetPricing
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/pricings/{id}
+  method: put
+  operationId: PutPricing
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/pricings/{id}
+  method: delete
+  operationId: DeletePricing
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/pricings
+  method: get
+  operationId: ListPricings
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/pricings
+  method: post
+  operationId: PostPricing
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/products/{id}
+  method: get
+  operationId: GetProduct
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/products/{id}
+  method: put
+  operationId: PutProduct
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/products/{id}
+  method: delete
+  operationId: DeleteProduct
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/products
+  method: get
+  operationId: ListProducts
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/products
+  method: post
+  operationId: PostProduct
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/permissions
+  method: get
+  operationId: GetResourceGroupPermissions
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/removeresource
+  method: post
+  operationId: RemoveResourceFromGroup
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/resourcegroups/{type}
+  method: get
+  operationId: ListResourceGroups
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/resourcegroups/{type}
+  method: post
+  operationId: PostResourceGroup
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/resourcegroups/{type}/{id}
+  method: get
+  operationId: GetResourceGroup
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/resourcegroups/{type}/{id}
+  method: put
+  operationId: PutResourceGroup
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/resourcegroups/{type}/{id}
+  method: delete
+  operationId: DeleteResourceGroup
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/addresource
+  method: post
+  operationId: AddResourceToGroup
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/contents
+  method: post
+  operationId: ListResourceGroupsForId
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/scheduledevents/configurations/{id}
+  method: get
+  operationId: GetScheduledEventConfiguration
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/scheduledevents/configurations/{id}
+  method: put
+  operationId: UpdateScheduledEventConfiguration
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/scheduledevents/configurations/{id}
+  method: delete
+  operationId: DeleteScheduledEventConfiguration
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/scheduledevents/configurations
+  method: get
+  operationId: ListScheduledEventConfigurations
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/scheduledevents/configurations
+  method: post
+  operationId: CreateScheduledEventConfiguration
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/statementdefinitions/{id}
+  method: get
+  operationId: GetStatementDefinition
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/statementdefinitions/{id}
+  method: put
+  operationId: PutStatementDefinition
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/statementdefinitions/{id}
+  method: delete
+  operationId: DeleteStatementDefinition
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/statementdefinitions
+  method: get
+  operationId: ListStatementDefinitions
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/statementdefinitions
+  method: post
+  operationId: PostStatementDefinition
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/statementjobs/{id}/cancel
+  method: post
+  operationId: CancelStatementJob
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/statementjobs/{id}
+  method: get
+  operationId: GetStatementJob
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/statementjobs/batch
+  method: post
+  operationId: CreateStatementJobBatch
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/statementjobs
+  method: get
+  operationId: ListStatementJobs
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/statementjobs
+  method: post
+  operationId: CreateStatementJob
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/support
+  method: get
+  operationId: GetSupport
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/support
+  method: put
+  operationId: PutSupport
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/picklists/transactiontypes/{id}
+  method: get
+  operationId: GetTransactionType
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/picklists/transactiontypes/{id}
+  method: put
+  operationId: UpdateTransactionType
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/picklists/transactiontypes/{id}
+  method: delete
+  operationId: DeleteTransactionType
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/picklists/transactiontypes
+  method: get
+  operationId: ListTransactionTypes
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /organizations/{orgId}/picklists/transactiontypes
+  method: post
+  operationId: CreateTransactionType
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /organizations/{orgId}/users/me
+  method: get
+  operationId: GetMe
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
     token:
       max-ttl: 3600
     audit: none
