@@ -220,6 +220,45 @@ components:
             type: object
             additionalProperties: true
             description: ''
+    BillLineItemPricingBandUsage:
+      type: object
+      properties:
+        pricingBandId:
+          type: string
+          description: 'The UUID for the pricing band. '
+        lowerLimit:
+          type: number
+          description: The lower limit *(start)* of the pricing band.
+          format: double
+        fixedPrice:
+          type: number
+          description: 'Fixed price is a charge entered for certain pricing types such as Stairstep, Custom Tiered, and Custom Volume. It is a set price and not dependent on usage.
+
+
+
+            '
+        unitSubtotal:
+          type: number
+          description: 'The subtotal of the unit usage. '
+        unitPrice:
+          type: number
+          description: 'The price per unit in the band. '
+        bandUnits:
+          type: number
+          description: 'The number of units used within the band. '
+        bandQuantity:
+          type: number
+          description: 'Usage amount within the band. '
+        bandSubtotal:
+          type: number
+          description: 'Subtotal amount for the band. '
+        creditTypeId:
+          type: string
+          description: The UUID of the credit type.
+        convertedBandSubtotal:
+          type: number
+          description: ''
+      description: Array containing the pricing band information, which shows the details for each pricing band or tier.
     AbstractBillLineItemResponse:
       type: object
       description: ''
@@ -271,25 +310,6 @@ components:
             description: The ID of the user who last modified this line item.
             x-stainless-skip:
             - terraform
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
     PaginatedBillLineItemResponseData:
       type: object
       properties:
@@ -325,45 +345,25 @@ components:
       - BALANCE_CONSUMED
       - BALANCE_FEE
       - AD_HOC
-    BillLineItemPricingBandUsage:
+    AbstractResponse:
+      required:
+      - id
       type: object
       properties:
-        pricingBandId:
+        id:
           type: string
-          description: 'The UUID for the pricing band. '
-        lowerLimit:
-          type: number
-          description: The lower limit *(start)* of the pricing band.
-          format: double
-        fixedPrice:
-          type: number
-          description: 'Fixed price is a charge entered for certain pricing types such as Stairstep, Custom Tiered, and Custom Volume. It is a set price and not dependent on usage.
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
 
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
 
-
-            '
-        unitSubtotal:
-          type: number
-          description: 'The subtotal of the unit usage. '
-        unitPrice:
-          type: number
-          description: 'The price per unit in the band. '
-        bandUnits:
-          type: number
-          description: 'The number of units used within the band. '
-        bandQuantity:
-          type: number
-          description: 'Usage amount within the band. '
-        bandSubtotal:
-          type: number
-          description: 'Subtotal amount for the band. '
-        creditTypeId:
-          type: string
-          description: The UUID of the credit type.
-        convertedBandSubtotal:
-          type: number
-          description: ''
-      description: Array containing the pricing band information, which shows the details for each pricing band or tier.
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
   responses:
     Error:
       description: Error message

@@ -370,53 +370,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    PaginatedAccountPlanResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/AccountPlanResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    ChildBillingMode:
-      type: string
-      description: 'If the Account is either a Parent or a Child Account, this specifies the Account hierarchy billing mode. The mode determines how billing will be handled and shown on bills for charges due on the Parent Account, and charges due on Child Accounts:
-
-
-        * **Parent Breakdown** - a separate bill line item per Account. Default setting.
-
-
-        * **Parent Summary** - single bill line item for all Accounts.
-
-
-        * **Child** - the Child Account is billed.'
-      enum:
-      - PARENT_SUMMARY
-      - PARENT_BREAKDOWN
-      - CHILD
     AccountPlanResponse:
       type: object
       description: ''
@@ -491,6 +444,29 @@ components:
             description: The unique identifier (UUID) for the user who last modified the AccountPlan or AccountPlanGroup.
             x-stainless-skip:
             - terraform
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
     AbstractRequest:
       type: object
       properties:
@@ -505,6 +481,22 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    ChildBillingMode:
+      type: string
+      description: 'If the Account is either a Parent or a Child Account, this specifies the Account hierarchy billing mode. The mode determines how billing will be handled and shown on bills for charges due on the Parent Account, and charges due on Child Accounts:
+
+
+        * **Parent Breakdown** - a separate bill line item per Account. Default setting.
+
+
+        * **Parent Summary** - single bill line item for all Accounts.
+
+
+        * **Child** - the Child Account is billed.'
+      enum:
+      - PARENT_SUMMARY
+      - PARENT_BREAKDOWN
+      - CHILD
     AccountPlanRequest:
       type: object
       description: ''
@@ -576,29 +568,18 @@ components:
 
               * **Child** - the Child Account is billed.'
             $ref: '#/components/schemas/ChildBillingMode'
-    AbstractResponseWithCustomFields:
+    PaginatedAccountPlanResponseData:
       type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AccountPlanResponse'
+        nextToken:
+          type: string
+          description: ''
       description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
     ReplaceAccountPlanResponse:
       type: object
       properties:
@@ -608,6 +589,25 @@ components:
         newAccountPlan:
           description: ''
           $ref: '#/components/schemas/AccountPlanResponse'
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
       description: ''
     AbstractRequestWithCustomFields:
       type: object

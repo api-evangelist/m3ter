@@ -53,75 +53,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    DimensionQuery:
-      required:
-      - filter
-      - name
-      type: object
-      properties:
-        name:
-          minLength: 1
-          type: string
-          description: The Dimension name to target.
-        attributes:
-          type: array
-          description: The dimension attribute to target
-          items:
-            type: string
-        filter:
-          minItems: 1
-          type: array
-          description: The value of a dimension to filter by. Use "*" to filter on all dimension values.
-          items:
-            type: string
-      description: Dimension of a Meter used as a filter.
-    BillData:
-      type: object
-      properties:
-        updatedDate:
-          type: string
-          description: ''
-          format: date-time
-        dimensions:
-          description: ''
-          $ref: '#/components/schemas/LineItemDimensions'
-        measures:
-          description: ''
-          $ref: '#/components/schemas/LineItemMeasures'
-        billDetails:
-          description: ''
-          $ref: '#/components/schemas/BillDetails'
-      description: ''
-    LineItemMeasures:
-      type: object
-      properties:
-        convertedSubtotal:
-          type: number
-          description: ''
-          format: double
-        subtotal:
-          type: number
-          description: ''
-          format: double
-        version:
-          type: number
-          description: ''
-          format: double
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        conversionRate:
-          type: number
-          description: ''
-          format: double
-        quantity:
-          type: number
-          description: ''
-          format: double
-        units:
-          type: number
-          description: ''
-          format: double
-      description: ''
     QueryBillDataRequest:
       required:
       - endDate
@@ -158,15 +89,6 @@ components:
       description: Data Explorer Bill data query.
       allOf:
       - $ref: '#/components/schemas/AbstractRequest'
-    BillDataResponse:
-      type: object
-      properties:
-        values:
-          type: array
-          description: A list of bill line items.
-          items:
-            $ref: '#/components/schemas/BillData'
-      description: Response containing bill line items.
     AbstractRequest:
       type: object
       properties:
@@ -181,29 +103,15 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    LineItemType:
-      type: string
-      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
-      enum:
-      - STANDING_CHARGE
-      - USAGE
-      - COUNTER_RUNNING_TOTAL_CHARGE
-      - COUNTER_ADJUSTMENT_DEBIT
-      - COUNTER_ADJUSTMENT_CREDIT
-      - USAGE_CREDIT
-      - MINIMUM_SPEND
-      - MINIMUM_SPEND_REFUND
-      - CREDIT_DEDUCTION
-      - MANUAL_ADJUSTMENT
-      - CREDIT_MEMO
-      - DEBIT_MEMO
-      - COMMITMENT_CONSUMED
-      - COMMITMENT_FEE
-      - OVERAGE_SURCHARGE
-      - OVERAGE_USAGE
-      - BALANCE_CONSUMED
-      - BALANCE_FEE
-      - AD_HOC
+    BillDataResponse:
+      type: object
+      properties:
+        values:
+          type: array
+          description: A list of bill line items.
+          items:
+            $ref: '#/components/schemas/BillData'
+      description: Response containing bill line items.
     LineItemDimensions:
       type: object
       properties:
@@ -259,6 +167,98 @@ components:
           type: string
           description: ''
       description: ''
+    LineItemMeasures:
+      type: object
+      properties:
+        convertedSubtotal:
+          type: number
+          description: ''
+          format: double
+        subtotal:
+          type: number
+          description: ''
+          format: double
+        version:
+          type: number
+          description: ''
+          format: double
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        conversionRate:
+          type: number
+          description: ''
+          format: double
+        quantity:
+          type: number
+          description: ''
+          format: double
+        units:
+          type: number
+          description: ''
+          format: double
+      description: ''
+    DimensionQuery:
+      required:
+      - filter
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The Dimension name to target.
+        attributes:
+          type: array
+          description: The dimension attribute to target
+          items:
+            type: string
+        filter:
+          minItems: 1
+          type: array
+          description: The value of a dimension to filter by. Use "*" to filter on all dimension values.
+          items:
+            type: string
+      description: Dimension of a Meter used as a filter.
+    BillData:
+      type: object
+      properties:
+        updatedDate:
+          type: string
+          description: ''
+          format: date-time
+        dimensions:
+          description: ''
+          $ref: '#/components/schemas/LineItemDimensions'
+        measures:
+          description: ''
+          $ref: '#/components/schemas/LineItemMeasures'
+        billDetails:
+          description: ''
+          $ref: '#/components/schemas/BillDetails'
+      description: ''
+    LineItemType:
+      type: string
+      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
+      enum:
+      - STANDING_CHARGE
+      - USAGE
+      - COUNTER_RUNNING_TOTAL_CHARGE
+      - COUNTER_ADJUSTMENT_DEBIT
+      - COUNTER_ADJUSTMENT_CREDIT
+      - USAGE_CREDIT
+      - MINIMUM_SPEND
+      - MINIMUM_SPEND_REFUND
+      - CREDIT_DEDUCTION
+      - MANUAL_ADJUSTMENT
+      - CREDIT_MEMO
+      - DEBIT_MEMO
+      - COMMITMENT_CONSUMED
+      - COMMITMENT_FEE
+      - OVERAGE_SURCHARGE
+      - OVERAGE_USAGE
+      - BALANCE_CONSUMED
+      - BALANCE_FEE
+      - AD_HOC
     BillDetails:
       type: object
       properties:

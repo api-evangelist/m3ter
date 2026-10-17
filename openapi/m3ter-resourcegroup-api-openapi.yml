@@ -494,12 +494,126 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    PermissionPolicyResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the Permission Policy.
+          permissionPolicy:
+            type: array
+            description: 'Array containing the Permission Policies information. '
+            items:
+              $ref: '#/components/schemas/PermissionStatement'
+          managedPolicy:
+            type: boolean
+            description: 'Indicates whether this is a system generated Managed Permission Policy. '
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Permission Policy was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Permission Policy was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this Permission Policy.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this Permission Policy.
+            x-stainless-skip:
+            - terraform
+    PaginatedResourceGroupResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ResourceGroupResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     TargetType:
       type: string
       description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
       enum:
       - ITEM
       - GROUP
+    ResourceGroupItemRequest:
+      required:
+      - targetId
+      - targetType
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the group.
+
+            '
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        targetId:
+          minLength: 1
+          type: string
+          description: 'The id of the item or group you want to:
+
+            - *Add Item* call: add to a Resource Group.
+
+            - *Remove Item* call: remove from the Resource Group.'
+        targetType:
+          description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
+          $ref: '#/components/schemas/TargetType'
+      description: ''
+      example:
+        targetId: 06f6b50c-a868-4ca6-XXXX-448e507d5248
+        targetType: item
+    ResourceGroupItemResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          targetId:
+            type: string
+            description: The UUID of the item.
+          targetType:
+            description: ''
+            $ref: '#/components/schemas/TargetType'
+          dtCreated:
+            type: string
+            description: The DateTime when the item was created for the resource group.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the resource group item was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this item for the resource group.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this item for the resource group.
+            x-stainless-skip:
+            - terraform
     PermissionStatement:
       required:
       - action
@@ -574,116 +688,6 @@ components:
           type: string
           description: ''
       description: ''
-    PermissionPolicyResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          name:
-            type: string
-            description: The name of the Permission Policy.
-          permissionPolicy:
-            type: array
-            description: 'Array containing the Permission Policies information. '
-            items:
-              $ref: '#/components/schemas/PermissionStatement'
-          managedPolicy:
-            type: boolean
-            description: 'Indicates whether this is a system generated Managed Permission Policy. '
-          dtCreated:
-            type: string
-            description: The date and time *(in ISO-8601 format)* when the Permission Policy was created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The date and time *(in ISO-8601 format)* when the Permission Policy was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The unique identifier (UUID) of the user who created this Permission Policy.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The unique identifier (UUID) of the user who last modified this Permission Policy.
-            x-stainless-skip:
-            - terraform
-    PermissionEffect:
-      type: string
-      description: ''
-      enum:
-      - ALLOW
-      - DENY
-    ResourceGroupItemRequest:
-      required:
-      - targetId
-      - targetType
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the group.
-
-            '
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        targetId:
-          minLength: 1
-          type: string
-          description: 'The id of the item or group you want to:
-
-            - *Add Item* call: add to a Resource Group.
-
-            - *Remove Item* call: remove from the Resource Group.'
-        targetType:
-          description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
-          $ref: '#/components/schemas/TargetType'
-      description: ''
-      example:
-        targetId: 06f6b50c-a868-4ca6-XXXX-448e507d5248
-        targetType: item
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    ResourceGroupRequest:
-      required:
-      - name
-      type: object
-      properties:
-        version:
-          type: integer
-          description: ''
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        name:
-          maxLength: 100
-          minLength: 1
-          type: string
-          description: ''
-      description: ''
     ResourceGroupResponse:
       type: object
       description: ''
@@ -715,17 +719,47 @@ components:
             description: The unique identifier (UUID) of the user who last modified this Resource Group.
             x-stainless-skip:
             - terraform
-    PaginatedResourceGroupResponseData:
+    PermissionEffect:
+      type: string
+      description: ''
+      enum:
+      - ALLOW
+      - DENY
+    ResourceGroupRequest:
+      required:
+      - name
       type: object
       properties:
-        data:
-          type: array
+        version:
+          type: integer
           description: ''
-          items:
-            $ref: '#/components/schemas/ResourceGroupResponse'
-        nextToken:
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        name:
+          maxLength: 100
+          minLength: 1
           type: string
           description: ''
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
       description: ''
     PaginatedResourceGroupItemResponseData:
       type: object
@@ -739,40 +773,6 @@ components:
           type: string
           description: ''
       description: ''
-    ResourceGroupItemResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          targetId:
-            type: string
-            description: The UUID of the item.
-          targetType:
-            description: ''
-            $ref: '#/components/schemas/TargetType'
-          dtCreated:
-            type: string
-            description: The DateTime when the item was created for the resource group.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the resource group item was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The id of the user who created this item for the resource group.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The id of the user who last modified this item for the resource group.
-            x-stainless-skip:
-            - terraform
   responses:
     Error:
       description: Error message

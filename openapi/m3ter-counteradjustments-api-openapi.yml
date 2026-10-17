@@ -312,77 +312,18 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    CounterAdjustmentResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          counterId:
-            type: string
-            description: The ID of the Counter that was used to make the CounterAdjustment on the Account.
-          accountId:
-            type: string
-            description: The Account ID the CounterAdjustment was created for.
-          date:
-            type: string
-            description: The date the CounterAdjustment was created for the Account *(in ISO-8601 date format)*.
-            format: date
-          value:
-            type: integer
-            description: Integer Value of the Counter that was used to make the CounterAdjustment.
-            format: int32
-          purchaseOrderNumber:
-            type: string
-            description: Purchase Order Number for the Counter Adjustment. *(Optional)*
-    AbstractResponse:
-      required:
-      - id
+    PaginatedCounterAdjustmentResponseData:
       type: object
       properties:
-        id:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/CounterAdjustmentResponse'
+        nextToken:
           type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
+          description: ''
       description: ''
-    AbstractResponseWithAuditFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          dtCreated:
-            type: string
-            description: The DateTime when this item was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The ID of the user who created this item.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The ID of the user who last modified this item.
-            x-stainless-skip:
-            - terraform
     AbstractRequest:
       type: object
       properties:
@@ -396,18 +337,6 @@ components:
           format: int64
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
-      description: ''
-    PaginatedCounterAdjustmentResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/CounterAdjustmentResponse'
-        nextToken:
-          type: string
-          description: ''
       description: ''
     CounterAdjustmentRequest:
       type: object
@@ -448,6 +377,77 @@ components:
             maxLength: 100
             type: string
             description: Purchase Order Number for the Counter Adjustment. *(Optional)*
+    CounterAdjustmentResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          counterId:
+            type: string
+            description: The ID of the Counter that was used to make the CounterAdjustment on the Account.
+          accountId:
+            type: string
+            description: The Account ID the CounterAdjustment was created for.
+          date:
+            type: string
+            description: The date the CounterAdjustment was created for the Account *(in ISO-8601 date format)*.
+            format: date
+          value:
+            type: integer
+            description: Integer Value of the Counter that was used to make the CounterAdjustment.
+            format: int32
+          purchaseOrderNumber:
+            type: string
+            description: Purchase Order Number for the Counter Adjustment. *(Optional)*
+    AbstractResponseWithAuditFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
   responses:
     Error:
       description: Error message

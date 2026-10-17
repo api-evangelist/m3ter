@@ -324,25 +324,49 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    UsageFilter:
-      required:
-      - dimensionCode
-      - mode
-      - value
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+    AbstractRequest:
       type: object
       properties:
-        dimensionCode:
-          minLength: 1
-          type: string
-          description: ''
-        value:
-          minLength: 1
-          type: string
-          description: ''
-        mode:
-          description: ''
-          $ref: '#/components/schemas/UsageFilterMode'
-      description: Filters that determine which usage records are included in contract billing
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    UsageFilterMode:
+      type: string
+      description: ''
+      enum:
+      - INCLUDE
+      - EXCLUDE
     EndDateBillingEntitiesResponse:
       type: object
       properties:
@@ -376,38 +400,27 @@ components:
               $ref: '#/components/schemas/Set_String_'
           description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the entities for which the update failed.
       description: ''
-    AbstractResponseWithCustomFields:
+    PaginatedContractResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ContractResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    Set_String_:
       type: object
       description: ''
       allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
+      - $ref: '#/components/schemas/Collection_String_'
       - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-    BillingEntity:
-      type: string
-      description: ''
-      enum:
-      - CONTRACT
-      - ACCOUNTPLAN
-      - PREPAYMENT
-      - PRICINGS
-      - COUNTER_PRICINGS
+          empty:
+            type: boolean
+            description: ''
     ContractRequest:
       type: object
       description: ''
@@ -476,24 +489,60 @@ components:
             type: string
             description: The exclusive end date of the Contract *(in ISO-8601 format)*. This means the Contract is active until midnight on the day ***before*** this date.
             format: date
-    AbstractResponse:
+    UsageFilter:
       required:
-      - id
+      - dimensionCode
+      - mode
+      - value
       type: object
       properties:
-        id:
+        dimensionCode:
+          minLength: 1
           type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
+          description: ''
+        value:
+          minLength: 1
+          type: string
+          description: ''
+        mode:
+          description: ''
+          $ref: '#/components/schemas/UsageFilterMode'
+      description: Filters that determine which usage records are included in contract billing
+    EndDateBillingEntitiesRequest:
+      required:
+      - billingEntities
+      - endDate
+      type: object
+      properties:
+        endDate:
+          type: string
+          description: The end date and time applied to the specified billing entities *(in ISO 8601 format)*.
+          format: date-time
+        applyToChildren:
+          type: boolean
+          description: A Boolean TRUE/FALSE flag. For Parent Accounts, set to TRUE if you want the specified end-date to be applied to any billing entities associated with Child Accounts. *(Optional)*
+        billingEntities:
+          minItems: 1
+          type: array
+          description: Defines which billing entities associated with the Account will have the specified end-date applied. For example, if you want the specified end-date to be applied to all Prepayments/Commitments created for the Account use `"PREPAYMENT"`.
+          items:
+            $ref: '#/components/schemas/BillingEntity'
+      description: ''
+    BillingEntity:
+      type: string
+      description: ''
+      enum:
+      - CONTRACT
+      - ACCOUNTPLAN
+      - PREPAYMENT
+      - PRICINGS
+      - COUNTER_PRICINGS
+    Collection_String_:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          description: ''
       description: ''
     ContractResponse:
       type: object
@@ -566,74 +615,25 @@ components:
             description: The unique identifier (UUID) of the user who last modified this Contract.
             x-stainless-skip:
             - terraform
-    Set_String_:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/Collection_String_'
-      - properties:
-          empty:
-            type: boolean
-            description: ''
-    AbstractRequest:
+    AbstractResponse:
+      required:
+      - id
       type: object
       properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
         version:
           type: integer
-          description: 'The version number of the entity:
+          description: 'The version number:
 
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
 
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
           format: int64
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    PaginatedContractResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/ContractResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    Collection_String_:
-      type: object
-      properties:
-        empty:
-          type: boolean
-          description: ''
-      description: ''
-    EndDateBillingEntitiesRequest:
-      required:
-      - billingEntities
-      - endDate
-      type: object
-      properties:
-        endDate:
-          type: string
-          description: The end date and time applied to the specified billing entities *(in ISO 8601 format)*.
-          format: date-time
-        applyToChildren:
-          type: boolean
-          description: A Boolean TRUE/FALSE flag. For Parent Accounts, set to TRUE if you want the specified end-date to be applied to any billing entities associated with Child Accounts. *(Optional)*
-        billingEntities:
-          minItems: 1
-          type: array
-          description: Defines which billing entities associated with the Account will have the specified end-date applied. For example, if you want the specified end-date to be applied to all Prepayments/Commitments created for the Account use `"PREPAYMENT"`.
-          items:
-            $ref: '#/components/schemas/BillingEntity'
-      description: ''
-    UsageFilterMode:
-      type: string
-      description: ''
-      enum:
-      - INCLUDE
-      - EXCLUDE
     AbstractRequestWithCustomFields:
       type: object
       description: ''

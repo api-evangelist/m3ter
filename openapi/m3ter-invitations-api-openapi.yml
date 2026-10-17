@@ -141,26 +141,17 @@ paths:
         5XX:
           $ref: '#/components/responses/Error'
 components:
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
   schemas:
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
     UserRequest:
       required:
       - email
@@ -197,25 +188,6 @@ components:
           description: ''
           format: email
       description: ''
-    OrgUserInvitationRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/UserRequest'
-      - properties:
-          permissionPolicyIds:
-            type: array
-            description: 'The IDs of the permission policies the invited user has been assigned. This controls the access rights and privileges that this user will have when working in the m3ter Organization. '
-            items:
-              type: string
-          dtEndAccess:
-            type: string
-            description: 'The date when access will end for the user *(in ISO-8601 format)*. Leave blank for no end date, which gives the user permanent access. '
-            format: date-time
-          dtExpiry:
-            type: string
-            description: The date when the invite expires *(in ISO-8601 format)*. After this date the invited user can no longer accept the invite. By default, any invite is valid for 30 days from the date the invite is sent.
-            format: date-time
     OrgUserInvitationResponse:
       type: object
       description: ''
@@ -289,16 +261,44 @@ components:
           type: string
           description: ''
       description: ''
-  responses:
-    Error:
-      description: Error message
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
+    OrgUserInvitationRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/UserRequest'
+      - properties:
+          permissionPolicyIds:
+            type: array
+            description: 'The IDs of the permission policies the invited user has been assigned. This controls the access rights and privileges that this user will have when working in the m3ter Organization. '
+            items:
+              type: string
+          dtEndAccess:
+            type: string
+            description: 'The date when access will end for the user *(in ISO-8601 format)*. Leave blank for no end date, which gives the user permanent access. '
+            format: date-time
+          dtExpiry:
+            type: string
+            description: The date when the invite expires *(in ISO-8601 format)*. After this date the invited user can no longer accept the invite. By default, any invite is valid for 30 days from the date the invite is sent.
+            format: date-time
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
   securitySchemes:
     OAuth2:
       type: oauth2

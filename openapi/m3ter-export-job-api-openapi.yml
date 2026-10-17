@@ -158,45 +158,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    PaginatedJobResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/JobResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    Status:
-      type: string
-      description: ''
-      enum:
-      - PENDING
-      - RUNNING
-      - SUCCEEDED
-      - FAILED
     SourceType:
       type: string
       description: ''
@@ -233,6 +194,45 @@ components:
       description: Base Response containing data export job
       allOf:
       - $ref: '#/components/schemas/AbstractResponse'
+    Status:
+      type: string
+      description: ''
+      enum:
+      - PENDING
+      - RUNNING
+      - SUCCEEDED
+      - FAILED
+    PaginatedJobResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/JobResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
   responses:
     Error:
       description: Error message

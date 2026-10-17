@@ -266,52 +266,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractPickListResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          code:
-            type: string
-            description: The short code of the data entity.
-          name:
-            type: string
-            description: The name of the data entity.
-          archived:
-            type: boolean
-            description: TRUE / FALSE flag indicating whether the data entity is archived. An entity can be archived if it is obsolete.
-    PaginatedCurrencyResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/CurrencyResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
     AbstractPickListRequest:
       type: object
       description: ''
@@ -353,6 +307,33 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    AbstractPickListResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          code:
+            type: string
+            description: The short code of the data entity.
+          name:
+            type: string
+            description: The name of the data entity.
+          archived:
+            type: boolean
+            description: TRUE / FALSE flag indicating whether the data entity is archived. An entity can be archived if it is obsolete.
+    RoundingMode:
+      type: string
+      description: ''
+      enum:
+      - UP
+      - DOWN
+      - CEILING
+      - FLOOR
+      - HALF_UP
+      - HALF_DOWN
+      - HALF_EVEN
+      - UNNECESSARY
     CurrencyRequest:
       type: object
       description: ''
@@ -406,18 +387,37 @@ components:
             description: The unique identifier (UUID) of the user who last modified this Currency.
             x-stainless-skip:
             - terraform
-    RoundingMode:
-      type: string
+    PaginatedCurrencyResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/CurrencyResponse'
+        nextToken:
+          type: string
+          description: ''
       description: ''
-      enum:
-      - UP
-      - DOWN
-      - CEILING
-      - FLOOR
-      - HALF_UP
-      - HALF_DOWN
-      - HALF_EVEN
-      - UNNECESSARY
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
   responses:
     Error:
       description: Error message

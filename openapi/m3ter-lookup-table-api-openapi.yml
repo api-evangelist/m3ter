@@ -255,30 +255,126 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractRequestWithCustomFields:
+    AbstractResponseWithCustomFields:
       type: object
       description: ''
       allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
+      - $ref: '#/components/schemas/AbstractResponse'
       - properties:
           customFields:
             type: object
             description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
 
 
-              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
 
 
               See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            maxItems: 100
             additionalProperties:
               anyOf:
-              - title: StringCustomFieldReq
+              - title: StringCustomFieldRes
                 type: string
-              - title: IntegerCustomFieldReq
+              - title: IntegerCustomFieldRes
                 type: integer
-              - title: NumberCustomFieldReq
+              - title: NumberCustomFieldRes
                 type: number
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    LookupTableResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the Lookup Table
+          code:
+            type: string
+            description: The code of the Lookup Table
+          dtCreated:
+            type: string
+            description: The DateTime when the Lookup Table was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the Lookup Table was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this Lookup Table.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this Lookup Table.
+            x-stainless-skip:
+            - terraform
+          activeRevision:
+            description: ''
+            allOf:
+            - $ref: '#/components/schemas/LookupTableRevisionResponse'
+            - description: The active Lookup Table Revision
+    LookupTableRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - code
+        - name
+        properties:
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: Descriptive name for the Lookup Table.
+          code:
+            maxLength: 80
+            minLength: 1
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: 'Code of the Lookup Table - unique short code used to identify the Lookup Table.
+
+
+              **NOTE:** Code has a maximum length of 80 characters and must not contain non-printable or whitespace characters (except space), and cannot start/end with whitespace.'
+    LookupTableRevisionStatus:
+      type: string
+      description: Status of a Lookup Table Revision
+      enum:
+      - DRAFT
+      - PUBLISHED
+      - ARCHIVED
+    PaginatedLookupTableResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/LookupTableResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     LookupTableRevisionField:
       required:
       - type
@@ -296,25 +392,6 @@ components:
           - $ref: '#/components/schemas/LookupTableRevisionFieldType'
           - description: The type of the field
       description: Field of a Lookup Table Revision
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
     LookupTableRevisionResponse:
       type: object
       properties:
@@ -370,132 +447,55 @@ components:
       allOf:
       - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
       - $ref: '#/components/schemas/AbstractResponse'
-    LookupTableRevisionStatus:
-      type: string
-      description: Status of a Lookup Table Revision
-      enum:
-      - DRAFT
-      - PUBLISHED
-      - ARCHIVED
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    LookupTableRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - code
-        - name
-        properties:
-          name:
-            maxLength: 200
-            minLength: 1
-            type: string
-            description: Descriptive name for the Lookup Table.
-          code:
-            maxLength: 80
-            minLength: 1
-            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
-            type: string
-            description: 'Code of the Lookup Table - unique short code used to identify the Lookup Table.
-
-
-              **NOTE:** Code has a maximum length of 80 characters and must not contain non-printable or whitespace characters (except space), and cannot start/end with whitespace.'
-    LookupTableResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          name:
-            type: string
-            description: The name of the Lookup Table
-          code:
-            type: string
-            description: The code of the Lookup Table
-          dtCreated:
-            type: string
-            description: The DateTime when the Lookup Table was created.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the Lookup Table was last modified.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The id of the user who created this Lookup Table.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The id of the user who last modified this Lookup Table.
-            x-stainless-skip:
-            - terraform
-          activeRevision:
-            description: ''
-            allOf:
-            - $ref: '#/components/schemas/LookupTableRevisionResponse'
-            - description: The active Lookup Table Revision
-    AbstractResponseWithCustomFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
     LookupTableRevisionFieldType:
       type: string
       description: Type of a Lookup Table Revision Field
       enum:
       - STRING
       - NUMBER
-    PaginatedLookupTableResponseData:
+    AbstractResponse:
+      required:
+      - id
       type: object
       properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/LookupTableResponse'
-        nextToken:
+        id:
           type: string
-          description: ''
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
       description: ''
+    AbstractRequestWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
   responses:
     Error:
       description: Error message

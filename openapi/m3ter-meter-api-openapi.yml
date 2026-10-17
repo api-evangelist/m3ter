@@ -276,6 +276,136 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    DataField:
+      required:
+      - category
+      - code
+      - name
+      type: object
+      properties:
+        category:
+          description: The type of field (WHO, WHAT, WHERE, MEASURE, METADATA, INCOME, COST, OTHER).
+          $ref: '#/components/schemas/DataFieldCategory'
+        code:
+          maxLength: 80
+          minLength: 1
+          pattern: ^[\p{L}_$][\p{L}_$0-9]*$
+          type: string
+          description: 'Short code to identify the field
+
+
+            **NOTE:** Code has a maximum length of 80 characters and can only contain letters, numbers, underscore, and the dollar character, and must not start with a number.'
+        name:
+          maxLength: 200
+          minLength: 1
+          type: string
+          description: Descriptive name of the field.
+        unit:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: The units to measure the data with. Should conform to *Unified Code for Units of Measure* (UCUM). Required only for numeric field categories.
+      description: ''
+    MeterResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          productId:
+            type: string
+            description: UUID of the Product the Meter belongs to. *(Optional)* - if blank, the Meter is global.
+          groupId:
+            type: string
+            description: UUID of the MeterGroup the Meter belongs to. *(Optional)*.
+          name:
+            type: string
+            description: Descriptive name for the Meter.
+          code:
+            type: string
+            description: Code of the Meter - unique short code used to identify the Meter.
+          dataFields:
+            type: array
+            description: Used to submit categorized raw usage data values for ingest into the platform - either numeric quantitative values or non-numeric data values. At least one required per Meter; maximum 15 per Meter.
+            items:
+              $ref: '#/components/schemas/DataField'
+          derivedFields:
+            type: array
+            description: Used to submit usage data values for ingest into the platform that are the result of a calculation performed on `dataFields`, `customFields`, or system `Timestamp` fields. Raw usage data is not submitted using `derivedFields`. Maximum 15 per Meter. *(Optional)*.
+            items:
+              $ref: '#/components/schemas/DerivedField'
+          dtCreated:
+            type: string
+            description: The DateTime when the meter was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the meter was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this meter.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this meter.
+            x-stainless-skip:
+            - terraform
+    PaginatedMeterResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/MeterResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     MeterRequest:
       type: object
       description: ''
@@ -328,36 +458,18 @@ components:
               **Note:** Required parameter. If you want to create a Meter without Derived Fields, use an empty array `[]`. If you use a `null`, you''ll receive an error.'
             items:
               $ref: '#/components/schemas/DerivedField'
-    DataField:
-      required:
-      - category
-      - code
-      - name
-      type: object
-      properties:
-        category:
-          description: The type of field (WHO, WHAT, WHERE, MEASURE, METADATA, INCOME, COST, OTHER).
-          $ref: '#/components/schemas/DataFieldCategory'
-        code:
-          maxLength: 80
-          minLength: 1
-          pattern: ^[\p{L}_$][\p{L}_$0-9]*$
-          type: string
-          description: 'Short code to identify the field
-
-
-            **NOTE:** Code has a maximum length of 80 characters and can only contain letters, numbers, underscore, and the dollar character, and must not start with a number.'
-        name:
-          maxLength: 200
-          minLength: 1
-          type: string
-          description: Descriptive name of the field.
-        unit:
-          maxLength: 50
-          minLength: 1
-          type: string
-          description: The units to measure the data with. Should conform to *Unified Code for Units of Measure* (UCUM). Required only for numeric field categories.
-      description: ''
+    DataFieldCategory:
+      type: string
+      description: "The field type, which defines the type of data collected in the field. \n\n* **Who.** String. Use to collect usage data about an individual or organization - data events that answer a \"Who\" question, such as, \"Who or which organization logged-in to the service?\", \"Who was contacted?\", and so on.\n\n* **What.** String. Use to collect usage data about some object or thing, whether it be a physical object in the real world or something in a virtual context.\n\n* **Where.** String. Use to collect usage data about a location - where something happened, whether in physical geographical space or a virtual space.\n\n* **Measure.** Numeric. Use in a general way to collect quantitative usage data.\n\n* **Metadata.** String. *(Max. 256 characters).* Use for high-cardinality fields that you don't intend to segment when you aggregate the data.\n\n* **Income.** Numeric. Use to collect usage data associated with income.\n\n* **Cost.** Numeric. Use to collect usage data associated with costs.\n\n* **Other.** String. Use to collect textual usage not applicable to Who, What, or Where events."
+      enum:
+      - WHO
+      - WHERE
+      - WHAT
+      - OTHER
+      - METADATA
+      - MEASURE
+      - INCOME
+      - COST
     DerivedField:
       type: object
       description: ''
@@ -390,118 +502,6 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    DataFieldCategory:
-      type: string
-      description: "The field type, which defines the type of data collected in the field. \n\n* **Who.** String. Use to collect usage data about an individual or organization - data events that answer a \"Who\" question, such as, \"Who or which organization logged-in to the service?\", \"Who was contacted?\", and so on.\n\n* **What.** String. Use to collect usage data about some object or thing, whether it be a physical object in the real world or something in a virtual context.\n\n* **Where.** String. Use to collect usage data about a location - where something happened, whether in physical geographical space or a virtual space.\n\n* **Measure.** Numeric. Use in a general way to collect quantitative usage data.\n\n* **Metadata.** String. *(Max. 256 characters).* Use for high-cardinality fields that you don't intend to segment when you aggregate the data.\n\n* **Income.** Numeric. Use to collect usage data associated with income.\n\n* **Cost.** Numeric. Use to collect usage data associated with costs.\n\n* **Other.** String. Use to collect textual usage not applicable to Who, What, or Where events."
-      enum:
-      - WHO
-      - WHERE
-      - WHAT
-      - OTHER
-      - METADATA
-      - MEASURE
-      - INCOME
-      - COST
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    PaginatedMeterResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/MeterResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    AbstractResponseWithCustomFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-    MeterResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          productId:
-            type: string
-            description: UUID of the Product the Meter belongs to. *(Optional)* - if blank, the Meter is global.
-          groupId:
-            type: string
-            description: UUID of the MeterGroup the Meter belongs to. *(Optional)*.
-          name:
-            type: string
-            description: Descriptive name for the Meter.
-          code:
-            type: string
-            description: Code of the Meter - unique short code used to identify the Meter.
-          dataFields:
-            type: array
-            description: Used to submit categorized raw usage data values for ingest into the platform - either numeric quantitative values or non-numeric data values. At least one required per Meter; maximum 15 per Meter.
-            items:
-              $ref: '#/components/schemas/DataField'
-          derivedFields:
-            type: array
-            description: Used to submit usage data values for ingest into the platform that are the result of a calculation performed on `dataFields`, `customFields`, or system `Timestamp` fields. Raw usage data is not submitted using `derivedFields`. Maximum 15 per Meter. *(Optional)*.
-            items:
-              $ref: '#/components/schemas/DerivedField'
-          dtCreated:
-            type: string
-            description: The DateTime when the meter was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the meter was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The id of the user who created this meter.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The id of the user who last modified this meter.
-            x-stainless-skip:
-            - terraform
     AbstractRequestWithCustomFields:
       type: object
       description: ''

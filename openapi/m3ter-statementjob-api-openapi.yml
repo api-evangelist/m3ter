@@ -327,37 +327,31 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    PaginatedStatementJobResponseData:
+    StatementJobRequest:
       type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/StatementJobResponse'
-        nextToken:
-          type: string
-          description: ''
       description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - billId
+        properties:
+          billId:
+            minLength: 1
+            type: string
+            description: The unique identifier (UUID) of the bill associated with the StatementJob.
+          includeCsvFormat:
+            type: boolean
+            description: 'A Boolean value indicating whether the generated statement includes a CSV format.
 
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
 
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
+              * TRUE - includes the statement in CSV format.
+
+              * FALSE - no CSV format statement.'
+          filters:
+            description: ''
+            allOf:
+            - $ref: '#/components/schemas/StatementJobFilters'
+            - description: Optional filters to generate a statement for specific usage only.
     StatementsBatchJobRequest:
       type: object
       description: ''
@@ -386,23 +380,6 @@ components:
             allOf:
             - $ref: '#/components/schemas/StatementJobFilters'
             - description: Optional filters to generate a statement for specific usage only.
-    StatementStatus:
-      type: string
-      description: ''
-      enum:
-      - LATEST
-      - STALE
-      - INVALIDATED
-    StatementJobFilters:
-      type: object
-      properties:
-        meterIds:
-          maxItems: 10
-          type: array
-          description: Include usage line items whose meterId matches one of these values.
-          items:
-            type: string
-      description: ''
     AbstractRequest:
       type: object
       properties:
@@ -417,6 +394,13 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    StatementStatus:
+      type: string
+      description: ''
+      enum:
+      - LATEST
+      - STALE
+      - INVALIDATED
     StatementJobResponse:
       type: object
       description: ''
@@ -479,6 +463,16 @@ components:
             description: The unique identifier (UUID) of the user who last modified this StatementJob.
             x-stainless-skip:
             - terraform
+    StatementJobFilters:
+      type: object
+      properties:
+        meterIds:
+          maxItems: 10
+          type: array
+          description: Include usage line items whose meterId matches one of these values.
+          items:
+            type: string
+      description: ''
     StatementJobStatus:
       type: string
       description: The current status of the StatementJob. The status helps track the progress and outcome of a StatementJob.
@@ -488,31 +482,37 @@ components:
       - COMPLETE
       - CANCELLED
       - FAILED
-    StatementJobRequest:
+    PaginatedStatementJobResponseData:
       type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/StatementJobResponse'
+        nextToken:
+          type: string
+          description: ''
       description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - billId
-        properties:
-          billId:
-            minLength: 1
-            type: string
-            description: The unique identifier (UUID) of the bill associated with the StatementJob.
-          includeCsvFormat:
-            type: boolean
-            description: 'A Boolean value indicating whether the generated statement includes a CSV format.
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
 
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
 
-              * TRUE - includes the statement in CSV format.
-
-              * FALSE - no CSV format statement.'
-          filters:
-            description: ''
-            allOf:
-            - $ref: '#/components/schemas/StatementJobFilters'
-            - description: Optional filters to generate a statement for specific usage only.
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
   responses:
     Error:
       description: Error message

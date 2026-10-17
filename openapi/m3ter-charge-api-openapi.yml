@@ -287,6 +287,12 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    ChargeEntityType:
+      type: string
+      description: The entity type the Charge has been created for.
+      enum:
+      - AD_HOC
+      - BALANCE
     ChargeRequest:
       type: object
       description: Request containing a Charge entity
@@ -380,6 +386,38 @@ components:
             type: string
             description: The ID of a Contract on the Account that the Charge will be added to.
         description: Request containing a Charge entity
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PaginatedChargeResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ChargeResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    ChargeLineItemType:
+      type: string
+      description: Available line item types that can be used for billing a Charge.
+      enum:
+      - BALANCE_FEE
+      - AD_HOC
     ChargeResponse:
       type: object
       properties:
@@ -493,44 +531,6 @@ components:
           format: int64
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
-      description: ''
-    ChargeEntityType:
-      type: string
-      description: The entity type the Charge has been created for.
-      enum:
-      - AD_HOC
-      - BALANCE
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    ChargeLineItemType:
-      type: string
-      description: Available line item types that can be used for billing a Charge.
-      enum:
-      - BALANCE_FEE
-      - AD_HOC
-    PaginatedChargeResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/ChargeResponse'
-        nextToken:
-          type: string
-          description: ''
       description: ''
   responses:
     Error:

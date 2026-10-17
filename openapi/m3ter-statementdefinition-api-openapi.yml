@@ -233,16 +233,6 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AggregationFrequency:
-      type: string
-      description: This specifies how often the data should be aggregated.
-      enum:
-      - DAY
-      - WEEK
-      - MONTH
-      - QUARTER
-      - YEAR
-      - WHOLE_PERIOD
     Dimension:
       required:
       - filter
@@ -268,6 +258,20 @@ components:
           items:
             type: string
       description: A Dimension belonging to a Meter.
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     Aggregation:
       type: string
       description: 'Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected targetField.
@@ -301,18 +305,6 @@ components:
       - MEAN
       - UNIQUE
       - CUSTOM_SQL
-    PaginatedStatementDefinitionResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/StatementDefinitionResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
     StatementDefinitionResponse:
       type: object
       description: ''
@@ -377,38 +369,33 @@ components:
             description: The unique identifier (UUID) of the user who last modified this StatementDefinition.
             x-stainless-skip:
             - terraform
-    AbstractResponse:
-      required:
-      - id
+    PaginatedStatementDefinitionResponseData:
       type: object
       properties:
-        id:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/StatementDefinitionResponse'
+        nextToken:
           type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
+          description: ''
       description: ''
-    AbstractRequest:
+    Measure:
       type: object
       properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
+        meterId:
+          type: string
+          description: The unique identifier (UUID) of the Meter containing this Measure.
+        name:
+          type: string
+          description: The name of a Measure data field *(or blank to indicate a wildcard, i.e. all fields)*. Default value is blank.
+        aggregations:
+          maxItems: 7
+          type: array
+          description: A list of Aggregations to apply to the Measure.
+          items:
+            $ref: '#/components/schemas/Aggregation'
       description: ''
     StatementDefinitionRequest:
       type: object
@@ -445,21 +432,34 @@ components:
           generateSlimStatements:
             type: boolean
             description: ''
-    Measure:
+    AggregationFrequency:
+      type: string
+      description: This specifies how often the data should be aggregated.
+      enum:
+      - DAY
+      - WEEK
+      - MONTH
+      - QUARTER
+      - YEAR
+      - WHOLE_PERIOD
+    AbstractResponse:
+      required:
+      - id
       type: object
       properties:
-        meterId:
+        id:
           type: string
-          description: The unique identifier (UUID) of the Meter containing this Measure.
-        name:
-          type: string
-          description: The name of a Measure data field *(or blank to indicate a wildcard, i.e. all fields)*. Default value is blank.
-        aggregations:
-          maxItems: 7
-          type: array
-          description: A list of Aggregations to apply to the Measure.
-          items:
-            $ref: '#/components/schemas/Aggregation'
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
       description: ''
   responses:
     Error:
