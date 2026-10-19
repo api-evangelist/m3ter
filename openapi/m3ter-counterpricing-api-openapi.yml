@@ -3,7 +3,77 @@ info:
   title: m3ter Counter Pricing API
   description: 'If you are using Postman, you can:
 
-    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See Importing the m3ter Open API in our main user Documentation for details. - Copy this link: m3ter-Template API Collection and use it to import the **m3ter-Template API Collection** into your Workspace. See Importing the m3ter Template API Collection in our main user Documentation for details. ---
+
+
+    # Introduction
+
+    The m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:
+
+    - The **Ingest API**, which you can use for submitting raw data measurements. *(See the Submit Measurements endpoint in this API Reference.)*
+
+    - The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)*
+
+
+    ## Authentication and Authorization
+
+    Our APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification. OAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:
+
+    - **Authorization Code**: Used for human login access via the m3ter Console. - **Client Credentials**: Used for machine-to-machine communication and API access. Complete the following flow for API access:
+
+
+    1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. 2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. See Service Authentication for detailed instructions and an example. 3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.*
+
+
+    4. **Bearer Token Usage**: Use the HTTP ''Authorization'' header with the bearer token to authorise all subsequent API requests. > Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one. Below are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. ### cURL Example
+
+    1. Open your terminal or command prompt. 2. Use the following `cURL` command to obtain a Bearer Token:
+
+
+    ```bash
+
+    curl -X POST https://api.m3ter.com/oauth/token \
+
+    -H ''Content-Type: application/x-www-form-urlencoded'' \
+
+    -u your_access_key_id:your_api_secret \
+
+    -d ''grant_type=client_credentials''
+
+    ```
+
+
+    Replace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. 3. Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:
+
+
+    ```json
+
+    {
+
+    "access_token": "your_bearer_token",
+
+    "token_type": "Bearer",
+
+    "expires_in": 18000
+
+    }
+
+    ```
+
+
+    You can then use the Bearer Token *(the value of `"access_token"`)* for subsequent API calls to m3ter. ### Python Example
+
+    1. Install the `requests` library if you haven''t already:
+
+
+    ```bash
+
+    pip install requests
+
+    ```
+
+
+    2.'
   version: '1.0'
   x-logo:
     url: https://console.m3ter.com/m3ter-logo-black.svg
@@ -37,8 +107,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: pageSize
         in: query
         description: Number of CounterPricings to retrieve per page.
@@ -127,8 +195,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       requestBody:
         description: ''
         content:
@@ -163,8 +229,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: id
         in: path
         description: The UUID of the CounterPricing to retrieve.
@@ -202,8 +266,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: id
         in: path
         description: The UUID of the CounterPricing to update.
@@ -245,8 +307,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: id
         in: path
         description: The UUID of the CounterPricing to delete.
@@ -268,6 +328,132 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
+    PricingBand:
+      required:
+      - fixedPrice
+      - lowerLimit
+      - unitPrice
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID for the Pricing band.
+        lowerLimit:
+          minimum: 0
+          type: number
+          description: Lower limit for the Pricing band.
+          format: double
+        fixedPrice:
+          type: number
+          description: Fixed price charged for the Pricing band.
+          format: double
+        unitPrice:
+          type: number
+          description: Unit price charged for the Pricing band.
+          format: double
+        creditTypeId:
+          type: string
+          description: '**OBSOLETE - this is deprecated and no longer used.** '
+      description: ''
+    BasePricingRequestWithPricingBands:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/BasePricingRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - pricingBands
+        type: object
+        properties:
+          pricingBands:
+            minItems: 1
+            type: array
+            description: ''
+            items:
+              $ref: '#/components/schemas/PricingBand'
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    BasePricingResponseWithPricingBands:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/BasePricingResponse'
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - type: object
+        properties:
+          pricingBands:
+            type: array
+            description: ''
+            items:
+              $ref: '#/components/schemas/PricingBand'
+    BasePricingRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - startDate
+        type: object
+        properties:
+          code:
+            maxLength: 80
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: Unique short code for the Pricing.
+          planId:
+            type: string
+            description: UUID of the Plan the Pricing is created for.
+          planTemplateId:
+            type: string
+            description: UUID of the Plan Template the Pricing is created for.
+          cumulative:
+            type: boolean
+            description: 'Controls whether or not charge rates under a set of pricing bands configured for a Pricing are applied according to each separate band or at the highest band reached.
+
+
+              *(Optional)*. The default value is **FALSE**.
+
+
+              * When TRUE, at billing charge rates are applied according to each separate band.
+
+
+              * When FALSE, at billing charge rates are applied according to highest band reached.
+
+
+              **NOTE:** Use the `cumulative` parameter to create the type of Pricing you require. For example, for Tiered Pricing set to **TRUE**; for Volume Pricing, set to **FALSE**.'
+          startDate:
+            type: string
+            description: The start date *(in ISO-8601 format)* for when the Pricing starts to be active for the Plan or the Plan Template.*(Required)*
+            format: date-time
+          endDate:
+            type: string
+            description: 'The end date *(in ISO-8601 format)* for when the Pricing ceases to be active for the Plan or the Plan Template.
+
+
+              *(Optional)* If not specified, the Pricing remains active indefinitely.'
+            format: date-time
+          description:
+            maxLength: 200
+            type: string
+            description: Displayed on Bill line items.
+          accountingProductId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: Optional Product ID this Pricing should be attributed to for accounting purposes
     CounterPricingRequest:
       type: object
       description: ''
@@ -277,6 +463,7 @@ components:
       - $ref: '#/components/schemas/AbstractRequest'
       - required:
         - counterId
+        type: object
         properties:
           counterId:
             minLength: 1
@@ -342,94 +529,58 @@ components:
           type: string
           description: ''
       description: ''
-    AbstractRequest:
+    AbstractResponse:
+      required:
+      - id
       type: object
       properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
         version:
           type: integer
-          description: 'The version number of the entity:
+          description: 'The version number:
 
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
 
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
           format: int64
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    BasePricingRequest:
+    AbstractResponseWithAuditFields:
       type: object
       description: ''
       allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - startDate
-        properties:
-          code:
-            maxLength: 80
-            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
-            type: string
-            description: Unique short code for the Pricing.
-          planId:
-            type: string
-            description: UUID of the Plan the Pricing is created for.
-          planTemplateId:
-            type: string
-            description: UUID of the Plan Template the Pricing is created for.
-          cumulative:
-            type: boolean
-            description: 'Controls whether or not charge rates under a set of pricing bands configured for a Pricing are applied according to each separate band or at the highest band reached.
-
-
-              *(Optional)*. The default value is **FALSE**.
-
-
-              * When TRUE, at billing charge rates are applied according to each separate band.
-
-
-              * When FALSE, at billing charge rates are applied according to highest band reached.
-
-
-              **NOTE:** Use the `cumulative` parameter to create the type of Pricing you require. For example, for Tiered Pricing set to **TRUE**; for Volume Pricing, set to **FALSE**.'
-          startDate:
-            type: string
-            description: The start date *(in ISO-8601 format)* for when the Pricing starts to be active for the Plan of Plan Template.*(Required)*
-            format: date-time
-          endDate:
-            type: string
-            description: 'The end date *(in ISO-8601 format)* for when the Pricing ceases to be active for the Plan or Plan Template.
-
-
-              *(Optional)* If not specified, the Pricing remains active indefinitely.'
-            format: date-time
-          description:
-            maxLength: 200
-            type: string
-            description: Displayed on Bill line items.
-          accountingProductId:
-            maxLength: 36
-            minLength: 36
-            type: string
-            description: Optional Product ID this Pricing should be attributed to for accounting purposes
-    BasePricingResponseWithPricingBands:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/BasePricingResponse'
-      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
       - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          pricingBands:
-            type: array
-            description: ''
-            items:
-              $ref: '#/components/schemas/PricingBand'
+      - type: object
+        properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip: terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip: terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip: terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip: terraform
     BasePricingResponse:
       type: object
       description: ''
       allOf:
       - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
       - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
+      - type: object
+        properties:
           planId:
             type: string
             description: UUID of the Plan the Pricing is created for.
@@ -476,7 +627,8 @@ components:
       - $ref: '#/components/schemas/BasePricingResponse'
       - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
       - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
+      - type: object
+        properties:
           counterId:
             type: string
             description: UUID of the Counter used to create the pricing.
@@ -516,95 +668,6 @@ components:
 
 
               * When FALSE, counter adjustment credits are not prorated and are billed for the entire billing period.'
-    PricingBand:
-      required:
-      - fixedPrice
-      - lowerLimit
-      - unitPrice
-      type: object
-      properties:
-        id:
-          type: string
-          description: The ID for the Pricing band.
-        lowerLimit:
-          minimum: 0
-          type: number
-          description: Lower limit for the Pricing band.
-          format: double
-        fixedPrice:
-          type: number
-          description: Fixed price charged for the Pricing band.
-          format: double
-        unitPrice:
-          type: number
-          description: Unit price charged for the Pricing band.
-          format: double
-        creditTypeId:
-          type: string
-          description: '**OBSOLETE - this is deprecated and no longer used.** '
-      description: ''
-    BasePricingRequestWithPricingBands:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/BasePricingRequest'
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - pricingBands
-        properties:
-          pricingBands:
-            minItems: 1
-            type: array
-            description: ''
-            items:
-              $ref: '#/components/schemas/PricingBand'
-    AbstractResponseWithAuditFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          dtCreated:
-            type: string
-            description: The DateTime when this item was created *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The ID of the user who created this item.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The ID of the user who last modified this item.
-            x-stainless-skip:
-            - terraform
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
   responses:
     Error:
       description: Error message
@@ -624,9 +687,6 @@ components:
           tokenUrl: /oauth/token
           scopes:
             m3ter-resources/m3ter-scope: m3ter resources
-            measurements:upload: Upload measurements
-            measurements:fileUpload: Upload file
-            measurements:retrieve: Retrieve measurements
         authorizationCode:
           authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
           tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
@@ -634,6 +694,3 @@ components:
             m3ter-resources/m3ter-scope: m3ter resources
             openid: OpenID
             email: email
-            measurements:upload: Upload measurements
-            measurements:fileUpload: Upload file
-            measurements:retrieve: Retrieve measurements

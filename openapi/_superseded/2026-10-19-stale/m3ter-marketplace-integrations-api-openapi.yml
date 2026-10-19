@@ -1,0 +1,179 @@
+openapi: 3.2.0
+info:
+  title: m3ter Marketplace Integrations API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Marketplace Integrations
+  description: Endpoints for retrieving reporting data on Marketplace Integration runs
+paths:
+  /organizations/{orgId}/integrationdestinations/marketplace/usageReport:
+    get:
+      tags:
+      - Marketplace Integrations
+      summary: Retrieve reported usage
+      description: 'Retrieve a list of reported usage records that match the provided filters.
+
+
+        When Bill integration runs are performed, all interactions between m3ter and a Marketplace system are persisted as logs. Use this endpoint to retrieve these logs, which you can use to track all amounts sent over to the Marketplace system together with the date and time the Bill data was sent. This provides a report on usage data sent to the Marketplace for each Bill integration run'
+      operationId: GetUsageReport
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: billStartDate
+        in: query
+        description: Only include usage with bill start dates equal to this date
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: accountId
+        in: query
+        description: List usage for the customer UUID
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: externalSystem
+        in: query
+        description: Filter usage for the provided marketplace
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of usage records to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 50
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: billId
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          maxLength: 50
+          type:
+          - string
+          - 'null'
+      responses:
+        '200':
+          description: Return Usage reports
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMarketplaceUsageReportResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    MarketplaceUsageReportResponse:
+      required:
+      - accountId
+      - billId
+      - externalSystem
+      - reportedUsage
+      type: object
+      properties:
+        accountId:
+          type: string
+          description: ''
+        billId:
+          type: string
+          description: ''
+        externalSystem:
+          type: string
+          description: ''
+        reportedUsage:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: number
+          description: ''
+      description: Response containing marketplace usage report information
+    PaginatedMarketplaceUsageReportResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/MarketplaceUsageReportResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

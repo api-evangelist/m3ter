@@ -1,0 +1,411 @@
+openapi: 3.2.0
+info:
+  title: m3ter Debit Reason API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: DebitReason
+  description: 'Endpoints for DebitReason operations such as creation, update, list, and delete.
+
+
+    You can create DebitReasons for your Organization, and then use them when creating a debit line item on a bill, or applying a product debit to a bill. DebitReasons provide contextual information as to why a debit was applied.'
+paths:
+  /organizations/{orgId}/picklists/debitreasons:
+    get:
+      tags:
+      - DebitReason
+      summary: List Debit Reasons
+      description: Retrieve a list of the Debit Reason entities created for your Organization. You can filter the list returned for the call by Debit Reason ID, Debit Reason short code, or by Archive status.
+      operationId: ListDebitReasons
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Number of Debit Reasons to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: '`nextToken` for multi page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: List of Debit Reason IDs to retrieve.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: codes
+        in: query
+        description: List of Debit Reason short codes to retrieve.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: archived
+        in: query
+        description: 'Filter using the boolean archived flag. DebitReasons can be archived if they are obsolete.
+
+          * TRUE includes DebitReasons that have been archived.
+
+          * FALSE excludes archived DebitReasons.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: List of Debit Reasons
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDebitReasonResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - DebitReason
+      summary: Create Debit Reason
+      description: Create a new Debit Reason for your Organization. When you've created a Debit Reason, it becomes available as a debit type for adding Debit line items to Bills. See Debits.
+      operationId: CreateDebitReason
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebitReasonRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the created Debit Reason
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebitReasonResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/picklists/debitreasons/{id}:
+    get:
+      tags:
+      - DebitReason
+      summary: Retrieve Debit Reason
+      description: Retrieve the Debit Reason with the given UUID.
+      operationId: GetDebitReason
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Debit Reason to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the Debit Reason
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebitReasonResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - DebitReason
+      summary: Update Debit Reason
+      description: Update the Debit Reason with the given UUID.
+      operationId: UpdateDebitReason
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Debit Reason to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebitReasonRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the updated Debit Reason
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebitReasonResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - DebitReason
+      summary: Delete Debit Reason
+      description: Delete the Debit Reason with the given UUID.
+      operationId: DeleteDebitReason
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Debit Reason to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the deleted Debit Reason
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebitReasonResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    AbstractPickListRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - name
+        properties:
+          code:
+            maxLength: 80
+            pattern: ^[\p{L}_$][\p{L}_$0-9]*$
+            type: string
+            description: The short code for the entity.
+            example: code
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: The name of the entity.
+          archived:
+            type: boolean
+            description: 'A Boolean TRUE / FALSE flag indicating whether the entity is archived. An entity can be archived if it is obsolete.
+
+
+              * TRUE - the entity is in the archived state.
+
+              * FALSE - the entity is not in the archived state.'
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    DebitReasonResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractPickListResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when the debit reason was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the debit reason was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this debit reason.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this debit reason.
+            x-stainless-skip:
+            - terraform
+    AbstractPickListResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          code:
+            type: string
+            description: The short code of the data entity.
+          name:
+            type: string
+            description: The name of the data entity.
+          archived:
+            type: boolean
+            description: TRUE / FALSE flag indicating whether the data entity is archived. An entity can be archived if it is obsolete.
+    PaginatedDebitReasonResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/DebitReasonResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    DebitReasonRequest:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/AbstractPickListRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

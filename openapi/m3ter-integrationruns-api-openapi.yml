@@ -1,0 +1,660 @@
+openapi: 3.2.0
+info:
+  title: m3ter Integration Runs API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See Importing the m3ter Open API in our main user Documentation for details. - Copy this link: m3ter-Template API Collection and use it to import the **m3ter-Template API Collection** into your Workspace. See Importing the m3ter Template API Collection in our main user Documentation for details. ---
+
+
+    # Introduction
+
+    The m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:
+
+    - The **Ingest API**, which you can use for submitting raw data measurements. *(See the Submit Measurements endpoint in this API Reference.)*
+
+    - The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)*
+
+
+    ## Authentication and Authorization
+
+    Our APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification. OAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:
+
+    - **Authorization Code**: Used for human login access via the m3ter Console. - **Client Credentials**: Used for machine-to-machine communication and API access. Complete the following flow for API access:
+
+
+    1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. 2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. See Service Authentication for detailed instructions and an example. 3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.*
+
+
+    4. **Bearer Token Usage**: Use the HTTP ''Authorization'' header with the bearer token to authorise all subsequent API requests. > Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one. Below are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. ### cURL Example
+
+    1. Open your terminal or command prompt. 2. Use the following `cURL` command to obtain a Bearer Token:
+
+
+    ```bash
+
+    curl -X POST https://api.m3ter.com/oauth/token \
+
+    -H ''Content-Type: application/x-www-form-urlencoded'' \
+
+    -u your_access_key_id:your_api_secret \
+
+    -d ''grant_type=client_credentials''
+
+    ```
+
+
+    Replace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. 3. Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:
+
+
+    ```json
+
+    {
+
+    "access_token": "your_bearer_token",
+
+    "token_type": "Bearer",
+
+    "expires_in": 18000
+
+    }
+
+    ```
+
+
+    You can then use the Bearer Token *(the value of `"access_token"`)* for subsequent API calls to m3ter. ### Python Example
+
+    1. Install the `requests` library if you haven''t already:
+
+
+    ```bash
+
+    pip install requests
+
+    ```
+
+
+    2.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: IntegrationRuns
+  description: Endpoints for integration runs
+paths:
+  /organizations/{orgId}/integrationruns/destinations/{destinationId}:
+    get:
+      tags:
+      - IntegrationRuns
+      summary: List IntegrationRuns By DestinationId
+      description: Retrieve a list of the integration runs for the destination
+      operationId: ListIntegrationRunsByDestinationId
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: destinationId
+        in: path
+        description: The UUID of the destination.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: destination
+        in: query
+        description: Destination system
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: startDate
+        in: query
+        description: Retrieve entities started after the specified date.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: endDate
+        in: query
+        description: Retrieve entities started before the specified date.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of products to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: status
+        in: query
+        description: Status of the integration run
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/RunStatus'
+      - name: order
+        in: query
+        description: Integration runs order
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/IntegrationRunDao.Order'
+      responses:
+        '200':
+          description: ListIntegrationRunsByDestinationId 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedIntegrationRunResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationruns/logs/{id}:
+    get:
+      tags:
+      - IntegrationRuns
+      summary: Get IntegrationRun Log
+      description: 'Retrieve the integrationrun log for the given UUID.
+
+
+        This endpoint is for retrieving logs of a specific integrationrun. It is useful for debugging and monitoring the performance of integrations within your organization.'
+      operationId: GetIntegrationRunLogs
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The UUID associated with the integrationrun. This ID helps in pinpointing the exact integrationrun logs you are looking to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the IntegrationRun
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationRunLogResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationruns/{entityType}/latest:
+    get:
+      tags:
+      - IntegrationRuns
+      summary: Retrieve IntegrationRuns
+      description: Retrieve the latest integration runs for entity and ids
+      operationId: GetIntegrationRunLatestForIds
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: entityType
+        in: path
+        description: The type of the entity (e.g. Bill).
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: List of ids to retrieve
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Return the IntegrationRuns
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationRunResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationruns/{entityType}/latest/{id}:
+    get:
+      tags:
+      - IntegrationRuns
+      summary: Retrieve Latest IntegrationRun
+      description: Retrieve the latest integration run for the entity.
+      operationId: GetIntegrationRunLatest
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: entityType
+        in: path
+        description: 'The type of the entity you want to retrieve the last integration run for. Two options:
+
+          * Bill
+
+          * Notification'
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The UUID of the entity to retrieve the latest integration run for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the Integration Run
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationRunResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationruns/{entityType}/{entityId}:
+    get:
+      tags:
+      - IntegrationRuns
+      summary: List IntegrationRuns
+      description: 'Retrieve a list of the integration runs for the specified entity.
+
+
+        You can filter the list using the `startDate` and `endDate` query parameters to specify date/times to define the time period you want to return integration runs for.'
+      operationId: ListIntegrationRuns
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: entityId
+        in: path
+        description: The UUID of the entity to retrieve the integration runs for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: entityType
+        in: path
+        description: 'The type of the entity you want to retrieve the integration runs for. Two options:
+
+          * Bill
+
+          * Notification'
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: startDate
+        in: query
+        description: Retrieve only those integration runs started after the specified date/time.*(ISO 8601 formatted)*
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: endDate
+        in: query
+        description: Retrieve only those integration runs started before or on the specified date/time.*(ISO 8601 formatted)*
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of integration runs to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: '`nextToken` for multi page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: status
+        in: query
+        description: Status of the integration run
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/RunStatus'
+      - name: order
+        in: query
+        description: Integration runs order
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/IntegrationRunDao.Order'
+      responses:
+        '200':
+          description: Return the Integration Runs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedIntegrationRunResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationruns/{id}:
+    get:
+      tags:
+      - IntegrationRuns
+      summary: Get IntegrationRun for the UUID
+      description: Retrieve the integration run for the id
+      operationId: GetIntegrationRun
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The UUID of the entity.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the IntegrationRun
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationRunResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationruns/{id}/replay:
+    post:
+      tags:
+      - IntegrationRuns
+      summary: Replay an IntegrationRun
+      description: Re-submits the original request from a previous integration run
+      operationId: ReplayIntegrationRun
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The UUID of the run to replay.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Replay accepted
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    RunStatus:
+      type: string
+      description: ''
+      enum:
+      - WAITING
+      - STARTED
+      - COMPLETE
+      - ERROR
+      - AWAITING_RETRY
+      - AUTH_FAILED
+      - ACCOUNTING_PERIOD_CLOSED
+      - INVOICE_ALREADY_PAID
+      - DISABLED
+      - TIMEOUT_LIMIT_EXCEEDED
+      - RATE_LIMIT_RETRY
+    PaginatedIntegrationRunResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/IntegrationRunResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    IntegrationRunResponse:
+      type: object
+      description: Response containing an IntegrationRun entity.
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - required:
+        - destination
+        - entityId
+        - entityType
+        - status
+        type: object
+        properties:
+          entityType:
+            minLength: 1
+            type: string
+            description: 'The type of entity the integration run is for. Two options:
+
+              * Bill
+
+              * Notification'
+          entityId:
+            minLength: 1
+            type: string
+            description: The unique identifier (UUID) of the entity the integration run is for.
+          dtStarted:
+            type: string
+            description: The date and time the integration run was started *(in ISO-8601 format)*.
+            format: date-time
+          dtCompleted:
+            type: string
+            description: The date and time the integration was completed. *(in ISO-8601 format)*.
+            format: date-time
+          status:
+            description: The current status of the integration run.
+            allOf:
+            - $ref: '#/components/schemas/RunStatus'
+            - type: object
+              description: Status of the integration
+          destination:
+            type: string
+            description: The destination system for the integration run.
+          destinationId:
+            type: string
+            description: Identifier of the destination
+          error:
+            type: string
+            description: Describes any errors encountered during the integration run.
+          url:
+            type: string
+            description: The URL of the entity in the destination system if available.
+          externalId:
+            type: string
+            description: The external ID in the destination system if available.
+          parentIntegrationRunId:
+            type: string
+            description: ID of the parent integration run, or null if this is a parent integration run
+          replayedFromIntegrationRunId:
+            type: string
+            description: ID of the integration run this was replayed from, or null if this is not a replay
+        description: Response containing a IntegrationRun entity
+    IntegrationRunDao.Order:
+      type: string
+      description: ''
+      enum:
+      - ASC
+      - DESC
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractResponseWithAuditFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - type: object
+        properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip: terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip: terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip: terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip: terraform
+    IntegrationRunLogResponse:
+      type: object
+      properties:
+        Payload:
+          type: string
+          description: Base64 encoded log
+      description: Response containing the log for an IntegrationRun entity
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email

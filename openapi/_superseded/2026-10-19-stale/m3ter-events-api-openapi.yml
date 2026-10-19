@@ -1,0 +1,551 @@
+openapi: 3.2.0
+info:
+  title: m3ter Events API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Events
+  description: This section provides Endpoints for operations that allow you to retrieve detailed information about individual Events, list all Events or specific Event Types, and explore dynamic fields available for each Event Type.
+paths:
+  /organizations/{orgId}/events/{id}:
+    get:
+      tags:
+      - Events
+      summary: Retrieve EventResponse
+      description: 'Retrieve a specific Event.
+
+
+        Retrieves detailed information about the specific Event with the given UUID. An Event corresponds to a unique instance of a state change within the system, classified under a specific Event Type.'
+      operationId: GetEvent
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Event to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the Event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/events/fields:
+    get:
+      tags:
+      - Events
+      summary: List Events
+      description: 'List Event Fields.
+
+
+        Retrieves a list of Fields for a specific Event Type. These Fields are dynamic and forward compatibile, enabling calculation operations on the Event schema.
+
+
+        **Notes:**
+
+        - In many of the Response schema for this call, such as when you retrieve the Fields for a `configuration.commitment.created` Event Type, `new` represents the attributes the newly created object has. The Response to a call to retrieve the Fields for a `configuration.commitment.updated` Event Type will contain Field values for both the `old` and `new` objects. The Response to a call to retrieve the Fields for a `configuration.commitment.deleted` Event Type will only contain `old` Fields, for values at point of deletion. Having access to reference both `new` and `old` Field values for an object can be very useful if you want to base a Notification rule on an Event and include a calculation in the rule that, for example, compares `new` values with `old` - for example, trigger a Notification only when a Commitment has been updated and the `new` value for the `amount` is at least $1,000 greater than the `old` value.
+
+        - Some Event types will show `customFields` even though the specific billing or configuration object the Event is for does not yet have the custom fields functionality implemented. For these Events, their `customFields` values will not be populated until such time as the custom fields functionality is implemented for them'
+      operationId: ListEventFields
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: eventName
+        in: query
+        description: The name of the specific Event Type to use as a list filter, for example `configuration.commitment.created`.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the list of Fields for an Event Type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventFieldsResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/events:
+    get:
+      tags:
+      - Events
+      summary: List EventResponse
+      description: 'List all Events.
+
+
+        Retrieve a list of all Events, with options to filter the returned list based on various criteria. Each Event represents a unique instance of a state change within the system, classified under a specific kind of Event.
+
+
+        **NOTES:** You can:
+
+        * Use `eventName` as a valid Query parameter to filter the list of Events returned. For example:
+
+        `.../organizations/{orgId}/events?eventName=configuration.commitment.created`
+
+        * Use the List Notification Events endpoint in this section. The response lists the valid Query parameters.'
+      operationId: ListEvents
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of the Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: The maximum number of Events to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: ids
+        in: query
+        description: "List of Event UUIDs to filter the results. \n\n**NOTE:** cannot be used with other filters."
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: notificationId
+        in: query
+        description: Notification UUID to filter the results. Returns the Events that have triggered the Notification.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: accountId
+        in: query
+        description: The Account ID associated with the Event to filter the results. Returns the Events that have been generated for the Account.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: eventType
+        in: query
+        description: 'The category of Events to filter the results by. Options:
+
+          * Notification
+
+          * IntegrationEvent
+
+          * IngestValidationFailure
+
+          * DataExportJobFailure'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: notificationCode
+        in: query
+        description: Short code of the Notification to filter the results. Returns the Events that have triggered the Notification.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: includeActioned
+        in: query
+        description: 'A Boolean flag indicating whether to return Events that have been actioned.
+
+
+          * **TRUE** - include actioned Events.
+
+          * **FALSE** - exclude actioned Events. '
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Events in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: eventName
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          type:
+          - string
+          - 'null'
+      - name: resourceId
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          type:
+          - string
+          - 'null'
+      responses:
+        '200':
+          description: Returns list of Events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEventResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/events/types:
+    get:
+      tags:
+      - Events
+      summary: List Notification Events
+      description: 'Retrieve a list of Notification Event Types.
+
+
+        This endpoint retrieves a list of Event Types that can have Notification rules configured.'
+      operationId: ListEventTypes
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifer (UUID) of the Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      responses:
+        '200':
+          description: Returns the list of Event Types that can have Notification rules configured
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventTypeResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  schemas:
+    EventTypeResponse:
+      type: object
+      properties:
+        events:
+          type: array
+          description: An array containing a list of all Event Types for which Notification rules can be configured. Each Event Type is represented by a string.
+          items:
+            type: string
+      description: Response containing list of Event Types that can have Notification rules configured.
+      example:
+        events:
+        - billing.balance.created
+        - billing.balance.deleted
+        - billing.balance.updated
+        - billing.balanceamount.created
+        - billing.balanceamount.deleted
+        - billing.balanceamount.updated
+        - billing.bill.created
+        - billing.bill.deleted
+        - billing.bill.updated
+        - billing.billconfig.created
+        - billing.billconfig.deleted
+        - billing.billconfig.updated
+        - billing.billjob.created
+        - billing.billjob.deleted
+        - billing.billjob.updated
+        - billing.charge.created
+        - billing.charge.deleted
+        - billing.charge.updated
+        - billing.counteradjustment.created
+        - billing.counteradjustment.deleted
+        - billing.counteradjustment.updated
+        - billing.scheduledbalancecharge.created
+        - billing.scheduledbalancecharge.deleted
+        - billing.scheduledbalancecharge.updated
+        - billing.scheduledbalancetransaction.created
+        - billing.scheduledbalancetransaction.deleted
+        - billing.scheduledbalancetransaction.updated
+        - billing.statementjob.created
+        - billing.statementjob.deleted
+        - billing.statementjob.updated
+        - configuration.account.created
+        - configuration.account.deleted
+        - configuration.account.updated
+        - configuration.accountplan.created
+        - configuration.accountplan.deleted
+        - configuration.accountplan.updated
+        - configuration.aggregation.created
+        - configuration.aggregation.deleted
+        - configuration.aggregation.updated
+        - configuration.alert.created
+        - configuration.alert.deleted
+        - configuration.alert.updated
+        - configuration.commitment.created
+        - configuration.commitment.deleted
+        - configuration.commitment.updated
+        - configuration.compoundaggregation.created
+        - configuration.compoundaggregation.deleted
+        - configuration.compoundaggregation.updated
+        - configuration.contract.created
+        - configuration.contract.deleted
+        - configuration.contract.updated
+        - configuration.counter.created
+        - configuration.counter.deleted
+        - configuration.counter.updated
+        - configuration.counterpricing.created
+        - configuration.counterpricing.deleted
+        - configuration.counterpricing.updated
+        - configuration.creditreason.created
+        - configuration.creditreason.deleted
+        - configuration.creditreason.updated
+        - configuration.customfield.created
+        - configuration.customfield.deleted
+        - configuration.customfield.updated
+        - configuration.meter.created
+        - configuration.meter.deleted
+        - configuration.meter.updated
+        - configuration.metergroup.created
+        - configuration.metergroup.deleted
+        - configuration.metergroup.updated
+        - configuration.organization.created
+        - configuration.organization.deleted
+        - configuration.organization.updated
+        - configuration.organizationconfig.created
+        - configuration.organizationconfig.deleted
+        - configuration.organizationconfig.updated
+        - configuration.plan.created
+        - configuration.plan.deleted
+        - configuration.plan.updated
+        - configuration.plangroup.created
+        - configuration.plangroup.deleted
+        - configuration.plangroup.updated
+        - configuration.plangrouplink.created
+        - configuration.plangrouplink.deleted
+        - configuration.plangrouplink.updated
+        - configuration.plantemplate.created
+        - configuration.plantemplate.deleted
+        - configuration.plantemplate.updated
+        - configuration.pricing.created
+        - configuration.pricing.deleted
+        - configuration.pricing.updated
+        - configuration.pricingband.created
+        - configuration.pricingband.deleted
+        - configuration.pricingband.updated
+        - configuration.product.created
+        - configuration.product.deleted
+        - configuration.product.updated
+        - configuration.transactiontype.created
+        - configuration.transactiontype.deleted
+        - configuration.transactiontype.updated
+        - dataexport.job.failure
+        - ingest.validation.failure
+        - integration.authentication.error
+        - integration.disabled.error
+        - integration.missingaccountmapping.error
+        - integration.perform.error
+        - integration.validation.error
+    PaginatedEventResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/EventResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    EventResponse:
+      required:
+      - dtActioned
+      - eventName
+      - eventTime
+      - id
+      - m3terEvent
+      type: object
+      properties:
+        id:
+          type: string
+          description: The uniqie identifier (UUID) of the Event.
+        eventName:
+          type: string
+          description: The name of the Event as it is registered in the system. This name is used to categorize and trigger associated actions.
+        eventTime:
+          type: string
+          description: The time when the Event was triggered, using the ISO 8601 date and time format.
+          format: date-time
+        m3terEvent:
+          description: 'The Data Transfer Object (DTO) containing the details of the Event. '
+        dtActioned:
+          type: string
+          description: 'When an Event was actioned. It follows the ISO 8601 date and time format.
+
+
+            You can action an Event to indicate that it has been followed up and resolved - this is useful when dealing with integration error Events or ingest failure Events.'
+          format: date-time
+      description: Response containing an Event entity.
+      example:
+        id: 9cb46d85-7cb6-4637-80a1-d4ec38e4ab30
+        eventName: configuration.commitment.created
+        eventTime: '2022-10-28T13:54:49.557Z'
+        dtActioned: '2022-10-28T13:56:49.557Z'
+        m3terEvent:
+          eventData:
+            newDto:
+              commitmentFeeDescription: ''
+              endDate: '2024-12-31'
+              billingInterval: 1
+              orgId: 396d788d-5174-XXXX-9d69-YYYY4671fc33
+              overageSurchargePercent: 5
+              overageDescription: ''
+              currency: USD
+              id: 480d317e-2030-416b-b64b-c07577c418b4
+              amountSpent: 0
+              accountCode: doetech_premium
+              amount: 15000
+              billingOffset: 0
+              lastModifiedBy: USER_810e3a43-XXXX-4dab-YYYY-470977405b58
+              billingPlanId: 0409e75a-8a87-43de-aa58-fc6ec823ce37
+              version: 1
+              accountId: 1cf2a754-476c-498c-b05a-7d41abfc404d
+              dtCreated: '2022-10-28T13:54:48.081781Z'
+              amountPrePaid: 0
+              productIds:
+              - bec371ef-dbad-4e73-a56a-dadecff2287c
+              createdBy: USER_810e3a43-XXXX-4dab-YYYY-470977405b58
+              contractId: 68595d6d-261f-496b-bf88-51fc7d2b5ccc
+              commitmentUsageDescription: ''
+              startDate: '2023-01-01'
+              dtLastModified: '2022-10-28T13:54:48.081781Z'
+    EventFieldsResponse:
+      type: object
+      properties:
+        events:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+          description: "An object containing the list of Fields for the queried Event Type. \n\nSee the 200 Response sample where we have queried to get the Fields for the `configuration.commitment.created` Event Type. \n\n**Note:** `new` represents the attributes the newly created object has."
+      description: Response containing the list of Fields for an Event Type.
+      example:
+        events:
+          configuration.commitment.created:
+            new.accountCode: string
+            new.accountId: string
+            new.accountingProductId: string
+            new.amount: double
+            new.amountFirstBill: double
+            new.amountPrePaid: double
+            new.amountSpent: double
+            new.billEpoch: string
+            new.billingInterval: int
+            new.billingOffset: int
+            new.billingPlanId: string
+            new.commitmentFeeBillInAdvance: boolean
+            new.commitmentFeeDescription: string
+            new.commitmentUsageDescription: string
+            new.contractId: string
+            new.currency: string
+            new.customFields: map
+            new.endDate: string
+            new.feeDates: array
+            new.id: string
+            new.overageDescription: string
+            new.overageSurchargePercent: double
+            new.productIds: array
+            new.startDate: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

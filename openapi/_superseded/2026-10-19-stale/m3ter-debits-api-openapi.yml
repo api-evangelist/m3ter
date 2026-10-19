@@ -1,0 +1,495 @@
+openapi: 3.2.0
+info:
+  title: m3ter Debits API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Debits
+  description: 'Endpoints for Debit line item related operations such as creation, update, list and delete. These are line items on Bills that are specifically related to Debits.
+
+
+    You use the Debit Reasons created for your Organization when you create Debit line items for Bills. See the DebitReason section for calls you can use to create and manage Debit Reasons for your Organization.'
+paths:
+  /organizations/{orgId}/bills/{billId}/debitlineitems/{id}:
+    get:
+      tags:
+      - Debits
+      summary: Retrieve Debit Line Item
+      description: Retrieve the Debit line item with the given UUID.
+      operationId: GetDebitLineItem
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: billId
+        in: path
+        description: UUID of the bill.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The UUID of the debit line item to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the debit line item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebitLineItemResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - Debits
+      summary: Update Debit Line Item
+      description: Update the Debit line item with the given UUID.
+      operationId: PutDebitLineItem
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: billId
+        in: path
+        description: UUID of the bill.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The UUID of the debit line item to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebitLineItemRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated debit line item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebitLineItemResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - Debits
+      summary: Delete Debit Line Item
+      description: Delete the Debit line item with the given UUID.
+      operationId: DeleteDebitLineItem
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: billId
+        in: path
+        description: UUID of the bill.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: UUID of the debit line item.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted debit line item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebitLineItemResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/bills/{billId}/debitlineitems:
+    get:
+      tags:
+      - Debits
+      summary: List Debit Line Items
+      description: List the Debit line items for the given bill.
+      operationId: ListDebitLineItems
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: billId
+        in: path
+        description: UUID of the bill.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of line items to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: '`nextToken` for multi page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns a list of debit line items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDebitLineItemResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - Debits
+      summary: Create Debit Line Item
+      description: 'Create a new Debit line item for the given bill.
+
+
+        When creating Debit line items for Bills, use the Debit Reasons created for your Organization. See DebitReason.'
+      operationId: PostDebitLineItem
+      parameters:
+      - name: orgId
+        in: path
+        description: 'UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service. '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: billId
+        in: path
+        description: UUID of the bill.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebitLineItemRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the new debit line item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebitLineItemResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    DebitLineItemResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractBillLineItemResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          amount:
+            type: number
+            description: ''
+          debitReasonId:
+            type: string
+            description: The UUID of the debit reason for this debit line item.
+    DebitLineItemRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/MemoLineItemRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          amountToApplyOnBill:
+            type: number
+            description: ''
+          debitReasonId:
+            type: string
+            description: The ID of the Debit Reason given for this debit line item.
+    AbstractBillLineItemResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          lineItemType:
+            description: ''
+            $ref: '#/components/schemas/LineItemType'
+          productId:
+            type: string
+            description: ''
+          description:
+            type: string
+            description: ''
+          servicePeriodStartDate:
+            type: string
+            description: ''
+            format: date-time
+          servicePeriodEndDate:
+            type: string
+            description: ''
+            format: date-time
+          referencedBillId:
+            type: string
+            description: ''
+          referencedLineItemId:
+            type: string
+            description: ''
+          dtCreated:
+            type: string
+            description: The DateTime when the line item was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the line item was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this line item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this line item.
+            x-stainless-skip:
+            - terraform
+    MemoLineItemRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - accountingProductId
+        - amount
+        - description
+        - productId
+        - referencedBillId
+        - referencedLineItemId
+        - servicePeriodEndDate
+        - servicePeriodStartDate
+        properties:
+          reasonId:
+            type: string
+            description: The UUID of the line item reason.
+          lineItemType:
+            description: ''
+            $ref: '#/components/schemas/LineItemType'
+          amountToApplyOnBill:
+            type: number
+            description: ''
+          productId:
+            type: string
+            description: The UUID of the Product.
+          accountingProductId:
+            type: string
+            description: ''
+          description:
+            minLength: 1
+            type: string
+            description: The description for the line item.
+          amount:
+            type: number
+            description: The amount for the line item.
+            exclusiveMinimum: 0
+          referencedBillId:
+            type: string
+            description: 'The UUID of the bill for the line item. '
+          referencedLineItemId:
+            type: string
+            description: The UUID of the line item.
+          servicePeriodStartDate:
+            type: string
+            description: The service period start date in ISO-8601 format. *(inclusive of the starting date)*.
+            format: date-time
+          servicePeriodEndDate:
+            type: string
+            description: The service period end date in ISO-8601 format.*(exclusive of the ending date)*.
+            format: date-time
+    LineItemType:
+      type: string
+      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
+      enum:
+      - STANDING_CHARGE
+      - USAGE
+      - COUNTER_RUNNING_TOTAL_CHARGE
+      - COUNTER_ADJUSTMENT_DEBIT
+      - COUNTER_ADJUSTMENT_CREDIT
+      - USAGE_CREDIT
+      - MINIMUM_SPEND
+      - MINIMUM_SPEND_REFUND
+      - CREDIT_DEDUCTION
+      - MANUAL_ADJUSTMENT
+      - CREDIT_MEMO
+      - DEBIT_MEMO
+      - COMMITMENT_CONSUMED
+      - COMMITMENT_FEE
+      - OVERAGE_SURCHARGE
+      - OVERAGE_USAGE
+      - BALANCE_CONSUMED
+      - BALANCE_FEE
+      - AD_HOC
+    PaginatedDebitLineItemResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/DebitLineItemResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

@@ -1,0 +1,921 @@
+openapi: 3.2.0
+info:
+  title: m3ter Permission Policy API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: PermissionPolicy
+  description: 'Endpoints for Permission Policy related operations such as creation, update, add and retrieve.
+
+
+    Permission Policies can restrict or grant access to specific resources for both Users *(people)* and Service Users *(automated processes with direct API access)*. This enables you to control precisely what a User can do in your m3ter Organization.
+
+
+    For more details, see Understanding, Creating, and Managing Permission Policies in our main Documentation.'
+paths:
+  /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtousergroup:
+    post:
+      tags:
+      - PermissionPolicy
+      summary: Add a PermissionPolicy to a user group
+      description: Add a permission Policy to a user group
+      operationId: AddPermissionPolicyToUserGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: permissionPolicyId
+        in: path
+        description: UUID of the permission policy
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrincipalPermissionRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the PrincipalPermission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrincipalPermissionResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromuser:
+    post:
+      tags:
+      - PermissionPolicy
+      summary: Remove a PermissionPolicy from a user
+      description: Remove a permission policy from a user.
+      operationId: RemovePermissionPolicyFromUser
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: permissionPolicyId
+        in: path
+        description: UUID of the permission policy
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrincipalPermissionRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the PrincipalPermission that was removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrincipalPermissionResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtouser:
+    post:
+      tags:
+      - PermissionPolicy
+      summary: Add a PermissionPolicy to a user
+      description: Add a permission policy to a user.
+      operationId: AddPermissionPolicyToUser
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: permissionPolicyId
+        in: path
+        description: UUID of the permission policy
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrincipalPermissionRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the PrincipalPermission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrincipalPermissionResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtosupportusers:
+    post:
+      tags:
+      - PermissionPolicy
+      summary: Add a PermissionPolicy to support users for an organization
+      description: Add a permission policy to support users for an organization.
+      operationId: AddPermissionPolicyToSupportUsers
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: permissionPolicyId
+        in: path
+        description: UUID of the permission policy
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the PrincipalPermission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrincipalPermissionResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/addtoserviceuser:
+    post:
+      tags:
+      - PermissionPolicy
+      summary: Add a PermissionPolicy to a service user
+      description: Add a permission policy to a service user.
+      operationId: AddPermissionPolicyToServiceUser
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: permissionPolicyId
+        in: path
+        description: UUID of the permission policy
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrincipalPermissionRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the PrincipalPermission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrincipalPermissionResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromserviceuser:
+    post:
+      tags:
+      - PermissionPolicy
+      summary: Remove a PermissionPolicy from a service user
+      description: Remove a permission policy from a service user.
+      operationId: RemovePermissionPolicyFromServiceUser
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: permissionPolicyId
+        in: path
+        description: UUID of the permission policy
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrincipalPermissionRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the PrincipalPermission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrincipalPermissionResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/permissionpolicies:
+    get:
+      tags:
+      - PermissionPolicy
+      summary: List PermissionPolicies
+      description: Retrieve a list of PermissionPolicy entities
+      operationId: ListPermissionPolicies
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Number of permission polices to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ListPermissionPolicies 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPermissionPolicyResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - PermissionPolicy
+      summary: Create Permission Policy
+      description: 'Create a new Permission Policy
+
+
+        **NOTE:** When you set up a policy statement for this call using the `permissionPolicy` request parameter to specify the `effect`, `action`, and `resource`, you must use all lower case and the format as shown in this example for a Permission Policy statement that grants full CRUD access to all meters:
+
+        ```
+
+        "permissionPolicy" : [
+
+        {
+
+        "effect" : "allow",
+
+        "action" : [
+
+        "config:create",
+
+        "config:delete",
+
+        "config:retrieve",
+
+        "config:update"
+
+        ]
+
+        "resource" : [
+
+        "config:meter/*"
+
+        ]
+
+        }
+
+        ]
+
+        ```
+
+
+        For more details and further examples, see Understanding, Creating, and Managing Permission Policies in our main Documentation.'
+      operationId: PostPermissionPolicy
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionPolicyRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the new Permission Policy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionPolicyResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromsupportusers:
+    post:
+      tags:
+      - PermissionPolicy
+      summary: Remove a PermissionPolicy from support users for an organization
+      description: Remove a permission policy from support users for an organization.
+      operationId: RemovePermissionPolicyFromSupportUsers
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: permissionPolicyId
+        in: path
+        description: UUID of the permission policy
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the PrincipalPermission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrincipalPermissionResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/permissionpolicies/{permissionPolicyId}/removefromusergroup:
+    post:
+      tags:
+      - PermissionPolicy
+      summary: Remove a PermissionPolicy from a user group
+      description: Remove a permission policy from a user group.
+      operationId: RemovePermissionPolicyFromUserGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: permissionPolicyId
+        in: path
+        description: UUID of the permission policy
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrincipalPermissionRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the PrincipalPermission that was removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrincipalPermissionResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/permissionpolicies/{id}:
+    get:
+      tags:
+      - PermissionPolicy
+      summary: Retrieve Permission Policy
+      description: Retrieve the permission policy for the UUID
+      operationId: GetPermissionPolicy
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the PermissionPolicy to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the PermissionPolicy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionPolicyResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - PermissionPolicy
+      summary: Update Permission Policy
+      description: 'Update a Permission Policy for the UUID
+
+
+        **NOTE:** When you set up a policy statement for this call to specify the `effect`, `action`, and `resource`, you must use all lower case and the format as shown in this example - a Permission Policy statement that grants full CRUD access to all meters:
+
+        ```
+
+        "permissionPolicy" : [
+
+        {
+
+        "effect" : "allow",
+
+        "action" : [
+
+        "config:create",
+
+        "config:delete",
+
+        "config:retrieve",
+
+        "config:update"
+
+        ]
+
+        "resource" : [
+
+        "config:meter/*"
+
+        ]
+
+        }
+
+        ]
+
+        ```
+
+
+        For more details and further examples, see Understanding, Creating, and Managing Permission Policies in our main Documentation.'
+      operationId: PutPermissionPolicy
+      parameters:
+      - name: id
+        in: path
+        description: The UUID of the PermissionPolicy to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionPolicyRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated version of the PermissionPolicy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionPolicyResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - PermissionPolicy
+      summary: Delete Permission Policy
+      description: Delete the PermissionPolicy for the UUID
+      operationId: DeletePermissionPolicy
+      parameters:
+      - name: id
+        in: path
+        description: The UUID of the PermissionPolicy to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      responses:
+        '200':
+          description: Returns the PermissionPolicy that was deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionPolicyResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    PrincipalType:
+      type: string
+      description: ''
+      enum:
+      - USER
+      - USERGROUP
+      - SERVICEUSER
+      - SUPPORTUSERS
+    PermissionPolicyResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the Permission Policy.
+          permissionPolicy:
+            type: array
+            description: 'Array containing the Permission Policies information. '
+            items:
+              $ref: '#/components/schemas/PermissionStatement'
+          managedPolicy:
+            type: boolean
+            description: 'Indicates whether this is a system generated Managed Permission Policy. '
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Permission Policy was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Permission Policy was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this Permission Policy.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this Permission Policy.
+            x-stainless-skip:
+            - terraform
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PermissionRequest:
+      $ref: '#/components/schemas/AbstractRequest'
+    PermissionPolicyRequest:
+      required:
+      - name
+      - permissionPolicy
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            * **Create entity:** Not valid for initial insertion of new entity - do not use for Create. On initial Create, version is set at 1 and listed in the response.
+
+            * **Update Entity:** On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.
+
+
+            '
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+          description: ''
+        permissionPolicy:
+          minItems: 1
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/PermissionStatement'
+      description: ''
+    PermissionStatement:
+      required:
+      - action
+      - effect
+      - resource
+      type: object
+      properties:
+        effect:
+          description: 'Specifies whether or not the user is allowed to perform the action on the resource.
+
+
+            **NOTE:** Use lower case, for example: `"allow"`. If you use upper case, you''ll receive an error.'
+          $ref: '#/components/schemas/PermissionEffect'
+        action:
+          type: array
+          description: 'The actions available to users who are assigned the Permission Policy - what they can do or cannot do with respect to the specified resource.
+
+
+            **NOTE:** Use lower case and a colon-separated format, for example, if you want to confer full CRUD, use:
+
+            ```
+
+            "config:create",
+
+            "config:delete",
+
+            "config:retrieve",
+
+            "config:update"
+
+            ```'
+          items:
+            $ref: '#/components/schemas/PermissionAction'
+        resource:
+          minItems: 1
+          type: array
+          description: See [Statements - Available Resources](https://www.m3ter.com/docs/guides/managing-organization-and-users/creating-and-managing-permissions#statements---available-resources) for a listing of available resources for Permission Policy statements.
+          items:
+            type: string
+      description: ''
+    PaginatedPermissionPolicyResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/PermissionPolicyResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    PrincipalPermissionResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          permissionPolicyId:
+            type: string
+            description: ''
+          principalId:
+            type: string
+            description: ''
+          principalType:
+            description: ''
+            $ref: '#/components/schemas/PrincipalType'
+          dtCreated:
+            type: string
+            description: The DateTime *(in ISO-8601 format)* when the principal permission was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime *(in ISO-8601 format)* when the principal permission was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this principal permission.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this principal permission.
+            x-stainless-skip:
+            - terraform
+    PermissionAction:
+      type: string
+      description: ''
+      enum:
+      - ALL
+      - CONFIG_CREATE
+      - CONFIG_RETRIEVE
+      - CONFIG_UPDATE
+      - CONFIG_DELETE
+      - CONFIG_EXPORT
+      - ANALYTICS_QUERY
+      - MEASUREMENTS_UPLOAD
+      - MEASUREMENTS_FILEUPLOAD
+      - MEASUREMENTS_RETRIEVE
+      - MEASUREMENTS_EXPORT
+      - FORECAST_RETRIEVE
+      - HEALTHSCORES_RETRIEVE
+      - ANOMALIES_RETRIEVE
+      - EXPORTS_DOWNLOAD
+      - MARKETPLACE_USAGE_CREATE
+      - MARKETPLACE_USAGE_RETRIEVE
+      - AUDIT_RETRIEVE
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PermissionEffect:
+      type: string
+      description: ''
+      enum:
+      - ALLOW
+      - DENY
+    PrincipalPermissionRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - principalId
+        properties:
+          principalId:
+            minLength: 1
+            type: string
+            description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

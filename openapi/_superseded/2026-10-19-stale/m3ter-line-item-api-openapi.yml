@@ -1,0 +1,398 @@
+openapi: 3.2.0
+info:
+  title: m3ter Line Item API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Line Item
+  description: Endpoint for retrieving a list of line items for Bills in an Organization.
+paths:
+  /organizations/{orgId}/lineitems:
+    get:
+      tags:
+      - Line Item
+      summary: List Line Items
+      description: List the billing line items for the given Organization, which can be filtered by the type of line item, Bill ID, or Commitment *(prepayment)* ID.
+      operationId: ListLineItems
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: commitmentId
+        in: query
+        description: "Filter the line items list using the given Commitment ID. \n"
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: lineItemType
+        in: query
+        description: "Filter the line items list using the given line item type. \nSee [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information on each line item type. "
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/LineItemType'
+      - name: billId
+        in: query
+        description: Filter the line items list using the given Bill ID.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of Line Items to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: '`nextToken` for multi page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: additional
+        in: query
+        description: Comma separated list of additional fields.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns list of billing line items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBillLineItemResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    BillLineItemResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractBillLineItemResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          productName:
+            type: string
+            description: 'The name of the Product associated with this line item. '
+          productCode:
+            type: string
+            description: The code of the Product associated with this line item.
+          accountingProductId:
+            type: string
+            description: The unique identifier (UUID) for the associated Accounting Product.
+          accountingProductName:
+            type: string
+            description: The name of the Accounting Product associated with this line item.
+          accountingProductCode:
+            type: string
+            description: The code of the Accounting Product associated with this line item.
+          aggregationId:
+            type: string
+            description: 'A unique identifier (UUID) for the Aggregation that contributes to this Bill line item. '
+          compoundAggregationId:
+            type: string
+            description: A unique identifier (UUID) for the Compound Aggregation, if applicable.
+          counterId:
+            type: string
+            description: The unique identifier (UUID) for the Counter associated with this line item.
+          chargeId:
+            type: string
+            description: The unique identifier (UUID) for the Charge associated with this line item.
+          segment:
+            type: object
+            additionalProperties:
+              type: string
+            description: Specifies the segment name or identifier when segmented Aggregation is used. This is relevant for more complex billing structures.
+          group:
+            type: object
+            additionalProperties:
+              type: string
+            description: ''
+          meterId:
+            type: string
+            description: 'The unique identifier (UUID) of the Meter responsible for tracking usage. '
+          planId:
+            type: string
+            description: 'A unique identifier (UUID) for the billing Plan associated with this line item. '
+          planGroupId:
+            type: string
+            description: The unique identifier (UUID) of the Plan Group associated with this line item.
+          commitmentId:
+            type: string
+            description: 'The unique identifier (UUID) of the Commitment associated with this line item. '
+          balanceId:
+            type: string
+            description: The unique identifier (UUID) for the Balance associated with this line item.
+          billId:
+            type: string
+            description: 'The unique identifier (UUID) for the Bill that includes this line item. '
+          quantity:
+            type: number
+            description: The amount of the product or service used in this line item.
+          units:
+            type: number
+            description: "The number of units rated in the line item, each of which is of the type specified in the `unit` field. For example: 400 api_calls. \n\nIn this example, the unit type of **api_calls** is read from the `unit` field."
+          unit:
+            type: string
+            description: 'Specifies the unit type. For example: **MB**, **GB**, **api_calls**, and so on.  '
+          subtotal:
+            type: number
+            description: The subtotal amount when not currency converted *(in the cases where currency conversion is required)*.
+          currency:
+            type: string
+            description: 'The currency in which the line item is billed, represented as a currency code. For example, USD, GBP, or EUR. '
+          conversionRate:
+            type: number
+            description: The currency conversion rate *(if used)* for the line item.
+          convertedSubtotal:
+            type: number
+            description: The subtotal amount for this line item after currency conversion, if applicable.
+          creditTypeId:
+            type: string
+            description: The unique identifier (UUID) for the type of credit applied to this line item.
+          pricingId:
+            type: string
+            description: 'The unique identifier (UUID) of the Pricing used for this line item, '
+          bandUsage:
+            type: array
+            description: Array containing the pricing band information, which shows the details for each pricing band or tier.
+            items:
+              $ref: '#/components/schemas/BillLineItemPricingBandUsage'
+          reasonId:
+            type: string
+            description: 'A unique identifier (UUID) for the reason or justification for this line item, if applicable. '
+          contractId:
+            type: string
+            description: 'The unique identifier (UUID) for the Contract associated with this line item. '
+          jsonUsageGenerated:
+            type: boolean
+            description: Boolean flag indicating whether the Bill line item has associated statement usage in JSON format. When a Bill statement is generated, usage line items have their usage stored in JSON format.
+            deprecated: true
+          averageUnitPrice:
+            type: number
+            description: Represents the average unit price calculated across all pricing bands or tiers for this line item.
+          sequenceNumber:
+            type: integer
+            description: 'The line item sequence number. '
+            format: int32
+          additional:
+            type: object
+            additionalProperties: true
+            description: ''
+    BillLineItemPricingBandUsage:
+      type: object
+      properties:
+        pricingBandId:
+          type: string
+          description: 'The UUID for the pricing band. '
+        lowerLimit:
+          type: number
+          description: The lower limit *(start)* of the pricing band.
+          format: double
+        fixedPrice:
+          type: number
+          description: 'Fixed price is a charge entered for certain pricing types such as Stairstep, Custom Tiered, and Custom Volume. It is a set price and not dependent on usage.
+
+
+
+            '
+        unitSubtotal:
+          type: number
+          description: 'The subtotal of the unit usage. '
+        unitPrice:
+          type: number
+          description: 'The price per unit in the band. '
+        bandUnits:
+          type: number
+          description: 'The number of units used within the band. '
+        bandQuantity:
+          type: number
+          description: 'Usage amount within the band. '
+        bandSubtotal:
+          type: number
+          description: 'Subtotal amount for the band. '
+        creditTypeId:
+          type: string
+          description: The UUID of the credit type.
+        convertedBandSubtotal:
+          type: number
+          description: ''
+      description: Array containing the pricing band information, which shows the details for each pricing band or tier.
+    AbstractBillLineItemResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          lineItemType:
+            description: ''
+            $ref: '#/components/schemas/LineItemType'
+          productId:
+            type: string
+            description: ''
+          description:
+            type: string
+            description: ''
+          servicePeriodStartDate:
+            type: string
+            description: ''
+            format: date-time
+          servicePeriodEndDate:
+            type: string
+            description: ''
+            format: date-time
+          referencedBillId:
+            type: string
+            description: ''
+          referencedLineItemId:
+            type: string
+            description: ''
+          dtCreated:
+            type: string
+            description: The DateTime when the line item was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the line item was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this line item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this line item.
+            x-stainless-skip:
+            - terraform
+    PaginatedBillLineItemResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/BillLineItemResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    LineItemType:
+      type: string
+      description: See [Bill Line Item Types](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/bill-line-item-types) for more information.
+      enum:
+      - STANDING_CHARGE
+      - USAGE
+      - COUNTER_RUNNING_TOTAL_CHARGE
+      - COUNTER_ADJUSTMENT_DEBIT
+      - COUNTER_ADJUSTMENT_CREDIT
+      - USAGE_CREDIT
+      - MINIMUM_SPEND
+      - MINIMUM_SPEND_REFUND
+      - CREDIT_DEDUCTION
+      - MANUAL_ADJUSTMENT
+      - CREDIT_MEMO
+      - DEBIT_MEMO
+      - COMMITMENT_CONSUMED
+      - COMMITMENT_FEE
+      - OVERAGE_SURCHARGE
+      - OVERAGE_USAGE
+      - BALANCE_CONSUMED
+      - BALANCE_FEE
+      - AD_HOC
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

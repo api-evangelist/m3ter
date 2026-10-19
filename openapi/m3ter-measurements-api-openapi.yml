@@ -3,7 +3,77 @@ info:
   title: m3ter Measurements API
   description: 'If you are using Postman, you can:
 
-    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See Importing the m3ter Open API in our main user Documentation for details. - Copy this link: m3ter-Template API Collection and use it to import the **m3ter-Template API Collection** into your Workspace. See Importing the m3ter Template API Collection in our main user Documentation for details. ---
+
+
+    # Introduction
+
+    The m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:
+
+    - The **Ingest API**, which you can use for submitting raw data measurements. *(See the Submit Measurements endpoint in this API Reference.)*
+
+    - The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)*
+
+
+    ## Authentication and Authorization
+
+    Our APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification. OAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:
+
+    - **Authorization Code**: Used for human login access via the m3ter Console. - **Client Credentials**: Used for machine-to-machine communication and API access. Complete the following flow for API access:
+
+
+    1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. 2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. See Service Authentication for detailed instructions and an example. 3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.*
+
+
+    4. **Bearer Token Usage**: Use the HTTP ''Authorization'' header with the bearer token to authorise all subsequent API requests. > Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one. Below are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. ### cURL Example
+
+    1. Open your terminal or command prompt. 2. Use the following `cURL` command to obtain a Bearer Token:
+
+
+    ```bash
+
+    curl -X POST https://api.m3ter.com/oauth/token \
+
+    -H ''Content-Type: application/x-www-form-urlencoded'' \
+
+    -u your_access_key_id:your_api_secret \
+
+    -d ''grant_type=client_credentials''
+
+    ```
+
+
+    Replace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. 3. Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:
+
+
+    ```json
+
+    {
+
+    "access_token": "your_bearer_token",
+
+    "token_type": "Bearer",
+
+    "expires_in": 18000
+
+    }
+
+    ```
+
+
+    You can then use the Bearer Token *(the value of `"access_token"`)* for subsequent API calls to m3ter. ### Python Example
+
+    1. Install the `requests` library if you haven''t already:
+
+
+    ```bash
+
+    pip install requests
+
+    ```
+
+
+    2.'
   version: '1.0'
   x-logo:
     url: https://console.m3ter.com/m3ter-logo-black.svg
@@ -15,8 +85,255 @@ tags:
 - name: Measurements
   description: 'Endpoints for submitting usage data measurements to the m3ter platform:
 
-    - **Directly:** You can use the **Submit Measurements** call to submit raw data measurements directly using the **Ingest API**.'
+    - **Directly:** You can use the **Submit Measurements** call to submit raw data measurements directly using the **Ingest API**.
+
+    - **Indirectly:** You can use the platform''s file upload service calls to prepare for and submit a file for data ingest using the **Config API**.
+
+
+    To use the file upload service:
+
+    - First, make a **Generate an upload URL** call to obtain a temporary upload URL and an upload job ID.
+
+    - You can then upload your data measurements file using a `PUT` request using the upload URL as the endpoint.
+
+    - Any errors are reported via the normal Alerts service in the Console UI.
+
+    - If any issues occur with a file upload, you can use the upload job ID with other file upload service calls we provide to troubleshoot and resolve issues.
+
+
+    **Note:** You can also perform a File Upload via a Meter''s Details page in the m3ter Console using a `CSV` formatted file you''ve prepared for usage data measurements ingest for the Meter.
+
+
+    In the m3ter documentation, see also:
+
+    - Optimizing Measurement Submissions.
+
+    - File Upload Service API
+
+    - File Uploads for Usage Data by Meter'
 paths:
+  /organizations/{orgId}/fileuploads/measurements/generateUploadUrl:
+    post:
+      tags:
+      - Measurements
+      summary: Generate Upload URL
+      description: 'Generate a URL for uploading a file containing measurements to the platform in preparation for the measurements it contains to be ingested:
+
+        - An upload URL is returned together with an upload job id:
+
+        - You can then upload your data measurements file using a `PUT` request using the returned upload URL as the endpoint.
+
+        - You can use the returned upload job id with other calls to the File Upload Service for any follow-up or troubleshooting.
+
+
+        **Important:**
+
+        * The `contentLength` request parameter is required.
+
+        * The upload URL is time limited - it is valid for ***one*** minute.
+
+
+        Part of the file upload service for submitting measurements data files.'
+      operationId: GenerateUploadUrl
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter platform.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetUploadUrlRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the upload URL and jobId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlUploadResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+      security:
+      - OAuth2:
+        - measurements:fileUpload
+  /organizations/{orgId}/fileuploads/measurements/jobs:
+    get:
+      tags:
+      - Measurements
+      summary: List File Upload Jobs
+      description: 'Lists the File Upload jobs. Part of the File Upload service for measurements ingest:
+
+        * You can use the `dateCreatedStart` and `dateCreatedEnd` optional Query parameters to define a date range to filter the File Uploads jobs returned for this call.
+
+        * If `dateCreatedStart` and `dateCreatedEnd` Query parameters are not used, then all File Upload jobs are returned.'
+      operationId: ListJobs
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of File Upload jobs to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: '`nextToken` for multi page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: dateCreatedStart
+        in: query
+        description: 'Include only File Upload jobs created on or after this date. Required format is ISO-8601: yyyy-MM-dd''T''HH:mm:ss''Z'''
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: dateCreatedEnd
+        in: query
+        description: 'Include only File Upload jobs created before this date. Required format is ISO-8601: yyyy-MM-dd''T''HH:mm:ss''Z'''
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: fileKey
+        in: query
+        description: <<deprecated>>
+        required: false
+        style: form
+        explode: false
+        schema:
+          type:
+          - string
+          - 'null'
+      responses:
+        '200':
+          description: Return the list of File Upload jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUploadJobResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+      security:
+      - OAuth2:
+        - measurements:fileUpload
+  /organizations/{orgId}/fileuploads/measurements/jobs/{id}:
+    get:
+      tags:
+      - Measurements
+      summary: Get File Upload Job Response
+      description: 'Get the file upload job response using the UUID of the file upload job.
+
+
+        Part of the file upload service for measurements ingest.'
+      operationId: GetUploadJobResponse
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: UUID of the file upload job.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the UploadJobResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadJobResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+      security:
+      - OAuth2:
+        - measurements:fileUpload
+  /organizations/{orgId}/fileuploads/measurements/jobs/{id}/original:
+    get:
+      tags:
+      - Measurements
+      summary: Get Original File Download URL
+      description: 'Use the original file upload job id to obtain a download URL, which you can then use to retrieve the file you originally uploaded to the file upload service:
+
+        - A download URL is returned together with a download job id.
+
+        - You can then use a `GET` using the returned download URL as the endpoint to retrieve the file you originally uploaded.
+
+
+        Part of the file upload service for submitting measurements data files.'
+      operationId: GetJobOriginalFileDownloadUrl
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: UUID of the file service job for the original measurements file upload.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the download URL and jobId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlDownloadResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+      security:
+      - OAuth2:
+        - measurements:fileUpload
   /organizations/{orgId}/measurements:
     post:
       tags:
@@ -27,7 +344,7 @@ paths:
 
         **NOTES:**
 
-        * **Non-existent Accounts.** The `account` request parameter is required. However, if you want to submit a usage data measurement for an Account which does not yet exist in your Organization, you can use an `account` code for a non-existent Account. A new skeleton Account will be automatically created. The usage data measurement is accepted and ingested as data belonging to the new auto-created Account. At a later date, you can edit the Account''s Code,??Name, and??e-mail address. For more details, see Submitting Usage Data for Non-Existent Accounts in our main documentation.
+        * **Non-existent Accounts.** The `account` request parameter is required. However, if you want to submit a usage data measurement for an Account which does not yet exist in your Organization, you can use an `account` code for a non-existent Account. A new skeleton Account will be automatically created. The usage data measurement is accepted and ingested as data belonging to the new auto-created Account. At a later date, you can edit the Account and update the Code,??Name, and email address. For more details, see Submitting Usage Data for Non-Existent Accounts in our main documentation.
 
         * **Usage Data Adjustments.** If you need to make corrections for billing retrospectively against an Account, you can use date/time values in the past for the `ts` (timestamp) request parameter to submit positive or negative usage data amounts to correct and reconcile earlier billing anomalies. For more details, see Submitting Usage Data Adjustments Using Timestamp in our main documentation.
 
@@ -45,8 +362,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       requestBody:
         description: ''
         content:
@@ -103,8 +418,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: file
         in: query
         description: The file path
@@ -127,312 +440,8 @@ paths:
       security:
       - OAuth2:
         - measurements:retrieve
-  /organizations/{orgId}/fileuploads/measurements/jobs/{id}/original:
-    get:
-      tags:
-      - Measurements
-      summary: Get Original File Download URL
-      description: 'Use the original file upload job id to obtain a download URL, which you can then use to retrieve the file you originally uploaded to the file upload service:
-
-        - A download URL is returned together with a download job id.
-
-        - You can then use a `GET` using the returned download URL as the endpoint to retrieve the file you originally uploaded.
-
-
-        Part of the file upload service for submitting measurements data files.'
-      operationId: GetJobOriginalFileDownloadUrl
-      parameters:
-      - name: orgId
-        in: path
-        description: UUID of the organization
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
-      - name: id
-        in: path
-        description: UUID of the file service job for the original measurements file upload.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Returns the download URL and jobId
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UrlDownloadResponse'
-        4XX:
-          $ref: '#/components/responses/Error'
-        5XX:
-          $ref: '#/components/responses/Error'
-      security:
-      - OAuth2:
-        - measurements:fileUpload
-  /organizations/{orgId}/fileuploads/measurements/generateUploadUrl:
-    post:
-      tags:
-      - Measurements
-      summary: Generate Upload URL
-      description: 'Generate a URL for uploading a file containing measurements to the platform in preparation for the measurements it contains to be ingested:
-
-        - An upload URL is returned together with an upload job id:
-
-        - You can then upload your data measurements file using a `PUT` request using the returned upload URL as the endpoint.
-
-        - You can use the returned upload job id with other calls to the File Upload Service for any follow-up or troubleshooting.
-
-
-        **Important:**
-
-        * The `contentLength` request parameter is required.
-
-        * The upload URL is time limited - it is valid for ***one*** minute.
-
-
-        Part of the file upload service for submitting measurements data files.'
-      operationId: GenerateUploadUrl
-      parameters:
-      - name: orgId
-        in: path
-        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter platform.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
-      requestBody:
-        description: ''
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GetUploadUrlRequest'
-        required: true
-      responses:
-        '200':
-          description: Returns the upload URL and jobId
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UrlUploadResponse'
-        4XX:
-          $ref: '#/components/responses/Error'
-        5XX:
-          $ref: '#/components/responses/Error'
-      security:
-      - OAuth2:
-        - measurements:fileUpload
-  /organizations/{orgId}/fileuploads/measurements/jobs:
-    get:
-      tags:
-      - Measurements
-      summary: List File Upload Jobs
-      description: 'Lists the File Upload jobs. Part of the File Upload service for measurements ingest:
-
-        * You can use the `dateCreatedStart` and `dateCreatedEnd` optional Query parameters to define a date range to filter the File Uploads jobs returned for this call.
-
-        * If `dateCreatedStart` and `dateCreatedEnd` Query parameters are not used, then all File Upload jobs are returned.'
-      operationId: ListJobs
-      parameters:
-      - name: orgId
-        in: path
-        description: UUID of the organization
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
-      - name: pageSize
-        in: query
-        description: Number of File Upload jobs to retrieve per page.
-        required: false
-        allowEmptyValue: true
-        style: form
-        explode: true
-        schema:
-          maximum: 100
-          minimum: 1
-          type: integer
-          format: int32
-      - name: nextToken
-        in: query
-        description: '`nextToken` for multi page retrievals.'
-        required: false
-        allowEmptyValue: true
-        style: form
-        explode: true
-        schema:
-          type: string
-      - name: dateCreatedStart
-        in: query
-        description: 'Include only File Upload jobs created on or after this date. Required format is ISO-8601: yyyy-MM-dd''T''HH:mm:ss''Z'''
-        required: false
-        allowEmptyValue: true
-        style: form
-        explode: true
-        schema:
-          type: string
-      - name: dateCreatedEnd
-        in: query
-        description: 'Include only File Upload jobs created before this date. Required format is ISO-8601: yyyy-MM-dd''T''HH:mm:ss''Z'''
-        required: false
-        allowEmptyValue: true
-        style: form
-        explode: true
-        schema:
-          type: string
-      - name: fileKey
-        in: query
-        description: <<deprecated>>
-        required: false
-        style: form
-        explode: true
-        schema:
-          type:
-          - string
-          - 'null'
-      responses:
-        '200':
-          description: Return the list of File Upload jobs.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedUploadJobResponseData'
-        4XX:
-          $ref: '#/components/responses/Error'
-        5XX:
-          $ref: '#/components/responses/Error'
-      security:
-      - OAuth2:
-        - measurements:fileUpload
-  /organizations/{orgId}/fileuploads/measurements/jobs/{id}:
-    get:
-      tags:
-      - Measurements
-      summary: Get File Upload Job Response
-      description: 'Get the file upload job response using the UUID of the file upload job.
-
-
-        Part of the file upload service for measurements ingest.'
-      operationId: GetUploadJobResponse
-      parameters:
-      - name: orgId
-        in: path
-        description: UUID of the organization
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
-      - name: id
-        in: path
-        description: UUID of the file upload job.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Return the UploadJobResponse
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UploadJobResponse'
-        4XX:
-          $ref: '#/components/responses/Error'
-        5XX:
-          $ref: '#/components/responses/Error'
-      security:
-      - OAuth2:
-        - measurements:fileUpload
 components:
   schemas:
-    JobStatus:
-      type: string
-      description: 'The status of the file upload job. '
-      enum:
-      - notUploaded
-      - running
-      - failed
-      - succeeded
-    SubmitMeasurementsResponse:
-      type: object
-      properties:
-        result:
-          type: string
-          description: '`accepted` is returned when successful.'
-      description: ''
-      example:
-        result: accepted
-    UploadJobResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          description: UUID of the file upload job.
-        version:
-          type: integer
-          description: 'The version number. Default value when newly created is one. '
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        fileName:
-          type: string
-          description: 'The name of the measurements file for the upload job. '
-        uploadDate:
-          type: string
-          description: The upload date for the upload job *(in ISO-8601 format)*.
-        contentLength:
-          type: integer
-          description: 'The size of the body in bytes. For example: `"contentLength": 485`, where 485 is the size in bytes of the file uploaded.'
-          format: int64
-        status:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/JobStatus'
-          - description: The status
-        totalRows:
-          type: integer
-          description: 'The total number of rows in the file. '
-          format: int64
-        processedRows:
-          type: integer
-          description: The number of rows that were processed during ingest.
-          format: int64
-        failedRows:
-          type: integer
-          description: The number of rows that failed processing during ingest.
-          format: int64
-      description: Response containing the upload job details.
-    UrlDownloadResponse:
-      type: object
-      properties:
-        jobId:
-          type: string
-          description: UUID of the download job
-        url:
-          type: string
-          description: The URL
-        headers:
-          description: The headers
-          allOf:
-          - type: object
-            additionalProperties:
-              type: string
-          - description: The headers
-      description: It contains details for downloading a file
     GetUploadUrlRequest:
       required:
       - contentLength
@@ -445,6 +454,7 @@ components:
           minLength: 1
           type: string
           description: 'The name of the measurements file to be uploaded.  '
+          x-size-message: The fileName cannot exceed 50 characters
         contentType:
           maxLength: 20
           minLength: 1
@@ -456,6 +466,7 @@ components:
           enum:
           - application/json
           - text/json
+          x-size-message: The content type cannot exceed 20 characters
         contentLength:
           maximum: 1073741824
           minimum: 1
@@ -465,7 +476,15 @@ components:
 
             **NOTE:** Required.'
           format: int64
+          x-not-null-message: The content length cannot be blank
       description: Request containing the file details when generating an upload URL.
+    GenerateDownloadUrlResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The presigned download URL
+      description: It contains details for downloading a file
     PaginatedUploadJobResponseData:
       type: object
       properties:
@@ -486,25 +505,31 @@ components:
       type: object
       properties:
         uid:
-          maxLength: 50
+          maxLength: 128
           type: string
           description: Unique ID for this measurement.
+          x-size-message: '''uid'' cannot exceed 128 characters'
         meter:
           maxLength: 80
           minLength: 1
           pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
           type: string
           description: Short code identifying the Meter the measurement is for.
+          x-pattern-message: Code must not contain non-printable or whitespace characters (except space), and cannot start/end with whitespace
+          x-size-message: Code cannot exceed 80 characters
         account:
           maxLength: 80
           minLength: 1
           pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
           type: string
           description: Code of the Account the measurement is for.
+          x-pattern-message: Code must not contain non-printable or whitespace characters (except space), and cannot start/end with whitespace
+          x-size-message: Code cannot exceed 80 characters
         ts:
           type: string
           description: Timestamp for the measurement *(in ISO 8601 format)*.
           format: date-time
+          x-not-null-message: Required field 'ts' is missing
         ets:
           type: string
           description: 'End timestamp for the measurement *(in ISO 8601 format)*. *(Optional)*.
@@ -513,67 +538,51 @@ components:
             Can be used in the case a usage event needs to have an explicit start and end rather than being instantaneous.'
           format: date-time
         who:
+          type: object
+          additionalProperties:
+            type: string
           description: 'Non-numeric `who` values for data measurements, such as: who logged-in to the service; who was contacted by the service.'
-          allOf:
-          - type: object
-            additionalProperties:
-              type: string
-          - description: '''who'' values'
         where:
+          type: object
+          additionalProperties:
+            type: string
           description: 'Non-numeric `where` values for data measurements such as: where someone logged into your service from.'
-          allOf:
-          - type: object
-            additionalProperties:
-              type: string
-          - description: '''where'' values'
         what:
+          type: object
+          additionalProperties:
+            type: string
           description: 'Non-numeric `what` values for data measurements such as: what level of user logged into the service.'
-          allOf:
-          - type: object
-            additionalProperties:
-              type: string
-          - description: '''what'' values'
         other:
+          type: object
+          additionalProperties:
+            type: string
           description: Non-numeric `other` values for measurements such as textual data which is not applicable to **Who**, **What**, or **Where** events.
-          allOf:
-          - type: object
-            additionalProperties:
-              type: string
-          - description: '''other'' values'
         metadata:
+          type: object
+          additionalProperties:
+            type: string
           description: 'Non-numeric `metadata` values for measurements using high-cardinality fields that you don''t intend to segment when you aggregate the data.
 
 
             Maximum length of 256 characters.'
-          allOf:
-          - type: object
-            additionalProperties:
-              type: string
-          - description: '''metadata'' values'
         measure:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
           description: Numeric `measure` values for general quantitative measurements.
-          allOf:
-          - type: object
-            additionalProperties:
-              type: number
-              format: double
-          - description: '''measure'' values'
         cost:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
           description: Numeric `cost` values for measurements associated with costs.
-          allOf:
-          - type: object
-            additionalProperties:
-              type: number
-              format: double
-          - description: '''cost'' values'
         income:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
           description: Numeric `income` values for measurements associated with income.
-          allOf:
-          - type: object
-            additionalProperties:
-              type: number
-              format: double
-          - description: '''income'' values'
       description: ''
       example:
         uid: string
@@ -605,13 +614,6 @@ components:
         income:
           property1: 0
           property2: 0
-    GenerateDownloadUrlResponse:
-      type: object
-      properties:
-        url:
-          type: string
-          description: The presigned download URL
-      description: It contains details for downloading a file
     UrlUploadResponse:
       type: object
       properties:
@@ -622,13 +624,26 @@ components:
           type: string
           description: The URL
         headers:
+          type: object
+          additionalProperties:
+            type: string
           description: The headers
-          allOf:
-          - type: object
-            additionalProperties:
-              type: string
-          - description: The headers
       description: Response containing the upload job URL details
+    UrlDownloadResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+          description: UUID of the download job
+        url:
+          type: string
+          description: The URL
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: The headers
+      description: It contains details for downloading a file
     SubmitMeasurementsRequest:
       required:
       - measurements
@@ -641,7 +656,67 @@ components:
           description: Request containing the usage data measurements for submission.
           items:
             $ref: '#/components/schemas/MeasurementRequest'
+          x-size-message: Measurements cannot be blank
       description: ''
+    SubmitMeasurementsResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          description: '`accepted` is returned when successful.'
+      description: ''
+      example:
+        result: accepted
+    UploadJobResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: UUID of the file upload job.
+        version:
+          type: integer
+          description: 'The version number. Default value when newly created is one. '
+          format: int64
+        fileName:
+          type: string
+          description: 'The name of the measurements file for the upload job. '
+        uploadDate:
+          type: string
+          description: The upload date for the upload job *(in ISO-8601 format)*.
+        contentLength:
+          type: integer
+          description: 'The size of the body in bytes. For example: `"contentLength": 485`, where 485 is the size in bytes of the file uploaded.'
+          format: int64
+        status:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/JobStatus'
+        totalRows:
+          type: integer
+          description: 'The total number of rows in the file. '
+          format: int64
+        processedRows:
+          type: integer
+          description: The number of rows that were processed during ingest.
+          format: int64
+        failedRows:
+          type: integer
+          description: The number of rows that failed processing during ingest.
+          format: int64
+      description: Response containing the upload job details.
+    JobStatus:
+      type: string
+      description: 'The status of the file upload job. '
+      enum:
+      - notUploaded
+      - running
+      - failed
+      - succeeded
+      x-enum-varnames:
+      - notUploaded
+      - running
+      - failed
+      - succeeded
   responses:
     Error:
       description: Error message
@@ -661,9 +736,6 @@ components:
           tokenUrl: /oauth/token
           scopes:
             m3ter-resources/m3ter-scope: m3ter resources
-            measurements:upload: Upload measurements
-            measurements:fileUpload: Upload file
-            measurements:retrieve: Retrieve measurements
         authorizationCode:
           authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
           tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
@@ -671,6 +743,3 @@ components:
             m3ter-resources/m3ter-scope: m3ter resources
             openid: OpenID
             email: email
-            measurements:upload: Upload measurements
-            measurements:fileUpload: Upload file
-            measurements:retrieve: Retrieve measurements

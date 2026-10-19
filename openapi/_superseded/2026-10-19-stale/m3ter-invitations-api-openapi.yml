@@ -1,0 +1,323 @@
+openapi: 3.2.0
+info:
+  title: m3ter Invitations API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Invitations
+  description: Endpoints for creating and retrieving user invitations.
+paths:
+  /organizations/{orgId}/invitations/{id}:
+    get:
+      tags:
+      - Invitations
+      summary: Retrieve Invitation
+      description: Retrieve the specified invitation with the given UUID.
+      operationId: GetOrgUserInvitation
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: UUID of the specific invitation to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the specified invitation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgUserInvitationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/invitations:
+    get:
+      tags:
+      - Invitations
+      summary: Retrieve Invitations
+      description: Retrieve a list of all invitations in the Organization.
+      operationId: ListOrgUserInvitations
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Number of invitations to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: '`nextToken` for multi page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the list of invitations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrgUserInvitationResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - Invitations
+      summary: Invite User to Organization
+      description: 'Invite a new user to your Organization.
+
+
+        This sends an email to someone inviting them to join your m3ter Organization.'
+      operationId: CreateOrgUserInvitation
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgUserInvitationRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the Invitation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgUserInvitationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  schemas:
+    UserRequest:
+      required:
+      - email
+      - firstName
+      - lastName
+      type: object
+      properties:
+        m3terUser:
+          type: boolean
+          description: ''
+        version:
+          type: integer
+          description: ''
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        firstName:
+          maxLength: 100
+          minLength: 1
+          type: string
+          description: ''
+        lastName:
+          maxLength: 100
+          minLength: 1
+          type: string
+          description: ''
+        contactNumber:
+          maxLength: 50
+          type: string
+          description: ''
+        email:
+          minLength: 1
+          type: string
+          description: ''
+          format: email
+      description: ''
+    OrgUserInvitationResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          email:
+            type: string
+            description: 'The email address of the invitee. The invitation will be sent to this email address. '
+          permissionPolicyIds:
+            type: array
+            description: 'The IDs of the permission policies the invited user has been assigned. This controls the access rights and privileges that this user will have when working in the m3ter Organization. '
+            items:
+              type: string
+          firstName:
+            type: string
+            description: The first name of the invitee.
+          lastName:
+            type: string
+            description: The surname of the invitee.
+          dtEndAccess:
+            type: string
+            description: 'The date that access will end for the user *(in ISO-8601 format)*. If this is blank, there is no end date  meaning that the user has permanent access. '
+            format: date-time
+          dtExpiry:
+            type: string
+            description: The date when the invite expires *(in ISO-8601 format)*. After this date the invited user can no longer accept the invite. By default, any invite is valid for 30 days from the date the invite is sent.
+            format: date-time
+          invitingPrincipalId:
+            type: string
+            description: 'The UUID of the user who sent the invite. '
+          accepted:
+            type: boolean
+            description: 'Boolean indicating whether the user has accepted the invitation.
+
+
+              * TRUE - the invite has been accepted.
+
+              * FALSE - the invite has not yet been accepted.'
+          dtCreated:
+            type: string
+            description: The DateTime when the invitation was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the invitation was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The UUID of the user who created the invitation.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The UUID of the user who last modified the invitation.
+            x-stainless-skip:
+            - terraform
+    PaginatedOrgUserInvitationResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/OrgUserInvitationResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    OrgUserInvitationRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/UserRequest'
+      - properties:
+          permissionPolicyIds:
+            type: array
+            description: 'The IDs of the permission policies the invited user has been assigned. This controls the access rights and privileges that this user will have when working in the m3ter Organization. '
+            items:
+              type: string
+          dtEndAccess:
+            type: string
+            description: 'The date when access will end for the user *(in ISO-8601 format)*. Leave blank for no end date, which gives the user permanent access. '
+            format: date-time
+          dtExpiry:
+            type: string
+            description: The date when the invite expires *(in ISO-8601 format)*. After this date the invited user can no longer accept the invite. By default, any invite is valid for 30 days from the date the invite is sent.
+            format: date-time
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

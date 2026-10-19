@@ -1,0 +1,691 @@
+openapi: 3.2.0
+info:
+  title: m3ter Compound Aggregation API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: CompoundAggregation
+  description: Endpoints for Compound Aggregation related operations such as creation, update, list and delete.
+paths:
+  /organizations/{orgId}/compoundaggregations/{id}:
+    get:
+      tags:
+      - CompoundAggregation
+      summary: Retrieve CompoundAggregation
+      description: 'Retrieve a CompoundAggregation using the given UUID.
+
+
+        This endpoint returns a specific CompoundAggregation associated with an Organization. It provides detailed information about the CompoundAggregation.'
+      operationId: GetCompoundAggregation
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the CompoundAggregation to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the CompoundAggregation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompoundAggregationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - CompoundAggregation
+      summary: Update CompoundAggregation
+      description: 'Update the CompoundAggregation with the given UUID.
+
+
+        This endpoint allows you to update the details of a specific CompoundAggregation associated with an Organization. Use it to modify details of an existing CompoundAggregation such as the Calculation formula.
+
+
+        **Note:** If you have created Custom Fields for a Compound Aggregation, when you use this endpoint to update the Compound Aggregation use the `customFields` parameter to preserve those Custom Fields. If you omit them from the update request, they will be lost.'
+      operationId: PutCompoundAggregation
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the CompoundAggregation to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompoundAggregationRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated CompoundAggregation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AggregationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - CompoundAggregation
+      summary: Delete CompoundAggregation
+      description: 'Delete a CompoundAggregation with the given UUID.
+
+
+        This endpoint enables deletion of a specific CompoundAggregation associated with a specific Organization. Useful when you need to remove an existing CompoundAggregation that is no longer required, such as when changing pricing or planning models.'
+      operationId: DeleteCompoundAggregation
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the CompoundAggregation to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted CompoundAggregation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompoundAggregationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/compoundaggregations:
+    get:
+      tags:
+      - CompoundAggregation
+      summary: List CompoundAggregations
+      description: 'Retrieve a list of all CompoundAggregations.
+
+
+        This endpoint retrieves a list of CompoundAggregations associated with a specific organization. CompoundAggregations enable you to define numerical measures based on simple Aggregations of usage data. It supports pagination, and includes various query parameters to filter the CompoundAggregations based on Product, CompoundAggregation IDs or short codes.'
+      operationId: ListCompoundAggregations
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of CompoundAggregations to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of CompoundAggregations in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: productId
+        in: query
+        description: An optional parameter to filter the CompoundAggregations based on specific Product unique identifiers (UUIDs).
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: ids
+        in: query
+        description: An optional parameter to retrieve specific CompoundAggregations based on their unique identifiers (UUIDs).
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: codes
+        in: query
+        description: An optional parameter to retrieve specific CompoundAggregations based on their short codes.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns the list of CompoundAggregations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCompoundAggregationResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - CompoundAggregation
+      summary: Create CompoundAggregation
+      description: 'Create a new CompoundAggregation.
+
+
+        This endpoint allows you to create a new CompoundAggregation for a specific Organization. The request body must include all the necessary details such as the Calculation formula.'
+      operationId: PostCompoundAggregation
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompoundAggregationRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the created CompoundAggregation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AggregationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractAggregationResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: Descriptive name for the Aggregation.
+          rounding:
+            description: 'Specifies how you want to deal with non-integer, fractional number Aggregation values.
+
+
+              **NOTES:**
+
+              * **NEAREST** rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.
+
+              * Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45.
+
+
+              Enum: ???UP??? ???DOWN??? ???NEAREST??? ???NONE???
+
+              '
+            $ref: '#/components/schemas/Rounding'
+          quantityPerUnit:
+            type: number
+            description: 'Defines how much of a quantity equates to 1 unit. Used when setting the price per unit for billing purposes - if charging for kilobytes per second (KiBy/s) at rate of $0.25 per 500 KiBy/s, then set quantityPerUnit to 500 and price Plan at $0.25 per unit.
+
+
+              If `quantityPerUnit` is set to a value other than one, rounding is typically set to UP.'
+          unit:
+            type: string
+            description: "User defined or following the *Unified Code for Units of Measure* (UCUM). \n\nUsed as the label for billing, indicating to your customers what they are being charged for."
+          code:
+            type: string
+            description: Code of the Aggregation. A unique short code to identify the Aggregation.
+          segments:
+            type: array
+            description: '*(Optional)*. Used when creating a segmented Aggregation, which segments the usage data collected by a single Meter. Works together with `segmentedFields`.
+
+
+              Contains the values that are to be used as the segments, read from the fields in the meter pointed at by `segmentedFields`.  '
+            items:
+              type: object
+              additionalProperties:
+                type: string
+          accountingProductId:
+            type: string
+            description: Optional Product ID this Aggregation should be attributed to for accounting purposes.
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PaginatedCompoundAggregationResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/CompoundAggregationResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AbstractAggregationRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - name
+        - quantityPerUnit
+        - rounding
+        - unit
+        properties:
+          version:
+            type: integer
+            description: 'The version number of the Aggregation:
+
+              - **Create entity:** Not valid for initial insertion of new Aggregation - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+              - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+            format: int64
+            x-stainless-terraform-configurability: computed
+            x-stainless-terraform-always-send: true
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: Descriptive name for the Aggregation.
+          rounding:
+            description: "Specifies how you want to deal with non-integer, fractional number Aggregation values.\n\n**NOTES:**\n* **NEAREST** rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.\n* Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45.\n\nEnum: ???UP??? ???DOWN??? ???NEAREST??? ???NONE???\n\n "
+            $ref: '#/components/schemas/Rounding'
+          quantityPerUnit:
+            type: number
+            description: 'Defines how much of a quantity equates to 1 unit. Used when setting the price per unit for billing purposes - if charging for kilobytes per second (KiBy/s) at rate of $0.25 per 500 KiBy/s, then set quantityPerUnit to 500 and price Plan at $0.25 per unit.
+
+
+              **Note:** If `quantityPerUnit` is set to a value other than one, `rounding` is typically set to `"UP"`.'
+            exclusiveMinimum: 0
+          unit:
+            maxLength: 50
+            minLength: 1
+            type: string
+            description: User defined label for units shown for Bill line items, indicating to your customers what they are being charged for.
+          code:
+            maxLength: 80
+            pattern: ^[\p{L}_$][\p{L}_$0-9]*$
+            type: string
+            description: Code of the new Aggregation. A unique short code to identify the Aggregation.
+            example: example_code
+          accountingProductId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: Optional Product ID this Aggregation should be attributed to for accounting purposes.
+    Aggregation:
+      type: string
+      description: 'Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected targetField.
+
+
+        * **SUM**. Adds the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **MIN**. Uses the minimum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **MAX**. Uses the maximum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **COUNT**. Counts the number of values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **LATEST**. Uses the most recent value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`. Note: Based on the timestamp `ts` value of usage data measurement submissions. If using this method, please ensure *distinct* `ts` values are used for usage data measurement submissions.
+
+
+        * **MEAN**. Uses the arithmetic mean of the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **UNIQUE**. Uses unique values and returns a count of the number of unique values. Can be applied to a **Metadata** `targetField`.'
+      enum:
+      - SUM
+      - MIN
+      - MAX
+      - COUNT
+      - LATEST
+      - MEAN
+      - UNIQUE
+      - CUSTOM_SQL
+    Rounding:
+      type: string
+      description: 'Specifies how you want to deal with non-integer, fractional number Aggregation values.
+
+
+        **NOTES:**
+
+        * "NEAREST" rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.
+
+        * Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45. '
+      enum:
+      - UP
+      - DOWN
+      - NEAREST
+      - NONE
+    AbstractRequestWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+    CompoundAggregationResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractAggregationResponse'
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          calculation:
+            type: string
+            description: This field is a string that represents the formula for the calculation. This formula determines how the CompoundAggregation is calculated from the underlying usage data.
+          productId:
+            type: string
+            description: 'This field represents the unique identifier (UUID) of the Product that is associated with the CompoundAggregation. '
+          evaluateNullAggregations:
+            type: boolean
+            description: "This is a boolean True / False flag. \n\nIf set to TRUE, the calculation will be evaluated even if the referenced aggregation has no usage data."
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the CompoundAggregation was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the CompoundAggregation was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this CompoundAggregation.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this CompoundAggregation.
+            x-stainless-skip:
+            - terraform
+    AggregationResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractAggregationResponse'
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          meterId:
+            type: string
+            description: 'The UUID of the Meter used as the source of usage data for the Aggregation.
+
+
+              Each Aggregation is a child of a Meter, so the Meter must be selected. '
+          targetField:
+            type: string
+            description: '`Code` of the target `dataField` or `derivedField` on the Meter used as the basis for the Aggregation.'
+          aggregation:
+            description: "Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected targetField.\n\nEnum: \n\n* **SUM**. Adds the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **MIN**. Uses the minimum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **MAX**. Uses the maximum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **COUNT**. Counts the number of values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **LATEST**. Uses the most recent value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`. Note: Based on the timestamp (`ts`) value of usage data measurement submissions. If using this method, please ensure *distinct* `ts` values are used for usage data measurment submissions.\n\n* **MEAN**. Uses the arithmetic mean of the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **UNIQUE**. Uses unique values and returns a count of the number of unique values. Can be applied to a **Metadata** `targetField`.\n\n* **CUSTOM_SQL**. Uses an SQL query expression. The `customSQL` parameter is used for the SQL query."
+            $ref: '#/components/schemas/Aggregation'
+          segmentedFields:
+            type: array
+            description: '*(Optional)*. Used when creating a segmented Aggregation, which segments the usage data collected by a single Meter. Works together with `segments`.
+
+
+              The `Codes` of the fields in the target Meter to use for segmentation purposes.
+
+
+              String `dataFields` on the target Meter can be segmented. Any string `derivedFields` on the target Meter, such as one that concatenates two string `dataFields`, can also be segmented.'
+            items:
+              type: string
+          defaultValue:
+            type: number
+            description: 'Aggregation value used when no usage data is available to be aggregated. *(Optional)*.
+
+
+              **Note:** Set to 0, if you expect to reference the Aggregation in a Compound Aggregation. This ensures that any null values are passed in correctly to the Compound Aggregation calculation with a value = 0.'
+          customSql:
+            type: string
+            description: The SQL query expression to be used for a Custom SQL Aggregation.
+          dtCreated:
+            type: string
+            description: The DateTime when the aggregation was created *(in ISO 8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the aggregation was last modified *(in ISO 8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this aggregation.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this aggregation.
+            x-stainless-skip:
+            - terraform
+    CompoundAggregationRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractAggregationRequest'
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - calculation
+        properties:
+          version:
+            type: integer
+            description: ''
+            format: int64
+            x-stainless-terraform-configurability: computed
+            x-stainless-terraform-always-send: true
+          productId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: 'Unique identifier (UUID) of the Product the CompoundAggregation belongs to.
+
+
+              **Note:** Omit this parameter if you want to create a *Global* CompoundAggregation.'
+          calculation:
+            maxLength: 5000
+            minLength: 1
+            type: string
+            description: 'String that represents the formula for the calculation. This formula determines how the CompoundAggregation value is calculated. The calculation can reference  simple Aggregations or Custom Fields. This field is required when creating or updating a CompoundAggregation.
+
+
+              **NOTE:** If a simple Aggregation referenced by a Compound Aggregation has a **Quantity per unit** defined or a **Rounding** defined, these will not be factored into the value used by the calculation. For example, if the simple Aggregation referenced has a base value of 100 and has **Quantity per unit** set at 10, the Compound Aggregation calculation *will use the base value of 100 not 10*.'
+          evaluateNullAggregations:
+            type: boolean
+            description: 'Boolean True / False flag:
+
+              - **TRUE** - set to TRUE if you want to allow null values from the simple Aggregations referenced in the Compound Aggregation to be passed in. Simple Aggregations based on Meter Target Fields where no usage data is available will have null values.
+
+              - **FALSE** Default.
+
+
+              **Note:** If any of the simple Aggregations you reference in a Compound Aggregation calculation might have null values, you must set their Default Value to 0. This ensures that any null values passed into the Compound Aggregation are passed in correctly with value = 0.
+
+              '
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

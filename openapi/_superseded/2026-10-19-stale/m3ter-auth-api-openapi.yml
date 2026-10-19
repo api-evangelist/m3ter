@@ -1,0 +1,125 @@
+openapi: 3.2.0
+info:
+  title: m3ter Auth API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Auth
+  description: 'Endpoint for retrieving a JSON Web Token (JWT) bearer token for a ServiceUser using the Client Credentials Grant flow.
+
+
+    A ServiceUser represents the automated process you want to grant access to your Organization - that is, as an API user.'
+  externalDocs:
+    description: Client Credentials Grant
+    url: https://datatracker.ietf.org/doc/html/rfc6749#section-4.4
+paths:
+  /oauth/token:
+    post:
+      tags:
+      - Auth
+      summary: Get Token
+      description: Get authentication token
+      operationId: GenerateToken
+      requestBody:
+        description: grant type and scope
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BearerAccessTokenRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Response containing access token detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BearerAccessTokenResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    BearerAccessTokenRequest:
+      required:
+      - grant_type
+      type: object
+      properties:
+        grant_type:
+          minLength: 1
+          type: string
+          description: The grant type.
+          enum:
+          - client_credentials
+        scope:
+          type: string
+          description: Not used. The JWT scope.
+      description: ''
+    BearerAccessTokenResponse:
+      required:
+      - access_token
+      - expires_in
+      type: object
+      properties:
+        token_type:
+          type: string
+          description: The token type, which in this case is "bearer".
+        access_token:
+          type: string
+          description: 'The access token. '
+        expires_in:
+          type: integer
+          description: 'Token expiry time in seconds. '
+          format: int64
+        scope:
+          type: string
+          description: Not used.
+      description: ''
+      example:
+        token_type: Bearer
+        access_token: eyJ0eXAiOiJKV1QiLCJwdCI6InNlcnZpY2UiLCJhbGciOiJSUzI1NiIsImtpZCI6InNlcnZpY2VVc2VyXzgxYzQ5YTU0LWRmY2QtNGRhNS1iYmYzLWQyODg1ZWMwMjVkZCJ9.eyJzdWIiOiIyOTA2ZDE4Zi1lNzFiLTRlMTAtOWJkNi1mZDA3YjUyNjM4ZjIiLCJwZXJtaXNzaW9ucyI6eyJNRUFTVVJFTUVOVFMjTUVBU1VSRU1FTlRTX1VQTE9BRCNJVEVNIyoiOnRydWV9LCJpc3MiOiJodHRwczpcL1wvbTN0ZXIuY29tXC9vYXV0aDIiLCJleHAiOjE2ODA1NDU3NTAsImlhdCI6MTY4MDUyNzc1MCwib3JnSWQiOiI4MWM0OWE1NC1kZmNkLTRkYTUtYmJmMy1kMjg4NWVjMDI1ZGQifQ.EwB-H4u7jKP5Ew8g0KwkPOBJPvuzDpayzWwyfm-kLPLPm9X3b3etQi1y3btKADYLy8WU452IbRFKgkhGBXrFN5rFR7mXLc1SUR-fU-anUNKCX-QPNrCzUyI2P1icQA2KFdvnYjJfLp5-gtCJWoX-Mf09-CFNPKC7sx0cVbro1Zd4axn6KpYi_48fufRYgoprwriYgpzkvG1Tq9SZtGU3vWex0eWFRKqHur6QwdxQzi_HM08kOb3puWqTio-7r3_sMOLkGitsg0teyJ-A-gYmOayZ4I2Nad7pmciLRh70kJYpR3L1yc82MPBIaJIYRxfWcOTnY8Opyv7ZlGm-hn2lUA
+        expires_in: 18000
+        scope: null
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

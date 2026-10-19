@@ -1,0 +1,639 @@
+openapi: 3.2.0
+info:
+  title: m3ter Counter Pricing API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: CounterPricing
+  description: 'Endpoints for listing, creating, updating, retrieving, or deleting CounterPricing.
+
+
+    Create the CounterPricing for a Plan/PlanTemplate using a Counter, and define a unit-based pricing structure for charging end customer Accounts put on the Plan.
+
+
+    See Creating Counters and Pricing Plans for more information.'
+paths:
+  /organizations/{orgId}/counterpricings:
+    get:
+      tags:
+      - CounterPricing
+      summary: List CounterPricings
+      description: Retrieve a list of CounterPricing entities filtered by date, Plan ID, Plan Template ID, or CounterPricing ID.
+      operationId: ListCounterPricings
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Number of CounterPricings to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: '`nextToken` for multi page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: date
+        in: query
+        description: Date on which to retrieve active CounterPricings.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: planId
+        in: query
+        description: UUID of the Plan to retrieve CounterPricings for.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: planTemplateId
+        in: query
+        description: UUID of the Plan Template to retrieve CounterPricings for.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: List of CounterPricing IDs to retrieve.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns the list of requested CounterPricings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCounterPricingResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - CounterPricing
+      summary: Create CounterPricing
+      description: 'Create a new CounterPricing.
+
+
+        **Note:** Either `planId` or `planTemplateId` request parameters are required for this call to be valid. If you omit both, then you will receive a validation error.'
+      operationId: PostCounterPricing
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CounterPricingRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the created CounterPricing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CounterPricingResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/counterpricings/{id}:
+    get:
+      tags:
+      - CounterPricing
+      summary: Retrieve CounterPricing
+      description: Retrieve a CounterPricing for the given UUID.
+      operationId: GetCounterPricing
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the CounterPricing to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the CounterPricing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CounterPricingResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - CounterPricing
+      summary: Update CounterPricing
+      description: 'Update CounterPricing for the given UUID.
+
+
+        **Note:** Either `planId` or `planTemplateId` request parameters are required for this call to be valid. If you omit both, then you will receive a validation error.'
+      operationId: PutCounterPricing
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the CounterPricing to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CounterPricingRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated CounterPricing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CounterPricingResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - CounterPricing
+      summary: Delete CounterPricing
+      description: Delete a CounterPricing for the given UUID.
+      operationId: DeleteCounterPricing
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the CounterPricing to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted CounterPricing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CounterPricingResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    CounterPricingRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/BasePricingRequestWithPricingBands'
+      - $ref: '#/components/schemas/BasePricingRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - counterId
+        properties:
+          counterId:
+            minLength: 1
+            type: string
+            description: UUID of the Counter used to create the pricing.
+          runningTotalBillInAdvance:
+            type: boolean
+            description: 'The default value is **TRUE**.
+
+
+              * When **TRUE**, running totals are billed at the start of each billing period.
+
+
+              * When **FALSE**, running totals are billed at the end of each billing period.
+
+
+              *(Optional)*.'
+          proRateRunningTotal:
+            type: boolean
+            description: 'The default value is **TRUE**.
+
+
+              * When **TRUE**, counter running total charges are prorated and are billed according to the number of days in billing period.
+
+
+              * When **FALSE**, counter running total charges are not prorated and are billed for the entire billing period.
+
+
+              *(Optional)*.'
+          proRateAdjustmentDebit:
+            type: boolean
+            description: 'The default value is **TRUE**.
+
+
+              * When **TRUE**, counter adjustment debits are prorated and are billed according to the number of days in billing period.
+
+
+              * When **FALSE**, counter adjustment debits are not prorated and are billed for the entire billing period.
+
+
+              *(Optional)*.'
+          proRateAdjustmentCredit:
+            type: boolean
+            description: 'The default value is **TRUE**.
+
+
+              * When **TRUE**, counter adjustment credits are prorated and are billed according to the number of days in billing period.
+
+
+              * When **FALSE**, counter adjustment credits are not prorated and are billed for the entire billing period.
+
+
+              *(Optional)*.'
+    PaginatedCounterPricingResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/CounterPricingResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    BasePricingRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - startDate
+        properties:
+          code:
+            maxLength: 80
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: Unique short code for the Pricing.
+          planId:
+            type: string
+            description: UUID of the Plan the Pricing is created for.
+          planTemplateId:
+            type: string
+            description: UUID of the Plan Template the Pricing is created for.
+          cumulative:
+            type: boolean
+            description: 'Controls whether or not charge rates under a set of pricing bands configured for a Pricing are applied according to each separate band or at the highest band reached.
+
+
+              *(Optional)*. The default value is **FALSE**.
+
+
+              * When TRUE, at billing charge rates are applied according to each separate band.
+
+
+              * When FALSE, at billing charge rates are applied according to highest band reached.
+
+
+              **NOTE:** Use the `cumulative` parameter to create the type of Pricing you require. For example, for Tiered Pricing set to **TRUE**; for Volume Pricing, set to **FALSE**.'
+          startDate:
+            type: string
+            description: The start date *(in ISO-8601 format)* for when the Pricing starts to be active for the Plan of Plan Template.*(Required)*
+            format: date-time
+          endDate:
+            type: string
+            description: 'The end date *(in ISO-8601 format)* for when the Pricing ceases to be active for the Plan or Plan Template.
+
+
+              *(Optional)* If not specified, the Pricing remains active indefinitely.'
+            format: date-time
+          description:
+            maxLength: 200
+            type: string
+            description: Displayed on Bill line items.
+          accountingProductId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: Optional Product ID this Pricing should be attributed to for accounting purposes
+    BasePricingResponseWithPricingBands:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/BasePricingResponse'
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          pricingBands:
+            type: array
+            description: ''
+            items:
+              $ref: '#/components/schemas/PricingBand'
+    BasePricingResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          planId:
+            type: string
+            description: UUID of the Plan the Pricing is created for.
+          planTemplateId:
+            type: string
+            description: UUID of the Plan Template the Pricing was created for.
+          cumulative:
+            type: boolean
+            description: 'Controls whether or not charge rates under a set of pricing bands configured for a Pricing are applied according to each separate band or at the highest band reached.
+
+
+              The default value is **TRUE**.
+
+
+              * When TRUE, at billing charge rates are applied according to each separate band.
+
+
+              * When FALSE, at billing charge rates are applied according to highest band reached.'
+          startDate:
+            type: string
+            description: The start date *(in ISO-8601 format)* for when the Pricing starts to be active for the Plan of Plan Template.
+            format: date-time
+          endDate:
+            type: string
+            description: 'The end date *(in ISO-8601 format)* for when the Pricing ceases to be active for the Plan or Plan Template.
+
+
+              If not specified, the Pricing remains active indefinitely.'
+            format: date-time
+          code:
+            type: string
+            description: Unique short code for the Pricing.
+          description:
+            type: string
+            description: Displayed on Bill line items.
+          accountingProductId:
+            type: string
+            description: Optional Product ID this Pricing should be attributed to for accounting purposes.
+    CounterPricingResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/BasePricingResponseWithPricingBands'
+      - $ref: '#/components/schemas/BasePricingResponse'
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          counterId:
+            type: string
+            description: UUID of the Counter used to create the pricing.
+          runningTotalBillInAdvance:
+            type: boolean
+            description: 'The default value is **TRUE**.
+
+
+              * When TRUE, running totals are billed at the start of each billing period.
+
+
+              * When FALSE, running totals are billed at the end of each billing period.'
+          proRateRunningTotal:
+            type: boolean
+            description: 'The default value is **TRUE**.
+
+
+              * When TRUE, counter running total charges are prorated and are billed according to the number of days in billing period.
+
+
+              * When FALSE, counter running total charges are not prorated and are billed for the entire billing period.'
+          proRateAdjustmentDebit:
+            type: boolean
+            description: 'The default value is **TRUE**.
+
+
+              * When TRUE, counter adjustment debits are prorated and are billed according to the number of days in billing period.
+
+
+              * When FALSE, counter adjustment debits are not prorated and are billed for the entire billing period.'
+          proRateAdjustmentCredit:
+            type: boolean
+            description: 'The default value is **TRUE**.
+
+
+              * When TRUE, counter adjustment credits are prorated and are billed according to the number of days in billing period.
+
+
+              * When FALSE, counter adjustment credits are not prorated and are billed for the entire billing period.'
+    PricingBand:
+      required:
+      - fixedPrice
+      - lowerLimit
+      - unitPrice
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID for the Pricing band.
+        lowerLimit:
+          minimum: 0
+          type: number
+          description: Lower limit for the Pricing band.
+          format: double
+        fixedPrice:
+          type: number
+          description: Fixed price charged for the Pricing band.
+          format: double
+        unitPrice:
+          type: number
+          description: Unit price charged for the Pricing band.
+          format: double
+        creditTypeId:
+          type: string
+          description: '**OBSOLETE - this is deprecated and no longer used.** '
+      description: ''
+    BasePricingRequestWithPricingBands:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/BasePricingRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - pricingBands
+        properties:
+          pricingBands:
+            minItems: 1
+            type: array
+            description: ''
+            items:
+              $ref: '#/components/schemas/PricingBand'
+    AbstractResponseWithAuditFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

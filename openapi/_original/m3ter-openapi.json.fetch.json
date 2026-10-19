@@ -1,0 +1,12 @@
+{
+ "url": "https://docs.m3ter.com/openapi.json",
+ "final": "https://docs.m3ter.com/openapi.json",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 1532439,
+ "sha256": "85c514abc69210b1bf39046a3f325921f4e6e6c468758bc742df7b0ddfd782a7",
+ "fetched_at": "2026-10-19",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "re-archived: the provider's current document replaced a stale archive (roadmap#793); the old files are in openapi/_superseded/2026-10-19-stale"
+}

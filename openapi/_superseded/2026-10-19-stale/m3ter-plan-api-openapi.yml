@@ -1,0 +1,589 @@
+openapi: 3.2.0
+info:
+  title: m3ter Plan API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Plan
+  description: Endpoints for listing, creating, updating, retrieving, or deleting Plans.
+paths:
+  /organizations/{orgId}/plans:
+    get:
+      tags:
+      - Plan
+      summary: List Plans
+      description: Retrieve a list of Plans that can be filtered by Product, Account, or Plan ID.
+      operationId: ListPlans
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Number of Plans to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: '`nextToken` for multi-page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: productId
+        in: query
+        description: UUID of the Product to retrieve Plans for.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 36
+          minimum: 36
+          type: string
+      - name: accountId
+        in: query
+        description: List of Account IDs the Plan belongs to.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: ids
+        in: query
+        description: 'List of Plan IDs to retrieve. '
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns the list of requested Plans
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPlanResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - Plan
+      summary: Create Plan
+      description: Create a new Plan.
+      operationId: PostPlan
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the created Plan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/plans/{id}:
+    get:
+      tags:
+      - Plan
+      summary: Retrieve Plan
+      description: Retrieve the Plan with the given UUID.
+      operationId: GetPlan
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Plan to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the Plan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - Plan
+      summary: Update Plan
+      description: 'Update the Plan with the given UUID.
+
+
+        **Note:** If you have created Custom Fields for a Plan, when you use this endpoint to update the Plan use the `customFields` parameter to preserve those Custom Fields. If you omit them from the update request, they will be lost.'
+      operationId: PutPlan
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Plan to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated Plan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - Plan
+      summary: Delete Plan
+      description: Delete the Plan with the given UUID.
+      operationId: DeletePlan
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Plan to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted Plan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PaginatedPlanResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/PlanResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    PlanResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          planTemplateId:
+            type: string
+            description: 'UUID of the PlanTemplate the Plan belongs to. '
+          productId:
+            type: string
+            description: 'UUID of the Product the Plan belongs to. '
+          name:
+            type: string
+            description: Descriptive name for the Plan.
+          code:
+            type: string
+            description: Unique short code reference for the Plan.
+          standingCharge:
+            type: number
+            description: 'The standing charge applied to bills for end customers. This is prorated.
+
+
+              *(Optional)*. Overrides PlanTemplate value.'
+            format: double
+          standingChargeDescription:
+            type: string
+            description: Standing charge description *(displayed on the bill line item)*.
+          ordinal:
+            type: integer
+            description: 'Assigns a rank or position to the Plan in your order of pricing plans - lower numbers represent more basic pricing plans; higher numbers represent more premium pricing plans.
+
+
+              *(Optional)*. Overrides PlanTemplate value.
+
+
+              **NOTE:** **DEPRECATED** - no longer used.'
+            format: int64
+          bespoke:
+            type: boolean
+            description: TRUE/FALSE flag indicating whether the Plan is custom/bespoke for a particular Account.
+          minimumSpend:
+            type: number
+            description: 'The product minimum spend amount per billing cycle for end customer Accounts on a priced Plan.
+
+
+              *(Optional)*. Overrides PlanTemplate value.'
+            format: double
+          minimumSpendDescription:
+            type: string
+            description: Minimum spend description *(displayed on the bill line item)*.
+          standingChargeBillInAdvance:
+            type: boolean
+            description: 'When **TRUE**, standing charge is billed at the start of each billing period.
+
+
+              When **FALSE**, standing charge is billed at the end of each billing period.
+
+
+              *(Optional)*. Overrides the setting at PlanTemplate level for standing charge billing in arrears/in advance.'
+          minimumSpendBillInAdvance:
+            type: boolean
+            description: 'When **TRUE**, minimum spend is billed at the start of each billing period.
+
+
+              When **FALSE**, minimum spend is billed at the end of each billing period.
+
+
+              *(Optional)*. Overrides the setting at PlanTemplate level for minimum spend billing in arrears/in advance.'
+          minimumSpendAccountingProductId:
+            type: string
+            description: Optional Product ID this Plan's minimum spend should be attributed to for accounting purposes.
+          standingChargeAccountingProductId:
+            type: string
+            description: Optional Product ID this Plan's standing charge should be attributed to for accounting purposes.
+          accountId:
+            type: string
+            description: '*(Optional)*. The Account ID for which this Plan was created as custom/bespoke. A custom/bespoke Plan can only be attached to the specified Account.'
+          dtCreated:
+            type: string
+            description: The DateTime *(in ISO-8601 format)* when the Plan was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime *(in ISO-8601 format)* when the Plan was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this plan.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this Plan.
+            x-stainless-skip:
+            - terraform
+    PlanRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - code
+        - name
+        - planTemplateId
+        properties:
+          planTemplateId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: 'UUID of the PlanTemplate the Plan belongs to. '
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: Descriptive name for the Plan.
+          code:
+            maxLength: 80
+            minLength: 1
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: Unique short code reference for the Plan.
+          standingCharge:
+            minimum: 0
+            type: number
+            description: 'The standing charge applied to bills for end customers. This is prorated.
+
+
+              *(Optional)*. Overrides PlanTemplate value.'
+            format: double
+          standingChargeDescription:
+            maxLength: 200
+            type: string
+            description: Standing charge description *(displayed on the bill line item)*.
+          ordinal:
+            minimum: 0
+            type: integer
+            description: 'Assigns a rank or position to the Plan in your order of pricing plans - lower numbers represent more basic pricing plans; higher numbers represent more premium pricing plans.
+
+
+              *(Optional)*. Overrides PlanTemplate value.
+
+
+              **NOTE: DEPRECATED** - do not use.'
+            format: int64
+          bespoke:
+            type: boolean
+            description: 'TRUE/FALSE flag indicating whether the plan is a custom/bespoke Plan for a particular Account:
+
+              * When creating a Plan, use the `accountId` request parameter to specify the Account for which the Plan will be custom/bespoke.
+
+              * A custom/bespoke Plan can only be attached to the specified Account.'
+          minimumSpend:
+            minimum: 0
+            type: number
+            description: 'The product minimum spend amount per billing cycle for end customer Accounts on a priced Plan.
+
+
+              *(Optional)*. Overrides PlanTemplate value.'
+            format: double
+          minimumSpendDescription:
+            maxLength: 200
+            type: string
+            description: Minimum spend description *(displayed on the bill line item)*.
+          standingChargeBillInAdvance:
+            type: boolean
+            description: 'When **TRUE**, standing charge is billed at the start of each billing period.
+
+
+              When **FALSE**, standing charge is billed at the end of each billing period.
+
+
+              *(Optional)*. Overrides the setting at PlanTemplate level for standing charge billing in arrears/in advance.'
+          minimumSpendBillInAdvance:
+            type: boolean
+            description: 'When **TRUE**, minimum spend is billed at the start of each billing period.
+
+
+              When **FALSE**, minimum spend is billed at the end of each billing period.
+
+
+              *(Optional)*. Overrides the setting at PlanTemplate level for minimum spend billing in arrears/in advance.'
+          minimumSpendAccountingProductId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: Optional Product ID this Plan's minimum spend should be attributed to for accounting purposes.
+          standingChargeAccountingProductId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: Optional Product ID this Plan's standing charge should be attributed to for accounting purposes.
+          accountId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: '*(Optional)*. Used to specify an Account for which the Plan will be a custom/bespoke Plan:
+
+              * Use when first creating a Plan.
+
+              * A custom/bespoke Plan can only be attached to the specified Account.
+
+              * Once created, a custom/bespoke Plan cannot be updated to be made a custom/bespoke Plan for a different Account.'
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractRequestWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

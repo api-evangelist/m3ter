@@ -1,0 +1,1926 @@
+openapi: 3.2.0
+info:
+  title: m3ter Integration Destinations API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See Importing the m3ter Open API in our main user Documentation for details. - Copy this link: m3ter-Template API Collection and use it to import the **m3ter-Template API Collection** into your Workspace. See Importing the m3ter Template API Collection in our main user Documentation for details. ---
+
+
+    # Introduction
+
+    The m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:
+
+    - The **Ingest API**, which you can use for submitting raw data measurements. *(See the Submit Measurements endpoint in this API Reference.)*
+
+    - The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)*
+
+
+    ## Authentication and Authorization
+
+    Our APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification. OAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:
+
+    - **Authorization Code**: Used for human login access via the m3ter Console. - **Client Credentials**: Used for machine-to-machine communication and API access. Complete the following flow for API access:
+
+
+    1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. 2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. See Service Authentication for detailed instructions and an example. 3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.*
+
+
+    4. **Bearer Token Usage**: Use the HTTP ''Authorization'' header with the bearer token to authorise all subsequent API requests. > Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one. Below are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. ### cURL Example
+
+    1. Open your terminal or command prompt. 2. Use the following `cURL` command to obtain a Bearer Token:
+
+
+    ```bash
+
+    curl -X POST https://api.m3ter.com/oauth/token \
+
+    -H ''Content-Type: application/x-www-form-urlencoded'' \
+
+    -u your_access_key_id:your_api_secret \
+
+    -d ''grant_type=client_credentials''
+
+    ```
+
+
+    Replace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. 3. Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:
+
+
+    ```json
+
+    {
+
+    "access_token": "your_bearer_token",
+
+    "token_type": "Bearer",
+
+    "expires_in": 18000
+
+    }
+
+    ```
+
+
+    You can then use the Bearer Token *(the value of `"access_token"`)* for subsequent API calls to m3ter. ### Python Example
+
+    1. Install the `requests` library if you haven''t already:
+
+
+    ```bash
+
+    pip install requests
+
+    ```
+
+
+    2.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: IntegrationDestinations
+  description: ''
+paths:
+  /organizations/{orgId}/integrationdestinations/webhooks:
+    get:
+      tags:
+      - IntegrationDestinations
+      summary: List Destinations
+      description: Retrieve a list of all Destinations created in the Organization.
+      operationId: ListWebhookIntegrations
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of WebhookIntegrations to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          maxItems: 200
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns a list of Destinations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWebhookDestinationResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - IntegrationDestinations
+      summary: Create Webhook Destination
+      description: This endpoint creates a new webhook destination. A webhook destination is a URL where webhook payloads will be sent.
+      operationId: CreateWebhookDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for the organization. This specifies the organization within which the webhook destination is created.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookDestinationRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the DestinationCreateRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/webhooks/{id}:
+    get:
+      tags:
+      - IntegrationDestinations
+      summary: Retrieve Destination
+      description: Retrieve the webhook Destination for the UUID.
+      operationId: GetWebhookIntegrationDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The UUID of the webhook destination.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the Destination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - IntegrationDestinations
+      summary: Update Destination
+      description: Update a destination to be used for a webhook.
+      operationId: UpdateWebhookDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The UUID of the WebhookDestination to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookDestinationRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the Destination Update Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - IntegrationDestinations
+      summary: Delete Webhook Destination
+      description: This endpoint deletes a specific webhook destination identified by its UUID.
+      operationId: DeleteWebhookDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the webhook destination to be deleted.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted Destination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/webhooks/{id}/active:
+    put:
+      tags:
+      - IntegrationDestinations
+      summary: Activate Webhook Destination
+      description: 'Set the `active` status on a webhook integration destination.
+
+
+        Use this endpoint to activate or deactivate a webhook integration destination. It toggles the `active` status of the specific wehbook destination with the given ID.'
+      operationId: ActivateWebhookDestination
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the webhook destination. This ID is used to specify which webhook integration is being targeted for activation or deactivation.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: active
+        in: query
+        description: active status of the webhook
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Returns the WebhookDestinationRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/workflows:
+    get:
+      tags:
+      - IntegrationDestinations
+      summary: List WorkflowIntegrations
+      description: Retrieve a list of WorkflowIntegration entities
+      operationId: ListWorkflowIntegrations
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of workflows to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids*
+        in: query
+        description: List of workflow ids to retrieve
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: object
+      - name: ids
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          maxItems: 200
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      responses:
+        '200':
+          description: ListWorkflowIntegrations 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWorkflowListResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - IntegrationDestinations
+      summary: Create Workflow
+      description: Create a new workflow
+      operationId: CreateWorkflow
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowRequest'
+        required: true
+      responses:
+        '200':
+          description: CreateWorkflow 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/workflows/accessrights:
+    get:
+      tags:
+      - IntegrationDestinations
+      summary: Get Workflow Access Rights
+      description: Retrieve the access rights of the workflow service
+      operationId: GetWorkflowAccessRights
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the status details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAccessRightsResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/workflows/functions:
+    get:
+      tags:
+      - IntegrationDestinations
+      summary: List Functions
+      description: Retrieve the available workflow functions, optionally filtered by destination type
+      operationId: ListFunctions
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: destination
+        in: query
+        description: Destination type to filter functions by
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ListFunctions 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/FunctionDetails'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/workflows/import:
+    post:
+      tags:
+      - IntegrationDestinations
+      summary: Export Workflow Version
+      description: Import a workflow.
+      operationId: ImportWorkflow
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowPayload'
+        required: true
+      responses:
+        '200':
+          description: ImportWorkflow 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/workflows/triggers:
+    get:
+      tags:
+      - IntegrationDestinations
+      summary: Get Triggerse
+      description: Retrieve the triggers for workflows
+      operationId: GetWorkflowTriggers
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: GetWorkflowTriggers 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowTriggersResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/workflows/validate:
+    post:
+      tags:
+      - IntegrationDestinations
+      summary: Validate Workflow
+      description: Validate workflow
+      operationId: ValidateWorkflow
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateWorkflowRequest'
+        required: true
+      responses:
+        '200':
+          description: ValidateWorkflow 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidateWorkflowResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/workflows/{id}:
+    get:
+      tags:
+      - IntegrationDestinations
+      summary: Get Workflow
+      description: Retrieve the workflow for the specified ID
+      operationId: GetWorkflowForId
+      parameters:
+      - name: id
+        in: path
+        description: UUID of the workflow to retrieve
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: workflowVersion
+        in: query
+        description: Optional version number to retrieve
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+          format: int32
+      - name: draft
+        in: query
+        description: Set to true to retrieve the latest draft
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      - name: draftVersion
+        in: query
+        description: UUID of a specific draft version to retrieve
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: GetWorkflowForId 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - IntegrationDestinations
+      summary: Update Workflow
+      description: Update an existing workflow
+      operationId: UpdateWorkflow
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: UUID of the workflow
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowRequest'
+        required: true
+      responses:
+        '200':
+          description: UpdateWorkflow 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - IntegrationDestinations
+      summary: Delete Workflow
+      description: Delete an existing workflow
+      operationId: DeleteWorkflow
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: UUID of the workflow
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: DeleteWorkflow 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/workflows/{id}/draft:
+    put:
+      tags:
+      - IntegrationDestinations
+      summary: Save Workflow Draft
+      description: Save a draft of the workflow without publishing it as a new version
+      operationId: SaveWorkflowDraft
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: UUID of the workflow
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowRequest'
+        required: true
+      responses:
+        '200':
+          description: SaveWorkflowDraft 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - IntegrationDestinations
+      summary: Discard Workflow Draft
+      description: Discard the current workflow draft
+      operationId: DiscardWorkflowDraft
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: UUID of the workflow
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: DiscardWorkflowDraft 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/workflows/{id}/enable:
+    put:
+      tags:
+      - IntegrationDestinations
+      summary: Enable Workflow
+      description: Enable a workflow. Requires that the workflow contains no errors
+      operationId: EnableWorkflow
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: UUID of the workflow
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: enable
+        in: query
+        description: '`false` to disable the workflow'
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: EnableWorkflow 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/workflows/{id}/export:
+    get:
+      tags:
+      - IntegrationDestinations
+      summary: Export Workflow Version
+      description: Export the specified version of the workflow for the UUID.
+      operationId: ExportWorkflowVersion
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: UUID of the workflow
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: version
+        in: query
+        description: The version of the workflow to export. If no version is specified the latest version is used
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ExportWorkflowVersion 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowPayload'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/workflows/{id}/publish:
+    post:
+      tags:
+      - IntegrationDestinations
+      summary: Publish Workflow Draft
+      description: Publish the current draft as a new workflow version
+      operationId: PublishWorkflowDraft
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: UUID of the workflow
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: PublishWorkflowDraft 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/integrationdestinations/workflows/{id}/useDraft:
+    put:
+      tags:
+      - IntegrationDestinations
+      summary: Set Workflow Use Draft
+      description: Toggle whether workflow execution uses the latest draft version or the latest live version
+      operationId: SetWorkflowUseDraft
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: UUID of the workflow
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: draft
+        in: query
+        description: '`false` to revert to live version'
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: SetWorkflowUseDraft 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowDestinationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    ValidateWorkflowResponse:
+      type: object
+      properties:
+        validationErrors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: ''
+      description: Response containing validation errors
+    AbstractLookupResponse:
+      required:
+      - destinationField
+      - type
+      type: object
+      properties:
+        destinationField:
+          type: string
+          description: ''
+        type:
+          description: ''
+          $ref: '#/components/schemas/LookupType'
+      description: ''
+    WorkflowTriggersResponse:
+      type: object
+      properties:
+        triggers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: ''
+      description: Response containing list of potential triggers for a Workflow
+    TemplateSource:
+      required:
+      - templateId
+      type: object
+      properties:
+        platform:
+          type: boolean
+          description: ''
+        templateId:
+          type: string
+          description: ''
+        templateVersion:
+          type:
+          - integer
+          - 'null'
+          description: ''
+          format: int32
+        templateOverrides:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: object
+            additionalProperties:
+              $ref: '#/components/schemas/AbstractFunctionParameter'
+          description: ''
+      description: ''
+    IntegrationM3terSignedCredentialsResponse:
+      type: object
+      properties:
+        apiKey:
+          type: string
+          description: The API key provided by m3ter. This key is part of the credential set required for signing requests and authenticating with m3ter services.
+          example: api key
+        secret:
+          type: string
+          description: The secret associated with the API key. This secret is used in conjunction with the API key to generate a signature for secure authentication.
+          example: api secret
+      description: 'Response representing a set of credentials used for signing m3ter requests. '
+      allOf:
+      - $ref: '#/components/schemas/IntegrationCredentialsResponse'
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+    AbstractFunctionRequest:
+      type: object
+      properties:
+        functionId:
+          type: string
+          description: ''
+        title:
+          type: string
+          description: ''
+        description:
+          type: string
+          description: ''
+        className:
+          type: string
+          description: ''
+        parameters:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/AbstractFunctionParameter'
+          description: ''
+        exits:
+          type: object
+          properties:
+            'TRUE':
+              type: string
+            'FALSE':
+              type: string
+            VALID:
+              type: string
+            INVALID:
+              type: string
+            NEXT:
+              type: string
+            TERMINATE:
+              type: string
+            ERROR:
+              type: string
+          description: ''
+      description: ''
+    WorkflowRequest:
+      required:
+      - code
+      - description
+      - enabled
+      - functions
+      - globalParameters
+      - name
+      - trigger
+      type: object
+      properties:
+        name:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: ''
+        description:
+          maxLength: 200
+          minLength: 1
+          type: string
+          description: ''
+        code:
+          maxLength: 80
+          minLength: 1
+          pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+          type: string
+          description: ''
+        trigger:
+          description: ''
+          $ref: '#/components/schemas/WorkflowTrigger'
+        functions:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AbstractFunctionRequest'
+        globalParameters:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AbstractGlobalParameter'
+        enabled:
+          type: boolean
+          description: ''
+        templateSource:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/TemplateSource'
+      description: ''
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractGlobalParameter:
+      required:
+      - type
+      type: object
+      properties:
+        name:
+          type: string
+          description: ''
+        type:
+          type: string
+          description: ''
+        constraints:
+          type: object
+          additionalProperties:
+            type: string
+          description: ''
+      description: ''
+    WorkflowAccessRights:
+      type: string
+      description: ''
+      enum:
+      - FULL_ACCESS
+      - READ_ONLY
+    FunctionType:
+      type: string
+      description: ''
+      enum:
+      - COMMON
+      - LOOP
+    PaginatedWebhookDestinationResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/WebhookDestinationResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    LookupType:
+      type: string
+      description: ''
+      enum:
+      - CALCULATION
+      - STATIC
+      - LOOKUP
+    CredentialsExportPayload:
+      required:
+      - credentialsId
+      - destinationType
+      - name
+      - type
+      type: object
+      properties:
+        credentialsId:
+          type: string
+          description: ''
+        name:
+          type: string
+          description: ''
+        destinationType:
+          description: ''
+          $ref: '#/components/schemas/DestinationType'
+        type:
+          description: ''
+          $ref: '#/components/schemas/AuthType'
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    WorkflowPayload:
+      required:
+      - code
+      - credentials
+      - description
+      - functions
+      - globalParameters
+      - name
+      - originalOrgId
+      - transformations
+      - trigger
+      - version
+      - versionDescription
+      - webhooks
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: ''
+        code:
+          type: string
+          description: ''
+        description:
+          minLength: 1
+          type: string
+          description: ''
+        originalOrgId:
+          minLength: 1
+          type: string
+          description: ''
+        version:
+          type: integer
+          description: ''
+          format: int32
+        versionDescription:
+          type: string
+          description: ''
+        functions:
+          minItems: 1
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AbstractFunctionRequest'
+        globalParameters:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AbstractGlobalParameter'
+        trigger:
+          description: ''
+          $ref: '#/components/schemas/WorkflowTrigger'
+        transformations:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/TransformationExportPayload'
+        credentials:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/CredentialsExportPayload'
+        webhooks:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/WebhookExportPayload'
+      description: ''
+    DestinationRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - description
+        - name
+        type: object
+        properties:
+          name:
+            minLength: 1
+            type: string
+            description: ''
+          description:
+            minLength: 1
+            type: string
+            description: ''
+          code:
+            type: string
+            description: ''
+          active:
+            type: boolean
+            description: ''
+    AuthType:
+      type: string
+      description: ''
+      enum:
+      - OAUTH_CODE
+      - OAUTH_CLIENT_CREDENTIALS
+      - HTTP_BASIC
+      - M3TER_SIGNED_REQUEST
+      - AWS_INTEGRATION
+      - PADDLE
+      - NETSUITE
+      - CHARGEBEE
+      - M3TER_APP_SIGNATURE
+      - M3TER_SERVICE_USER
+      - STRIPE_SIGNED_REQUEST
+      - OPSGENIE_KEY
+      - SAP_BYD
+      - HUBSPOT_ACCESS_TOKEN
+      - HUBSPOT_CLIENT_SECRET
+      - SLACK_WEBHOOK
+      - SAGE_INTACCT_CLIENT_CREDENTIALS
+      - SAGE_INTACCT_CLIENT_SECRET
+      - STATIC_API_KEY
+      - GCP_WIF
+      - SNS_REQUEST
+    FunctionParameter:
+      required:
+      - constraints
+      - description
+      - label
+      - ordinal
+      - required
+      - type
+      - values
+      type: object
+      properties:
+        description:
+          type: string
+          description: ''
+        label:
+          type: string
+          description: ''
+        required:
+          type: boolean
+          description: ''
+        type:
+          type: string
+          description: ''
+        values:
+          type: array
+          description: ''
+          items:
+            type: string
+        ordinal:
+          type: integer
+          description: ''
+          format: int32
+        constraints:
+          type: object
+          additionalProperties: true
+          description: ''
+      description: ''
+    DestinationResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - type: object
+        properties:
+          name:
+            type: string
+            description: ''
+          description:
+            type: string
+            description: ''
+          code:
+            type: string
+            description: ''
+          active:
+            type: boolean
+            description: ''
+        description: Response containing a Destination
+    WebhookExportPayload:
+      required:
+      - webhookDestinationId
+      - webhookUrl
+      type: object
+      properties:
+        webhookDestinationId:
+          type: string
+          description: ''
+        webhookUrl:
+          type: string
+          description: ''
+      description: ''
+    DestinationType:
+      type: string
+      description: ''
+      enum:
+      - WEBHOOK
+      - NETSUITE
+      - STRIPE
+      - STRIPE_TEST
+      - AWS
+      - PADDLE
+      - PADDLE_SANDBOX
+      - SALESFORCE
+      - XERO
+      - CHARGEBEE
+      - QUICKBOOKS
+      - QUICKBOOKS_SANDBOX
+      - M3TER
+    WebhookDestinationRequest:
+      required:
+      - credentials
+      - url
+      type: object
+      properties:
+        url:
+          minLength: 1
+          type: string
+          description: The URL to which the webhook requests will be sent.
+        credentials:
+          description: 'The credentials required for the webhook. '
+          allOf:
+          - $ref: '#/components/schemas/IntegrationM3terSignedCredentialsRequest'
+          - type: object
+            description: Request representing a credential set for m3ter request signing
+      description: This response contains details about the `WebhookDestinationRequest` entity, including the URL and credentials required for webhook activation.
+      allOf:
+      - $ref: '#/components/schemas/DestinationRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+    IntegrationCredentialsRequestBase:
+      required:
+      - type
+      type: object
+      properties:
+        empty:
+          type: boolean
+          description: "A flag to indicate whether the credentials are empty. \n\n* TRUE - empty credentials.\n* FALSE - credential details required."
+        type:
+          minLength: 1
+          type: string
+          description: Specifies the type of authorization required for the integration.
+          enum:
+          - HTTP_BASIC
+          - OAUTH_CLIENT_CREDENTIALS
+          - M3TER_SIGNED_REQUEST
+          - AWS_INTEGRATION
+          - PADDLE_AUTH
+          - NETSUITE_AUTH
+          - CHARGEBEE_AUTH
+          - M3TER_APP_SIGNATURE
+          - M3TER_SERVICE_USER
+          - STRIPE_SIGNED_REQUEST
+          - HUBSPOT_ACCESS_TOKEN
+          - HUBSPOT_CLIENT_SECRET
+          - OPSGENIE_KEY
+          - SAP_BYD
+          - SLACK_WEBHOOK
+          - SAGE_INTACCT_CLIENT_CREDENTIALS
+          - SAGE_INTACCT_CLIENT_SECRET
+          - STATIC_API_KEY
+          - GCP_WIF
+          - SNS_REQUEST
+        name:
+          type: string
+          description: The name of the credentials
+          example: Integration Credentials
+        destination:
+          description: ''
+          $ref: '#/components/schemas/DestinationType'
+      description: Base model for defining integration credentials across different types of integrations.
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+    AbstractFunctionParameter:
+      type: object
+    PaginatedWorkflowListResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/WorkflowListResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    FunctionDetails:
+      required:
+      - category
+      - categoryDescription
+      - className
+      - description
+      - destinations
+      - documentationUrl
+      - exits
+      - functionName
+      - functionType
+      - parameters
+      type: object
+      properties:
+        className:
+          type: string
+          description: ''
+        functionName:
+          type: string
+          description: ''
+        functionType:
+          description: ''
+          $ref: '#/components/schemas/FunctionType'
+        description:
+          type: string
+          description: ''
+        parameters:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FunctionParameter'
+          description: ''
+        exits:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/FunctionExit'
+        destinations:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/DestinationType'
+        category:
+          type: string
+          description: ''
+        categoryDescription:
+          type: string
+          description: ''
+        documentationUrl:
+          type: string
+          description: ''
+      description: ''
+    ValidateWorkflowRequest:
+      type: object
+      properties:
+        initialFunction:
+          type: string
+          description: ''
+        functions:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AbstractFunctionRequest'
+        globalParameters:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AbstractGlobalParameter'
+      description: Validate a list of functions and their parameters
+    AbstractResponseWithAuditFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - type: object
+        properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip: terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip: terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip: terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip: terraform
+    WorkflowAccessRightsResponse:
+      required:
+      - workflowAccessRights
+      type: object
+      properties:
+        workflowAccessRights:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/WorkflowAccessRights'
+          - type: object
+            description: The access rights of the workflow
+      description: Response containing workflow access rights information
+    WebhookDestinationResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          description: 'The URL to which webhook requests are sent. '
+        credentials:
+          description: 'This schema defines the credentials required for m3ter request signing. '
+          allOf:
+          - $ref: '#/components/schemas/IntegrationM3terSignedCredentialsResponse'
+          - type: object
+            description: Response representing a credential set for m3ter request signing
+      description: Response containing details of a webhook destination.
+      allOf:
+      - $ref: '#/components/schemas/DestinationResponse'
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+    FunctionExit:
+      type: string
+      description: ''
+      enum:
+      - 'TRUE'
+      - 'FALSE'
+      - VALID
+      - INVALID
+      - NEXT
+      - TERMINATE
+      - ERROR
+    IntegrationM3terSignedCredentialsRequest:
+      type: object
+      description: 'This schema defines the credentials required for m3ter request signing. '
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - $ref: '#/components/schemas/IntegrationCredentialsRequestBase'
+      - required:
+        - apiKey
+        - secret
+        - type
+        type: object
+        properties:
+          type:
+            minLength: 1
+            type: string
+            description: Specifies the authorization type. For this schema, it is exclusively set to M3TER_SIGNED_REQUEST.
+            enum:
+            - M3TER_SIGNED_REQUEST
+          empty:
+            type: boolean
+            description: "A flag to indicate whether the credentials are empty. \n\n* TRUE - empty credentials.\n* FALSE - credential details required."
+          apiKey:
+            minLength: 1
+            type: string
+            description: The API key provided by m3ter. This key is part of the credential set required for signing requests and authenticating with m3ter services.
+            example: api key
+          secret:
+            minLength: 1
+            type: string
+            description: The secret associated with the API key. This secret is used in conjunction with the API key to generate a signature for secure authentication.
+            example: api secret
+        description: Request representing a credential set for m3ter request signing
+    WorkflowTrigger:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: whether or not the trigger is enabled.
+        firstFunction:
+          type: string
+          description: Function ID of the next function to run
+      description: ''
+    WorkflowListResponse:
+      required:
+      - code
+      - id
+      - latestVersion
+      - name
+      - triggerDesc
+      - triggerType
+      type: object
+      properties:
+        id:
+          type: string
+          description: ''
+        name:
+          type: string
+          description: ''
+        code:
+          type: string
+          description: ''
+        triggerType:
+          type: string
+          description: ''
+        triggerDesc:
+          type: string
+          description: ''
+        latestVersion:
+          type: integer
+          description: ''
+          format: int32
+      description: ''
+    IntegrationCredentialsResponse:
+      type: object
+      description: Response containing a IntegrationCredentials entity
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - required:
+        - destination
+        - type
+        type: object
+        properties:
+          type:
+            minLength: 1
+            type: string
+            description: the type of credentials
+          destination:
+            minLength: 1
+            type: string
+            description: the system the integration is for
+          destinationId:
+            type: string
+            description: the destinationId the integration is for
+          name:
+            type: string
+            description: the name of the credentials
+        description: Response containing a IntegrationCredentials entity
+    WorkflowDestinationResponse:
+      type: object
+      properties:
+        trigger:
+          description: ''
+          $ref: '#/components/schemas/WorkflowTrigger'
+        functions:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AbstractFunctionRequest'
+        globalParameters:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AbstractGlobalParameter'
+        templateOverrides:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              $ref: '#/components/schemas/AbstractFunctionParameter'
+          description: ''
+        enabled:
+          type: boolean
+          description: ''
+        validationErrors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: ''
+        currentVersion:
+          type: integer
+          description: ''
+          format: int32
+        workflowVersion:
+          type: integer
+          description: ''
+          format: int32
+        draft:
+          type: boolean
+          description: ''
+        useDraftVersion:
+          type: boolean
+          description: ''
+        versions:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/VersionDetailResponse'
+        drafts:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/VersionDetailResponse'
+      description: Response containing a workflow
+      allOf:
+      - $ref: '#/components/schemas/DestinationResponse'
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+    TransformationExportPayload:
+      required:
+      - code
+      - description
+      - destinationSystem
+      - destinationTable
+      - name
+      - orgId
+      - sourceSystem
+      - sourceTable
+      - transformationId
+      - transformations
+      type: object
+      properties:
+        orgId:
+          type: string
+          description: ''
+        transformationId:
+          type: string
+          description: ''
+        name:
+          type: string
+          description: ''
+        code:
+          type: string
+          description: ''
+        description:
+          type: string
+          description: ''
+        sourceSystem:
+          type: string
+          description: ''
+        destinationSystem:
+          type: string
+          description: ''
+        sourceTable:
+          type: string
+          description: ''
+        destinationTable:
+          type: string
+          description: ''
+        transformations:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AbstractLookupResponse'
+      description: ''
+    VersionDetailResponse:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: ''
+          format: int32
+        description:
+          type: string
+          description: ''
+        dtCreated:
+          type: string
+          description: ''
+          format: date-time
+        createdBy:
+          type: string
+          description: ''
+        draftVersion:
+          type: string
+          description: ''
+        templateId:
+          type: string
+          description: ''
+        platform:
+          type: boolean
+          description: ''
+        templateVersion:
+          type: integer
+          description: ''
+          format: int32
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email

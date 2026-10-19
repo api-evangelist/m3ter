@@ -1,0 +1,252 @@
+openapi: 3.2.0
+info:
+  title: m3ter External Mappings API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See Importing the m3ter Open API in our main user Documentation for details. - Copy this link: m3ter-Template API Collection and use it to import the **m3ter-Template API Collection** into your Workspace. See Importing the m3ter Template API Collection in our main user Documentation for details. ---
+
+
+    # Introduction
+
+    The m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:
+
+    - The **Ingest API**, which you can use for submitting raw data measurements. *(See the Submit Measurements endpoint in this API Reference.)*
+
+    - The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)*
+
+
+    ## Authentication and Authorization
+
+    Our APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification. OAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:
+
+    - **Authorization Code**: Used for human login access via the m3ter Console. - **Client Credentials**: Used for machine-to-machine communication and API access. Complete the following flow for API access:
+
+
+    1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. 2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. See Service Authentication for detailed instructions and an example. 3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.*
+
+
+    4. **Bearer Token Usage**: Use the HTTP ''Authorization'' header with the bearer token to authorise all subsequent API requests. > Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one. Below are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. ### cURL Example
+
+    1. Open your terminal or command prompt. 2. Use the following `cURL` command to obtain a Bearer Token:
+
+
+    ```bash
+
+    curl -X POST https://api.m3ter.com/oauth/token \
+
+    -H ''Content-Type: application/x-www-form-urlencoded'' \
+
+    -u your_access_key_id:your_api_secret \
+
+    -d ''grant_type=client_credentials''
+
+    ```
+
+
+    Replace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. 3. Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:
+
+
+    ```json
+
+    {
+
+    "access_token": "your_bearer_token",
+
+    "token_type": "Bearer",
+
+    "expires_in": 18000
+
+    }
+
+    ```
+
+
+    You can then use the Bearer Token *(the value of `"access_token"`)* for subsequent API calls to m3ter. ### Python Example
+
+    1. Install the `requests` library if you haven''t already:
+
+
+    ```bash
+
+    pip install requests
+
+    ```
+
+
+    2.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: ExternalMappings
+  description: Endpoints for creating/updating/deleting External Mappings
+paths:
+  /organizations/{orgId}/externalmappingconfiguration:
+    get:
+      tags:
+      - ExternalMappings
+      summary: Retrieve External Mapping Configuration
+      description: 'Retrieve the global External Mapping configuration.
+
+
+        This endpoint retrieves the global External Mapping configuration for the specified Organization.'
+      operationId: GetExternalMappingConfiguration
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns External Mapping configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalMappingConfigurationResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/externalmappingconfiguration/values/{destination}/{entityType}/{integrationCredentialsId}:
+    get:
+      tags:
+      - ExternalMappings
+      summary: Retrieve a list of external entities from the destination system for a…
+      description: Retrieve a list of possible values to create an external mapping using a particular credential. These options are retrieved from the destination system if the system has been successfully authenticated and provides the mechanism to do so. Otherwise an empty response is returned.
+      operationId: GetExternalMappingOptionsForDestinationForCredentialsId
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: destination
+        in: path
+        description: Name of the destination system
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: entityType
+        in: path
+        description: The m3ter entity type.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: integrationCredentialsId
+        in: path
+        description: The UUID of the credentials to use.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: externalTable
+        in: query
+        description: Name of the target externalTable
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return a list of the external systems entities using a particular credential.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExternalEntityResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    ExternalEntityResponse:
+      type: object
+      properties:
+        externalId:
+          type: string
+          description: ''
+        externalName:
+          type: string
+          description: ''
+      description: Response containing an entity on an external system
+    ExternalMappingConfigurationResponse:
+      required:
+      - externalSystems
+      - m3terEntities
+      type: object
+      properties:
+        m3terEntities:
+          type: array
+          description: ' An array of m3ter entity names. For example, this could include "Account".'
+          items:
+            type: string
+        externalSystems:
+          type: array
+          description: An array with the list of external systems.
+          items:
+            $ref: '#/components/schemas/ExternalSystemResponse'
+      description: Response containing permitted External Mapping configuration.
+    ExternalSystemResponse:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the external system.
+        tables:
+          type: array
+          description: An array containing the list of external system tables permitted in mappings.
+          items:
+            type: string
+        allowCustomExternalTables:
+          type: boolean
+          description: ''
+      description: Response containing external system and permitted tables.
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email

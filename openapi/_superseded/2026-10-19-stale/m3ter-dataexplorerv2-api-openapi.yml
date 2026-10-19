@@ -1,0 +1,631 @@
+openapi: 3.2.0
+info:
+  title: m3ter Data Explorer V2 API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: DataExplorerV2
+  description: 'Endpoints for querying and filtering Usage data collected for your Organization.
+
+
+    **IMPORTANT: Request Rate Limits for Data Explorer v2!** As part of the Config API, requests made to the Data Explorer v2 are subject to tighter request rate limits:
+
+    - **Generally** 2 requests per second.
+
+    - **Burst** 20 requests per second.
+
+
+    If you exceed either of these rate limits, requests are throttled and an HTTP 429 (Too Many Requests) error response is returned.'
+paths:
+  /organizations/{orgId}/usage/savedqueries:
+    get:
+      tags:
+      - DataExplorerV2
+      summary: List UsageSavedQueries
+      description: Retrieve a list of UsageSavedQuery entities
+      operationId: ListUsageSavedQueries
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Number of UsageSavedQueries to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: ListUsageSavedQueries 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUsageSavedQueryResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - DataExplorerV2
+      summary: Create UsageSavedQuery
+      description: Create a new UsageSavedQuery.
+      operationId: CreateUsageSavedQuery
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsageSavedQueryRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the created UsageSavedQuery
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageSavedQueryResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/usage/savedqueries/{id}:
+    get:
+      tags:
+      - DataExplorerV2
+      summary: Retrieve UsageSavedQuery
+      description: Retrieve a UsageSavedQuery for the given UUID.
+      operationId: GetUsageSavedQuery
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the UsageSavedQuery to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the UsageSavedQuery
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageSavedQueryResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - DataExplorerV2
+      summary: Update UsageSavedQuery
+      description: Update a UsageSavedQuery for the given UUID.
+      operationId: UpdateUsageSavedQuery
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the UsageSavedQuery to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsageSavedQueryRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the updated UsageSavedQuery
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageSavedQueryResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - DataExplorerV2
+      summary: Delete UsageSavedQuery
+      description: Delete the UsageSavedQuery for the given UUID.
+      operationId: DeleteUsageSavedQuery
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the UsageSavedQuery to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the deleted UsageSavedQuery
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageSavedQueryResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/usage/query:
+    post:
+      tags:
+      - DataExplorerV2
+      summary: Query and filter usage data
+      description: 'Query and filter usage data collected for your Organization.
+
+
+        You can use several parameters to filter the range of usage data returned:
+
+        * **Time period.** Use `startDate` and `endDate` to define a period. The query references the `timestamp` values of usage data submissions for applying the defined time period, and not the time submissions were `receivedAt` by the platform. Only usage data with a `timestamp` that falls in the defined time period are returned.(Required)
+
+        * **Meters.** Specify the Meters you want the query to return data for.
+
+        * **Accounts.** Specify the Accounts you want the query to return data for.
+
+        * **Dimension Filters.** Specify values for Dimension data fields on included Meters. Only data that match the specified Dimension field values will be returned for the query.
+
+
+        You can apply Aggregations functions to the usage data returned for the query. If you apply Aggregations, you can select to group the data by:
+
+        * **Account**
+
+        * **Time**
+
+        * **Dimension**'
+      operationId: PostUsageDataQuery
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsageQueryRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns a list of usage data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageQueryResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    UsageQueryResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            type: object
+            additionalProperties: true
+        hasMoreData:
+          type: boolean
+          description: 'Boolean flag to indicate whether or not there are more data available for the query than are returned:
+
+            * If there are more data, then TRUE.
+
+            * If there are no more data, then FALSE.
+
+
+            **NOTES:**
+
+            * The limit on the size of the return is 20000 data items. If the query returns more than this limit, only 20000 items are returned with most recent first and `hasMoreData` will be TRUE.
+
+            * If you have set `limit` in your query request at fewer than the number returned by the query, then `hasMoreData` will be TRUE in the response.
+
+
+            '
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    UsageQueryRequestWithTimePeriod:
+      type: object
+      properties:
+        timePeriod:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/UsageSavedQueryTimePeriod'
+          - description: The time period
+      description: Data Explorer saved query request.
+      allOf:
+      - $ref: '#/components/schemas/UsageQueryRequest'
+      - $ref: '#/components/schemas/RequestWithStartAndEndDate'
+    UsageSavedQueryTimePeriod:
+      type: string
+      description: Time period for saved query
+      enum:
+      - TODAY
+      - YESTERDAY
+      - WEEK_TO_DATE
+      - MONTH_TO_DATE
+      - YEAR_TO_DATE
+      - PREVIOUS_WEEK
+      - PREVIOUS_MONTH
+      - PREVIOUS_QUARTER
+      - PREVIOUS_YEAR
+      - LAST_12_HOURS
+      - LAST_7_DAYS
+      - LAST_30_DAYS
+      - LAST_35_DAYS
+      - LAST_90_DAYS
+      - LAST_120_DAYS
+      - LAST_YEAR
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    DataExplorerFieldType:
+      type: string
+      description: Type of field
+      enum:
+      - DIMENSION
+      - MEASURE
+    PaginatedUsageSavedQueryResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/UsageSavedQueryResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    DataExplorerAggregation:
+      required:
+      - fieldType
+      - function
+      type: object
+      properties:
+        fieldType:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/DataExplorerFieldType'
+          - description: Type of field
+        function:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/DataExplorerAggregationFunction'
+          - description: Aggregation function to apply
+      description: Aggregation to be applied to a field
+      allOf:
+      - $ref: '#/components/schemas/DataExplorerMeterField'
+    UsageSavedQueryResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the saved query
+        usageQuery:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/UsageQueryRequestWithTimePeriod'
+          - description: The query to save
+      description: Request representing a usage saved query
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+    DataExplorerMeterField:
+      required:
+      - fieldCode
+      - meterId
+      type: object
+      properties:
+        meterId:
+          minLength: 1
+          type: string
+          description: Meter ID
+        fieldCode:
+          minLength: 1
+          type: string
+          description: Field code
+      description: Meter field
+    DataExplorerAggregationFunction:
+      type: string
+      description: Aggregation function
+      enum:
+      - SUM
+      - MIN
+      - MAX
+      - COUNT
+      - LATEST
+      - MEAN
+      - UNIQUE
+    UsageSavedQueryRequest:
+      required:
+      - name
+      - usageQuery
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: Name of the saved query
+        usageQuery:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/UsageQueryRequestWithTimePeriod'
+          - description: The query to save
+      description: Request representing a usage saved query
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+    UsageQueryRequest:
+      type: object
+      properties:
+        meterIds:
+          type: array
+          description: Specify the Meters you want the query to return usage data for.
+          items:
+            type: string
+        accountIds:
+          type: array
+          description: Specify the Accounts you want the query to return usage data for.
+          items:
+            type: string
+        dimensionFilters:
+          type: array
+          description: 'Define Dimension filters you want to apply for the query.
+
+
+            Specify values for Dimension data fields on included Meters. Only data that match the specified Dimension field values will be returned for the query.'
+          items:
+            $ref: '#/components/schemas/DataExplorerDimensionFilter'
+        aggregations:
+          type: array
+          description: 'Define the Aggregation functions you want to apply to data fields on included Meters:
+
+            * **SUM**. Adds the values.
+
+            * **MIN**. Uses the minimum value.
+
+            * **MAX**. Uses the maximum value.
+
+            * **COUNT**. Counts the number of values.
+
+            * **LATEST**. Uses the most recent value.
+
+            * **MEAN**. Uses the arithmetic mean of the values.
+
+            * **UNIQUE**. Uses a count of the number of unique values.
+
+
+            **NOTE!** The Aggregation functions that can be applied depend on the data field type:
+
+            - **Measure** fields. `SUM`, `MIN`, `MAX`, `COUNT`, `LATEST`, or `MEAN` functions can be applied.
+
+            - **Dimension** field. `COUNT` or `UNIQUE` functions can be applied.'
+          items:
+            $ref: '#/components/schemas/DataExplorerAggregation'
+        groups:
+          type: array
+          description: 'If you''ve applied Aggregations for your query, specify any grouping you want to impose on the returned data:
+
+            - **Account**
+
+            - **Time** - group by frequency. Five options: `DAY`, `HOUR`, `WEEK`, `MONTH`, or `QUARTER`.
+
+            - **Dimension** - group by Meter and data field.
+
+
+            **NOTE:** If you attempt to impose grouping for a query that doesn''t apply Aggregations, you''ll receive an error.'
+          items:
+            $ref: '#/components/schemas/DataExplorerGroup'
+        limit:
+          maximum: 20000
+          minimum: 1
+          type: integer
+          description: Define a limit for the number of usage data items you want the query to return, starting with the most recently received data item.
+          format: int32
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/RequestWithStartAndEndDate'
+    DataExplorerDimensionFilter:
+      required:
+      - values
+      type: object
+      properties:
+        values:
+          minItems: 1
+          type: array
+          description: Values to filter by
+          items:
+            type: string
+      description: Filter by dimension
+      allOf:
+      - $ref: '#/components/schemas/DataExplorerMeterField'
+    RequestWithStartAndEndDate:
+      type: object
+      properties:
+        startDate:
+          type: string
+          description: The inclusive start date to define a time period to filter by. (*ISO 8601 formatted*)
+          format: date-time
+        endDate:
+          type: string
+          description: The exclusive end date to define a time period to filter by. (*ISO 8601 formatted*)
+          format: date-time
+      description: ''
+    DataExplorerGroup:
+      type: object
+      properties:
+        groupType:
+          description: ''
+          $ref: '#/components/schemas/DataExplorerGroupType'
+      description: Group by a field
+      discriminator:
+        propertyName: groupType
+        mapping:
+          ACCOUNT: '#/components/schemas/DataExplorerAccountGroup'
+          DIMENSION: '#/components/schemas/DataExplorerDimensionGroup'
+          TIME: '#/components/schemas/DataExplorerTimeGroup'
+    DataExplorerGroupType:
+      type: string
+      description: Type of group
+      enum:
+      - ACCOUNT
+      - DIMENSION
+      - TIME
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

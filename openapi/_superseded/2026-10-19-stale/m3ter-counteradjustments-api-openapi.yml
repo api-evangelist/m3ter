@@ -1,0 +1,482 @@
+openapi: 3.2.0
+info:
+  title: m3ter Counter Adjustments API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: CounterAdjustments
+  description: 'Endpoints for listing, creating, updating, retrieving, or deleting CounterAdjustments.
+
+
+    If you attach a Plan to an Account which is priced using a Counter to apply unit-based pricing, you can then create CounterAdjustments for the Account using that Counter to ensure the Account is billed according to the number of Counter units the Account subscribes to in a given billing period.
+
+
+    See Understanding and Creating Counter Adjustments for Accounts for more information.'
+paths:
+  /organizations/{orgId}/counteradjustments:
+    get:
+      tags:
+      - CounterAdjustments
+      summary: List CounterAdjustments
+      description: 'Retrieve a list of CounterAdjustments created for Accounts in your Organization. You can filter the list returned by date, Account ID, or Counter ID.
+
+
+        **CONSTRAINTS:**
+
+        * The `counterId` query parameter is always required when calling this endpoint, used either as a single query parameter or in combination with any of the other query parameters.
+
+        * If you want to use the `date`, `dateStart`, or `dateEnd` query parameters, you must also use the `accountId` query parameter.'
+      operationId: ListCounterAdjustments
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Number of CounterAdjustments to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: counterId
+        in: query
+        description: List CounterAdjustment items for the Counter UUID.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: accountId
+        in: query
+        description: List CounterAdjustment items for the Account UUID.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: date
+        in: query
+        description: List CounterAdjustment items for the given date.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: endDateStart
+        in: query
+        description: Only include CounterAdjustments with end dates equal to or later than this date.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: endDateEnd
+        in: query
+        description: Only include CounterAdjustments with end dates earlier than this date.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sortOrder
+        in: query
+        description: Sort order for the results
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: dateStart
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          type:
+          - string
+          - 'null'
+      - name: dateEnd
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          type:
+          - string
+          - 'null'
+      responses:
+        '200':
+          description: Returns list of CounterAdjustments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCounterAdjustmentResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - CounterAdjustments
+      summary: Create CounterAdjustment
+      description: 'Create a new CounterAdjustment for an Account using a Counter.
+
+
+        **Notes:**
+
+        * Use the new absolute value for the Counter for the selected date - if it was 15 and has increased to 20, enter 20; if it was 15 and has decreased to 10, enter 10. *Do not enter* the plus or minus value relative to the previous Counter value on the Account.
+
+        * CounterAdjustments on Accounts are supported down to a *specific day* of granularity - you cannot create more than one CounterAdjustment for any given day using the same Counter and you''ll receive an error if you try to do this.'
+      operationId: PostCounterAdjustment
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CounterAdjustmentRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the created CounterAdjustment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CounterAdjustmentResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/counteradjustments/{id}:
+    get:
+      tags:
+      - CounterAdjustments
+      summary: Retrieve CounterAdjustment
+      description: Retrieve a CounterAdjustment for the given UUID.
+      operationId: GetCounterAdjustment
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the CounterAdjustment to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the CounterAdjustment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CounterAdjustmentResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - CounterAdjustments
+      summary: Update CounterAdjustment
+      description: Update a CounterAdjustment for an Account.
+      operationId: PutCounterAdjustment
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the CounterAdjustment to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CounterAdjustmentRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated CounterAdjustment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CounterAdjustmentResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - CounterAdjustments
+      summary: Delete CounterAdjustment
+      description: Delete a CounterAdjustment for the given UUID.
+      operationId: DeleteCounterAdjustment
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the CounterAdjustment to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted CounterAdjustment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CounterAdjustmentResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    PaginatedCounterAdjustmentResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/CounterAdjustmentResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    CounterAdjustmentRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - accountId
+        - counterId
+        - date
+        - value
+        properties:
+          counterId:
+            minLength: 1
+            type: string
+            description: The ID of the Counter used for the CounterAdjustment on the Account.
+          accountId:
+            minLength: 1
+            type: string
+            description: The Account ID the CounterAdjustment is created for.
+          date:
+            type: string
+            description: 'The date the CounterAdjustment is created for the Account *(in ISO-8601 date format)*.
+
+
+              **Note:** CounterAdjustments on Accounts are supported down to a *specific day* of granularity - you cannot create more than one CounterAdjustment for any given day using the same Counter and you''ll receive an error if you try to do this.'
+            example: '2022-01-04'
+            default: '2022-01-04'
+          value:
+            minimum: 0
+            type: integer
+            description: 'Integer Value of the Counter used for the CounterAdjustment.
+
+
+              **Note:** Use the new absolute value for the Counter for the selected date - if it was 15 and has increased to 20, enter 20; if it was 15 and has decreased to 10, enter 10. *Do not enter* the plus or minus value relative to the previous Counter value on the Account.'
+            format: int32
+          purchaseOrderNumber:
+            maxLength: 100
+            type: string
+            description: Purchase Order Number for the Counter Adjustment. *(Optional)*
+    CounterAdjustmentResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithAuditFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          counterId:
+            type: string
+            description: The ID of the Counter that was used to make the CounterAdjustment on the Account.
+          accountId:
+            type: string
+            description: The Account ID the CounterAdjustment was created for.
+          date:
+            type: string
+            description: The date the CounterAdjustment was created for the Account *(in ISO-8601 date format)*.
+            format: date
+          value:
+            type: integer
+            description: Integer Value of the Counter that was used to make the CounterAdjustment.
+            format: int32
+          purchaseOrderNumber:
+            type: string
+            description: Purchase Order Number for the Counter Adjustment. *(Optional)*
+    AbstractResponseWithAuditFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The DateTime when this item was created *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when this item was last modified *(in ISO-8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created this item.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified this item.
+            x-stainless-skip:
+            - terraform
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

@@ -1,0 +1,807 @@
+openapi: 3.2.0
+info:
+  title: m3ter Resource Group API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: ResourceGroup
+  description: Endpoints for ResourceGroup related operations such as creation, update, list and delete.
+paths:
+  /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/permissions:
+    get:
+      tags:
+      - ResourceGroup
+      summary: List ResourceGroup permission policies
+      description: Retrieve a list of permission policies for a ResourceGroup
+      operationId: GetResourceGroupPermissions
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: resourceGroupId
+        in: path
+        description: UUID of the ResourceGroup
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of PermissionPolicy entities to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return a list of PermissionPolicies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPermissionPolicyResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/removeresource:
+    post:
+      tags:
+      - ResourceGroup
+      summary: Remove item
+      description: Remove an item from a ResourceGroup.
+      operationId: RemoveResourceFromGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: resourceGroupId
+        in: path
+        description: The UUID of the ResourceGroup to remove the item from.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceGroupItemRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the ResourceGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/resourcegroups/{type}:
+    get:
+      tags:
+      - ResourceGroup
+      summary: List ResourceGroups
+      description: Retrieve a list of ResourceGroup entities
+      operationId: ListResourceGroups
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of ResourceGroups to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ListResourceGroups 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResourceGroupResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - ResourceGroup
+      summary: Create ResourceGroup
+      description: Create a ResourceGroup for the UUID
+      operationId: PostResourceGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceGroupRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the new ResourceGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/resourcegroups/{type}/{id}:
+    get:
+      tags:
+      - ResourceGroup
+      summary: Retrieve ResourceGroup
+      description: Retrieve the ResourceGroup for the UUID
+      operationId: GetResourceGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the ResourceGroup to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the ResourceGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - ResourceGroup
+      summary: Update ResourceGroup
+      description: Update the ResourceGroup for the UUID
+      operationId: PutResourceGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the ResourceGroup to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceGroupRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the updated ResourceGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - ResourceGroup
+      summary: Delete ResourceGroup
+      description: Delete a ResourceGroup for the UUID
+      operationId: DeleteResourceGroup
+      parameters:
+      - name: id
+        in: path
+        description: The UUID of the ResourceGroup to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the deleted ResourceGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/addresource:
+    post:
+      tags:
+      - ResourceGroup
+      summary: Add item
+      description: Add an item to a ResourceGroup.
+      operationId: AddResourceToGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: resourceGroupId
+        in: path
+        description: The UUID of the ResourceGroup to add the item to.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: type
+        in: path
+        description: The type of resource the Resource Group is for, such as a Meter Resource Group.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceGroupItemRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the ResourceGroup Item was added to
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/resourcegroups/{type}/{resourceGroupId}/contents:
+    post:
+      tags:
+      - ResourceGroup
+      summary: List ResourceGroup items
+      description: Retrieve a list of items for a ResourceGroup
+      operationId: ListResourceGroupsForId
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: type
+        in: path
+        description: The type of resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: resourceGroupId
+        in: path
+        description: UUID of the ResourceGroup
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of ResourceGroupItems to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return a list of ResourceGroupItems
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResourceGroupItemResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    PermissionPolicyResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the Permission Policy.
+          permissionPolicy:
+            type: array
+            description: 'Array containing the Permission Policies information. '
+            items:
+              $ref: '#/components/schemas/PermissionStatement'
+          managedPolicy:
+            type: boolean
+            description: 'Indicates whether this is a system generated Managed Permission Policy. '
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Permission Policy was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Permission Policy was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this Permission Policy.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this Permission Policy.
+            x-stainless-skip:
+            - terraform
+    PaginatedResourceGroupResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ResourceGroupResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    TargetType:
+      type: string
+      description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
+      enum:
+      - ITEM
+      - GROUP
+    ResourceGroupItemRequest:
+      required:
+      - targetId
+      - targetType
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the group.
+
+            '
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        targetId:
+          minLength: 1
+          type: string
+          description: 'The id of the item or group you want to:
+
+            - *Add Item* call: add to a Resource Group.
+
+            - *Remove Item* call: remove from the Resource Group.'
+        targetType:
+          description: "When adding to or removing from a Resource Group, specify whether a single item or group:\n- `item` \n\t- *Add Item* call: use to add a single meter to a Resource Group\n\t- *Remove Item* call: use to remove a single from a Resource Group.\n- `group`\n\t- *Add Item* call: use to add a Resource Group to another Resource Group and form a nested Resource Group\n\t- *Remove Item* call: use remove a nested Resource Group from a Resource Group."
+          $ref: '#/components/schemas/TargetType'
+      description: ''
+      example:
+        targetId: 06f6b50c-a868-4ca6-XXXX-448e507d5248
+        targetType: item
+    ResourceGroupItemResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          targetId:
+            type: string
+            description: The UUID of the item.
+          targetType:
+            description: ''
+            $ref: '#/components/schemas/TargetType'
+          dtCreated:
+            type: string
+            description: The DateTime when the item was created for the resource group.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the resource group item was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this item for the resource group.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this item for the resource group.
+            x-stainless-skip:
+            - terraform
+    PermissionStatement:
+      required:
+      - action
+      - effect
+      - resource
+      type: object
+      properties:
+        effect:
+          description: 'Specifies whether or not the user is allowed to perform the action on the resource.
+
+
+            **NOTE:** Use lower case, for example: `"allow"`. If you use upper case, you''ll receive an error.'
+          $ref: '#/components/schemas/PermissionEffect'
+        action:
+          type: array
+          description: 'The actions available to users who are assigned the Permission Policy - what they can do or cannot do with respect to the specified resource.
+
+
+            **NOTE:** Use lower case and a colon-separated format, for example, if you want to confer full CRUD, use:
+
+            ```
+
+            "config:create",
+
+            "config:delete",
+
+            "config:retrieve",
+
+            "config:update"
+
+            ```'
+          items:
+            $ref: '#/components/schemas/PermissionAction'
+        resource:
+          minItems: 1
+          type: array
+          description: See [Statements - Available Resources](https://www.m3ter.com/docs/guides/managing-organization-and-users/creating-and-managing-permissions#statements---available-resources) for a listing of available resources for Permission Policy statements.
+          items:
+            type: string
+      description: ''
+    PermissionAction:
+      type: string
+      description: ''
+      enum:
+      - ALL
+      - CONFIG_CREATE
+      - CONFIG_RETRIEVE
+      - CONFIG_UPDATE
+      - CONFIG_DELETE
+      - CONFIG_EXPORT
+      - ANALYTICS_QUERY
+      - MEASUREMENTS_UPLOAD
+      - MEASUREMENTS_FILEUPLOAD
+      - MEASUREMENTS_RETRIEVE
+      - MEASUREMENTS_EXPORT
+      - FORECAST_RETRIEVE
+      - HEALTHSCORES_RETRIEVE
+      - ANOMALIES_RETRIEVE
+      - EXPORTS_DOWNLOAD
+      - MARKETPLACE_USAGE_CREATE
+      - MARKETPLACE_USAGE_RETRIEVE
+      - AUDIT_RETRIEVE
+    PaginatedPermissionPolicyResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/PermissionPolicyResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    ResourceGroupResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the Resource Group.
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Resource Group was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Resource Group was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this Resource Group.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this Resource Group.
+            x-stainless-skip:
+            - terraform
+    PermissionEffect:
+      type: string
+      description: ''
+      enum:
+      - ALLOW
+      - DENY
+    ResourceGroupRequest:
+      required:
+      - name
+      type: object
+      properties:
+        version:
+          type: integer
+          description: ''
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+          description: ''
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PaginatedResourceGroupItemResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ResourceGroupItemResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

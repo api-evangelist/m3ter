@@ -1,0 +1,903 @@
+openapi: 3.2.0
+info:
+  title: m3ter Commitments API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Commitments
+  description: Endpoints that manage Commitments *(also known as Prepayments)* in the context of usage-based pricing and billing.
+paths:
+  /organizations/{orgId}/commitments/{id}:
+    get:
+      tags:
+      - Commitments
+      summary: Retrieve Commitment
+      description: 'Retrieve a specific Commitment.
+
+
+        Retrieve the details of the Commitment with the given UUID. It provides comprehensive information about the Commitment, such as the agreed amount, overage surcharge percentage, and other related details.'
+      operationId: GetCommitment
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Commitment to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maximum: 36
+          minimum: 36
+          type: string
+      responses:
+        '200':
+          description: Returns the Commitment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommitmentResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - Commitments
+      summary: Update Commitment
+      description: 'Modify a specific Commitment.
+
+
+        Update the details of the Commitment with the given UUID. Use this endpoint to adjust Commitment parameters such as the fixed amount, overage surcharge percentage, or associated contract details.'
+      operationId: PutCommitment
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) for the Commitment to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maximum: 36
+          minimum: 36
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommitmentRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated Commitment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommitmentResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - Commitments
+      summary: Delete Commitment
+      description: 'Remove a specific Commitment.
+
+
+        Deletes the Commitment with the given UUID. Use this endpoint when a Commitment is no longer valid or needs to be removed from the system.'
+      operationId: DeleteCommitment
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your organization. The Organization represents your company as a direct customer our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) for the Commitment to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maximum: 36
+          minimum: 36
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted Commitment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommitmentResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/commitments:
+    get:
+      tags:
+      - Commitments
+      summary: List Commitments
+      description: 'Retrieve a list of Commitments.
+
+
+        Retrieves a list of all Commitments associated with an Organization. This endpoint supports pagination and includes various query parameters to filter the Commitments based on Account, Product, date, and end dates.'
+      operationId: ListCommitments
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of Commitments to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Commitments in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: accountId
+        in: query
+        description: The unique identifier (UUID) for the Account. This parameter helps filter the Commitments related to a specific end-customer Account.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 36
+          minimum: 36
+          type: string
+      - name: productId
+        in: query
+        description: The unique identifier (UUID) for the Product. This parameter helps filter the Commitments related to a specific Product.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 36
+          minimum: 36
+          type: string
+      - name: date
+        in: query
+        description: A date *(in ISO-8601 format)* to filter Commitments which are active on this specific date.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: endDateStart
+        in: query
+        description: A date *(in ISO-8601 format)* used to filter Commitments. Only Commitments with end dates on or after this date will be included.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: endDateEnd
+        in: query
+        description: A date *(in ISO-8601 format)* used to filter Commitments. Only Commitments with end dates before this date will be included.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: A list of unique identifiers (UUIDs) for the Commitments to retrieve. Use this to fetch specific Commitments in a single request.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: contractId
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          maxLength: 36
+          type:
+          - string
+          - 'null'
+      responses:
+        '200':
+          description: Returns a list of Commitments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCommitmentResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - Commitments
+      summary: Create Commitment
+      description: 'Create a new Commitment.
+
+
+        Creates a new Commitment for an Organization. The request body must include all the necessary details such as the agreed amount, overage surcharge percentage, and the associated account and product details.
+
+
+        **Note:** If some of the agreed Commitment amount remains unpaid at the start of an end-customer contract period, when you create a Commitment for an Account you can set up billing for the outstanding amount in one of two ways:
+
+        - Select a Product *Plan to bill with*. Use the `billingPlanId` request parameter to select the Plan used for billing.
+
+        - Define a *schedule of billing dates*. Omit a `billingPlanId` and use the `feeDates` request parameter to define a precise schedule of bill dates and amounts.'
+      operationId: PostCommitment
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. This represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommitmentRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the created Commitment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommitmentResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/commitments/search:
+    get:
+      tags:
+      - Commitments
+      summary: Search Commitments
+      description: 'Search for commitment entities.
+
+
+        This endpoint executes a search query for Commitments based on the user specified search criteria. The search query is customizable, allowing for complex nested conditions and sorting. The returned list of Commitments can be paginated for easier management.'
+      operationId: SearchCommitments
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: searchQuery
+        in: query
+        description: "Query for data using special syntax:\n* Query parameters should be delimited using $ (dollar sign).\n* Allowed comparators are:\n\t* (greater than) >\n\t* (greater than or equal to) >=\n\t* (equal to) :\n\t* (less than) <\n\t* (less than or equal to) <=\n\t* (match phrase/prefix) ~\n*  Allowed parameters: startDate, endDate, contractId, accountId, productId, productIds, id, createdBy, dtCreated, lastModifiedBy, ids.\n*  Query example:\n\t*  searchQuery=startDate>2023-01-01$accountId:062085ab-a301-4f21-a081-411020864452.\n\t*  This query is translated into: find commitments where the startDate is older than 2023-01-01 AND the accountId is equal to 062085ab-a301-4f21-a081-411020864452.\n\n**Note:** Using the ~ match phrase/prefix comparator. For best results, we recommend treating this as a \"starts with\" comparator for your search query."
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: fromDocument
+        in: query
+        description: '`fromDocument` for multi page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'Number of Commitments to retrieve per page.
+
+
+          **NOTE:** If not defined, default is 10.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: operator
+        in: query
+        description: Search Operator to be used while querying search.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - AND
+          - OR
+      - name: sortBy
+        in: query
+        description: Name of the parameter on which sorting is performed. Use any field available on the Commitment entity to sort by, such as `accountId`, `endDate`, and so on.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sortOrder
+        in: query
+        description: Sorting order.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+      responses:
+        '200':
+          description: Return the Commitments that match the search criteria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCommitmentResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PaginatedCommitmentResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/CommitmentResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    ChildBillingMode:
+      type: string
+      description: 'If the Account is either a Parent or a Child Account, this specifies the Account hierarchy billing mode. The mode determines how billing will be handled and shown on bills for charges due on the Parent Account, and charges due on Child Accounts:
+
+
+        * **Parent Breakdown** - a separate bill line item per Account. Default setting.
+
+
+        * **Parent Summary** - single bill line item for all Accounts.
+
+
+        * **Child** - the Child Account is billed.'
+      enum:
+      - PARENT_SUMMARY
+      - PARENT_BREAKDOWN
+      - CHILD
+    CommitmentFee:
+      required:
+      - amount
+      - date
+      - servicePeriodEndDate
+      - servicePeriodStartDate
+      type: object
+      properties:
+        date:
+          type: string
+          description: ''
+          format: date
+        amount:
+          type: number
+          description: ''
+          format: double
+          exclusiveMinimum: 0
+        servicePeriodStartDate:
+          type: string
+          description: ''
+          format: date-time
+        servicePeriodEndDate:
+          type: string
+          description: ''
+          format: date-time
+      description: ''
+    CommitmentResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          accountId:
+            type: string
+            description: 'The unique identifier (UUID) for the end customer Account the Commitment is added to. '
+          billingPlanId:
+            type: string
+            description: The unique identifier (UUID) for the Product Plan used for billing Commitment fees due.
+          productIds:
+            type: array
+            description: 'A list of unique identifiers (UUIDs) for Products the Account consumes. Charges due for these Products will be made available for draw-down against the Commitment.
+
+
+              **Note:** If not used, then charges due for all Products the Account consumes will be made available for draw-down against the Commitment.'
+            items:
+              type: string
+          startDate:
+            type: string
+            description: The start date of the Commitment period in ISO-8601 format.
+            format: date
+          endDate:
+            type: string
+            description: The end date of the Commitment period in ISO-8601 format.
+            format: date
+          currency:
+            type: string
+            description: The currency used for the Commitment. For example, 'USD'.
+          amount:
+            type: number
+            description: The total amount that the customer has committed to pay.
+            format: double
+          amountPrePaid:
+            type: number
+            description: The amount that the customer has already paid upfront at the start of the Commitment service period.
+            format: double
+          amountFirstBill:
+            type: number
+            description: The amount to be billed in the first invoice.
+            format: double
+          amountSpent:
+            type: number
+            description: The total amount of the Commitment that the customer has spent so far.
+            format: double
+          overageSurchargePercent:
+            type: number
+            description: The percentage surcharge applied to the usage charges that exceed the Commitment amount.
+            format: double
+          separateOverageUsage:
+            type: boolean
+            description: 'A boolean value indicating whether the overage usage is billed separately or together. If overage usage is separated and a Commitment amount has been consumed by an Account, any subsequent line items on Bills against the Account for usage will show as separate "overage usage" charges, not simply as "usage" charges:
+
+
+              * **TRUE** - billed separately.
+
+              * **FALSE** - billed together. '
+          billingInterval:
+            type: integer
+            description: How often the Commitment fees are applied to bills. For example, if the plan being used to bill for Commitment fees is set to issue bills every three months and the `billingInterval` is set to 2, then the Commitment fees are applied every six months.
+            format: int32
+          billingOffset:
+            type: integer
+            description: The offset for when the Commitment fees are first applied to bills on the Account. For example, if bills are issued every three months and the `billingOffset` is 0, then the charge is applied to the first bill (at three months); if set to 1, it's applied to the next bill (at six months), and so on.
+            format: int32
+          commitmentFeeDescription:
+            type: string
+            description: A textual description of the Commitment fee.
+          commitmentUsageDescription:
+            type: string
+            description: A textual description of the Commitment usage.
+          overageDescription:
+            type: string
+            description: A textual description of the overage charges.
+          commitmentFeeBillInAdvance:
+            type: boolean
+            description: 'A boolean value indicating whether the Commitment fee is billed in advance *(start of each billing period)* or arrears *(end of each billing period)*.
+
+
+              * **TRUE** - bill in advance *(start of each billing period)*.
+
+              * **FALSE** - bill in arrears *(end of each billing period)*.'
+          billEpoch:
+            type: string
+            description: The starting date *(in ISO-8601 date format)* from which the billing cycles are calculated.
+            format: date
+          contractId:
+            type: string
+            description: The unique identifier (UUID) for a Contract you've created for the Account and to which the Commitment has been added.
+          accountingProductId:
+            type: string
+            description: 'The unique identifier (UUID) for the Product linked to the Commitment for accounting purposes.
+
+              '
+          feesAccountingProductId:
+            type: string
+            description: Optional Product ID this Commitment's fees should be attributed to for accounting purposes.
+          drawdownsAccountingProductId:
+            type: string
+            description: Optional Product ID this Commitment's consumptions should be attributed to for accounting purposes.
+          feeDates:
+            type: array
+            description: 'Used for billing any outstanding Commitment fees *on a schedule*.
+
+
+              An array defining a series of bill dates and amounts covering specified service periods:
+
+              - `date` - the billing date *(in ISO-8601 format)*.
+
+              - `amount` - the billed amount.
+
+              - `servicePeriodStartDate` and `servicePeriodEndDate` - defines the service period the bill covers *(in ISO-8601 format)*.'
+            items:
+              $ref: '#/components/schemas/CommitmentFee'
+          childBillingMode:
+            description: 'If the Account is either a Parent or a Child Account, this specifies the Account hierarchy billing mode. The mode determines how billing will be handled and shown on bills for charges due on the Parent Account, and charges due on Child Accounts:
+
+
+              * **Parent Breakdown** - a separate bill line item per Account. Default setting.
+
+
+              * **Parent Summary** - single bill line item for all Accounts.
+
+
+              * **Child** - the Child Account is billed.'
+            $ref: '#/components/schemas/ChildBillingMode'
+          lineItemTypes:
+            type: array
+            description: 'Specifies the line item charge types that can draw-down at billing against the Commitment amount. Options are:
+
+              - `MINIMUM_SPEND`
+
+              - `STANDING_CHARGE`
+
+              - `USAGE`
+
+              - `"COUNTER_RUNNING_TOTAL_CHARGE"`
+
+              - `"COUNTER_ADJUSTMENT_DEBIT"`'
+            items:
+              $ref: '#/components/schemas/CommitmentLineItemType'
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Commitment was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Commitment was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this Commitment.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this Commitment.
+            x-stainless-skip:
+            - terraform
+    CommitmentRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - accountId
+        - amount
+        - currency
+        - endDate
+        - startDate
+        properties:
+          accountId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: The unique identifier (UUID) for the end customer Account the Commitment is added to.
+          billingPlanId:
+            maxLength: 36
+            type: string
+            description: The unique identifier (UUID) for the Product Plan used for billing Commitment fees due.
+          productIds:
+            maxItems: 100
+            type: array
+            description: 'A list of unique identifiers (UUIDs) for Products the Account consumes. Charges due for these Products will be made available for draw-down against the Commitment.
+
+
+              **Note:** If not used, then charges due for all Products the Account consumes will be made available for draw-down against the Commitment.'
+            items:
+              type: string
+          startDate:
+            type: string
+            description: The start date of the Commitment period in ISO-8601 format.
+            format: date
+          endDate:
+            type: string
+            description: 'The end date of the Commitment period in ISO-8601 format.
+
+
+              **Note:** End date is exclusive -  if you set an end date of June 1st 2022, then the Commitment ceases to be active for the Account at midnight on May 31st 2022, and any Prepayment fees due are calculated up to that point in time, NOT up to midnight on June 1st'
+            format: date
+          currency:
+            minLength: 1
+            type: string
+            description: 'The currency used for the Commitment. For example: USD. '
+          amount:
+            type: number
+            description: The total amount that the customer has committed to pay.
+            format: double
+            exclusiveMinimum: 0
+          amountPrePaid:
+            minimum: 0
+            type: number
+            description: The amount that the customer has already paid upfront at the start of the Commitment service period.
+            format: double
+          amountFirstBill:
+            minimum: 0
+            type: number
+            description: The amount to be billed in the first invoice.
+            format: double
+          overageSurchargePercent:
+            type: number
+            description: 'The percentage surcharge applied to usage charges that exceed the Commitment amount.
+
+
+              **Note:** You can enter a *negative percentage* if you want to give a discount rate for usage to end customers who exceed their Commitment amount'
+            format: double
+          separateOverageUsage:
+            type: boolean
+            description: 'A boolean value indicating whether the overage usage is billed separately or together. If overage usage is separated and a Commitment amount has been consumed by an Account, any subsequent line items on Bills against the Account for usage will show as separate "overage usage" charges, not simply as "usage" charges:
+
+
+              * **TRUE** - billed separately.
+
+              * **FALSE** - billed together.
+
+
+              **Notes:**
+
+              - Can be used only if no value or 0 has been defined for the `overageSurchargePercent` parameter. If you try to separate overage usage when a value other than 0 has been defined for `overageSurchargePercent`, you''ll receive an error.
+
+              - If a priced Plan is used to bill any outstanding Commitment fees due and the Plan is set up with overage pricing on a *tiered pricing structure* and you enable separate bill line items for overage usage, then overage usage charges will be rated according to the overage pricing defined for the tiered pricing on the Plan.'
+          billingInterval:
+            maximum: 365
+            minimum: 1
+            type: integer
+            description: How often the Commitment fees are applied to bills. For example, if the plan being used to bill for Commitment fees is set to issue bills every three months and the `billingInterval` is set to 2, then the Commitment fees are applied every six months.
+            format: int32
+          billingOffset:
+            maximum: 364
+            minimum: 0
+            type: integer
+            description: Defines an offset for when the Commitment fees are first applied to bills on the Account. For example, if bills are issued every three months and the `billingOffset` is 0, then the charge is applied to the first bill (at three months); if set to 1, it's applied to the next bill (at six months), and so on.
+            format: int32
+          commitmentFeeDescription:
+            maxLength: 200
+            type: string
+            description: A textual description of the Commitment fee.
+          commitmentUsageDescription:
+            maxLength: 200
+            type: string
+            description: A textual description of the Commitment usage.
+          overageDescription:
+            maxLength: 200
+            type: string
+            description: A textual description of the overage charges.
+          commitmentFeeBillInAdvance:
+            type: boolean
+            description: "A boolean value indicating whether the Commitment fee is billed in advance *(start of each billing period)* or arrears *(end of each billing period)*.\n\nIf no value is supplied, then the Organization Configuration value is used.  \n\n* **TRUE** - bill in advance *(start of each billing period)*.\n* **FALSE** - bill in arrears *(end of each billing period)*."
+          billEpoch:
+            type: string
+            description: The starting date *(in ISO-8601 date format)* from which the billing cycles are calculated.
+            format: date
+          contractId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: 'The unique identifier (UUID) for a Contract you''ve created for the Account - used to add the Commitment to this Contract.
+
+
+              **Note:** If you associate the Commitment with a Contract you must ensure the Account Plan attached to the Account has the same Contract associated with it. If the Account Plan Contract and Commitment Contract do not match, then at billing the Commitment amount will not be drawn-down against.'
+          accountingProductId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: 'The unique identifier (UUID) for the Product linked to the Commitment for accounting purposes. *(Optional)*
+
+
+              **NOTE:** If you''re planning to set up an integration for sending Bills to an external accounts receivable system, please check requirements for your chosen system. Some systems, such as NetSuite, require a Product to be linked with any Bill line items associated with Account Commitments, and the integration will fail if this is not present'
+          feesAccountingProductId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: Optional Product ID this Commitment's fees should be attributed to for accounting purposes.
+          drawdownsAccountingProductId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: Optional Product ID this Commitment's consumptions should be attributed to for accounting purposes.
+          feeDates:
+            type: array
+            description: 'Used for billing any outstanding Commitment fees *on a schedule*.
+
+
+              Create an array to define a series of bill dates and amounts covering specified service periods:
+
+              - `date` - the billing date *(in ISO-8601 format)*.
+
+              - `amount` - the billed amount.
+
+              - `servicePeriodStartDate` and `servicePeriodEndDate` - defines the service period the bill covers *(in ISO-8601 format)*.
+
+
+              **Notes:**
+
+              * If you try to set `servicePeriodStartDate` *after* `servicePeriodEndDate`, you''ll receive an error.
+
+              * You can set `servicePeriodStartDate` and `servicePeriodEndDate` to the *same date* without receiving an error, but *please be sure* your Commitment billing use case requires this.'
+            items:
+              $ref: '#/components/schemas/CommitmentFee'
+          childBillingMode:
+            description: 'If the Account is either a Parent or a Child Account, this specifies the Account hierarchy billing mode. The mode determines how billing will be handled and shown on bills for charges due on the Parent Account, and charges due on Child Accounts:
+
+
+              * **Parent Breakdown** - a separate bill line item per Account. Default setting.
+
+
+              * **Parent Summary** - single bill line item for all Accounts.
+
+
+              * **Child** - the Child Account is billed.'
+            allOf:
+            - $ref: '#/components/schemas/ChildBillingMode'
+            - description: Commitment billing mode that only applies while using parent/child accounts, used to configure on which bill the commitment fees and draw downs end up.
+          lineItemTypes:
+            type: array
+            description: 'Specify the line item charge types that can draw-down at billing against the Commitment amount. Options are:
+
+              - `MINIMUM_SPEND`
+
+              - `STANDING_CHARGE`
+
+              - `USAGE`
+
+              - `"COUNTER_RUNNING_TOTAL_CHARGE"`
+
+              - `"COUNTER_ADJUSTMENT_DEBIT"`
+
+
+              **NOTE:** If no charge types are specified, by default *all types* can draw-down against the Commitment amount at billing.'
+            items:
+              $ref: '#/components/schemas/CommitmentLineItemType'
+    CommitmentLineItemType:
+      type: string
+      description: Available line item types for Commitments
+      enum:
+      - STANDING_CHARGE
+      - USAGE
+      - MINIMUM_SPEND
+      - COUNTER_RUNNING_TOTAL_CHARGE
+      - COUNTER_ADJUSTMENT_DEBIT
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

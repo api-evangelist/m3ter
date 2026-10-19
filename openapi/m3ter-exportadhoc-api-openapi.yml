@@ -3,7 +3,77 @@ info:
   title: m3ter Export Ad Hoc API
   description: 'If you are using Postman, you can:
 
-    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See Importing the m3ter Open API in our main user Documentation for details. - Copy this link: m3ter-Template API Collection and use it to import the **m3ter-Template API Collection** into your Workspace. See Importing the m3ter Template API Collection in our main user Documentation for details. ---
+
+
+    # Introduction
+
+    The m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:
+
+    - The **Ingest API**, which you can use for submitting raw data measurements. *(See the Submit Measurements endpoint in this API Reference.)*
+
+    - The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)*
+
+
+    ## Authentication and Authorization
+
+    Our APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification. OAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:
+
+    - **Authorization Code**: Used for human login access via the m3ter Console. - **Client Credentials**: Used for machine-to-machine communication and API access. Complete the following flow for API access:
+
+
+    1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. 2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. See Service Authentication for detailed instructions and an example. 3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.*
+
+
+    4. **Bearer Token Usage**: Use the HTTP ''Authorization'' header with the bearer token to authorise all subsequent API requests. > Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one. Below are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. ### cURL Example
+
+    1. Open your terminal or command prompt. 2. Use the following `cURL` command to obtain a Bearer Token:
+
+
+    ```bash
+
+    curl -X POST https://api.m3ter.com/oauth/token \
+
+    -H ''Content-Type: application/x-www-form-urlencoded'' \
+
+    -u your_access_key_id:your_api_secret \
+
+    -d ''grant_type=client_credentials''
+
+    ```
+
+
+    Replace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. 3. Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:
+
+
+    ```json
+
+    {
+
+    "access_token": "your_bearer_token",
+
+    "token_type": "Bearer",
+
+    "expires_in": 18000
+
+    }
+
+    ```
+
+
+    You can then use the Bearer Token *(the value of `"access_token"`)* for subsequent API calls to m3ter. ### Python Example
+
+    1. Install the `requests` library if you haven''t already:
+
+
+    ```bash
+
+    pip install requests
+
+    ```
+
+
+    2.'
   version: '1.0'
   x-logo:
     url: https://console.m3ter.com/m3ter-logo-black.svg
@@ -13,7 +83,23 @@ security:
 - OAuth2: []
 tags:
 - name: ExportAdHoc
-  description: Endpoints for triggering one-off, ad-hoc Data Exports.
+  description: 'Endpoints for triggering one-off, ad-hoc Data Exports. You can set up and run ad-hoc Exports to export two kinds of data from your m3ter Organization:
+
+    * Usage data.
+
+    * Operational data for entities.
+
+
+    **Ad-Hoc Export Destinations** When setting up and running an ad-hoc Export:
+
+    * You can define one or more Export Destinations - see the ExportDestination section of this API Reference. When the export runs, the data is sent through to the sepecified Destination. However, the export file is also made available for you to download it locally.
+
+    * You can set up and run Data Exports without defining a Destination. The data is not exported but the compiled export file is made available for downloading locally.
+
+    * For details on downloading an export file, see the Get Data Export File Download URL endpoint in this API Reference.
+
+
+    **Preview Version!** The Data Export feature is currently available only in Preview release version. See Feature Release Stages for Preview release definition. ExportAdHoc endpoints will only be available if Data Export has been enabled for your Organization. For more details see Data Export(Preview) in our main User documentation. If you''re interested in previewing the Data Export feature, please get in touch with m3ter Support or your m3ter contact.'
 paths:
   /organizations/{orgId}/dataexports/adhoc:
     post:
@@ -64,8 +150,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       requestBody:
         description: ''
         content:
@@ -76,7 +160,7 @@ paths:
                 mapping:
                   USAGE: '#/components/schemas/AdHocUsageDataExportConfigurationRequestV2'
                   OPERATIONAL: '#/components/schemas/AdHocOperationalDataExportConfigurationRequest'
-              anyOf:
+              oneOf:
               - $ref: '#/components/schemas/AdHocOperationalDataExportConfigurationRequest'
               - $ref: '#/components/schemas/AdHocUsageDataExportConfigurationRequestV2'
         required: true
@@ -93,23 +177,17 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    SourceType:
-      type: string
-      description: ''
-      enum:
-      - USAGE
-      - OPERATIONAL
     AdHocUsageDataExportConfigurationRequestV2:
       required:
       - sourceType
       type: object
       properties:
         sourceType:
+          description: ''
           allOf:
-          - type: string
-            enum:
-            - USAGE
-          - description: 'The type of data to export. Possible values are: USAGE'
+          - $ref: '#/components/schemas/SourceType'
+          - type: object
+            description: 'The type of data to export. Possible values are: OPERATIONAL, USAGE.'
         endDate:
           type: string
           description: The exclusive end date for the data export.
@@ -143,6 +221,32 @@ components:
       allOf:
       - $ref: '#/components/schemas/AdHocDataExportConfigurationRequest'
       - $ref: '#/components/schemas/AbstractRequest'
+    DataExplorerFieldType:
+      type: string
+      description: Type of field
+      enum:
+      - DIMENSION
+      - MEASURE
+    DataExplorerGroup:
+      type: object
+      properties:
+        groupType:
+          description: ''
+          $ref: '#/components/schemas/DataExplorerGroupType'
+      description: Group by a field
+      discriminator:
+        propertyName: groupType
+        mapping:
+          ACCOUNT: '#/components/schemas/DataExplorerAccountGroup'
+          DIMENSION: '#/components/schemas/DataExplorerDimensionGroup'
+          TIME: '#/components/schemas/DataExplorerTimeGroup'
+    AdHocResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+          description: The id of the job
+      description: Response containing data export ad-hoc jobId
     AbstractRequest:
       type: object
       properties:
@@ -157,101 +261,6 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
-    DataExplorerFieldType:
-      type: string
-      description: Type of field
-      enum:
-      - DIMENSION
-      - MEASURE
-    AdHocDataExportConfigurationRequest:
-      required:
-      - sourceType
-      type: object
-      properties:
-        sourceType:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/SourceType'
-          - description: 'The type of data to export. Possible values are: OPERATIONAL, USAGE.'
-        destinationIds:
-          type: array
-          description: 'The destination ids.
-
-
-            **Note:** If you omit a Destination, this means that when the Export job runs and has succeeded, you can download the data export file locally. For details, see the [Get Data Export File Download URL](https://www.m3ter.com/docs/api#tag/ExportDestination/operation/GenerateDataExportFileDownloadUrl) endpoint in this API Reference.'
-          items:
-            type: string
-        exportFileFormat:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/ExportFileFormat'
-          - description: The export file format.
-        startDate:
-          type: string
-          description: The inclusive start date for the data export.
-          format: date-time
-      description: Base mode request containing ad-hoc data export configuration
-      allOf:
-      - $ref: '#/components/schemas/AbstractRequest'
-    DataExplorerAggregation:
-      required:
-      - fieldType
-      - function
-      type: object
-      properties:
-        fieldType:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/DataExplorerFieldType'
-          - description: Type of field
-        function:
-          description: ''
-          allOf:
-          - $ref: '#/components/schemas/DataExplorerAggregationFunction'
-          - description: Aggregation function to apply
-      description: Aggregation to be applied to a field
-      allOf:
-      - $ref: '#/components/schemas/DataExplorerMeterField'
-    DataExplorerMeterField:
-      required:
-      - fieldCode
-      - meterId
-      type: object
-      properties:
-        meterId:
-          minLength: 1
-          type: string
-          description: Meter ID
-        fieldCode:
-          minLength: 1
-          type: string
-          description: Field code
-      description: Meter field
-    DataExplorerAggregationFunction:
-      type: string
-      description: Aggregation function
-      enum:
-      - SUM
-      - MIN
-      - MAX
-      - COUNT
-      - LATEST
-      - MEAN
-      - UNIQUE
-    DataExplorerDimensionFilter:
-      required:
-      - values
-      type: object
-      properties:
-        values:
-          minItems: 1
-          type: array
-          description: Values to filter by
-          items:
-            type: string
-      description: Filter by dimension
-      allOf:
-      - $ref: '#/components/schemas/DataExplorerMeterField'
     OperationalDataType:
       type: string
       description: ''
@@ -276,6 +285,74 @@ components:
       - BALANCE_TRANSACTIONS
       - TRANSACTION_TYPES
       - CHARGES
+    DataExplorerMeterField:
+      required:
+      - fieldCode
+      - meterId
+      type: object
+      properties:
+        meterId:
+          minLength: 1
+          type: string
+          description: Meter ID
+        fieldCode:
+          minLength: 1
+          type: string
+          description: Field code
+      description: Meter field
+    DataExplorerGroupType:
+      type: string
+      description: Type of group
+      enum:
+      - ACCOUNT
+      - DIMENSION
+      - TIME
+    DataExplorerAggregation:
+      required:
+      - fieldType
+      - function
+      type: object
+      properties:
+        fieldType:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/DataExplorerFieldType'
+          - type: object
+            description: Type of field
+        function:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/DataExplorerAggregationFunction'
+          - type: object
+            description: Aggregation function to apply
+      description: Aggregation to be applied to a field
+      allOf:
+      - $ref: '#/components/schemas/DataExplorerMeterField'
+    DataExplorerDimensionFilter:
+      required:
+      - values
+      type: object
+      properties:
+        values:
+          minItems: 1
+          type: array
+          description: Values to filter by
+          items:
+            type: string
+      description: Filter by dimension
+      allOf:
+      - $ref: '#/components/schemas/DataExplorerMeterField'
+    DataExplorerAggregationFunction:
+      type: string
+      description: Aggregation function
+      enum:
+      - SUM
+      - MIN
+      - MAX
+      - COUNT
+      - LATEST
+      - MEAN
+      - UNIQUE
     AdHocOperationalDataExportConfigurationRequest:
       required:
       - operationalDataTypes
@@ -283,11 +360,11 @@ components:
       type: object
       properties:
         sourceType:
+          description: ''
           allOf:
-          - type: string
-            enum:
-            - OPERATIONAL
-          - description: 'The type of data to export. Possible values are: OPERATIONAL'
+          - $ref: '#/components/schemas/SourceType'
+          - type: object
+            description: 'The type of data to export. Possible values are: OPERATIONAL, USAGE.'
         operationalDataTypes:
           minItems: 1
           type: array
@@ -298,39 +375,50 @@ components:
       allOf:
       - $ref: '#/components/schemas/AdHocDataExportConfigurationRequest'
       - $ref: '#/components/schemas/AbstractRequest'
+    SourceType:
+      type: string
+      description: ''
+      enum:
+      - USAGE
+      - OPERATIONAL
     ExportFileFormat:
       type: string
       description: ''
       enum:
       - CSV
       - JSONL
-    DataExplorerGroup:
+    AdHocDataExportConfigurationRequest:
+      required:
+      - sourceType
       type: object
       properties:
-        groupType:
+        sourceType:
           description: ''
-          $ref: '#/components/schemas/DataExplorerGroupType'
-      description: Group by a field
-      discriminator:
-        propertyName: groupType
-        mapping:
-          ACCOUNT: '#/components/schemas/DataExplorerAccountGroup'
-          DIMENSION: '#/components/schemas/DataExplorerDimensionGroup'
-          TIME: '#/components/schemas/DataExplorerTimeGroup'
-    AdHocResponse:
-      type: object
-      properties:
-        jobId:
+          allOf:
+          - $ref: '#/components/schemas/SourceType'
+          - type: object
+            description: 'The type of data to export. Possible values are: OPERATIONAL, USAGE.'
+        destinationIds:
+          type: array
+          description: 'The destination ids.
+
+
+            **Note:** If you omit a Destination, this means that when the Export job runs and has succeeded, you can download the data export file locally. For details, see the [Get Data Export File Download URL](https://www.m3ter.com/docs/api#tag/ExportDestination/operation/GenerateDataExportFileDownloadUrl) endpoint in this API Reference.'
+          items:
+            type: string
+        exportFileFormat:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/ExportFileFormat'
+          - type: object
+            description: The export file format.
+        startDate:
           type: string
-          description: The id of the job
-      description: Response containing data export ad-hoc jobId
-    DataExplorerGroupType:
-      type: string
-      description: Type of group
-      enum:
-      - ACCOUNT
-      - DIMENSION
-      - TIME
+          description: The inclusive start date for the data export.
+          format: date-time
+      description: Base mode request containing ad-hoc data export configuration
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
   responses:
     Error:
       description: Error message
@@ -350,9 +438,6 @@ components:
           tokenUrl: /oauth/token
           scopes:
             m3ter-resources/m3ter-scope: m3ter resources
-            measurements:upload: Upload measurements
-            measurements:fileUpload: Upload file
-            measurements:retrieve: Retrieve measurements
         authorizationCode:
           authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
           tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
@@ -360,6 +445,3 @@ components:
             m3ter-resources/m3ter-scope: m3ter resources
             openid: OpenID
             email: email
-            measurements:upload: Upload measurements
-            measurements:fileUpload: Upload file
-            measurements:retrieve: Retrieve measurements

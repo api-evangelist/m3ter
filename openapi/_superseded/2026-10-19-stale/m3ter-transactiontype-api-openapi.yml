@@ -1,0 +1,410 @@
+openapi: 3.2.0
+info:
+  title: m3ter Transaction Type API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: TransactionType
+  description: 'Endpoints for TransactionType operations such as creation, update, list, retrieve, and delete.
+
+
+    You can create TransactionTypes for your Organization, which can then be used when creating and updating Balances. Example TransactionTypes: "Balance Amount" or "Add Funds".
+
+
+    For details on creating a Transaction amount for a Balance using a TransactionType you''ve created for your Organization, see the Create Balance Transaction call in the Balances section of this API Reference.'
+paths:
+  /organizations/{orgId}/picklists/transactiontypes/{id}:
+    get:
+      tags:
+      - TransactionType
+      summary: Retrieve TransactionType
+      description: Retrieves the TransactionType with the given UUID from the specified Organization.
+      operationId: GetTransactionType
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the TransactionType to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the specified TransactionType
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionTypeResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - TransactionType
+      summary: Update TransactionType
+      description: Updates the TransactionType with the specified UUID for the specified Organization. Update details for the TransactionType should be included in the request body.
+      operationId: UpdateTransactionType
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifer (UUID) of the TransactionType to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionTypeRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated TransactionType
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionTypeResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - TransactionType
+      summary: Delete TransactionType
+      description: Deletes the TransactionType with the given UUID from the specified Organization.
+      operationId: DeleteTransactionType
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the TransactionType to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted TransactionType
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionTypeResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/picklists/transactiontypes:
+    get:
+      tags:
+      - TransactionType
+      summary: List TransactionTypes
+      description: Retrieves a list of TransactionType entities for the specified Organization. The list can be paginated for easier management, and supports filtering by various parameters.
+      operationId: ListTransactionTypes
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of TransactionTypes to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of TransactionTypes in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: A list of TransactionType unique identifiers (UUIDs) to retrieve.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: codes
+        in: query
+        description: A list of TransactionType short codes to retrieve.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: archived
+        in: query
+        description: "Filter with this Boolean flag whether to include TransactionTypes that are archived. \n\n* TRUE - include archived TransactionTypes in the list.\n* FALSE - exclude archived TransactionTypes. "
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Returns a list of TransactionTypes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTransactionTypeResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - TransactionType
+      summary: Create TransactionType
+      description: Create a new TransactionType for the specified Organization. Details of the new TransactionType should be included in the request body.
+      operationId: CreateTransactionType
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionTypeRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the created TransactionType
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionTypeResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    AbstractPickListRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - name
+        properties:
+          code:
+            maxLength: 80
+            pattern: ^[\p{L}_$][\p{L}_$0-9]*$
+            type: string
+            description: The short code for the entity.
+            example: code
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: The name of the entity.
+          archived:
+            type: boolean
+            description: 'A Boolean TRUE / FALSE flag indicating whether the entity is archived. An entity can be archived if it is obsolete.
+
+
+              * TRUE - the entity is in the archived state.
+
+              * FALSE - the entity is not in the archived state.'
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    TransactionTypeResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractPickListResponse'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the TransactionType was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the TransactionType was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this TransactionType.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this TransactionType.
+            x-stainless-skip:
+            - terraform
+    AbstractPickListResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          code:
+            type: string
+            description: The short code of the data entity.
+          name:
+            type: string
+            description: The name of the data entity.
+          archived:
+            type: boolean
+            description: TRUE / FALSE flag indicating whether the data entity is archived. An entity can be archived if it is obsolete.
+    TransactionTypeRequest:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/AbstractPickListRequest'
+      - $ref: '#/components/schemas/AbstractRequest'
+    PaginatedTransactionTypeResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/TransactionTypeResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

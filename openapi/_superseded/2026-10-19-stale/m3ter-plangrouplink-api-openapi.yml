@@ -1,0 +1,388 @@
+openapi: 3.2.0
+info:
+  title: m3ter Plan Group Link API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: PlanGroupLink
+  description: 'Endpoints for PlanGroupLink related operations such as creation, update, list and delete.
+
+
+    PlanGroupLinks are the intersection table between a PlanGroup and its associated Plans. A PlanGroupLink is only created when at least 1 Plan is linked to a PlanGroup.'
+paths:
+  /organizations/{orgId}/plangrouplinks:
+    get:
+      tags:
+      - PlanGroupLink
+      summary: List PlanGroupLinks
+      description: Retrieve a list of PlanGroupLink entities
+      operationId: ListPlanGroupLinks
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Number of PlanGroupLinks to retrieve per page
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: nextToken for multi page retrievals
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: planGroup
+        in: query
+        description: UUID of the PlanGroup to retrieve PlanGroupLinks for
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 36
+          minimum: 36
+          type: string
+      - name: plan
+        in: query
+        description: UUID of the Plan to retrieve PlanGroupLinks for
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 36
+          minimum: 36
+          type: string
+      - name: ids
+        in: query
+        description: list of IDs to retrieve
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: ListPlanGroupLinks 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPlanGroupLinkResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - PlanGroupLink
+      summary: Create PlanGroupLink
+      description: Create a new PlanGroupLink.
+      operationId: PostPlanGroupLink
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanGroupLinkRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the created PlanGroupLink
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanGroupLinkResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/plangrouplinks/{id}:
+    get:
+      tags:
+      - PlanGroupLink
+      summary: Retrieve PlanGroupLink
+      description: Retrieve a PlanGroupLink for the given UUID.
+      operationId: GetPlanGroupLink
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the PlanGroupLink to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the PlanGroupLink
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanGroupLinkResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - PlanGroupLink
+      summary: Update PlanGroupLink
+      description: Update PlanGroupLink for the given UUID.
+      operationId: PutPlanGroupLink
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the PlanGroupLink to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maximum: 36
+          minimum: 36
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanGroupLinkRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the updated PlanGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanGroupLinkResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - PlanGroupLink
+      summary: Delete PlanGroupLink
+      description: Delete a PlanGroupLink for the given UUID.
+      operationId: DeletePlanGroupLink
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the PlanGroupLink to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maximum: 36
+          minimum: 36
+          type: string
+      responses:
+        '200':
+          description: Return the deleted PlanGroupLink
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanGroupLinkResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PlanGroupLinkResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          planGroupId:
+            type: string
+            description: ID of the linked PlanGroup
+          planId:
+            type: string
+            description: ID of the linked Plan
+          dtCreated:
+            type: string
+            description: The DateTime *(in ISO-8601 format)* when the plan group link was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime *(in ISO-8601 format)* when the plan group link was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this plan group link.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this plan group link.
+            x-stainless-skip:
+            - terraform
+    PlanGroupLinkRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - planGroupId
+        - planId
+        properties:
+          planGroupId:
+            minLength: 1
+            type: string
+            description: ''
+          planId:
+            minLength: 1
+            type: string
+            description: ''
+    PaginatedPlanGroupLinkResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/PlanGroupLinkResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

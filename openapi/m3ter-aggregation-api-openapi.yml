@@ -3,7 +3,77 @@ info:
   title: m3ter Aggregation API
   description: 'If you are using Postman, you can:
 
-    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See Importing the m3ter Open API in our main user Documentation for details. - Copy this link: m3ter-Template API Collection and use it to import the **m3ter-Template API Collection** into your Workspace. See Importing the m3ter Template API Collection in our main user Documentation for details. ---
+
+
+    # Introduction
+
+    The m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:
+
+    - The **Ingest API**, which you can use for submitting raw data measurements. *(See the Submit Measurements endpoint in this API Reference.)*
+
+    - The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)*
+
+
+    ## Authentication and Authorization
+
+    Our APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification. OAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:
+
+    - **Authorization Code**: Used for human login access via the m3ter Console. - **Client Credentials**: Used for machine-to-machine communication and API access. Complete the following flow for API access:
+
+
+    1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. 2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. See Service Authentication for detailed instructions and an example. 3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.*
+
+
+    4. **Bearer Token Usage**: Use the HTTP ''Authorization'' header with the bearer token to authorise all subsequent API requests. > Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one. Below are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. ### cURL Example
+
+    1. Open your terminal or command prompt. 2. Use the following `cURL` command to obtain a Bearer Token:
+
+
+    ```bash
+
+    curl -X POST https://api.m3ter.com/oauth/token \
+
+    -H ''Content-Type: application/x-www-form-urlencoded'' \
+
+    -u your_access_key_id:your_api_secret \
+
+    -d ''grant_type=client_credentials''
+
+    ```
+
+
+    Replace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. 3. Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:
+
+
+    ```json
+
+    {
+
+    "access_token": "your_bearer_token",
+
+    "token_type": "Bearer",
+
+    "expires_in": 18000
+
+    }
+
+    ```
+
+
+    You can then use the Bearer Token *(the value of `"access_token"`)* for subsequent API calls to m3ter. ### Python Example
+
+    1. Install the `requests` library if you haven''t already:
+
+
+    ```bash
+
+    pip install requests
+
+    ```
+
+
+    2.'
   version: '1.0'
   x-logo:
     url: https://console.m3ter.com/m3ter-logo-black.svg
@@ -13,7 +83,20 @@ security:
 - OAuth2: []
 tags:
 - name: Aggregation
-  description: Endpoints for listing, creating, updating, retrieving, or deleting Aggregations.
+  description: 'Endpoints for listing, creating, updating, retrieving, or deleting Aggregations.
+
+
+    An Aggregation links to a Meter and targets a Data Field or Derived Field on the Meter. You define the method of aggregation used to convert the usage data collected by the targeted Meter field into a numerical unit of measurement.
+
+
+    You can then use the unit of measurement an Aggregation yields as a metric for pricing Product Plans and apply usage-based pricing to your products and services. You might also want to aggregate raw data measures for other purposes, such as to feed into analytical or business performance tools.
+
+
+    **Notes:**
+
+    * **Contrast with Compound Aggregations**. Standard or simple Aggregations of this type, which apply an aggregation method directly to Meter usage data fields, are contrasted with Compound Aggregations. A Compound Aggregation typically references one or more simple Aggregations and applies a calculation to them to derive pricing metrics needed to serve more complex usage-based pricing scenarios.
+
+    * **Segmented Aggregations**. Segmented Aggregations allow you to segment the usage data collected by a single Meter. This capability is very useful for implementing some pricing and billing use cases. See Segmented Aggregations in our main documentation for more details.'
 paths:
   /organizations/{orgId}/aggregations:
     get:
@@ -31,8 +114,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: pageSize
         in: query
         description: Number of Aggregations to retrieve per page.
@@ -113,8 +194,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       requestBody:
         description: ''
         content:
@@ -149,8 +228,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: id
         in: path
         description: The UUID of the Aggregation to retrieve.
@@ -188,8 +265,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: id
         in: path
         description: The UUID of the Aggregation to update.
@@ -231,8 +306,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: id
         in: path
         description: The UUID of the Aggregation to delete.
@@ -254,79 +327,21 @@ paths:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractResponseWithCustomFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+    Rounding:
+      type: string
+      description: 'Specifies how you want to deal with non-integer, fractional number Aggregation values.
 
 
-              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+        **NOTES:**
 
+        * "NEAREST" rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.
 
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-    AbstractAggregationResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          name:
-            type: string
-            description: Descriptive name for the Aggregation.
-          rounding:
-            description: 'Specifies how you want to deal with non-integer, fractional number Aggregation values.
-
-
-              **NOTES:**
-
-              * **NEAREST** rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.
-
-              * Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45.
-
-
-              Enum: ???UP??? ???DOWN??? ???NEAREST??? ???NONE???
-
-              '
-            $ref: '#/components/schemas/Rounding'
-          quantityPerUnit:
-            type: number
-            description: 'Defines how much of a quantity equates to 1 unit. Used when setting the price per unit for billing purposes - if charging for kilobytes per second (KiBy/s) at rate of $0.25 per 500 KiBy/s, then set quantityPerUnit to 500 and price Plan at $0.25 per unit.
-
-
-              If `quantityPerUnit` is set to a value other than one, rounding is typically set to UP.'
-          unit:
-            type: string
-            description: "User defined or following the *Unified Code for Units of Measure* (UCUM). \n\nUsed as the label for billing, indicating to your customers what they are being charged for."
-          code:
-            type: string
-            description: Code of the Aggregation. A unique short code to identify the Aggregation.
-          segments:
-            type: array
-            description: '*(Optional)*. Used when creating a segmented Aggregation, which segments the usage data collected by a single Meter. Works together with `segmentedFields`.
-
-
-              Contains the values that are to be used as the segments, read from the fields in the meter pointed at by `segmentedFields`.  '
-            items:
-              type: object
-              additionalProperties:
-                type: string
-          accountingProductId:
-            type: string
-            description: Optional Product ID this Aggregation should be attributed to for accounting purposes.
+        * Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45. '
+      enum:
+      - UP
+      - DOWN
+      - NEAREST
+      - NONE
     AbstractRequest:
       type: object
       properties:
@@ -341,6 +356,83 @@ components:
           x-stainless-terraform-configurability: computed
           x-stainless-terraform-always-send: true
       description: ''
+    AggregationRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractAggregationRequest'
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - aggregation
+        - meterId
+        - targetField
+        type: object
+        properties:
+          version:
+            type: integer
+            description: 'The version number of the entity:
+
+              - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+              - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+            format: int64
+          meterId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: 'The UUID of the Meter used as the source of usage data for the Aggregation.
+
+
+              Each Aggregation is a child of a Meter, so the Meter must be selected.  '
+          targetField:
+            maxLength: 80
+            minLength: 1
+            type: string
+            description: '`Code` of the target `dataField` or `derivedField` on the Meter used as the basis for the Aggregation.'
+          aggregation:
+            description: "Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected `targetField`.\n\nEnum: \n\n* **SUM**. Adds the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **MIN**. Uses the minimum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **MAX**. Uses the maximum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **COUNT**. Counts the number of values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **LATEST**. Uses the most recent value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`. Note: Based on the timestamp (`ts`) value of usage data measurement submissions. If using this method, please ensure *distinct* `ts` values are used for usage data measurement submissions.\n\n* **MEAN**. Uses the arithmetic mean of the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **UNIQUE**. Uses unique values and returns a count of the number of unique values. Can be applied to a **Metadata** `targetField`.\n\n* **CUSTOM_SQL**. Uses an SQL query expression. If you select this Aggregation type, use the `customSQL` request parameter to enter an SQL query."
+            $ref: '#/components/schemas/Aggregation'
+          segmentedFields:
+            maxItems: 5
+            type: array
+            description: '*(Optional)*. Used when creating a segmented Aggregation, which segments the usage data collected by a single Meter. Works together with `segments`.
+
+
+              Enter the `Codes` of the fields in the target Meter to use for segmentation purposes.
+
+
+              String `dataFields` on the target Meter can be segmented. Any string `derivedFields` on the target Meter, such as one that concatenates two string `dataFields`, can also be segmented.'
+            items:
+              type: string
+          segments:
+            maxItems: 1000
+            type: array
+            description: '*(Optional)*. Used when creating a segmented Aggregation, which segments the usage data collected by a single Meter. Works together with `segmentedFields`.
+
+
+              Enter the values that are to be used as the segments, read from the fields in the meter pointed at by `segmentedFields`.
+
+
+              **NOTE:** You can use *wildcards* or *defaults* when setting up segment values. For more details on how to do this with examples, see [Using Wildcards - API Calls](https://docs.m3ter.com/guides/usage-data-aggregations/segmented-aggregations#using-wildcards-api-calls) in our main User Docs.'
+            items:
+              type: object
+              additionalProperties:
+                type: string
+          defaultValue:
+            minimum: 0
+            type: number
+            description: 'Aggregation value used when no usage data is available to be aggregated. *(Optional)*.
+
+
+              **NOTE:** Set to 0, if you expect to reference the Aggregation in a Compound Aggregation. This ensures that any null values are passed in correctly to the Compound Aggregation calculation with a value = 0.'
+          customSql:
+            maxLength: 2048
+            type: string
+            description: 'Enter the SQL query expression to be used for a Custom SQL Aggregation. Custom SQL queries should be run against the Measurements table - for more details see [Custom SQL Aggregations](https://www.m3ter.com/docs/guides/usage-data-aggregations/custom-sql-aggregations) in your main User documentation.
+
+
+              **NOTE:** The `customSql` Aggregation type is currently available in Preview release. If you are interested in using this feature, please get in touch with m3ter Support or your m3ter contact.'
     Aggregation:
       type: string
       description: 'Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected targetField.
@@ -374,6 +466,162 @@ components:
       - MEAN
       - UNIQUE
       - CUSTOM_SQL
+    PaginatedAggregationResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AggregationResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AggregationResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractAggregationResponse'
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - type: object
+        properties:
+          meterId:
+            type: string
+            description: 'The UUID of the Meter used as the source of usage data for the Aggregation.
+
+
+              Each Aggregation is a child of a Meter, so the Meter must be selected. '
+          targetField:
+            type: string
+            description: '`Code` of the target `dataField` or `derivedField` on the Meter used as the basis for the Aggregation.'
+          aggregation:
+            description: "Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected targetField.\n\nEnum: \n\n* **SUM**. Adds the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **MIN**. Uses the minimum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **MAX**. Uses the maximum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **COUNT**. Counts the number of values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **LATEST**. Uses the most recent value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`. Note: Based on the timestamp (`ts`) value of usage data measurement submissions. If using this method, please ensure *distinct* `ts` values are used for usage data measurement submissions.\n\n* **MEAN**. Uses the arithmetic mean of the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **UNIQUE**. Uses unique values and returns a count of the number of unique values. Can be applied to a **Metadata** `targetField`.\n\n* **CUSTOM_SQL**. Uses an SQL query expression. The `customSQL` parameter is used for the SQL query."
+            $ref: '#/components/schemas/Aggregation'
+          segmentedFields:
+            type: array
+            description: '*(Optional)*. Used when creating a segmented Aggregation, which segments the usage data collected by a single Meter. Works together with `segments`.
+
+
+              The `Codes` of the fields in the target Meter to use for segmentation purposes.
+
+
+              String `dataFields` on the target Meter can be segmented. Any string `derivedFields` on the target Meter, such as one that concatenates two string `dataFields`, can also be segmented.'
+            items:
+              type: string
+          defaultValue:
+            type: number
+            description: 'Aggregation value used when no usage data is available to be aggregated. *(Optional)*.
+
+
+              **Note:** Set to 0, if you expect to reference the Aggregation in a Compound Aggregation. This ensures that any null values are passed in correctly to the Compound Aggregation calculation with a value = 0.'
+          customSql:
+            type: string
+            description: The SQL query expression to be used for a Custom SQL Aggregation.
+          productId:
+            type: string
+            description: ''
+          dtCreated:
+            type: string
+            description: The DateTime when the aggregation was created *(in ISO 8601 format)*.
+            format: date-time
+          dtLastModified:
+            type: string
+            description: The DateTime when the aggregation was last modified *(in ISO 8601 format)*.
+            format: date-time
+          createdBy:
+            type: string
+            description: The id of the user who created this aggregation.
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this aggregation.
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - type: object
+        properties:
+          customFields:
+            type: object
+            additionalProperties: true
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+    AbstractAggregationResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - type: object
+        properties:
+          name:
+            type: string
+            description: Descriptive name for the Aggregation.
+          rounding:
+            description: 'Specifies how you want to deal with non-integer, fractional number Aggregation values.
+
+
+              **NOTES:**
+
+              * **NONE** is default.
+
+              * **NEAREST** rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.
+
+              * Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45.
+
+              '
+            $ref: '#/components/schemas/Rounding'
+          quantityPerUnit:
+            type: number
+            description: 'Defines how much of a quantity equates to 1 unit. Used when setting the price per unit for billing purposes - if charging for kilobytes per second (KiBy/s) at rate of $0.25 per 500 KiBy/s, then set quantityPerUnit to 500 and price Plan at $0.25 per unit.
+
+
+              If `quantityPerUnit` is set to a value other than one, rounding is typically set to UP.'
+          unit:
+            type: string
+            description: "User defined or following the *Unified Code for Units of Measure* (UCUM). \n\nUsed as the label for billing, indicating to your customers what they are being charged for."
+          code:
+            type: string
+            description: Code of the Aggregation. A unique short code to identify the Aggregation.
+          segments:
+            type: array
+            description: '*(Optional)*. Used when creating a segmented Aggregation, which segments the usage data collected by a single Meter. Works together with `segmentedFields`.
+
+
+              Contains the values that are to be used as the segments, read from the fields in the meter pointed at by `segmentedFields`.  '
+            items:
+              type: object
+              additionalProperties:
+                type: string
+          accountingProductId:
+            type: string
+            description: Optional Product ID this Aggregation should be attributed to for accounting purposes.
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     AbstractAggregationRequest:
       type: object
       description: ''
@@ -385,6 +633,7 @@ components:
         - quantityPerUnit
         - rounding
         - unit
+        type: object
         properties:
           version:
             type: integer
@@ -394,15 +643,13 @@ components:
 
               - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
             format: int64
-            x-stainless-terraform-configurability: computed
-            x-stainless-terraform-always-send: true
           name:
             maxLength: 200
             minLength: 1
             type: string
             description: Descriptive name for the Aggregation.
           rounding:
-            description: "Specifies how you want to deal with non-integer, fractional number Aggregation values.\n\n**NOTES:**\n* **NEAREST** rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.\n* Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45.\n\nEnum: ???UP??? ???DOWN??? ???NEAREST??? ???NONE???\n\n "
+            description: "Specifies how you want to deal with non-integer, fractional number Aggregation values.\n\n**NOTES:**\n* **NONE** is default.\n* **NEAREST** rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.\n* Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45.\n\n "
             $ref: '#/components/schemas/Rounding'
           quantityPerUnit:
             type: number
@@ -427,194 +674,13 @@ components:
             minLength: 36
             type: string
             description: Optional Product ID this Aggregation should be attributed to for accounting purposes.
-    Rounding:
-      type: string
-      description: 'Specifies how you want to deal with non-integer, fractional number Aggregation values.
-
-
-        **NOTES:**
-
-        * "NEAREST" rounds to the nearest half: 5.1 is rounded to 5, and 3.5 is rounded to 4.
-
-        * Also used in combination with `quantityPerUnit`. Rounds the number of units after `quantityPerUnit` is applied. If you set `quantityPerUnit` to a value other than one, you would typically set Rounding to **UP**. For example, suppose you charge by kilobytes per second (KiBy/s), set `quantityPerUnit` = 500, and set charge rate at $0.25 per unit used. If your customer used 48,900 KiBy/s in a billing period, the charge would be 48,900 / 500 = 97.8 rounded up to 98 * 0.25 = $2.45. '
-      enum:
-      - UP
-      - DOWN
-      - NEAREST
-      - NONE
-    AggregationResponse:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractAggregationResponse'
-      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          meterId:
-            type: string
-            description: 'The UUID of the Meter used as the source of usage data for the Aggregation.
-
-
-              Each Aggregation is a child of a Meter, so the Meter must be selected. '
-          targetField:
-            type: string
-            description: '`Code` of the target `dataField` or `derivedField` on the Meter used as the basis for the Aggregation.'
-          aggregation:
-            description: "Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected targetField.\n\nEnum: \n\n* **SUM**. Adds the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **MIN**. Uses the minimum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **MAX**. Uses the maximum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **COUNT**. Counts the number of values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **LATEST**. Uses the most recent value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`. Note: Based on the timestamp (`ts`) value of usage data measurement submissions. If using this method, please ensure *distinct* `ts` values are used for usage data measurment submissions.\n\n* **MEAN**. Uses the arithmetic mean of the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **UNIQUE**. Uses unique values and returns a count of the number of unique values. Can be applied to a **Metadata** `targetField`.\n\n* **CUSTOM_SQL**. Uses an SQL query expression. The `customSQL` parameter is used for the SQL query."
-            $ref: '#/components/schemas/Aggregation'
-          segmentedFields:
-            type: array
-            description: '*(Optional)*. Used when creating a segmented Aggregation, which segments the usage data collected by a single Meter. Works together with `segments`.
-
-
-              The `Codes` of the fields in the target Meter to use for segmentation purposes.
-
-
-              String `dataFields` on the target Meter can be segmented. Any string `derivedFields` on the target Meter, such as one that concatenates two string `dataFields`, can also be segmented.'
-            items:
-              type: string
-          defaultValue:
-            type: number
-            description: 'Aggregation value used when no usage data is available to be aggregated. *(Optional)*.
-
-
-              **Note:** Set to 0, if you expect to reference the Aggregation in a Compound Aggregation. This ensures that any null values are passed in correctly to the Compound Aggregation calculation with a value = 0.'
-          customSql:
-            type: string
-            description: The SQL query expression to be used for a Custom SQL Aggregation.
-          dtCreated:
-            type: string
-            description: The DateTime when the aggregation was created *(in ISO 8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          dtLastModified:
-            type: string
-            description: The DateTime when the aggregation was last modified *(in ISO 8601 format)*.
-            format: date-time
-            x-stainless-skip:
-            - terraform
-          createdBy:
-            type: string
-            description: The id of the user who created this aggregation.
-            x-stainless-skip:
-            - terraform
-          lastModifiedBy:
-            type: string
-            description: The id of the user who last modified this aggregation.
-            x-stainless-skip:
-            - terraform
-    AggregationRequest:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractAggregationRequest'
-      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
-      - $ref: '#/components/schemas/AbstractRequest'
-      - required:
-        - aggregation
-        - meterId
-        - targetField
-        properties:
-          version:
-            type: integer
-            description: ''
-            format: int64
-            x-stainless-terraform-configurability: computed
-            x-stainless-terraform-always-send: true
-          meterId:
-            maxLength: 36
-            minLength: 36
-            type: string
-            description: 'The UUID of the Meter used as the source of usage data for the Aggregation.
-
-
-              Each Aggregation is a child of a Meter, so the Meter must be selected.  '
-          targetField:
-            maxLength: 80
-            minLength: 1
-            type: string
-            description: '`Code` of the target `dataField` or `derivedField` on the Meter used as the basis for the Aggregation.'
-          aggregation:
-            description: "Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected `targetField`.\n\nEnum: \n\n* **SUM**. Adds the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **MIN**. Uses the minimum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **MAX**. Uses the maximum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **COUNT**. Counts the number of values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **LATEST**. Uses the most recent value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`. Note: Based on the timestamp (`ts`) value of usage data measurement submissions. If using this method, please ensure *distinct* `ts` values are used for usage data measurment submissions.\n\n* **MEAN**. Uses the arithmetic mean of the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.\n\n* **UNIQUE**. Uses unique values and returns a count of the number of unique values. Can be applied to a **Metadata** `targetField`.\n\n* **CUSTOM_SQL**. Uses an SQL query expression. If you select this Aggregation type, use the `customSQL` request parameter to enter an SQL query."
-            $ref: '#/components/schemas/Aggregation'
-          segmentedFields:
-            maxItems: 5
-            type: array
-            description: '*(Optional)*. Used when creating a segmented Aggregation, which segments the usage data collected by a single Meter. Works together with `segments`.
-
-
-              Enter the `Codes` of the fields in the target Meter to use for segmentation purposes.
-
-
-              String `dataFields` on the target Meter can be segmented. Any string `derivedFields` on the target Meter, such as one that concatenates two string `dataFields`, can also be segmented.'
-            items:
-              type: string
-          segments:
-            maxItems: 1000
-            type: array
-            description: '*(Optional)*. Used when creating a segmented Aggregation, which segments the usage data collected by a single Meter. Works together with `segmentedFields`.
-
-
-              Enter the values that are to be used as the segments, read from the fields in the meter pointed at by `segmentedFields`.
-
-
-              Note that you can use *wildcards* or *defaults* when setting up segment values. For more details on how to do this with an example, see [Using Wildcards - API Calls](https://www.m3ter.com/docs/guides/setting-up-usage-data-meters-and-aggregations/segmented-aggregations#using-wildcards---api-calls) in our main User Docs.'
-            items:
-              type: object
-              additionalProperties:
-                type: string
-          defaultValue:
-            minimum: 0
-            type: number
-            description: 'Aggregation value used when no usage data is available to be aggregated. *(Optional)*.
-
-
-              **Note:** Set to 0, if you expect to reference the Aggregation in a Compound Aggregation. This ensures that any null values are passed in correctly to the Compound Aggregation calculation with a value = 0.'
-          customSql:
-            maxLength: 2048
-            type: string
-            description: 'Enter the SQL query expression to be used for a Custom SQL Aggregation. Custom SQL queries should be run against the Measurements table - for more details see [Custom SQL Aggregations](https://www.m3ter.com/docs/guides/usage-data-aggregations/custom-sql-aggregations) in your main User documentation.
-
-
-              **NOTE:** The `customSql` Aggregation type is currently available in Preview release. If you are interested in using this feature, please get in touch with m3ter Support or your m3ter contact.'
-    PaginatedAggregationResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/AggregationResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
     AbstractRequestWithCustomFields:
       type: object
       description: ''
       allOf:
       - $ref: '#/components/schemas/AbstractRequest'
-      - properties:
+      - type: object
+        properties:
           customFields:
             type: object
             description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
@@ -624,15 +690,11 @@ components:
 
 
               See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            maxItems: 100
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldReq
-                type: string
-              - title: IntegerCustomFieldReq
-                type: integer
-              - title: NumberCustomFieldReq
-                type: number
+            allOf:
+            - type: object
+              additionalProperties: true
+            - maxItems: 100
+              type: object
   responses:
     Error:
       description: Error message
@@ -652,9 +714,6 @@ components:
           tokenUrl: /oauth/token
           scopes:
             m3ter-resources/m3ter-scope: m3ter resources
-            measurements:upload: Upload measurements
-            measurements:fileUpload: Upload file
-            measurements:retrieve: Retrieve measurements
         authorizationCode:
           authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
           tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
@@ -662,6 +721,3 @@ components:
             m3ter-resources/m3ter-scope: m3ter resources
             openid: OpenID
             email: email
-            measurements:upload: Upload measurements
-            measurements:fileUpload: Upload file
-            measurements:retrieve: Retrieve measurements

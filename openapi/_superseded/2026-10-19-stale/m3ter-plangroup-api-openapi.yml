@@ -1,0 +1,513 @@
+openapi: 3.2.0
+info:
+  title: m3ter Plan Group API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: PlanGroup
+  description: 'Endpoints for PlanGroup related operations such as creation, update, retrieve, list and delete.
+
+
+    PlanGroups are constructs that group multiple plans together. This enables a unified approach to efficiently handle various uses cases across different plans. For example applying a minimum spend amount at billing, across several of your products or features that are each priced separately.'
+paths:
+  /organizations/{orgId}/plangroups:
+    get:
+      tags:
+      - PlanGroup
+      summary: List PlanGroups
+      description: 'Retrieve a list of PlanGroups.
+
+
+        Retrieves a list of PlanGroups within the specified organization. You can optionally filter by Account IDs or PlanGroup IDs, and also paginate the results for easier management.'
+      operationId: ListPlanGroups
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of PlanGroups to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of PlanGroups in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: accountId
+        in: query
+        description: Optional filter. The list of Account IDs to which the PlanGroups belong.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: ids
+        in: query
+        description: Optional filter. The list of PlanGroup IDs to retrieve.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns the list of PlanGroups
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPlanGroupResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - PlanGroup
+      summary: Create PlanGroup
+      description: 'Create a new PlanGroup.
+
+        This endpoint creates a new PlanGroup within the specified organization.'
+      operationId: PostPlanGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanGroupRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the created PlanGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/plangroups/{id}:
+    get:
+      tags:
+      - PlanGroup
+      summary: Retrieve PlanGroup
+      description: 'Retrieve a specific PlanGroup with the given UUID.
+
+
+        This endpoint retrieves detailed information about a specific PlanGroup identified by the given UUID within a specific organization.'
+      operationId: GetPlanGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the PlanGroup to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the requested PlanGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - PlanGroup
+      summary: Update PlanGroup
+      description: 'Update the PlanGroup with the given UUID.
+
+
+        This endpoint updates the details of a specific PlanGroup identified by the given UUID within a specific organization. This allows modifications to existing PlanGroup attributes.
+
+
+        **Note:** If you have created Custom Fields for a PlanGroup, when you use this endpoint to update the PlanGroup use the `customFields` parameter to preserve those Custom Fields. If you omit them from the update request, they will be lost.'
+      operationId: PutPlanGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the PlanGroup to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanGroupRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated PlanGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - PlanGroup
+      summary: Delete PlanGroup
+      description: 'Delete a PlanGroup with the given UUID.
+
+
+        This endpoint deletes the PlanGroup identified by the given UUID within a specific organization. This operation is irreversible and removes the PlanGroup along with any associated settings.'
+      operationId: DeletePlanGroup
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the PlanGroup to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted PlanGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanGroupResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PlanGroupRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - currency
+        - name
+        properties:
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: The name of the PlanGroup.
+          code:
+            maxLength: 80
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: The short code representing the PlanGroup.
+          minimumSpend:
+            minimum: 0
+            type: number
+            description: 'The minimum spend amount for the PlanGroup. '
+            format: double
+          minimumSpendDescription:
+            maxLength: 200
+            type: string
+            description: Description of the minimum spend, displayed on the bill line item.
+          standingCharge:
+            minimum: 0
+            type: number
+            description: Standing charge amount for the PlanGroup.
+            format: double
+          standingChargeDescription:
+            maxLength: 200
+            type: string
+            description: Description of the standing charge, displayed on the bill line item.
+          currency:
+            maxLength: 3
+            minLength: 3
+            type: string
+            description: Currency code for the PlanGroup (For example, USD).
+          standingChargeBillInAdvance:
+            type: boolean
+            description: "A boolean flag that determines when the standing charge is billed. This flag overrides the setting at Organizational level for standing charge billing in arrears/in advance.\n\n* **TRUE** - standing charge is billed at the start of each billing period. \n* **FALSE** - standing charge is billed at the end of each billing period."
+          minimumSpendBillInAdvance:
+            type: boolean
+            description: "A boolean flag that determines when the minimum spend is billed. This flag overrides the setting at Organizational level for minimum spend billing in arrears/in advance.\n\n* **TRUE** - minimum spend is billed at the start of each billing period. \n* **FALSE** - minimum spend is billed at the end of each billing period."
+          accountId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: Optional. This PlanGroup is created as bespoke for the associated Account with this Account ID.
+          minimumSpendAccountingProductId:
+            type: string
+            description: Optional. Product ID to attribute the PlanGroup's minimum spend for accounting purposes.
+          standingChargeAccountingProductId:
+            type: string
+            description: Optional. Product ID to attribute the PlanGroup's standing charge for accounting purposes.
+    AbstractRequestWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+    PlanGroupResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: The name of the PlanGroup.
+          code:
+            type: string
+            description: The short code representing the PlanGroup.
+          standingCharge:
+            type: number
+            description: Standing charge amount for the PlanGroup.
+            format: double
+          standingChargeDescription:
+            type: string
+            description: Description of the standing charge, displayed on the bill line item.
+          minimumSpend:
+            type: number
+            description: The minimum spend amount for the PlanGroup.
+            format: double
+          minimumSpendDescription:
+            type: string
+            description: Description of the minimum spend, displayed on the bill line item.
+          currency:
+            type: string
+            description: Currency code for the PlanGroup (For example, USD).
+          standingChargeBillInAdvance:
+            type: boolean
+            description: "A boolean flag that determines when the standing charge is billed. This flag overrides the setting at Organizational level for standing charge billing in arrears/in advance.\n\n* **TRUE** - standing charge is billed at the start of each billing period. \n* **FALSE** - standing charge is billed at the end of each billing period."
+          minimumSpendBillInAdvance:
+            type: boolean
+            description: "A boolean flag that determines when the minimum spend is billed. This flag overrides the setting at Organizational level for minimum spend billing in arrears/in advance.\n\n* **TRUE** - minimum spend is billed at the start of each billing period. \n* **FALSE** - minimum spend is billed at the end of each billing period."
+          accountId:
+            type: string
+            description: Optional. This PlanGroup was created as bespoke for the associated Account with this Account ID.
+          minimumSpendAccountingProductId:
+            type: string
+            description: Optional. Product ID to attribute the PlanGroup's minimum spend for accounting purposes.
+          standingChargeAccountingProductId:
+            type: string
+            description: Optional. Product ID to attribute the PlanGroup's standing charge for accounting purposes.
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO 8601 format)* when the PlanGroup was first created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO 8601 format)* when the PlanGroup was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) for the user who created the PlanGroup.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) for the user who last modified the PlanGroup.
+            x-stainless-skip:
+            - terraform
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    PaginatedPlanGroupResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/PlanGroupResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

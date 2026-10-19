@@ -3,7 +3,77 @@ info:
   title: m3ter Account API
   description: 'If you are using Postman, you can:
 
-    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See Importing the m3ter Open API in our main user Documentation for details. - Copy this link: m3ter-Template API Collection and use it to import the **m3ter-Template API Collection** into your Workspace. See Importing the m3ter Template API Collection in our main user Documentation for details. ---
+
+
+    # Introduction
+
+    The m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:
+
+    - The **Ingest API**, which you can use for submitting raw data measurements. *(See the Submit Measurements endpoint in this API Reference.)*
+
+    - The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)*
+
+
+    ## Authentication and Authorization
+
+    Our APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification. OAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:
+
+    - **Authorization Code**: Used for human login access via the m3ter Console. - **Client Credentials**: Used for machine-to-machine communication and API access. Complete the following flow for API access:
+
+
+    1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. 2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. See Service Authentication for detailed instructions and an example. 3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.*
+
+
+    4. **Bearer Token Usage**: Use the HTTP ''Authorization'' header with the bearer token to authorise all subsequent API requests. > Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one. Below are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. ### cURL Example
+
+    1. Open your terminal or command prompt. 2. Use the following `cURL` command to obtain a Bearer Token:
+
+
+    ```bash
+
+    curl -X POST https://api.m3ter.com/oauth/token \
+
+    -H ''Content-Type: application/x-www-form-urlencoded'' \
+
+    -u your_access_key_id:your_api_secret \
+
+    -d ''grant_type=client_credentials''
+
+    ```
+
+
+    Replace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. 3. Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:
+
+
+    ```json
+
+    {
+
+    "access_token": "your_bearer_token",
+
+    "token_type": "Bearer",
+
+    "expires_in": 18000
+
+    }
+
+    ```
+
+
+    You can then use the Bearer Token *(the value of `"access_token"`)* for subsequent API calls to m3ter. ### Python Example
+
+    1. Install the `requests` library if you haven''t already:
+
+
+    ```bash
+
+    pip install requests
+
+    ```
+
+
+    2.'
   version: '1.0'
   x-logo:
     url: https://console.m3ter.com/m3ter-logo-black.svg
@@ -13,8 +83,133 @@ security:
 - OAuth2: []
 tags:
 - name: Account
-  description: Endpoints for Account related operations such as creation, update, list and delete.
+  description: 'Endpoints for Account related operations such as creation, update, list and delete.
+
+    An Account represents one of your end-customer accounts.
+
+
+    Accounts do not belong to a Product to allow for cases where an end customer takes more than one of your Products, and the charges for these Products differ.
+
+
+    You typically attach a priced Plan or Plan Template to an Account before you can generate bills for the Account:
+
+    - If a customer consumes several of your Products, you can attach a priced Plan or Plan Template to the Account for charging against each Product.
+
+    - If an Account is charged solely on the basis of an agreed Prepayment/Commitment amount but not all of the Prepayment is prepaid, you can use a customized billing schedule for outstanding fees without having to attach a Plan to the Account to generate Bills.
+
+
+    You can create Child Accounts for end customers who hold multiple Accounts with you. You can then set up billing for the Parent/Child Account usage to have the end-customer billed once for the Parent Account, instead of having separate bills issued for usage against each of their multiple Accounts.
+
+
+    **IMPORTANT! - use of PII:** The use of any of your end-customers'' Personally Identifiable Information (PII) in m3ter is restricted to a few fields on the **Account** entity. Please ensure that only the ``name``, ``address``, or ``emailAddress`` fields contain any end-customer PII data on any Accounts you create. See the Introduction section above for more details.'
 paths:
+  /organizations/{orgId}/accounts:
+    get:
+      tags:
+      - Account
+      summary: List Accounts
+      description: Retrieve a list of Accounts that can be filtered by Account ID or Account Code.
+      operationId: ListAccounts
+      parameters:
+      - name: orgId
+        in: path
+        description: 'UUID of the organization.
+
+          The Organization represents your company as a direct customer of the m3ter service. '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: Number of accounts to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: '`nextToken` for multi-page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: List of Account IDs to retrieve.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: codes
+        in: query
+        description: "List of Account Codes to retrieve. \nThese are unique short codes for each Account."
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns the list of Accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAccountResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - Account
+      summary: Create Account
+      description: Create a new Account within the Organization.
+      operationId: PostAccount
+      parameters:
+      - name: orgId
+        in: path
+        description: 'UUID of the organization.
+
+          The Organization represents your company as a direct customer of the m3ter service. '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the created Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
   /organizations/{orgId}/accounts/search:
     get:
       tags:
@@ -34,8 +229,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: searchQuery
         in: query
         description: "Query for data using special syntax:\n- Query parameters should be delimited using the $ (dollar sign).\n- Allowed comparators are:\n\t- (greater than) > \n\t- (greater than or equal to) >= \n\t- (equal to) : \n\t- (less than) <\n\t- (less than or equal to) <=\n\t- (match phrase/prefix) ~\n-  Allowed parameters are: name, code, currency, purchaseOrderNumber, parentAccountId, codes, id, createdBy, dtCreated, lastModifiedBy, ids.\n-  Query example: \n\t-  searchQuery=name~Premium On$currency:USD.\n\t-  This query is translated into: find accounts whose name contains the phrase/prefix 'Premium On' AND the account currency is USD.\n\n**Note:** Using the ~ match phrase/prefix comparator. For best results, we recommend treating this as a \"starts with\" comparator for your search query."
@@ -114,117 +307,6 @@ paths:
           $ref: '#/components/responses/Error'
         5XX:
           $ref: '#/components/responses/Error'
-  /organizations/{orgId}/accounts/{id}/enddatebillingentities:
-    put:
-      tags:
-      - Account
-      summary: End-date Account billing entities
-      description: 'Apply the specified end-date to billing entities associated with an Account.
-
-
-        **NOTE:**
-
-        - When you successfully end-date billing entities, the version number of each entity is incremented.'
-      operationId: EndDateBillingEntitiesForAccount
-      parameters:
-      - name: orgId
-        in: path
-        description: UUID of the Organization.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
-      - name: id
-        in: path
-        description: The UUID of the Account.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      requestBody:
-        description: ''
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EndDateBillingEntitiesRequest'
-        required: true
-      responses:
-        '200':
-          description: Return the status and details of the updated active billing entities.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EndDateBillingEntitiesResponse'
-        4XX:
-          $ref: '#/components/responses/Error'
-        5XX:
-          $ref: '#/components/responses/Error'
-  /organizations/{orgId}/accounts/{id}/children:
-    get:
-      tags:
-      - Account
-      summary: List Account Children
-      description: Retrieve a list of Accounts that are children of the specified Account.
-      operationId: ListAccountChildren
-      parameters:
-      - name: orgId
-        in: path
-        description: 'UUID of the organization.
-
-          The Organization represents your company as a direct customer of the m3ter service. '
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
-      - name: id
-        in: path
-        description: The UUID of the Account to list children for.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      - name: pageSize
-        in: query
-        description: ''
-        required: false
-        style: form
-        explode: true
-        schema:
-          maximum: 200
-          minimum: 1
-          type:
-          - integer
-          - 'null'
-          format: int32
-      - name: nextToken
-        in: query
-        description: ''
-        required: false
-        style: form
-        explode: true
-        schema:
-          type:
-          - string
-          - 'null'
-      responses:
-        '200':
-          description: Returns the list of child Accounts
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedAccountResponseData'
-        4XX:
-          $ref: '#/components/responses/Error'
-        5XX:
-          $ref: '#/components/responses/Error'
   /organizations/{orgId}/accounts/{id}:
     get:
       tags:
@@ -243,8 +325,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: id
         in: path
         description: The UUID of the Account to retrieve.
@@ -282,8 +362,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: id
         in: path
         description: The UUID of the Account to update.
@@ -327,8 +405,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: id
         in: path
         description: The UUID of the Account to delete.
@@ -348,13 +424,13 @@ paths:
           $ref: '#/components/responses/Error'
         5XX:
           $ref: '#/components/responses/Error'
-  /organizations/{orgId}/accounts:
+  /organizations/{orgId}/accounts/{id}/children:
     get:
       tags:
       - Account
-      summary: List Accounts
-      description: Retrieve a list of Accounts that can be filtered by Account ID or Account Code.
-      operationId: ListAccounts
+      summary: List Account Children
+      description: Retrieve a list of Accounts that are children of the specified Account.
+      operationId: ListAccountChildren
       parameters:
       - name: orgId
         in: path
@@ -366,54 +442,40 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Account to list children for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       - name: pageSize
         in: query
-        description: Number of accounts to retrieve per page.
+        description: ''
         required: false
-        allowEmptyValue: true
         style: form
         explode: true
         schema:
-          maximum: 100
+          maximum: 200
           minimum: 1
-          type: integer
+          type:
+          - integer
+          - 'null'
           format: int32
       - name: nextToken
         in: query
-        description: '`nextToken` for multi-page retrievals.'
+        description: ''
         required: false
-        allowEmptyValue: true
         style: form
         explode: true
         schema:
-          type: string
-      - name: ids
-        in: query
-        description: List of Account IDs to retrieve.
-        required: false
-        allowEmptyValue: true
-        style: form
-        explode: true
-        schema:
-          type: array
-          items:
-            type: string
-      - name: codes
-        in: query
-        description: "List of Account Codes to retrieve. \nThese are unique short codes for each Account."
-        required: false
-        allowEmptyValue: true
-        style: form
-        explode: true
-        schema:
-          type: array
-          items:
-            type: string
+          type:
+          - string
+          - 'null'
       responses:
         '200':
-          description: Returns the list of Accounts
+          description: Returns the list of child Accounts
           content:
             application/json:
               schema:
@@ -422,95 +484,101 @@ paths:
           $ref: '#/components/responses/Error'
         5XX:
           $ref: '#/components/responses/Error'
-    post:
+  /organizations/{orgId}/accounts/{id}/enddatebillingentities:
+    put:
       tags:
       - Account
-      summary: Create Account
-      description: Create a new Account within the Organization.
-      operationId: PostAccount
+      summary: End-date Account billing entities
+      description: 'Apply the specified end-date to billing entities associated with an Account.
+
+
+        **NOTE:**
+
+        - When you successfully end-date billing entities, the version number of each entity is incremented.'
+      operationId: EndDateBillingEntitiesForAccount
       parameters:
       - name: orgId
         in: path
-        description: 'UUID of the organization.
-
-          The Organization represents your company as a direct customer of the m3ter service. '
+        description: UUID of the Organization.
         required: true
         style: simple
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Account.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       requestBody:
         description: ''
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AccountRequest'
+              $ref: '#/components/schemas/EndDateBillingEntitiesRequest'
         required: true
       responses:
         '200':
-          description: Return the created Account
+          description: Return the status and details of the updated active billing entities.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountResponse'
+                $ref: '#/components/schemas/EndDateBillingEntitiesResponse'
         4XX:
           $ref: '#/components/responses/Error'
         5XX:
           $ref: '#/components/responses/Error'
 components:
   schemas:
-    AbstractResponseWithCustomFields:
-      type: object
-      description: ''
-      allOf:
-      - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
-          customFields:
-            type: object
-            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
-
-
-              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
-
-
-              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldRes
-                type: string
-              - title: IntegerCustomFieldRes
-                type: integer
-              - title: NumberCustomFieldRes
-                type: number
-    AbstractRequest:
+    EndDateBillingEntitiesRequest:
+      required:
+      - billingEntities
+      - endDate
       type: object
       properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
+        endDate:
+          type: string
+          description: The end date and time applied to the specified billing entities *(in ISO 8601 format)*.
+          format: date-time
+        applyToChildren:
+          type: boolean
+          description: A Boolean TRUE/FALSE flag. For Parent Accounts, set to TRUE if you want the specified end-date to be applied to any billing entities associated with Child Accounts. *(Optional)*
+        billingEntities:
+          minItems: 1
+          type: array
+          description: Defines which billing entities associated with the Account will have the specified end-date applied. For example, if you want the specified end-date to be applied to all Prepayments/Commitments created for the Account use `"PREPAYMENT"`.
+          items:
+            $ref: '#/components/schemas/BillingEntity'
       description: ''
-    StatementAutoGenerateMode:
-      type: string
-      description: "Specify whether to auto-generate statements once Bills are *approved* or *locked*. It will not auto-generate if a bill is in *pending* state. \n\nThe default value is **None**.\n\n- **None**. Statements will not be auto-generated.\n- **JSON**. Statements are auto-generated in JSON format.\n- **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats."
-      enum:
-      - NONE
-      - JSON
-      - JSON_AND_CSV
+    PaginatedAccountResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AccountResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    Collection_String_:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          description: ''
+      description: ''
     Set_String_:
       type: object
       description: ''
       allOf:
       - $ref: '#/components/schemas/Collection_String_'
-      - properties:
+      - type: object
+        properties:
           empty:
             type: boolean
             description: ''
@@ -548,38 +616,19 @@ components:
           type: string
           description: ''
       description: Contact address.
-    Collection_String_:
+    AbstractRequest:
       type: object
       properties:
-        empty:
-          type: boolean
-          description: ''
-      description: ''
-    BillCreditType:
-      type: string
-      description: ''
-      enum:
-      - PREPAYMENT
-      - BALANCE
-    EndDateBillingEntitiesRequest:
-      required:
-      - billingEntities
-      - endDate
-      type: object
-      properties:
-        endDate:
-          type: string
-          description: The end date and time applied to the specified billing entities *(in ISO 8601 format)*.
-          format: date-time
-        applyToChildren:
-          type: boolean
-          description: A Boolean TRUE/FALSE flag. For Parent Accounts, set to TRUE if you want the specified end-date to be applied to any billing entities associated with Child Accounts. *(Optional)*
-        billingEntities:
-          minItems: 1
-          type: array
-          description: Defines which billing entities associated with the Account will have the specified end-date applied. For example, if you want the specified end-date to be applied to all Prepayments/Commitments created for the Account use `"PREPAYMENT"`.
-          items:
-            $ref: '#/components/schemas/BillingEntity'
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
       description: ''
     BillingEntity:
       type: string
@@ -590,13 +639,38 @@ components:
       - PREPAYMENT
       - PRICINGS
       - COUNTER_PRICINGS
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - type: object
+        properties:
+          customFields:
+            type: object
+            additionalProperties: true
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+    StatementAutoGenerateMode:
+      type: string
+      description: "Specify whether to auto-generate statements once Bills are *approved* or *locked*. It will not auto-generate if a bill is in *pending* state. \n\nThe default value is **None**.\n\n- **None**. Statements will not be auto-generated.\n- **JSON**. Statements are auto-generated in JSON format.\n- **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats."
+      enum:
+      - NONE
+      - JSON
+      - JSON_AND_CSV
     AccountResponse:
       type: object
       description: Response containing an AccountResponse entity.
       allOf:
       - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
       - $ref: '#/components/schemas/AbstractResponse'
-      - properties:
+      - type: object
+        properties:
           name:
             type: string
             description: Name of the Account.
@@ -609,7 +683,8 @@ components:
             description: Contact address for the Account.
             allOf:
             - $ref: '#/components/schemas/Address'
-            - description: Address of the Account
+            - type: object
+              description: Address of the Account
           emailAddress:
             type: string
             description: Contact email for the Account.
@@ -648,29 +723,21 @@ components:
               Bill statements can be used as informative backing sheets to invoices. Based on the usage breakdown defined in the statement definition, generated statements give a breakdown of usage charges on Account Bills, which helps customers better understand usage charges incurred over the billing period.
 
 
-              See [Working with Bill Statements](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/working-with-bill-statements) in the m3ter documentation for more details.'
+              See [Working with Bill Statements](https://docs.m3ter.com/guides/billing-and-usage-data/running-viewing-and-managing-bills/working-with-bill-statements) in the m3ter documentation for more details.'
           dtCreated:
             type: string
             description: The DateTime when the Account was created *(in ISO 8601 format)*.
             format: date-time
-            x-stainless-skip:
-            - terraform
           dtLastModified:
             type: string
             description: The DateTime when the Account was last modified *(in ISO 8601 format)*.
             format: date-time
-            x-stainless-skip:
-            - terraform
           createdBy:
             type: string
             description: The ID of the user who created the account.
-            x-stainless-skip:
-            - terraform
           lastModifiedBy:
             type: string
             description: The ID of the user who last modified the Account.
-            x-stainless-skip:
-            - terraform
           autoGenerateStatementMode:
             description: 'Specify whether to auto-generate statements once Bills are approved or locked.
 
@@ -698,17 +765,24 @@ components:
             type: integer
             description: The number of days after the Bill generation date shown on Bills as the due date.
             format: int32
-    PaginatedAccountResponseData:
+    AbstractResponse:
+      required:
+      - id
       type: object
       properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/AccountResponse'
-        nextToken:
+        id:
           type: string
-          description: ''
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
       description: ''
     AccountRequest:
       type: object
@@ -720,6 +794,7 @@ components:
         - code
         - emailAddress
         - name
+        type: object
         properties:
           name:
             maxLength: 200
@@ -736,7 +811,8 @@ components:
             description: Contact address for the Account.
             allOf:
             - $ref: '#/components/schemas/Address'
-            - description: Address of the Account
+            - type: object
+              description: Address of the Account
           emailAddress:
             type: string
             description: Contact email for the Account.
@@ -780,7 +856,7 @@ components:
               Bill statements can be used as informative backing sheets to invoices. Based on the usage breakdown defined in the statement definition, generated statements give a breakdown of usage charges on Account Bills, which helps customers better understand usage charges incurred over the billing period.
 
 
-              See [Working with Bill Statements](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/working-with-bill-statements) in the m3ter documentation for more details.
+              See [Working with Bill Statements](https://docs.m3ter.com/guides/billing-and-usage-data/running-viewing-and-managing-bills/working-with-bill-statements) in the m3ter documentation for more details.
 
               '
           autoGenerateStatementMode:
@@ -828,6 +904,7 @@ components:
           type: string
           description: A message indicating the status of the operation.
         updatedEntities:
+          type: object
           properties:
             CONTRACT:
               $ref: '#/components/schemas/Set_String_'
@@ -841,6 +918,7 @@ components:
               $ref: '#/components/schemas/Set_String_'
           description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the updated entities.
         failedEntities:
+          type: object
           properties:
             CONTRACT:
               $ref: '#/components/schemas/Set_String_'
@@ -854,31 +932,13 @@ components:
               $ref: '#/components/schemas/Set_String_'
           description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the entities for which the update failed.
       description: ''
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
     AbstractRequestWithCustomFields:
       type: object
       description: ''
       allOf:
       - $ref: '#/components/schemas/AbstractRequest'
-      - properties:
+      - type: object
+        properties:
           customFields:
             type: object
             description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
@@ -888,15 +948,17 @@ components:
 
 
               See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
-            maxItems: 100
-            additionalProperties:
-              anyOf:
-              - title: StringCustomFieldReq
-                type: string
-              - title: IntegerCustomFieldReq
-                type: integer
-              - title: NumberCustomFieldReq
-                type: number
+            allOf:
+            - type: object
+              additionalProperties: true
+            - maxItems: 100
+              type: object
+    BillCreditType:
+      type: string
+      description: ''
+      enum:
+      - PREPAYMENT
+      - BALANCE
   responses:
     Error:
       description: Error message
@@ -916,9 +978,6 @@ components:
           tokenUrl: /oauth/token
           scopes:
             m3ter-resources/m3ter-scope: m3ter resources
-            measurements:upload: Upload measurements
-            measurements:fileUpload: Upload file
-            measurements:retrieve: Retrieve measurements
         authorizationCode:
           authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
           tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
@@ -926,6 +985,3 @@ components:
             m3ter-resources/m3ter-scope: m3ter resources
             openid: OpenID
             email: email
-            measurements:upload: Upload measurements
-            measurements:fileUpload: Upload file
-            measurements:retrieve: Retrieve measurements

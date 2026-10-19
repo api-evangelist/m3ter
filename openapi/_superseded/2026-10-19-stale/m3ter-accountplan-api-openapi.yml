@@ -1,0 +1,667 @@
+openapi: 3.2.0
+info:
+  title: m3ter Account Plan API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: AccountPlan
+  description: Endpoints for AccountPlan and AccountPlanGroup related operations such as creation, update, list and delete.
+paths:
+  /organizations/{orgId}/accountplans/{id}:
+    get:
+      tags:
+      - AccountPlan
+      summary: Retrieve AccountPlan
+      description: Retrieve the AccountPlan or AccountPlanGroup details corresponding to the given UUID.
+      operationId: GetAccountPlan
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the AccountPlan or AccountPlanGroup to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the AccountPlan or AccountPlanGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountPlanResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - AccountPlan
+      summary: Update AccountPlan
+      description: 'Update the AccountPlan or AccountPlanGroup with the given UUID.
+
+
+        This endpoint updates a new AccountPlan or AccountPlanGroup for a specific Account in your Organization. The updated information should be provided in the request body.
+
+
+        **Notes:**
+
+        * You cannot use this call to update *both* an AccountPlan and AccountPlanGroup for an Account at the same time. If you want to update an AccounPlan and an AccountPlanGroup attached to an Account, you must submit two separate calls.
+
+        * If you have created Custom Fields for an AccountPlan, when you use this endpoint to update the AccountPlan use the `customFields` parameter to preserve those Custom Fields. If you omit them from the update request, they will be lost.'
+      operationId: PutAccountPlan
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the AccountPlan or AccountPlanGroup to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountPlanRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated AccountPlan or AccountPlanGroup.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountPlanResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - AccountPlan
+      summary: Delete AccountPlan
+      description: 'Delete the AccountPlan or AccountPlanGroup with the given UUID.
+
+
+        This endpoint deletes an AccountPlan or AccountPlanGroup that has been attached to a specific Account in your Organization.'
+      operationId: DeleteAccountPlan
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifer (UUID) of the AccountPlan or AccountPlanGroup to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted AccountPlan or AccountPlanGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountPlanResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/accountplans:
+    get:
+      tags:
+      - AccountPlan
+      summary: List AccountPlans
+      description: Retrieves a list of AccountPlan and AccountPlanGroup entities for the specified Organization. The list can be paginated for easier management, and supports filtering with various query parameters.
+      operationId: ListAccountPlans
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: The maximum number of AccountPlans and AccountPlanGroups to return per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for retrieving the next page of AccountPlans and AccountPlanGroups. It is used to fetch the next page of AccountPlans and AccountPlanGroups in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: date
+        in: query
+        description: 'The specific date for which you want to retrieve AccountPlans and AccountPlanGroups.
+
+
+          **NOTE:** Returns both active and inactive AccountPlans and AccountPlanGroups for the specified date.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: account
+        in: query
+        description: 'The unique identifier (UUID) for the Account whose AccountPlans and AccountPlanGroups you want to retrieve.
+
+
+          **NOTE:** Only returns the currently active AccountPlans and AccountPlanGroups for the specified Account. Use in combination with the `includeall` query parameter to return both active and inactive.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: plan
+        in: query
+        description: 'The unique identifier (UUID) for the Plan whose associated AccountPlans you want to retrieve.
+
+
+          **NOTE:** Does not return AccountPlanGroups if you use a `planGroupId`.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: product
+        in: query
+        description: 'The unique identifier (UUID) for the Product whose associated AccountPlans you want to retrieve.
+
+
+          **NOTE:** You cannot use the `product` query parameter as a single filter condition, but must always use it in combination with the `account` query parameter.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: includeall
+        in: query
+        description: 'A Boolean flag that specifies whether to include both active and inactive AccountPlans and AccountPlanGroups in the list.
+
+
+          * **TRUE** - both active and inactive AccountPlans and AccountPlanGroups are included in the list.
+
+          * **FALSE** - only active AccountPlans and AccountPlanGroups are retrieved in the list.*(Default)*
+
+
+          **NOTE:** Only operative if you also have one of `account`, `plan` or `contract` as a query parameter.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      - name: ids
+        in: query
+        description: A list of unique identifiers (UUIDs) for specific AccountPlans and AccountPlanGroups you want to retrieve.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: contract
+        in: query
+        description: 'The unique identifier (UUID) of the Contract which the AccountPlans you want to retrieve have been linked to.
+
+
+          **NOTE:** Does not return AccountPlanGroups that have been linked to the Contract.'
+        required: false
+        style: form
+        explode: true
+        schema:
+          type:
+          - string
+          - 'null'
+      responses:
+        '200':
+          description: Returns the list of AccountPlans and AccountPlanGroups
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAccountPlanResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - AccountPlan
+      summary: Create AccountPlan
+      description: 'Create a new AccountPlan or AccountPlanGroup.
+
+
+        This endpoint creates a new AccountPlan or AccountPlanGroup for a specific Account in your Organization. The details of the new AccountPlan or AccountPlanGroup should be supplied in the request body.
+
+
+        **Note:** You cannot use this call to create *both* an AccountPlan and AccountPlanGroup for an Account at the same time. If you want to create both for an Account, you must submit two separate calls.'
+      operationId: PostAccountPlan
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountPlanRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the created AccountPlan or AccountPlanGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountPlanResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/accountplans/{id}/replace:
+    post:
+      tags:
+      - AccountPlan
+      summary: Replace AccountPlan
+      description: End-dates the specified AccountPlan at the new startDate and creates the new AccountPlan.
+      operationId: ReplaceAccountPlan
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the AccountPlan to replace.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountPlanRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the updated existing AccountPlan and the created AccountPlan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceAccountPlanResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    AccountPlanResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          accountId:
+            type: string
+            description: The unique identifier (UUID) for the Account to which the AccountPlan or AccounPlanGroup is attached.
+          productId:
+            type: string
+            description: 'The unique identifier (UUID) for the Product associated with the AccountPlan.
+
+
+              **Note:** Not present in response for AccountPlanGroup - Plan Groups can contain multiple Plans belonging to different Products.'
+          planId:
+            type: string
+            description: The unique identifier (UUID) of the Plan that has been attached to the Account to create the AccountPlan.
+          planGroupId:
+            type: string
+            description: The unique identifier (UUID) of the Plan Group that has been attached to the Account to create the AccountPlanGroup.
+          startDate:
+            type: string
+            description: The start date *(in ISO-8601 format)* for the when the AccountPlan or AccountPlanGroup starts to be active for the Account.
+            format: date-time
+          endDate:
+            type: string
+            description: The end date *(in ISO-8601 format)* for when the AccountPlan or AccountPlanGroup ceases to be active for the Account. If not specified, the AccountPlan or AccountPlanGroup remains active indefinitely.
+            format: date-time
+          code:
+            type: string
+            description: 'The unique short code of the AccountPlan or AccountPlanGroup. '
+          billEpoch:
+            type: string
+            description: The initial date for creating the first bill against the Account for charges due under the AccountPlan or AccountPlanGroup. All subsequent bill creation dates are calculated from this date. If left empty, the first bill date definedfor the Account is used. The date is in ISO-8601 format.
+            format: date
+          contractId:
+            type: string
+            description: The unique identifier (UUID) for the Contract to which the Plan or Plan Group  attached to the Account has been added.
+          childBillingMode:
+            description: 'If the Account is either a Parent or a Child Account, this specifies the Account hierarchy billing mode. The mode determines how billing will be handled and shown on bills for charges due on the Parent Account, and charges due on Child Accounts:
+
+
+              * **Parent Breakdown** - a separate bill line item per Account. Default setting.
+
+
+              * **Parent Summary** - single bill line item for all Accounts.
+
+
+              * **Child** - the Child Account is billed.'
+            $ref: '#/components/schemas/ChildBillingMode'
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO 8601 format)* when the AccountPlan or AccountPlanGroup was first created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO 8601 format)* when the AccountPlan or AccountPlanGroup was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) for the user who created the AccountPlan or AccountPlanGroup.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) for the user who last modified the AccountPlan or AccountPlanGroup.
+            x-stainless-skip:
+            - terraform
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    ChildBillingMode:
+      type: string
+      description: 'If the Account is either a Parent or a Child Account, this specifies the Account hierarchy billing mode. The mode determines how billing will be handled and shown on bills for charges due on the Parent Account, and charges due on Child Accounts:
+
+
+        * **Parent Breakdown** - a separate bill line item per Account. Default setting.
+
+
+        * **Parent Summary** - single bill line item for all Accounts.
+
+
+        * **Child** - the Child Account is billed.'
+      enum:
+      - PARENT_SUMMARY
+      - PARENT_BREAKDOWN
+      - CHILD
+    AccountPlanRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - accountId
+        - startDate
+        properties:
+          accountId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: The unique identifier (UUID) for the Account.
+          planId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: 'The unique identifier (UUID) of the Plan to be attached to the Account to create an AccountPlan.
+
+
+              **Note:** Exclusive of the `planGroupId` request parameter - exactly one of `planId` or `planGroupId` must be used per call.'
+          planGroupId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: 'The unique identifier (UUID) of the PlanGroup to be attached to the Account to create an AccountPlanGroup.
+
+
+              **Note:** Exclusive of the `planId` request parameter - exactly one of `planId` or `planGroupId` must be used per call.'
+          startDate:
+            type: string
+            description: The start date *(in ISO-8601 format)* for the AccountPlan or AccountPlanGroup becoming active for the Account.
+            format: date-time
+          endDate:
+            type: string
+            description: The end date *(in ISO-8601 format)* for when the AccountPlan or AccountPlanGroup ceases to be active for the Account. If not specified, the AccountPlan or AccountPlanGroup remains active indefinitely.
+            format: date-time
+          code:
+            maxLength: 80
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: A unique short code for the AccountPlan or AccountPlanGroup.
+          billEpoch:
+            type: string
+            description: 'Optional setting to define a *billing cycle date*, which acts as a reference for when in the applied billing frequency period bills are created:
+
+              * For example, if you attach a Plan to an Account where the Plan is configured for monthly billing frequency and you''ve defined the period the Plan will apply to the Account to be from January 1st, 2022 until January 1st, 2023. You then set a `billEpoch` date of February 15th, 2022. The first Bill will be created for the Account on February 15th, and subsequent Bills created on the 15th of the months following for the remainder of the billing period - March 15th, April 15th, and so on.
+
+              * If not defined, then the `billEpoch` date set for the Account will be used instead.
+
+              * The date is in ISO-8601 format.'
+            format: date
+          contractId:
+            maxLength: 36
+            minLength: 36
+            type: string
+            description: The unique identifier (UUID) for a Contract to which you want to add the Plan or Plan Group being attached to the Account.
+          childBillingMode:
+            description: 'If the Account is either a Parent or a Child Account, this specifies the Account hierarchy billing mode. The mode determines how billing will be handled and shown on bills for charges due on the Parent Account, and charges due on Child Accounts:
+
+
+              * **Parent Breakdown** - a separate bill line item per Account. Default setting.
+
+
+              * **Parent Summary** - single bill line item for all Accounts.
+
+
+              * **Child** - the Child Account is billed.'
+            $ref: '#/components/schemas/ChildBillingMode'
+    PaginatedAccountPlanResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AccountPlanResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    ReplaceAccountPlanResponse:
+      type: object
+      properties:
+        originalAccountPlan:
+          description: ''
+          $ref: '#/components/schemas/AccountPlanResponse'
+        newAccountPlan:
+          description: ''
+          $ref: '#/components/schemas/AccountPlanResponse'
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractRequestWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

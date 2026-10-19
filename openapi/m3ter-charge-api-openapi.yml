@@ -3,7 +3,77 @@ info:
   title: m3ter Charge API
   description: 'If you are using Postman, you can:
 
-    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See Importing the m3ter Open API in our main user Documentation for details. - Copy this link: m3ter-Template API Collection and use it to import the **m3ter-Template API Collection** into your Workspace. See Importing the m3ter Template API Collection in our main user Documentation for details. ---
+
+
+    # Introduction
+
+    The m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:
+
+    - The **Ingest API**, which you can use for submitting raw data measurements. *(See the Submit Measurements endpoint in this API Reference.)*
+
+    - The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)*
+
+
+    ## Authentication and Authorization
+
+    Our APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification. OAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:
+
+    - **Authorization Code**: Used for human login access via the m3ter Console. - **Client Credentials**: Used for machine-to-machine communication and API access. Complete the following flow for API access:
+
+
+    1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. 2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. See Service Authentication for detailed instructions and an example. 3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.*
+
+
+    4. **Bearer Token Usage**: Use the HTTP ''Authorization'' header with the bearer token to authorise all subsequent API requests. > Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one. Below are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. ### cURL Example
+
+    1. Open your terminal or command prompt. 2. Use the following `cURL` command to obtain a Bearer Token:
+
+
+    ```bash
+
+    curl -X POST https://api.m3ter.com/oauth/token \
+
+    -H ''Content-Type: application/x-www-form-urlencoded'' \
+
+    -u your_access_key_id:your_api_secret \
+
+    -d ''grant_type=client_credentials''
+
+    ```
+
+
+    Replace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. 3. Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:
+
+
+    ```json
+
+    {
+
+    "access_token": "your_bearer_token",
+
+    "token_type": "Bearer",
+
+    "expires_in": 18000
+
+    }
+
+    ```
+
+
+    You can then use the Bearer Token *(the value of `"access_token"`)* for subsequent API calls to m3ter. ### Python Example
+
+    1. Install the `requests` library if you haven''t already:
+
+
+    ```bash
+
+    pip install requests
+
+    ```
+
+
+    2.'
   version: '1.0'
   x-logo:
     url: https://console.m3ter.com/m3ter-logo-black.svg
@@ -13,7 +83,27 @@ security:
 - OAuth2: []
 tags:
 - name: Charge
-  description: Endpoints for creating/updating/deleting Charges.
+  description: 'Endpoints for creating/updating/deleting Charges.
+
+
+    Create Charges for your end-customer Accounts to create ad-hoc line items for Account billing. Charges are:
+
+    * Created for either debit or credit amounts.
+
+    * Linked to a Product for accounting purposes.
+
+    * Optionally linked to a Contract.
+
+    * Given a specific date for billing. When a bill job has run for the specified Charge bill date, a Charge appears as an Ad-hoc line item on the Bill.
+
+    * Assigned a service period.
+
+    * Available in any currency defined for your Organization.
+
+    See Creating Charges for Accounts in our main user documentation for more details.
+
+
+    Alternatively, you can create a Charge for a Balance on an end-customer Account to create balance fee line items for Account billing. See Creating Charges for Balances in our main user documentation for more details.'
 paths:
   /organizations/{orgId}/charges:
     get:
@@ -31,8 +121,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: pageSize
         in: query
         description: Number of Charges to retrieve per page
@@ -99,9 +187,7 @@ paths:
         style: form
         explode: true
         schema:
-          type: array
-          items:
-            type: string
+          type: string
       - name: scheduleId
         in: query
         description: List Charge items for the Schedule UUID
@@ -146,8 +232,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       requestBody:
         description: ''
         content:
@@ -182,8 +266,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: id
         in: path
         description: The UUID of the Charge to retrieve.
@@ -221,8 +303,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: id
         in: path
         description: The UUID of the Charge to update.
@@ -264,8 +344,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       - name: id
         in: path
         description: The UUID of the Charge to update.
@@ -286,13 +364,74 @@ paths:
         5XX:
           $ref: '#/components/responses/Error'
 components:
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
   schemas:
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    ChargeLineItemType:
+      type: string
+      description: Available line item types that can be used for billing a Charge.
+      enum:
+      - BALANCE_FEE
+      - AD_HOC
+    PaginatedChargeResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ChargeResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
     ChargeEntityType:
       type: string
       description: The entity type the Charge has been created for.
       enum:
       - AD_HOC
       - BALANCE
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
     ChargeRequest:
       type: object
       description: Request containing a Charge entity
@@ -307,6 +446,7 @@ components:
         - name
         - servicePeriodEndDate
         - servicePeriodStartDate
+        type: object
         properties:
           name:
             maxLength: 200
@@ -351,12 +491,14 @@ components:
               **NOTE:** If `entityType` is `BALANCE`, you must provide the `entityId` of the Balance the Charge is for.'
             allOf:
             - $ref: '#/components/schemas/ChargeEntityType'
-            - description: 'The entity this charge is created for, ex: Balance or AD_HOC if none applies'
+            - type: object
+              description: 'The entity this charge is created for, ex: Balance or AD_HOC if none applies'
           lineItemType:
             description: The line item type used for Charge billing.
             allOf:
             - $ref: '#/components/schemas/ChargeLineItemType'
-            - description: The Line Item Type to be used for this Charge
+            - type: object
+              description: The Line Item Type to be used for this Charge
           entityId:
             type: string
             description: 'The ID of the Charge linked entity. For example, the ID of an Account Balance if a Balance Charge.
@@ -386,38 +528,6 @@ components:
             type: string
             description: The ID of a Contract on the Account that the Charge will be added to.
         description: Request containing a Charge entity
-    AbstractRequest:
-      type: object
-      properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    PaginatedChargeResponseData:
-      type: object
-      properties:
-        data:
-          type: array
-          description: ''
-          items:
-            $ref: '#/components/schemas/ChargeResponse'
-        nextToken:
-          type: string
-          description: ''
-      description: ''
-    ChargeLineItemType:
-      type: string
-      description: Available line item types that can be used for billing a Charge.
-      enum:
-      - BALANCE_FEE
-      - AD_HOC
     ChargeResponse:
       type: object
       properties:
@@ -489,59 +599,22 @@ components:
           type: string
           description: The date and time (*in ISO-8601 format*) when the Charge was created.
           format: date-time
-          x-stainless-skip:
-          - terraform
         dtLastModified:
           type: string
           description: The date and time (*in ISO 8601 format*) when the Charge was last modified.
           format: date-time
-          x-stainless-skip:
-          - terraform
         createdBy:
           type: string
           description: The unique identifier (UUID) of the user who created the Charge.
-          x-stainless-skip:
-          - terraform
         lastModifiedBy:
           type: string
           description: The unique identifier (UUID) of the user who last modified the Charge.
-          x-stainless-skip:
-          - terraform
         scheduleId:
           type: string
           description: The ID of the Balance Charge Schedule that created the Charge.
       description: Response containing a Charge entity
       allOf:
       - $ref: '#/components/schemas/AbstractResponse'
-    AbstractResponse:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: 'The UUID of the entity. '
-        version:
-          type: integer
-          description: 'The version number:
-
-            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
-
-            - **Update:** On successful Update, the version is incremented by 1 in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-  responses:
-    Error:
-      description: Error message
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
   securitySchemes:
     OAuth2:
       type: oauth2
@@ -551,9 +624,6 @@ components:
           tokenUrl: /oauth/token
           scopes:
             m3ter-resources/m3ter-scope: m3ter resources
-            measurements:upload: Upload measurements
-            measurements:fileUpload: Upload file
-            measurements:retrieve: Retrieve measurements
         authorizationCode:
           authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
           tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
@@ -561,6 +631,3 @@ components:
             m3ter-resources/m3ter-scope: m3ter resources
             openid: OpenID
             email: email
-            measurements:upload: Upload measurements
-            measurements:fileUpload: Upload file
-            measurements:retrieve: Retrieve measurements

@@ -1,0 +1,931 @@
+openapi: 3.2.0
+info:
+  title: m3ter Account API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Account
+  description: Endpoints for Account related operations such as creation, update, list and delete.
+paths:
+  /organizations/{orgId}/accounts/search:
+    get:
+      tags:
+      - Account
+      summary: Search Accounts
+      description: 'Search for Account entities.
+
+
+        This endpoint executes a search query for Accounts based on the user specified search criteria. The search query is customizable, allowing for complex nested conditions and sorting. The returned list of Accounts can be paginated for easier management.'
+      operationId: SearchAccounts
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: searchQuery
+        in: query
+        description: "Query for data using special syntax:\n- Query parameters should be delimited using the $ (dollar sign).\n- Allowed comparators are:\n\t- (greater than) > \n\t- (greater than or equal to) >= \n\t- (equal to) : \n\t- (less than) <\n\t- (less than or equal to) <=\n\t- (match phrase/prefix) ~\n-  Allowed parameters are: name, code, currency, purchaseOrderNumber, parentAccountId, codes, id, createdBy, dtCreated, lastModifiedBy, ids.\n-  Query example: \n\t-  searchQuery=name~Premium On$currency:USD.\n\t-  This query is translated into: find accounts whose name contains the phrase/prefix 'Premium On' AND the account currency is USD.\n\n**Note:** Using the ~ match phrase/prefix comparator. For best results, we recommend treating this as a \"starts with\" comparator for your search query."
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: fromDocument
+        in: query
+        description: '`fromDocument` for multi page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'Number of Accounts to retrieve per page.
+
+
+          **NOTE:** If not defined, default is 10.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: operator
+        in: query
+        description: Search Operator to be used while querying search.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - AND
+          - OR
+      - name: sortBy
+        in: query
+        description: Name of the parameter on which sorting is performed. Use any field available on the Account entity to sort by, such as `name`, `code`, and so on.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sortOrder
+        in: query
+        description: Sorting order.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+      responses:
+        '200':
+          description: Return the Accounts that match the search criteria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAccountResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/accounts/{id}/enddatebillingentities:
+    put:
+      tags:
+      - Account
+      summary: End-date Account billing entities
+      description: 'Apply the specified end-date to billing entities associated with an Account.
+
+
+        **NOTE:**
+
+        - When you successfully end-date billing entities, the version number of each entity is incremented.'
+      operationId: EndDateBillingEntitiesForAccount
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Account.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EndDateBillingEntitiesRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the status and details of the updated active billing entities.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EndDateBillingEntitiesResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/accounts/{id}/children:
+    get:
+      tags:
+      - Account
+      summary: List Account Children
+      description: Retrieve a list of Accounts that are children of the specified Account.
+      operationId: ListAccountChildren
+      parameters:
+      - name: orgId
+        in: path
+        description: 'UUID of the organization.
+
+          The Organization represents your company as a direct customer of the m3ter service. '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Account to list children for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          maximum: 200
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+          format: int32
+      - name: nextToken
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          type:
+          - string
+          - 'null'
+      responses:
+        '200':
+          description: Returns the list of child Accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAccountResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/accounts/{id}:
+    get:
+      tags:
+      - Account
+      summary: Retrieve Account
+      description: Retrieve the Account with the given Account UUID.
+      operationId: GetAccount
+      parameters:
+      - name: orgId
+        in: path
+        description: 'UUID of the organization.
+
+          The Organization represents your company as a direct customer of the m3ter service. '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Account to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the requested Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - Account
+      summary: Update Account
+      description: 'Update the Account with the given Account UUID.
+
+
+        **Note:** If you have created Custom Fields for an Account, when you use this endpoint to update the Account, use the `customFields` parameter to preserve those Custom Fields. If you omit them from the update request, they will be lost.'
+      operationId: PutAccount
+      parameters:
+      - name: orgId
+        in: path
+        description: 'UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service. '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Account to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - Account
+      summary: Delete Account
+      description: Delete the Account with the given UUID. This may fail if there are any AccountPlans that reference the Account being deleted.
+      operationId: DeleteAccount
+      parameters:
+      - name: orgId
+        in: path
+        description: 'UUID of the organization.
+
+          The Organization represents your company as a direct customer of the m3ter service. '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The UUID of the Account to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return the deleted Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/accounts:
+    get:
+      tags:
+      - Account
+      summary: List Accounts
+      description: Retrieve a list of Accounts that can be filtered by Account ID or Account Code.
+      operationId: ListAccounts
+      parameters:
+      - name: orgId
+        in: path
+        description: 'UUID of the organization.
+
+          The Organization represents your company as a direct customer of the m3ter service. '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Number of accounts to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: '`nextToken` for multi-page retrievals.'
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: List of Account IDs to retrieve.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: codes
+        in: query
+        description: "List of Account Codes to retrieve. \nThese are unique short codes for each Account."
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Returns the list of Accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAccountResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - Account
+      summary: Create Account
+      description: Create a new Account within the Organization.
+      operationId: PostAccount
+      parameters:
+      - name: orgId
+        in: path
+        description: 'UUID of the organization.
+
+          The Organization represents your company as a direct customer of the m3ter service. '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the created Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    StatementAutoGenerateMode:
+      type: string
+      description: "Specify whether to auto-generate statements once Bills are *approved* or *locked*. It will not auto-generate if a bill is in *pending* state. \n\nThe default value is **None**.\n\n- **None**. Statements will not be auto-generated.\n- **JSON**. Statements are auto-generated in JSON format.\n- **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats."
+      enum:
+      - NONE
+      - JSON
+      - JSON_AND_CSV
+    Set_String_:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/Collection_String_'
+      - properties:
+          empty:
+            type: boolean
+            description: ''
+    Address:
+      type: object
+      properties:
+        addressLine1:
+          maxLength: 50
+          type: string
+          description: ''
+        addressLine2:
+          maxLength: 50
+          type: string
+          description: ''
+        addressLine3:
+          type: string
+          description: ''
+        addressLine4:
+          type: string
+          description: ''
+        locality:
+          maxLength: 100
+          type: string
+          description: ''
+        region:
+          maxLength: 50
+          type: string
+          description: ''
+        postCode:
+          maxLength: 20
+          type: string
+          description: ''
+        country:
+          maxLength: 100
+          type: string
+          description: ''
+      description: Contact address.
+    Collection_String_:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          description: ''
+      description: ''
+    BillCreditType:
+      type: string
+      description: ''
+      enum:
+      - PREPAYMENT
+      - BALANCE
+    EndDateBillingEntitiesRequest:
+      required:
+      - billingEntities
+      - endDate
+      type: object
+      properties:
+        endDate:
+          type: string
+          description: The end date and time applied to the specified billing entities *(in ISO 8601 format)*.
+          format: date-time
+        applyToChildren:
+          type: boolean
+          description: A Boolean TRUE/FALSE flag. For Parent Accounts, set to TRUE if you want the specified end-date to be applied to any billing entities associated with Child Accounts. *(Optional)*
+        billingEntities:
+          minItems: 1
+          type: array
+          description: Defines which billing entities associated with the Account will have the specified end-date applied. For example, if you want the specified end-date to be applied to all Prepayments/Commitments created for the Account use `"PREPAYMENT"`.
+          items:
+            $ref: '#/components/schemas/BillingEntity'
+      description: ''
+    BillingEntity:
+      type: string
+      description: ''
+      enum:
+      - CONTRACT
+      - ACCOUNTPLAN
+      - PREPAYMENT
+      - PRICINGS
+      - COUNTER_PRICINGS
+    AccountResponse:
+      type: object
+      description: Response containing an AccountResponse entity.
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: Name of the Account.
+          code:
+            type: string
+            description: 'Code of the Account.
+
+              This is a unique short code used for the Account.'
+          address:
+            description: Contact address for the Account.
+            allOf:
+            - $ref: '#/components/schemas/Address'
+            - description: Address of the Account
+          emailAddress:
+            type: string
+            description: Contact email for the Account.
+          parentAccountId:
+            type: string
+            description: Parent Account ID, or null if this account does not have a parent.
+          billEpoch:
+            type: string
+            description: 'Defines first bill date for Account Bills. For example, if the Plan attached to the Account is set for monthly billing frequency and you set the first bill date to be January 1st, Bills are created every month starting on that date.
+
+
+              Optional attribute - if not defined, then first bill date is determined by the Epoch settings at Organizational level.'
+            format: date
+          purchaseOrderNumber:
+            type: string
+            description: 'Purchase Order Number of the Account.
+
+
+              Optional attribute - allows you to set a purchase order number that comes through into invoicing. For example, your financial systems might require this as a reference for clearing payments.'
+          currency:
+            type: string
+            description: 'Account level billing currency, such as USD or GBP. Optional attribute:
+
+              - If you define an Account currency, this will be used for bills.
+
+              - If you do not define a currency, the billing currency defined at Organizational will be used.
+
+
+              **Note:** If you''ve attached a Plan to the Account that uses a different currency to the billing currency, then you must add the relevant currency conversion rate at Organization level to ensure the billing process can convert line items calculated using the Plan currency into the selected billing currency. If you don''t add these conversion rates, then bills will fail for the Account.'
+            example: USD
+          statementDefinitionId:
+            type: string
+            description: 'The UUID of the statement definition used when Bill statements are generated for the Account. If no statement definition is specified for the Account, the statement definition specified at Organizational level is used.
+
+
+              Bill statements can be used as informative backing sheets to invoices. Based on the usage breakdown defined in the statement definition, generated statements give a breakdown of usage charges on Account Bills, which helps customers better understand usage charges incurred over the billing period.
+
+
+              See [Working with Bill Statements](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/working-with-bill-statements) in the m3ter documentation for more details.'
+          dtCreated:
+            type: string
+            description: The DateTime when the Account was created *(in ISO 8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the Account was last modified *(in ISO 8601 format)*.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The ID of the user who created the account.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The ID of the user who last modified the Account.
+            x-stainless-skip:
+            - terraform
+          autoGenerateStatementMode:
+            description: 'Specify whether to auto-generate statements once Bills are approved or locked.
+
+
+              - **None**. Statements will not be auto-generated.
+
+              - **JSON**. Statements are auto-generated in JSON format.
+
+              - **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats. '
+            $ref: '#/components/schemas/StatementAutoGenerateMode'
+          creditApplicationOrder:
+            type: array
+            description: 'The order in which any Prepayment or Balance amounts on the Account are to be drawn-down against for billing. Four options:
+
+              - `"PREPAYMENT","BALANCE"`. Draw-down against Prepayment credit before Balance credit.
+
+              - `"BALANCE","PREPAYMENT"`. Draw-down against Balance credit before Prepayment credit.
+
+              - `"PREPAYMENT"`. Only draw-down against Prepayment credit.
+
+              - `"BALANCE"`. Only draw-down against Balance credit.'
+            items:
+              $ref: '#/components/schemas/BillCreditType'
+          daysBeforeBillDue:
+            type: integer
+            description: The number of days after the Bill generation date shown on Bills as the due date.
+            format: int32
+    PaginatedAccountResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/AccountResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    AccountRequest:
+      type: object
+      description: Account request for operations such as Create or Update Account.
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - code
+        - emailAddress
+        - name
+        properties:
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: Name of the Account.
+          code:
+            maxLength: 80
+            minLength: 1
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: "Code of the Account. \nThis is a unique short code used for the Account."
+          address:
+            description: Contact address for the Account.
+            allOf:
+            - $ref: '#/components/schemas/Address'
+            - description: Address of the Account
+          emailAddress:
+            type: string
+            description: Contact email for the Account.
+            format: email
+          parentAccountId:
+            type: string
+            description: Parent Account ID, or null if this Account does not have a parent.
+          billEpoch:
+            type: string
+            description: 'Optional setting to define a *billing cycle date*, which sets the date of the first Bill and acts as a reference for when in the applied billing frequency period subsequent bills are created:
+
+              * For example, if you attach a Plan to an Account where the Plan is configured for monthly billing frequency and you''ve defined the period the Plan will apply to the Account to be from January 1st, 2022 until January 1st, 2023. You then set a `billEpoch` date of February 15th, 2022. The first Bill will be created for the Account on February 15th, and subsequent Bills created on the 15th of the months following for the remainder of the billing period - March 15th, April 15th, and so on.
+
+              * If not defined, then the relevant Epoch date set for the billing frequency period at Organization level will be used instead.
+
+              * The date is in ISO-8601 format.'
+            format: date
+          purchaseOrderNumber:
+            maxLength: 100
+            type: string
+            description: 'Purchase Order Number of the Account.
+
+
+              Optional attribute - allows you to set a purchase order number that comes through into invoicing. For example, your financial systems might require this as a reference for clearing payments.'
+          currency:
+            type: string
+            description: 'Account level billing currency, such as USD or GBP. Optional attribute:
+
+              - If you define an Account currency, this will be used for bills.
+
+              - If you do not define a currency, the billing currency defined at Organizational level will be used.
+
+
+              **Note:** If you''ve attached a Plan to the Account that uses a different currency to the billing currency, then you must add the relevant currency conversion rate at Organization level to ensure the billing process can convert line items calculated using the Plan currency into the selected billing currency. If you don''t add these conversion rates, then bills will fail for the Account.'
+            example: USD
+          statementDefinitionId:
+            type: string
+            description: 'The UUID of the statement definition used when Bill statements are generated for the Account. If no statement definition is specified for the Account, the statement definition specified at Organizational level is used.
+
+
+              Bill statements can be used as informative backing sheets to invoices. Based on the usage breakdown defined in the statement definition, generated statements give a breakdown of usage charges on Account Bills, which helps customers better understand usage charges incurred over the billing period.
+
+
+              See [Working with Bill Statements](https://www.m3ter.com/docs/guides/running-viewing-and-managing-bills/working-with-bill-statements) in the m3ter documentation for more details.
+
+              '
+          autoGenerateStatementMode:
+            description: 'Specify whether to auto-generate statements once Bills are approved or locked.
+
+
+              - **None**. Statements will not be auto-generated.
+
+              - **JSON**. Statements are auto-generated in JSON format.
+
+              - **JSON and CSV**. Statements are auto-generated in both JSON and CSV formats. '
+            $ref: '#/components/schemas/StatementAutoGenerateMode'
+          creditApplicationOrder:
+            type: array
+            description: 'Define the order in which any Prepayment or Balance amounts on the Account are to be drawn-down against for billing. Four options:
+
+              - `"PREPAYMENT","BALANCE"`. Draw-down against Prepayment credit before Balance credit.
+
+              - `"BALANCE","PREPAYMENT"`. Draw-down against Balance credit before Prepayment credit.
+
+              - `"PREPAYMENT"`. Only draw-down against Prepayment credit.
+
+              - `"BALANCE"`. Only draw-down against Balance credit.
+
+
+              **NOTES:**
+
+              * Any setting you define here overrides the setting for credit application order at Organization level.
+
+              * If the Account belongs to a Parent/Child Account hierarchy, then the `creditApplicationOrder` settings are not available, and the draw-down order defaults always to Prepayment then Balance order.'
+            items:
+              $ref: '#/components/schemas/BillCreditType'
+          daysBeforeBillDue:
+            type: integer
+            description: 'Enter the number of days after the Bill generation date that you want to show on Bills as the due date.
+
+
+              **Note:** If you define `daysBeforeBillDue` at individual Account level, this will take precedence over any `daysBeforeBillDue` setting defined at Organization level.'
+            format: int32
+            exclusiveMinimum: 0
+    EndDateBillingEntitiesResponse:
+      type: object
+      properties:
+        statusMessage:
+          type: string
+          description: A message indicating the status of the operation.
+        updatedEntities:
+          properties:
+            CONTRACT:
+              $ref: '#/components/schemas/Set_String_'
+            ACCOUNTPLAN:
+              $ref: '#/components/schemas/Set_String_'
+            PREPAYMENT:
+              $ref: '#/components/schemas/Set_String_'
+            PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+            COUNTER_PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the updated entities.
+        failedEntities:
+          properties:
+            CONTRACT:
+              $ref: '#/components/schemas/Set_String_'
+            ACCOUNTPLAN:
+              $ref: '#/components/schemas/Set_String_'
+            PREPAYMENT:
+              $ref: '#/components/schemas/Set_String_'
+            PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+            COUNTER_PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the entities for which the update failed.
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractRequestWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

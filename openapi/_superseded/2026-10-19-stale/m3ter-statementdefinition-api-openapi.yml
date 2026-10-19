@@ -1,0 +1,495 @@
+openapi: 3.2.0
+info:
+  title: m3ter Statement Definition API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: StatementDefinition
+  description: Endpoints for listing, creating, updating, retrieving, or deleting Statement Definitions.
+paths:
+  /organizations/{orgId}/statementdefinitions/{id}:
+    get:
+      tags:
+      - StatementDefinition
+      summary: Retrieve StatementDefinition
+      description: 'Retrieve a StatementDefinition with the given UUID.
+
+
+        Retrieves the details of a specific StatementDefinition for the specified Organization, using its unique identifier (UUID). This endpoint is useful when you want to retrieve the complete details of a single StatementDefinition.'
+      operationId: GetStatementDefinition
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the StatementDefinition to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the StatementDefinition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatementDefinitionResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - StatementDefinition
+      summary: Update StatementDefinition
+      description: 'Update StatementDefinition for the given UUID.
+
+
+        Update the details of a specific StatementDefinition for the specified Organization, using its unique identifier (UUID). The updated details for the StatementDefinition should be sent in the request body.'
+      operationId: PutStatementDefinition
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: ''
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatementDefinitionRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated StatementDefinition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatementDefinitionResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - StatementDefinition
+      summary: Delete StatementDefinition
+      description: 'Delete a StatementDefinition with the given UUID.
+
+
+        This endpoint deletes a specific StatementDefinition within a specified Organization, using the StatementDefinition UUID.'
+      operationId: DeleteStatementDefinition
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the StatementDefinition to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted StatementDefinition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatementDefinitionResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/statementdefinitions:
+    get:
+      tags:
+      - StatementDefinition
+      summary: List StatementDefinitions
+      description: 'Retrieve a list of StatementDefinitions.
+
+
+        This endpoint retrieves a list of all the StatementDefinitions within a specified Organization. The list can be paginated for easier management.'
+      operationId: ListStatementDefinitions
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of StatementDefinitions to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of StatementDefinitions in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the list of requested StatementDefinitions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStatementDefinitionResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - StatementDefinition
+      summary: Create StatementDefinition
+      description: 'Create a new StatementDefinition.
+
+
+        This endpoint creates a new StatementDefinition within the specified Organization. The details of the StatementDefinition are provided in the request body.'
+      operationId: PostStatementDefinition
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatementDefinitionRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the created StatementDefinition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatementDefinitionResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    Dimension:
+      required:
+      - filter
+      - name
+      type: object
+      properties:
+        meterId:
+          type: string
+          description: The unique identifier (UUID) of the Meter containing this Dimension.
+        name:
+          minLength: 1
+          type: string
+          description: The name of the Dimension to target in the Meter.
+        attributes:
+          type: array
+          description: The Dimension attribute to target.
+          items:
+            type: string
+        filter:
+          minItems: 1
+          type: array
+          description: The value of a Dimension to use as a filter. Use "*" as a wildcard to filter on all Dimension values.
+          items:
+            type: string
+      description: A Dimension belonging to a Meter.
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    Aggregation:
+      type: string
+      description: 'Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected targetField.
+
+
+        * **SUM**. Adds the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **MIN**. Uses the minimum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **MAX**. Uses the maximum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **COUNT**. Counts the number of values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **LATEST**. Uses the most recent value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`. Note: Based on the timestamp `ts` value of usage data measurement submissions. If using this method, please ensure *distinct* `ts` values are used for usage data measurement submissions.
+
+
+        * **MEAN**. Uses the arithmetic mean of the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **UNIQUE**. Uses unique values and returns a count of the number of unique values. Can be applied to a **Metadata** `targetField`.'
+      enum:
+      - SUM
+      - MIN
+      - MAX
+      - COUNT
+      - LATEST
+      - MEAN
+      - UNIQUE
+      - CUSTOM_SQL
+    StatementDefinitionResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          id:
+            type: string
+            description: 'The unique identifier (UUID) of the StatementDefinition. '
+          name:
+            type: string
+            description: Descriptive name for the StatementDefinition providing context and information.
+          version:
+            type: integer
+            description: The version number. Default value when newly created is one.
+            format: int64
+            x-stainless-terraform-configurability: computed
+            x-stainless-terraform-always-send: true
+          aggregationFrequency:
+            description: This specifies how often the Statement should aggregate data.
+            $ref: '#/components/schemas/AggregationFrequency'
+          includePricePerUnit:
+            type: boolean
+            description: 'A Boolean indicating whether to include the price per unit in the Statement.
+
+
+              * TRUE - includes the price per unit.
+
+              * FALSE - excludes the price per unit.'
+          dimensions:
+            type: array
+            description: An array of objects, each representing a Dimension data field from a Meter *(for Meters that have Dimensions setup)*.
+            items:
+              $ref: '#/components/schemas/Dimension'
+          measures:
+            type: array
+            description: An array of objects, each representing a Measure data field from a Meter.
+            items:
+              $ref: '#/components/schemas/Measure'
+          generateSlimStatements:
+            type: boolean
+            description: ''
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the StatementDefinition was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the StatementDefinition was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this StatementDefinition.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this StatementDefinition.
+            x-stainless-skip:
+            - terraform
+    PaginatedStatementDefinitionResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/StatementDefinitionResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    Measure:
+      type: object
+      properties:
+        meterId:
+          type: string
+          description: The unique identifier (UUID) of the Meter containing this Measure.
+        name:
+          type: string
+          description: The name of a Measure data field *(or blank to indicate a wildcard, i.e. all fields)*. Default value is blank.
+        aggregations:
+          maxItems: 7
+          type: array
+          description: A list of Aggregations to apply to the Measure.
+          items:
+            $ref: '#/components/schemas/Aggregation'
+      description: ''
+    StatementDefinitionRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - aggregationFrequency
+        properties:
+          name:
+            type: string
+            description: Descriptive name for the StatementDefinition providing context and information.
+          aggregationFrequency:
+            description: This specifies how often the Statement should aggregate data.
+            $ref: '#/components/schemas/AggregationFrequency'
+          includePricePerUnit:
+            type: boolean
+            description: 'A Boolean indicating whether to include the price per unit in the Statement.
+
+
+              * TRUE - includes the price per unit.
+
+              * FALSE - excludes the price per unit.'
+          dimensions:
+            type: array
+            description: An array of objects, each representing a Dimension data field from a Meter *(for Meters that have Dimensions setup)*.
+            items:
+              $ref: '#/components/schemas/Dimension'
+          measures:
+            type: array
+            description: An array of objects, each representing a Measure data field from a Meter.
+            items:
+              $ref: '#/components/schemas/Measure'
+          generateSlimStatements:
+            type: boolean
+            description: ''
+    AggregationFrequency:
+      type: string
+      description: This specifies how often the data should be aggregated.
+      enum:
+      - DAY
+      - WEEK
+      - MONTH
+      - QUARTER
+      - YEAR
+      - WHOLE_PERIOD
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

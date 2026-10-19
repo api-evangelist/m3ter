@@ -1,0 +1,193 @@
+openapi: 3.2.0
+info:
+  title: m3ter Bill Config API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: BillConfig
+  description: Endpoints for updating and retreiving the Bill Configuration for an Organization.
+paths:
+  /organizations/{orgId}/billconfig:
+    get:
+      tags:
+      - BillConfig
+      summary: Retrieve BillConfig
+      description: Retrieve the Organization-wide BillConfig.
+      operationId: GetBillConfig
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      responses:
+        '200':
+          description: Return the BillConfig
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillConfigResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - BillConfig
+      summary: Update BillConfig
+      description: 'Update the Organization-wide BillConfig.
+
+
+        You can use this endpoint to set a global lock date for **all** Bills - any Bill with a service period end date on or before the set date will be locked and cannot be updated or recalculated.'
+      operationId: UpdateBillConfig
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillConfigRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the updated BillConfig
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillConfigResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    BillConfigResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          billLockDate:
+            type: string
+            description: 'The global lock date *(in ISO 8601 format)* when all Bills will be locked.
+
+
+              For example: `"2024-03-01"`.'
+            format: date
+          dtCreated:
+            type: string
+            description: The DateTime *(in ISO-8601 format)* when the bill config was first created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime *(in ISO-8601 format)* when the bill config was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this bill config.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this bill config.
+            x-stainless-skip:
+            - terraform
+    BillConfigRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number:
+
+            * Default value when newly created is one.
+
+            * On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+        billLockDate:
+          type: string
+          description: 'The global lock date when all Bills will be locked *(in ISO 8601 format)*.
+
+
+            For example: `"2024-03-01"`.'
+          format: date
+      description: ''
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

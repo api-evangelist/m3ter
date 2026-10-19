@@ -1,0 +1,692 @@
+openapi: 3.2.0
+info:
+  title: m3ter Contract API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Contract
+  description: 'Endpoints for Contract related operations such as creation, update, list and delete.
+
+
+    Contracts are created for Accounts, which are your end-user customers. Contracts can be used for:
+
+    * **Accounts Reporting**. To serve your general accounting operations and processes, you can report on total Contract values for an Account.
+
+    * **Contract Billing**. Various billing entities associated with an Account can be linked to Contracts on the Account to meet your specific Contract billing use cases.'
+paths:
+  /organizations/{orgId}/contracts:
+    get:
+      tags:
+      - Contract
+      summary: List Contracts
+      description: Retrieves a list of Contracts by Organization ID. Supports pagination and includes various query parameters to filter the Contracts returned based on Contract IDs or short codes.
+      operationId: ListContracts
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: pageSize
+        in: query
+        description: Specifies the maximum number of Contracts to retrieve per page.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      - name: nextToken
+        in: query
+        description: The `nextToken` for multi-page retrievals. It is used to fetch the next page of Contracts in a paginated list.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: An optional parameter to filter the list based on specific Contract unique identifiers (UUIDs).
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: codes
+        in: query
+        description: An optional parameter to retrieve specific Contracts based on their short codes.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: accountId
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          maxLength: 36
+          minLength: 36
+          type:
+          - string
+          - 'null'
+      responses:
+        '200':
+          description: Returns a list of Contracts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContractResponseData'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+      - Contract
+      summary: Create Contract
+      description: 'Creates a new Contract for the specified Account. The Contract includes information such as the associated Account along with start and end dates.
+
+
+        If you intend to bill an Account on a Contract basis, you can use the `billGroupingKeyId`, `applyContractPeriodLimits`, and `usageFilters` request parameters to control Contract billing.'
+      operationId: PostContract
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the created Contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/contracts/{id}/enddatebillingentities:
+    put:
+      tags:
+      - Contract
+      summary: End-date Contract Account billing entities
+      description: 'Apply the specified end-date to billing entities associated with Accounts the Contract has been added to, and apply the end-date to the Contract itself.
+
+
+        **NOTES:**
+
+        - If you want to apply the end-date to the Contract *itself* - the Contract `id` you use as the required PATH PARAMETER - you must also specify `CONTRACT` as a `billingEntities` option in the request body schema.
+
+        - Only the Contract whose id you specify for the PATH PARAMETER will be end-dated. If there are other Contracts associated with the Account, these will not be end-dated.
+
+        - When you successfully end-date billing entities, the version number of each entity is incremented.'
+      operationId: EndDateBillingEntitiesForContract
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) for your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: Unique identifier (UUID) of the Contract - the specified billing entities associated with the Account the Contract has been added to will be end-dated.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EndDateBillingEntitiesRequest'
+        required: true
+      responses:
+        '200':
+          description: Return the status and details of the updated active billing entities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EndDateBillingEntitiesResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/contracts/{id}:
+    get:
+      tags:
+      - Contract
+      summary: Retrieve Contract
+      description: Retrieves the Contract with the given UUID. Used to obtain the details of a Contract.
+      operationId: GetContract
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Contract to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the Contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - Contract
+      summary: Update Contract
+      description: 'Update the Contract with the given UUID.
+
+
+        This endpoint updates the details of the Contract with the specified ID. Used to modify details of an existing Contract such as the start or end dates.
+
+
+        **Note:** If you have created Custom Fields for a Contract, when you use this endpoint to update the Contract use the `customFields` parameter to preserve those Custom Fields. If you omit them from the update request, they will be lost.'
+      operationId: PutContract
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Contract to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns the updated Contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+      - Contract
+      summary: Delete Contract
+      description: 'Deletes the Contract with the specified UUID. Used to remove an existing Contract from an Account.
+
+
+        **Note:** This call will fail if there are any other billing entities associated with the Account and that have been added to the Contract, such as AccountPlans, Balance, or Commitments.'
+      operationId: DeleteContract
+      parameters:
+      - name: orgId
+        in: path
+        description: The unique identifier (UUID) of your Organization. The Organization represents your company as a direct customer of our service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      - name: id
+        in: path
+        description: The unique identifier (UUID) of the Contract to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the deleted Contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    AbstractResponseWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level,`customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldRes
+                type: string
+              - title: IntegerCustomFieldRes
+                type: integer
+              - title: NumberCustomFieldRes
+                type: number
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    UsageFilterMode:
+      type: string
+      description: ''
+      enum:
+      - INCLUDE
+      - EXCLUDE
+    EndDateBillingEntitiesResponse:
+      type: object
+      properties:
+        statusMessage:
+          type: string
+          description: A message indicating the status of the operation.
+        updatedEntities:
+          properties:
+            CONTRACT:
+              $ref: '#/components/schemas/Set_String_'
+            ACCOUNTPLAN:
+              $ref: '#/components/schemas/Set_String_'
+            PREPAYMENT:
+              $ref: '#/components/schemas/Set_String_'
+            PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+            COUNTER_PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the updated entities.
+        failedEntities:
+          properties:
+            CONTRACT:
+              $ref: '#/components/schemas/Set_String_'
+            ACCOUNTPLAN:
+              $ref: '#/components/schemas/Set_String_'
+            PREPAYMENT:
+              $ref: '#/components/schemas/Set_String_'
+            PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+            COUNTER_PRICINGS:
+              $ref: '#/components/schemas/Set_String_'
+          description: A dictionary with keys as identifiers of billing entities and values as lists containing details of the entities for which the update failed.
+      description: ''
+    PaginatedContractResponseData:
+      type: object
+      properties:
+        data:
+          type: array
+          description: ''
+          items:
+            $ref: '#/components/schemas/ContractResponse'
+        nextToken:
+          type: string
+          description: ''
+      description: ''
+    Set_String_:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/Collection_String_'
+      - properties:
+          empty:
+            type: boolean
+            description: ''
+    ContractRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequestWithCustomFields'
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - accountId
+        - endDate
+        - name
+        - startDate
+        properties:
+          accountId:
+            minLength: 1
+            type: string
+            description: The unique identifier (UUID) of the Account associated with this Contract.
+          name:
+            maxLength: 200
+            minLength: 1
+            type: string
+            description: The name of the Contract.
+          code:
+            maxLength: 80
+            pattern: ^([^[\p{Cntrl}\s]])|([^[\p{Cntrl}\s]][[^[\p{Cntrl}\s]] ]*[^[\p{Cntrl}\s]])$
+            type: string
+            description: The short code of the Contract.
+          description:
+            maxLength: 500
+            type: string
+            description: The description of the Contract, which provides context and information.
+          purchaseOrderNumber:
+            maxLength: 100
+            type: string
+            description: The Purchase Order Number associated with the Contract.
+          applyContractPeriodLimits:
+            type: boolean
+            description: 'For Contract billing, a boolean setting for restricting the charges billed to the period defined for the Contract:
+
+              * **TRUE** - Contract billing for the Account will be restricted to charge amounts that fall within the defined Contract period.
+
+              * **FALSE** - The period for amounts billed under the Contract will be determined by the Account Plan attached to the Account and linked to the Contract.(*Default*)'
+          usageFilters:
+            type: array
+            description: 'Use `usageFilters` to control Contract billing and charge at billing only for usage where Product Meter dimensions equal specific defined values:
+
+              * Define Usage filters to either *include* or *exclude* charges for usage associated with specific Meter dimensions.
+
+              * The Meter dimensions must be present in the data field schema of the Meter used to submit usage data measurements.'
+            items:
+              $ref: '#/components/schemas/UsageFilter'
+          billGroupingKeyId:
+            type: string
+            description: 'The ID of the Bill Grouping Key assigned to the Contract.
+
+
+              If you are implementing Contract Billing for an Account, use `billGroupingKey` to control how charges linked to Contracts on the Account will be billed:
+
+              * **Independent Contract billing**. Assign an *exclusive* Bill Grouping Key to the Contract - only charges due against the Account and linked to the single Contract will appear on a separate Bill.
+
+              * **Collective Contract billing**. Assign the same *non-exclusive* Bill Grouping Key to multiple Contracts - all charges due against the Account and linked to the multiple Contracts will appear together on a single Bill. '
+          startDate:
+            type: string
+            description: The start date for the Contract *(in ISO-8601 format)*. This date is inclusive, meaning the Contract is active from this date onward.
+            format: date
+          endDate:
+            type: string
+            description: The exclusive end date of the Contract *(in ISO-8601 format)*. This means the Contract is active until midnight on the day ***before*** this date.
+            format: date
+    UsageFilter:
+      required:
+      - dimensionCode
+      - mode
+      - value
+      type: object
+      properties:
+        dimensionCode:
+          minLength: 1
+          type: string
+          description: ''
+        value:
+          minLength: 1
+          type: string
+          description: ''
+        mode:
+          description: ''
+          $ref: '#/components/schemas/UsageFilterMode'
+      description: Filters that determine which usage records are included in contract billing
+    EndDateBillingEntitiesRequest:
+      required:
+      - billingEntities
+      - endDate
+      type: object
+      properties:
+        endDate:
+          type: string
+          description: The end date and time applied to the specified billing entities *(in ISO 8601 format)*.
+          format: date-time
+        applyToChildren:
+          type: boolean
+          description: A Boolean TRUE/FALSE flag. For Parent Accounts, set to TRUE if you want the specified end-date to be applied to any billing entities associated with Child Accounts. *(Optional)*
+        billingEntities:
+          minItems: 1
+          type: array
+          description: Defines which billing entities associated with the Account will have the specified end-date applied. For example, if you want the specified end-date to be applied to all Prepayments/Commitments created for the Account use `"PREPAYMENT"`.
+          items:
+            $ref: '#/components/schemas/BillingEntity'
+      description: ''
+    BillingEntity:
+      type: string
+      description: ''
+      enum:
+      - CONTRACT
+      - ACCOUNTPLAN
+      - PREPAYMENT
+      - PRICINGS
+      - COUNTER_PRICINGS
+    Collection_String_:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          description: ''
+      description: ''
+    ContractResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponseWithCustomFields'
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          accountId:
+            type: string
+            description: The unique identifier (UUID) of the Account associated with this Contract.
+          name:
+            type: string
+            description: The name of the Contract.
+          code:
+            type: string
+            description: The short code of the Contract.
+          description:
+            type: string
+            description: The description of the Contract, which provides context and information.
+          purchaseOrderNumber:
+            type: string
+            description: The Purchase Order Number associated with the Contract.
+          applyContractPeriodLimits:
+            type: boolean
+            description: 'For Contract billing, a boolean setting for restricting the charges billed to the period defined for the Contract:
+
+              * **TRUE** - Contract billing for the Account will be restricted to charge amounts that fall within the defined Contract period.
+
+              * **FALSE** - The period for amounts billed under the Contract will be determined by the Account Plan attached to the Account and linked to the Contract.(*Default*)'
+          usageFilters:
+            type: array
+            description: 'Used to control Contract billing and charge at billing only for usage where Product Meter dimensions equal specific defined values:
+
+              * Usage filters are defined to either *include* or *exclude* charges for usage associated with specific Meter dimensions.
+
+              * The Meter dimensions must be present in the data field schema of the Meter used to submit usage data measurements.'
+            items:
+              $ref: '#/components/schemas/UsageFilter'
+          billGroupingKeyId:
+            type: string
+            description: The ID of the Bill Grouping Key assigned to the Contract.
+          startDate:
+            type: string
+            description: The start date for the Contract *(in ISO-8601 format)*. This date is inclusive, meaning the Contract is active from this date onward.
+            format: date
+          endDate:
+            type: string
+            description: The exclusive end date of the Contract *(in ISO-8601 format)*. This means the Contract is active until midnight on the day ***before*** this date.
+            format: date
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Contract was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the Contract was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The unique identifier (UUID) of the user who created this Contract.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this Contract.
+            x-stainless-skip:
+            - terraform
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AbstractRequestWithCustomFields:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - properties:
+          customFields:
+            type: object
+            description: 'User defined fields enabling you to attach custom data. The value for a custom field can be either a string or a number.
+
+
+              If `customFields` can also be defined for this entity at the Organizational level, `customField` values defined at individual level override values of `customFields` with the same name defined at Organization level.
+
+
+              See [Working with Custom Fields](https://www.m3ter.com/docs/guides/creating-and-managing-products/working-with-custom-fields) in the m3ter documentation for more information.'
+            maxItems: 100
+            additionalProperties:
+              anyOf:
+              - title: StringCustomFieldReq
+                type: string
+              - title: IntegerCustomFieldReq
+                type: integer
+              - title: NumberCustomFieldReq
+                type: number
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

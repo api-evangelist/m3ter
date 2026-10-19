@@ -1,0 +1,301 @@
+openapi: 3.2.0
+info:
+  title: m3ter User API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: User
+  description: Endpoints for creating/updating Users
+paths:
+  /organizations/{orgId}/users/me:
+    get:
+      tags:
+      - User
+      summary: Retrieve current user information
+      description: Retrieve information about the current user
+      operationId: GetMe
+      responses:
+        '200':
+          description: GetMe 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: orgId
+        in: path
+        description: 'UUID of the organization.
+
+          The Organization represents your company as a direct customer of the m3ter service. '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+components:
+  schemas:
+    ServiceUserResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          name:
+            type: string
+            description: ''
+          dtCreated:
+            type: string
+            description: The DateTime when the service user was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the service user was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this service user.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this service user.
+            x-stainless-skip:
+            - terraform
+    UserResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          firstName:
+            type: string
+            description: The first name of the user.
+          lastName:
+            type: string
+            description: 'The surname of the user. '
+          contactNumber:
+            type: string
+            description: The user's contact telephone number.
+          email:
+            type: string
+            description: 'The email address for this user. '
+          organizations:
+            type: array
+            description: An array listing the Organizations where this user has access.
+            items:
+              type: string
+          firstAcceptedTermsAndConditions:
+            type: string
+            description: 'The date and time *(in ISO 8601 format)* when this user first accepted the the m3ter terms and conditions.  '
+            format: date-time
+          lastAcceptedTermsAndConditions:
+            type: string
+            description: 'The date and time *(in ISO 8601 format)* when this user last accepted the the m3ter terms and conditions.  '
+            format: date-time
+          supportUser:
+            type: boolean
+            description: 'Indicates whether this is a m3ter Support user. '
+          dtCreated:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the user was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The date and time *(in ISO-8601 format)* when the user was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The user who created this user.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The unique identifier (UUID) of the user who last modified this user record.
+            x-stainless-skip:
+            - terraform
+    OrganizationResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          orgId:
+            type: string
+            description: ''
+          customerId:
+            type: string
+            description: ''
+          organizationName:
+            type: string
+            description: ''
+          shortName:
+            type: string
+            description: ''
+          addressLine1:
+            type: string
+            description: ''
+          addressLine2:
+            type: string
+            description: ''
+          addressLine3:
+            type: string
+            description: ''
+          addressLine4:
+            type: string
+            description: ''
+          locality:
+            type: string
+            description: ''
+          region:
+            type: string
+            description: ''
+          postCode:
+            type: string
+            description: ''
+          country:
+            type: string
+            description: ''
+          taxId:
+            type: string
+            description: ''
+          purchaseOrderNumber:
+            type: string
+            description: ''
+          invoiceGeneralReference:
+            type: string
+            description: ''
+          billingContactUserId1:
+            type: string
+            description: ''
+          billingContactUserId2:
+            type: string
+            description: ''
+          billingContactUserId3:
+            type: string
+            description: ''
+          type:
+            description: ''
+            $ref: '#/components/schemas/OrganizationType'
+          status:
+            description: ''
+            $ref: '#/components/schemas/OrganizationStatus'
+          dtCreated:
+            type: string
+            description: The DateTime when the organization was created.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          dtLastModified:
+            type: string
+            description: The DateTime when the organization was last modified.
+            format: date-time
+            x-stainless-skip:
+            - terraform
+          createdBy:
+            type: string
+            description: The id of the user who created this organization.
+            x-stainless-skip:
+            - terraform
+          lastModifiedBy:
+            type: string
+            description: The id of the user who last modified this organization.
+            x-stainless-skip:
+            - terraform
+    MeResponse:
+      type: object
+      properties:
+        user:
+          description: ''
+          $ref: '#/components/schemas/UserResponse'
+        serviceUser:
+          description: ''
+          $ref: '#/components/schemas/ServiceUserResponse'
+        organization:
+          description: ''
+          $ref: '#/components/schemas/OrganizationResponse'
+      description: ''
+    OrganizationStatus:
+      type: string
+      description: ''
+      enum:
+      - ACTIVE
+      - ARCHIVED
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    OrganizationType:
+      type: string
+      description: ''
+      enum:
+      - PRODUCTION
+      - SANDBOX
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements

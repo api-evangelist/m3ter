@@ -3,7 +3,77 @@ info:
   title: m3ter Data Explorer API
   description: 'If you are using Postman, you can:
 
-    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace. See Importing the m3ter Open API in our main user Documentation for details. - Copy this link: m3ter-Template API Collection and use it to import the **m3ter-Template API Collection** into your Workspace. See Importing the m3ter Template API Collection in our main user Documentation for details. ---
+
+
+    # Introduction
+
+    The m3ter platform supports two HTTP-based REST APIs returning JSON encoded responses:
+
+    - The **Ingest API**, which you can use for submitting raw data measurements. *(See the Submit Measurements endpoint in this API Reference.)*
+
+    - The **Config API**, which you can use for configuration and management. *(All other endpoints in this API Reference.)*
+
+
+    ## Authentication and Authorization
+
+    Our APIs use an industry-standard authorization protocol known as the OAuth 2.0 specification. OAuth2 supports several grant types, each designed for a specific use case. m3ter uses the following two grant types:
+
+    - **Authorization Code**: Used for human login access via the m3ter Console. - **Client Credentials**: Used for machine-to-machine communication and API access. Complete the following flow for API access:
+
+
+    1. **Create a Service User and add Permissions**: Log in to the m3ter Console, go to **Settings**, **Access** then **Service Users** tab, and create a Service User. To enable API calls, grant the user **Administrator** permissions. 2. **Generate Access Keys**: In the Console, open the *Overview* page for the Service User by clicking on the name. Generate an **Access Key id** and **Api Secret**. Make sure you copy the **Api Secret** because it is only visible at the time of creation. See Service Authentication for detailed instructions and an example. 3. **Obtain a Bearer Token using Basic Auth**: We implement the OAuth 2.0 Client Credentials Grant authentication flow for Service User Authentication. Submit a request to the m3ter OAuth Client Credentials authentication flow, using your concatenated **Access Key id** and **Api Secret** to obtain a Bearer Token for your Service User. *See examples below.*
+
+
+    4. **Bearer Token Usage**: Use the HTTP ''Authorization'' header with the bearer token to authorise all subsequent API requests. > Warning: The Bearer Token is valid for 18,000 seconds or 5 hours. When the token has expired, you must obtain a new one. Below are two examples for obtaining a Bearer Token using Basic Auth: the first in cURL and the second as a Python script. ### cURL Example
+
+    1. Open your terminal or command prompt. 2. Use the following `cURL` command to obtain a Bearer Token:
+
+
+    ```bash
+
+    curl -X POST https://api.m3ter.com/oauth/token \
+
+    -H ''Content-Type: application/x-www-form-urlencoded'' \
+
+    -u your_access_key_id:your_api_secret \
+
+    -d ''grant_type=client_credentials''
+
+    ```
+
+
+    Replace `your_access_key_id` and `your_api_secret` with your actual **Access Key id** and **Api Secret**. 3. Run the command, and if successful, it will return a JSON response containing the Bearer Token. The response will look like this:
+
+
+    ```json
+
+    {
+
+    "access_token": "your_bearer_token",
+
+    "token_type": "Bearer",
+
+    "expires_in": 18000
+
+    }
+
+    ```
+
+
+    You can then use the Bearer Token *(the value of `"access_token"`)* for subsequent API calls to m3ter. ### Python Example
+
+    1. Install the `requests` library if you haven''t already:
+
+
+    ```bash
+
+    pip install requests
+
+    ```
+
+
+    2.'
   version: '1.0'
   x-logo:
     url: https://console.m3ter.com/m3ter-logo-black.svg
@@ -13,7 +83,21 @@ security:
 - OAuth2: []
 tags:
 - name: Data Explorer
-  description: Endpoints for querying the Data Explorer and saving query selections.
+  description: 'Endpoints for querying the Data Explorer and saving query selections.
+
+
+    The Data Explorer is a m3ter analytics tool, enabling you to query the Usage, Billing, and Prepayments data collected for your Organization in m3ter.
+
+
+    **IMPORTANT: Request Rate Limits for Data Explorer!** As part of the Config API, requests made to the Data Explorer are subject to tighter request rate limits:
+
+    - **Generally** 1 request per second.
+
+
+    - **Burst** 10 requests per second.
+
+
+    If you exceed either of these rate limits, requests are throttled and an HTTP 429 (Too Many Requests) error response is returned. See the Rate and Payload Limts section above for more details.'
 paths:
   /organizations/{orgId}/dataexplorer/bills:
     post:
@@ -31,8 +115,6 @@ paths:
         explode: false
         schema:
           type: string
-          deprecated: true
-          x-stainless-deprecation-message: the org id should be set at the client level instead
       requestBody:
         description: ''
         content:
@@ -51,8 +133,1106 @@ paths:
           $ref: '#/components/responses/Error'
         5XX:
           $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/bills/accounts:
+    get:
+      tags:
+      - Data Explorer
+      summary: Get account values for querying bill line items
+      description: Get account values for querying bill line items.
+      operationId: GetBillAccounts
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limit the number of items returned.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 2000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returns a list of accounts.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountsResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/bills/download/csv:
+    post:
+      tags:
+      - Data Explorer
+      summary: Download Bill data as a CSV
+      description: Download Bill data as a CSV.
+      operationId: DownloadBillDataCsv
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryBillDataRequest'
+        required: true
+      responses:
+        '200':
+          description: Contains a link to download the file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadDataExplorerResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/bills/download/json:
+    post:
+      tags:
+      - Data Explorer
+      summary: Download Bill data as JSON
+      description: Download Bill data as JSON.
+      operationId: DownloadBillDataJson
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryBillDataRequest'
+        required: true
+      responses:
+        '200':
+          description: Contains a link to download the file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadDataExplorerResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/bills/products:
+    get:
+      tags:
+      - Data Explorer
+      summary: Get product values for querying bill line items
+      description: Get product values for querying bill line items.
+      operationId: GetBillProducts
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limit the number of items returned.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 2000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returns a list of products.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillProductsResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/commitments/accounts:
+    get:
+      tags:
+      - Data Explorer
+      summary: Get account values for querying commitments
+      description: Get account values for querying commitments.
+      operationId: GetCommitmentsAccounts
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limit the number of items returned.
+        required: false
+        allowEmptyValue: true
+        style: form
+        explode: true
+        schema:
+          maximum: 10000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returns a list of accounts.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountsResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/commitments/download/csv:
+    post:
+      tags:
+      - Data Explorer
+      summary: Download Commitments data as a CSV
+      description: Download Commitments data as a CSV.
+      operationId: DownloadCommitmentsDataCsv
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryCommitmentsRequest'
+        required: true
+      responses:
+        '200':
+          description: Contains a link to download the file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadDataExplorerResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/commitments/download/json:
+    post:
+      tags:
+      - Data Explorer
+      summary: Download Commitments data as JSON
+      description: Download Commitments data as JSON.
+      operationId: DownloadCommitmentsDataJson
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryCommitmentsRequest'
+        required: true
+      responses:
+        '200':
+          description: Contains a link to download the file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadDataExplorerResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/commitments/obligations:
+    post:
+      tags:
+      - Data Explorer
+      summary: Query and filter for obligations
+      description: Query and filter for obligations.
+      operationId: PostQueryObligations
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryObligationsRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns a list of obligations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Obligation'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/commitments/obligations/download/csv:
+    post:
+      tags:
+      - Data Explorer
+      summary: Download Commitments Obligations data in CSV format
+      description: Download Commitments Obligations data in CSV format.
+      operationId: DownloadCommitmentsObligationsDataCsv
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the Organization. The Organization represents your company as a direct customer of the m3ter service.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryObligationsRequest'
+        required: true
+      responses:
+        '200':
+          description: Link to download the file
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadDataExplorerResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/commitments/obligations/download/json:
+    post:
+      tags:
+      - Data Explorer
+      summary: Download Commitments Obligations data as JSON
+      description: Download Commitments Obligations data as JSON.
+      operationId: DownloadCommitmentsObligationsDataJson
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryObligationsRequest'
+        required: true
+      responses:
+        '200':
+          description: Contains a link to download the file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadDataExplorerResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/commitments/remaining:
+    post:
+      tags:
+      - Data Explorer
+      summary: Query and filter for Remaining Commitments
+      description: Query and filter for remaining commitments.
+      operationId: PostQueryRemainingCommitment
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryObligationsRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns a list of remaining commitments.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemainingCommitmentsResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/commitments/v2:
+    post:
+      tags:
+      - Data Explorer
+      summary: Query and filter for commitments
+      description: Query and filter for commitments.
+      operationId: PostQueryCommitments
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryCommitmentsRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns a list of commitments.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillDataResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/commitments/v2/lineitems:
+    post:
+      tags:
+      - Data Explorer
+      summary: Query and filter for commitment line items
+      description: Query and filter for commitment line items.
+      operationId: PostQueryCommitmentLineItems
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryCommitmentsRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns a list of commitment line items.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillDataResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/mergedmeterdimensions:
+    post:
+      tags:
+      - Data Explorer
+      summary: Retrieve the values of a single Dimension for one or more Meters
+      description: Retrieve the values of a single Dimension for one or more Meters stored in the Data Warehouse over a period of time.
+      operationId: GetMergedMeterDimensions
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryMergedMeterDimensionsRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns a Meter's Dimensions from the Data Warehouse.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeterDimensionsResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/meterdimensions:
+    post:
+      tags:
+      - Data Explorer
+      summary: Retrieve the values of a Meter Dimension
+      description: Retrieve the Dimensions of a Meter stored in the Data Warehouse over a period of time.
+      operationId: GetMeterDimensions
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryMeterDimensionsRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns a Meter's Dimensions from the Data Warehouse.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeterDimensionsResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/meters:
+    get:
+      tags:
+      - Data Explorer
+      summary: Retrieve Meters stored in the Data Warehouse over a period of time
+      description: Retrieve the Meters and their dimension and measure names that are stored in the Data Warehouse over a period of time.
+      operationId: GetMeters
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: startDate
+        in: query
+        description: Start date
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: endDate
+        in: query
+        description: End date
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: ''
+        required: false
+        style: form
+        explode: true
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      responses:
+        '200':
+          description: Returns a list of Meters from the Data Warehouse.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetersResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/usagedata:
+    post:
+      tags:
+      - Data Explorer
+      summary: Query and filter aggregated usage data
+      description: Query and filter aggregated usage data.
+      operationId: PostQueryAggregatedUsageData
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryUsageDataRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns a list of aggregated usage data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AggregatedUsageDataResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/usagedata/download/csv:
+    post:
+      tags:
+      - Data Explorer
+      summary: Download aggregated usage data as a CSV
+      description: Download aggregated usage data as a CSV.
+      operationId: DownloadAggregatedUsageDataCsv
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryUsageDataRequest'
+        required: true
+      responses:
+        '200':
+          description: Contains a link to download the file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadDataExplorerResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+  /organizations/{orgId}/dataexplorer/usagedata/download/json:
+    post:
+      tags:
+      - Data Explorer
+      summary: Download aggregated usage data as JSON
+      description: Download aggregated usage data as JSON.
+      operationId: DownloadAggregatedUsageDataJson
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryUsageDataRequest'
+        required: true
+      responses:
+        '200':
+          description: Contains a link to download the file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadDataExplorerResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
 components:
   schemas:
+    AccountsResponse:
+      type: object
+      properties:
+        accountCodes:
+          type: array
+          description: A list of account codes.
+          items:
+            type: string
+        accounts:
+          type: array
+          description: A list of accounts.
+          items:
+            $ref: '#/components/schemas/Account'
+      description: Response containing accounts used for filtering bill queries.
+    AggregatedUsageData:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          description: Start time of aggregated time period *(in ISO-8601 format)*.
+          format: date-time
+        dimensions:
+          type: object
+          description: Dimensions that were used for filtering
+          allOf:
+          - type: object
+            additionalProperties:
+              type: object
+              additionalProperties:
+                type: string
+          - type: object
+            description: Dimensions that were used for filtering
+        measures:
+          type: object
+          description: Measures and their values
+          allOf:
+          - type: object
+            additionalProperties:
+              type: object
+              additionalProperties:
+                type: number
+                format: double
+          - type: object
+            description: Measures and their values
+        meterCode:
+          type: string
+          description: Meter code
+        meterName:
+          type: string
+          description: Meter name
+        uid:
+          type: string
+          description: uid
+      description: Aggregated usage data
+    QueryMergedMeterDimensionsRequest:
+      required:
+      - dimensionName
+      - endDate
+      - meterCodes
+      - startDate
+      type: object
+      properties:
+        meterCodes:
+          maxItems: 100
+          type: array
+          description: Codes representing Meters, or an empty list for a wildcard (i.e. all Meters).
+          items:
+            type: string
+        dimensionName:
+          minLength: 1
+          type: string
+          description: The name of a Meter dimension, for example "account".
+        startDate:
+          type: string
+          description: ISO 8601 formatted start date to filter by.
+          format: date-time
+        endDate:
+          type: string
+          description: ISO 8601 formatted end date to filter by.
+          format: date-time
+        attributes:
+          type: array
+          description: Attributes to filter values by.
+          items:
+            type: string
+        limit:
+          type: integer
+          description: Limit the records returned.
+          format: int32
+      description: Data Explorer dimensions query for multiple meters.
+    RemainingCommitmentsResponse:
+      type: object
+      properties:
+        values:
+          type: array
+          description: List of Remain9ing Commitment items
+          items:
+            $ref: '#/components/schemas/RemainingCommitment'
+      description: Response containing Remaining Commitments Response
+    QueryCommitmentsRequest:
+      required:
+      - endDate
+      - startDate
+      type: object
+      properties:
+        startDate:
+          type: string
+          description: ISO 8601 formatted start date for the commitment.
+          format: date-time
+        endDate:
+          type: string
+          description: ISO 8601 formatted end date for the commitment.
+          format: date-time
+        dimensions:
+          maxItems: 100
+          type: array
+          description: Dimensions to filter by. The only valid dimension is 'account'.
+          items:
+            $ref: '#/components/schemas/DimensionQuery'
+        limit:
+          maximum: 2000
+          minimum: 1
+          type: integer
+          description: Limit the number of data points returned
+          format: int32
+      description: Data Explorer commitments query.
+    AggregationFrequency:
+      type: string
+      description: This specifies how often the data should be aggregated.
+      enum:
+      - DAY
+      - WEEK
+      - MONTH
+      - QUARTER
+      - YEAR
+      - WHOLE_PERIOD
+    DimensionValue:
+      type: object
+      properties:
+        dimensionAttribute:
+          type: string
+          description: The attribute of a DimensionQuery
+        dimensionValue:
+          type: string
+          description: The value of a DimensionQuery
+      description: A dimension and its value.
+    BillDataResponse:
+      type: object
+      properties:
+        values:
+          type: array
+          description: A list of bill line items.
+          items:
+            $ref: '#/components/schemas/BillData'
+      description: Response containing bill line items.
+    MeterDimensionsResponse:
+      type: object
+      properties:
+        meterCode:
+          type: string
+          description: Code representing the Meter
+        dimensionName:
+          type: string
+          description: Name representing the dimension
+        dimensionValues:
+          type: array
+          description: Dimension values
+          items:
+            $ref: '#/components/schemas/DimensionValue'
+      description: Response containing a Meters dimensions and values
+    LineItemMeasures:
+      type: object
+      properties:
+        convertedSubtotal:
+          type: number
+          description: ''
+          format: double
+        subtotal:
+          type: number
+          description: ''
+          format: double
+        version:
+          type: number
+          description: ''
+          format: double
+        conversionRate:
+          type: number
+          description: ''
+          format: double
+        quantity:
+          type: number
+          description: ''
+          format: double
+        units:
+          type: number
+          description: ''
+          format: double
+      description: ''
+    DataFieldMeasure:
+      type: object
+      properties:
+        measureName:
+          type: string
+          description: The name of the Measure
+        measureUnit:
+          type: string
+          description: The unit
+      description: A data field (of type Measure) belonging to a Meter.
+    BillProductsResponse:
+      type: object
+      properties:
+        productNames:
+          type: array
+          description: A list of product names that can be used for filtering.
+          items:
+            type: string
+      description: Response containing product names used for filtering bill queries.
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    AggregatedUsageDataResponse:
+      type: object
+      properties:
+        values:
+          type: array
+          description: List of aggregated usage data
+          items:
+            $ref: '#/components/schemas/AggregatedUsageData'
+      description: Response containing the aggregated usage data
+    Account:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Account code
+        name:
+          type: string
+          description: Account name
+      description: Response containing accounts parameters that can be used for filtering.
+    Aggregation:
+      type: string
+      description: 'Specifies the computation method applied to usage data collected in `targetField`. Aggregation unit value depends on the **Category** configured for the selected targetField.
+
+
+        * **SUM**. Adds the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **MIN**. Uses the minimum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **MAX**. Uses the maximum value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **COUNT**. Counts the number of values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **LATEST**. Uses the most recent value. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`. Note: Based on the timestamp `ts` value of usage data measurement submissions. If using this method, please ensure *distinct* `ts` values are used for usage data measurement submissions.
+
+
+        * **MEAN**. Uses the arithmetic mean of the values. Can be applied to a **Measure**, **Income**, or **Cost** `targetField`.
+
+
+        * **UNIQUE**. Uses unique values and returns a count of the number of unique values. Can be applied to a **Metadata** `targetField`.'
+      enum:
+      - SUM
+      - MIN
+      - MAX
+      - COUNT
+      - LATEST
+      - MEAN
+      - UNIQUE
+      - CUSTOM_SQL
+    Dimension:
+      required:
+      - filter
+      - name
+      type: object
+      properties:
+        meterId:
+          type: string
+          description: The unique identifier (UUID) of the Meter containing this Dimension.
+        name:
+          minLength: 1
+          type: string
+          description: The name of the Dimension to target in the Meter.
+        attributes:
+          type: array
+          description: The Dimension attribute to target.
+          items:
+            type: string
+        filter:
+          minItems: 1
+          type: array
+          description: The value of a Dimension to use as a filter. Use "*" as a wildcard to filter on all Dimension values.
+          items:
+            type: string
+      description: A Dimension belonging to a Meter.
+    DataFieldMeasureQuery:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of a Measure data field (or blank to indicate a wildcard, i.e. all fields)
+        aggregations:
+          maxItems: 7
+          type: array
+          description: A list of Aggregations to apply to the measure
+          items:
+            $ref: '#/components/schemas/Aggregation'
+      description: A data field (of type Measure) to retrieve aggregated usage data on.
+    QueryObligationsRequest:
+      required:
+      - endDate
+      - startDate
+      type: object
+      properties:
+        startDate:
+          type: string
+          description: ISO 8601 formatted start date for the obligations.
+          format: date-time
+        endDate:
+          type: string
+          description: ISO 8601 formatted end date for the obligations.
+          format: date-time
+        dimensions:
+          maxItems: 100
+          type: array
+          description: Dimensions to filter by
+          items:
+            $ref: '#/components/schemas/DimensionQuery'
+        limit:
+          maximum: 2000
+          minimum: 1
+          type: integer
+          description: Limit the number of data points returned
+          format: int32
+      description: Data Explorer Obligations query.
+    BillDetails:
+      type: object
+      properties:
+        day:
+          type: integer
+          description: ''
+          format: int32
+        week:
+          type: string
+          description: ''
+        year:
+          type: integer
+          description: ''
+          format: int32
+        month:
+          type: string
+          description: ''
+        locked:
+          type: string
+          description: ''
+        status:
+          type: string
+          description: ''
+        dueDate:
+          type: string
+          description: ''
+        startDate:
+          type: string
+          description: ''
+        endDate:
+          type: string
+          description: ''
+        servicePeriodStartDate:
+          type: string
+          description: ''
+        servicePeriodEndDate:
+          type: string
+          description: ''
+        billDate:
+          type: string
+          description: ''
+        timezone:
+          type: string
+          description: ''
+        yearMonth:
+          type: string
+          description: ''
+        billCurrency:
+          type: string
+          description: ''
+        billingFrequency:
+          type: string
+          description: ''
+      description: ''
+    Obligation:
+      type: object
+      properties:
+        dateMonth:
+          type: string
+          description: ''
+        obligations:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+          description: ''
+      description: ''
     QueryBillDataRequest:
       required:
       - endDate
@@ -89,29 +1269,100 @@ components:
       description: Data Explorer Bill data query.
       allOf:
       - $ref: '#/components/schemas/AbstractRequest'
-    AbstractRequest:
+    DownloadDataExplorerResponse:
       type: object
       properties:
-        version:
-          type: integer
-          description: 'The version number of the entity:
-
-            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
-
-            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
-          format: int64
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-      description: ''
-    BillDataResponse:
+        downloadUrl:
+          type: string
+          description: ''
+          format: url
+      description: Download link for Data Explorer data
+    DimensionQuery:
+      required:
+      - filter
+      - name
       type: object
       properties:
-        values:
+        name:
+          minLength: 1
+          type: string
+          description: The Dimension name to target.
+        attributes:
           type: array
-          description: A list of bill line items.
+          description: The dimension attribute to target
           items:
-            $ref: '#/components/schemas/BillData'
-      description: Response containing bill line items.
+            type: string
+        filter:
+          minItems: 1
+          type: array
+          description: The value of a dimension to filter by. Use "*" to filter on all dimension values.
+          items:
+            type: string
+      description: Dimension of a Meter used as a filter.
+    QueryUsageDataRequest:
+      required:
+      - aggregationFrequency
+      - endDate
+      - measures
+      - meterCodes
+      - startDate
+      type: object
+      properties:
+        meterCodes:
+          maxItems: 100
+          type: array
+          description: Codes representing Meters, or an empty list for a wildcard (i.e. all Meters).
+          items:
+            type: string
+        startDate:
+          type: string
+          description: ISO 8601 formatted start date for the aggregation.
+          format: date-time
+        endDate:
+          type: string
+          description: ISO 8601 formatted end date for the aggregation.
+          format: date-time
+        aggregationFrequency:
+          description: ''
+          allOf:
+          - $ref: '#/components/schemas/AggregationFrequency'
+          - type: object
+            description: The time period to aggregate data with.
+        measures:
+          maxItems: 30
+          minItems: 1
+          type: array
+          description: Measures to retrieve usage data entries for
+          items:
+            $ref: '#/components/schemas/DataFieldMeasureQuery'
+        dimensions:
+          maxItems: 100
+          type: array
+          description: Dimensions to filter by
+          items:
+            $ref: '#/components/schemas/DimensionQuery'
+        limit:
+          maximum: 5000
+          minimum: 1
+          type: integer
+          description: Limit the number of data points returned
+          format: int32
+      description: Data Explorer query request
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+    RemainingCommitment:
+      type: object
+      properties:
+        dateMonth:
+          type: string
+          description: ''
+        remaining:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+          description: ''
+      description: ''
     LineItemDimensions:
       type: object
       properties:
@@ -167,58 +1418,15 @@ components:
           type: string
           description: ''
       description: ''
-    LineItemMeasures:
+    MetersResponse:
       type: object
       properties:
-        convertedSubtotal:
-          type: number
-          description: ''
-          format: double
-        subtotal:
-          type: number
-          description: ''
-          format: double
-        version:
-          type: number
-          description: ''
-          format: double
-          x-stainless-terraform-configurability: computed
-          x-stainless-terraform-always-send: true
-        conversionRate:
-          type: number
-          description: ''
-          format: double
-        quantity:
-          type: number
-          description: ''
-          format: double
-        units:
-          type: number
-          description: ''
-          format: double
-      description: ''
-    DimensionQuery:
-      required:
-      - filter
-      - name
-      type: object
-      properties:
-        name:
-          minLength: 1
-          type: string
-          description: The Dimension name to target.
-        attributes:
+        values:
           type: array
-          description: The dimension attribute to target
+          description: List of Meters.
           items:
-            type: string
-        filter:
-          minItems: 1
-          type: array
-          description: The value of a dimension to filter by. Use "*" to filter on all dimension values.
-          items:
-            type: string
-      description: Dimension of a Meter used as a filter.
+            $ref: '#/components/schemas/DwMeter'
+      description: Response containing Meters and their dimension names and measure names.
     BillData:
       type: object
       properties:
@@ -259,60 +1467,60 @@ components:
       - BALANCE_CONSUMED
       - BALANCE_FEE
       - AD_HOC
-    BillDetails:
+    DwMeter:
       type: object
       properties:
-        day:
-          type: integer
-          description: ''
-          format: int32
-        week:
+        meterCode:
           type: string
-          description: ''
-        year:
-          type: integer
-          description: ''
-          format: int32
-        month:
+          description: The code of a Meter
+        meterName:
           type: string
-          description: ''
-        locked:
+          description: The name of a Meter
+        measures:
+          type: array
+          description: Measures associated with the Meter
+          items:
+            $ref: '#/components/schemas/DataFieldMeasure'
+        dimensions:
+          type: array
+          description: Dimensions associated with the Meter
+          items:
+            $ref: '#/components/schemas/Dimension'
+      description: A Meter from the Data Warehouse
+    QueryMeterDimensionsRequest:
+      required:
+      - dimensionName
+      - endDate
+      - meterCode
+      - startDate
+      type: object
+      properties:
+        meterCode:
+          minLength: 1
           type: string
-          description: ''
-        status:
+          description: Code representing a Meter.
+        dimensionName:
+          minLength: 1
           type: string
-          description: ''
-        dueDate:
-          type: string
-          description: ''
+          description: The name of a Meter dimension, for example "account".
         startDate:
           type: string
-          description: ''
+          description: ISO 8601 formatted start date to filter by.
+          format: date-time
         endDate:
           type: string
-          description: ''
-        servicePeriodStartDate:
-          type: string
-          description: ''
-        servicePeriodEndDate:
-          type: string
-          description: ''
-        billDate:
-          type: string
-          description: ''
-        timezone:
-          type: string
-          description: ''
-        yearMonth:
-          type: string
-          description: ''
-        billCurrency:
-          type: string
-          description: ''
-        billingFrequency:
-          type: string
-          description: ''
-      description: ''
+          description: ISO 8601 formatted end date to filter by.
+          format: date-time
+        attributes:
+          type: array
+          description: Attributes to filter values by.
+          items:
+            type: string
+        limit:
+          type: integer
+          description: Limit the records returned.
+          format: int32
+      description: Data Explorer meter dimensions query.
   responses:
     Error:
       description: Error message
@@ -332,9 +1540,6 @@ components:
           tokenUrl: /oauth/token
           scopes:
             m3ter-resources/m3ter-scope: m3ter resources
-            measurements:upload: Upload measurements
-            measurements:fileUpload: Upload file
-            measurements:retrieve: Retrieve measurements
         authorizationCode:
           authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
           tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
@@ -342,6 +1547,3 @@ components:
             m3ter-resources/m3ter-scope: m3ter resources
             openid: OpenID
             email: email
-            measurements:upload: Upload measurements
-            measurements:fileUpload: Upload file
-            measurements:retrieve: Retrieve measurements

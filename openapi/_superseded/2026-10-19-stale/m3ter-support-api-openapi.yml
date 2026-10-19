@@ -1,0 +1,205 @@
+openapi: 3.2.0
+info:
+  title: m3ter Support API
+  description: 'If you are using Postman, you can:
+
+    - Use the **Download** button above to download the m3ter Open API spec JSON file and then import this file as the **m3ter API Collection** into your Workspace.'
+  version: '1.0'
+  x-logo:
+    url: https://console.m3ter.com/m3ter-logo-black.svg
+servers:
+- url: https://api.m3ter.com
+security:
+- OAuth2: []
+tags:
+- name: Support
+  description: 'Endpoints for requesting support and managing m3ter Support users.
+
+
+    For troubleshooting purposes, you can grant m3ter Support access to your Organization. m3ter Support only has access for a limited time that you specify.'
+paths:
+  /organizations/{orgId}/support:
+    get:
+      tags:
+      - Support
+      summary: Retrieve Support Details
+      description: Get support user details on the specific permissions applied and the date and time support access ends.
+      operationId: GetSupport
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      responses:
+        '200':
+          description: Returns Support User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+    put:
+      tags:
+      - Support
+      summary: Request Support
+      description: Use this call to make a request and grant m3ter Support access to your Organization for a specified timeframe and with specific permissions assigned to Support users. You might want to grant Support access when you've submitted a request for help in resolving an issue you've encountered in your Organization
+      operationId: PutSupport
+      parameters:
+      - name: orgId
+        in: path
+        description: UUID of the organization
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          deprecated: true
+          x-stainless-deprecation-message: the org id should be set at the client level instead
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupportRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns Support request details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportResponse'
+        4XX:
+          $ref: '#/components/responses/Error'
+        5XX:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    AbstractRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: 'The version number of the entity:
+
+            - **Create entity:** Not valid for initial insertion of new entity - *do not use for Create*. On initial Create, version is set at 1 and listed in the response.
+
+            - **Update Entity:**  On Update, version is required and must match the existing version because a check is performed to ensure sequential versioning is preserved. Version is incremented by 1 and listed in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+    SupportResponse:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractResponse'
+      - properties:
+          dtEndSupportUsersAccess:
+            type: string
+            description: The Date/Time Support access ends *(in ISO-8601 format)*.
+            format: date-time
+          supportUsersPermissionPolicy:
+            type: array
+            description: The Permission Policies assigned to any support users when they access your Organization.
+            items:
+              $ref: '#/components/schemas/PermissionStatementWrapper'
+    PermissionStatementWrapper:
+      required:
+      - action
+      - effect
+      - resource
+      type: object
+      properties:
+        effect:
+          type: string
+          description: ''
+        action:
+          type: array
+          description: ''
+          items:
+            type: string
+        resource:
+          minItems: 1
+          type: array
+          description: ''
+          items:
+            type: string
+      description: ''
+    SupportRequest:
+      type: object
+      description: ''
+      allOf:
+      - $ref: '#/components/schemas/AbstractRequest'
+      - required:
+        - dtEndSupportUsersAccess
+        properties:
+          dtEndSupportUsersAccess:
+            type: string
+            description: The Date/Time Support access ends *(in ISO-8601 format)*.
+            format: date-time
+          supportUsersPermissionPolicy:
+            type: array
+            description: The Permission Policies assigned to any support users when they access your Organization.
+            items:
+              $ref: '#/components/schemas/PermissionStatementWrapper'
+    AbstractResponse:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The UUID of the entity. '
+        version:
+          type: integer
+          description: 'The version number:
+
+            - **Create:** On initial Create to insert a new entity, the version is set at 1 in the response.
+
+            - **Update:** On successful Update, the version is incremented by 1 in the response.'
+          format: int64
+          x-stainless-terraform-configurability: computed
+          x-stainless-terraform-always-send: true
+      description: ''
+  responses:
+    Error:
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "m3ter supports machine to machine authentication using the `clientCredentials` OAuth2 flow.\n\nThe `authorizationCode` flow controls access for human users via the m3ter Console application. \n"
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
+        authorizationCode:
+          authorizationUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://m3ter.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            m3ter-resources/m3ter-scope: m3ter resources
+            openid: OpenID
+            email: email
+            measurements:upload: Upload measurements
+            measurements:fileUpload: Upload file
+            measurements:retrieve: Retrieve measurements
