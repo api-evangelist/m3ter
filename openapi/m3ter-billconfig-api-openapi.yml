@@ -250,3 +250,9 @@ components:
             m3ter-resources/m3ter-scope: m3ter resources
             openid: OpenID
             email: email
+x-provenance:
+  method: harvested
+  publisher: M3ter
+  source: https://docs.m3ter.com/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
